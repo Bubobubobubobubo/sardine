@@ -4,22 +4,41 @@ import mido
 import time
 from rich import print
 from typing import Union
+from math import floor
 
-class Task:
 
-    """
-    Specialised version of an asyncio task meant to be scheduled
-    in a temporal context. 
-    """
+class Time:
+    def __init__(self, ppqn: int, bar: Union[int, float] = 0,
+                 beat: Union[int, float] = 0, phase: int = 0):
 
-    def __init__(self, callback):
-        pass
+        """
+        Generate a time target in the future. The function needs a PPQN
+        to be used as reference. The PPQN will be used to decompose bars
+        and beats in a given nb of PPQN to reach the target.
+
+        ppqn: int -- How many PPQN are used by the system
+        bar:  Union[int, float]  -- How many bars in the future
+        beat: Union[int, float]  -- How many beats in the future
+        phase: Union[int, float] -- How many PPQN in the future
+        """
+
+        self.ppqn = ppqn
+        bar_standard, beat_standard = ppqn * 4, ppqn
+        self.bar = floor(bar_standard * bar)
+        self.beat = floor(beat_standard * beat)
+        self.phase = phase
+
+    def target(self) -> int:
+        """ Return the number of PPQN to reach target """
+        return self.beat + self.bar + self.phase
 
 
 class MidiIO:
 
     """
-    Naive MIDI Clock implementation.
+    Very naive MIDI Clock. Lots of jitter and time problems.
+    The reason is that everything, including blocking I/O is
+    still running in the same thread.
 
     Keyword arguments:
     port_name: str -- Exact String for the MIDIOut Port.
@@ -36,14 +55,17 @@ class MidiIO:
             try:
                 self._midi = mido.open_output()
             except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
+                print(f"[bold red]Init error: {error}[/bold red]")
         else:
             try:
                 self._midi = mido.open_output(self._midi_ports[0])
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
+        self._pool = Pool(processes=20)
+
         # Clock maintenance related
-        self._background_tasks = set()
+        self.tasks = {}
+
         self.running = True
         self._debug = False
         # Timing related
@@ -58,9 +80,7 @@ class MidiIO:
         self.current_beat = 0
         self.elapsed_bars = 0
         self.tick_duration = self._get_tick_duration()
-
-        # Initialise clock and signal out when ready
-        self.send_start()
+        self.tick_time = 0
 
     # ---------------------------------------------------------------------- #
     # Setters and getters
@@ -69,7 +89,7 @@ class MidiIO:
         """ BPM Getter """
         return self._bpm
 
-    def set_bpm(self, new_bpm: Union[int, float]) -> None:
+    def set_bpm(self, new_bpm: int) -> None:
         """ BPM Setter """
         if 1 < new_bpm < 800:
             self._bpm = new_bpm
@@ -111,18 +131,24 @@ class MidiIO:
         self.current_beat = next(self._current_beat_gen)
 
     # ---------------------------------------------------------------------- #
+    # Scheduler methods
+
+    def __rshift__(self, coroutine):
+        """ Add a new task to the scheduler """
+        self.tasks[coroutine.__qualname__] = asyncio.create_task(coroutine)
+
+    def __lshift__(self, coroutine):
+        """ Remove a task from the scheuler """
+        del self.tasks[coroutine.__qualname__]
+
+    # ---------------------------------------------------------------------- #
     # Public methods
 
-    def __rshift__(self, function_to_call):
-        """ Can I override this? """
-        asyncio.create_task(function_to_call)
-
-    async def play_note(self, note: int = 60,
-                        channel: int = 0,
+    async def play_note(self, note: int = 60, channel: int = 0,
                         velocity: int = 127,
                         duration: Union[float, int] = 1) -> None:
         """
-        Play note test function
+        Dumb method that will play a note for a given duration.
         
         Keyword arguments:
         note: int -- the MIDI note to be played (default 1.0)
@@ -137,9 +163,15 @@ class MidiIO:
         await asyncio.sleep(self.tick_duration * duration)
         self._midi.send(note_off)
 
-    def send_start(self) -> None:
+    async def run_clock_initial(self):
+        """ The MIDIClock needs to start """
+        self.run_clock()
+
+    async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
+        if initial:
+            asyncio.create_task(self.run_clock())
 
     def send_stop(self) -> None:
         """ MIDI Start message """
@@ -154,12 +186,14 @@ class MidiIO:
         """ MIDI Clock Message """
         self._midi.send(mido.Message('clock'))
 
-    def log_clock(self) -> None:
+    def log(self) -> None:
+
         """
         Pretty print information about Clock timing on the console.
         Used for debugging purposes. Not to be used when playing,
         can be very verbose. Will overflow the console in no-time.
         """
+
         color = "[bold yellow]"
         beat, bar, delta, phase = (self.beat, self.elapsed_bars,
                                    self.delta, self.phase)
@@ -169,8 +203,11 @@ class MidiIO:
     async def run_clock(self):
 
         """
-        Naive MIDI clock implementation. Drift will happen and will not be
-        corrected.
+        Naive MIDI clock implementation. Drift will happen
+        because of IO and miscalculations of time and will
+        not be corrected.
+
+        TODO: do better!
 
         Keyword arguments:
         debug: bool -- print debug messages on stdout.
@@ -182,6 +219,7 @@ class MidiIO:
             await asyncio.sleep(self.tick_duration)
             self.send_clock()
             self.beat += 1
+            self.tick_time += 1
             self._update_phase()
             if self.phase == 1:
                 self._update_current_beat()
@@ -190,68 +228,47 @@ class MidiIO:
             end = time.perf_counter()
             self.delta = end - begin
             if self._debug:
-                self.log_clock()
+                self.log()
 
-    async def mod_on(self, modulo: int, note: int):
+    async def play(self, beat: int, note: int):
         """
-        Play a note for a specific modulo based on MIDI tick rate.
-        modulo: int -- targetted modulo for a note_on playback.
-        note: int -- MIDI note to be played.
-        """
-        while True:
-            await asyncio.sleep(0.0)
-            if self.phase == modulo:
-                await self.play_note(note)
+        Test by playing a note on a given beat.
 
-    async def old_beat_on(self, beat: int, note: int):
-        """
-        Play a note on a specific beat of the current measure.
         beat: int -- targetted beat in the bar.
         note: int -- MIDI note to be played.
         """
-        while True:
-            await asyncio.sleep(0.0)
-            if self.current_beat == beat:
-                await self.play_note(note)
-
-    async def beat_on(self, beat: int, note: int):
-        """
-        Play a note on a specific beat of the current measure.
-        beat: int -- targetted beat in the bar.
-        note: int -- MIDI note to be played.
-        """
-        # await asyncio.sleep(0.0)
         if self.current_beat == beat:
             await self.play_note(note)
 
-async def background_services(midi: MidiIO):
-    """
-    Run some background services (such as the Clock) right when the library
-    is imported. This is the equivalent of the main() loop for our asyncio
-    event loop.
+        self.__rshift__(self.play(beat, note))
 
-    midi: MidiIO -- the MIDI output and Clock to be used.
-    """
-    clock_task = midi.run_clock()
-    midi._background_tasks.add(clock_task)
+    async def play_target(self, target: Time, note: int):
+        """ Play a note in the future at given Time target """
+        cur_time = self.tick_time
+        while self.tick_time != cur_time + target.target():
+            await asyncio.sleep(0.0)
+        await self.play_note(note)
 
-    # To prevent the garbage collector from collecting our tasks
-    for task in midi._background_tasks:
-        await asyncio.create_task(task)
+        self.__rshift__(self.play_target(target, note))
 
 # ----------------------------------------------------------------------
 # Playground: test code to be imported with library here :)
 
-midi = MidiIO("MIDI Bus 1")
-sched = asyncio.create_task
-sched(background_services(midi))
 
+midi = MidiIO("MIDI Bus 1")
+# midi.debug = True
 
 def reset():
     midi.send_stop()
     midi.send_reset()
 
-# midi >> midi.old_beat_on(1, 60)
-# midi >> midi.old_beat_on(2, 64)
-# midi >> midi.old_beat_on(3, 67)
-# midi >> midi.old_beat_on(4, 72)
+asyncio.create_task(midi.send_start(initial=True))
+
+# This should ideally be perfectly in sync. It is not 
+# because of messy management of IO.
+midi >> midi.play_target(Time(24, 0.5, 0), 48)
+midi >> midi.play_target(Time(24, 1, 0), 60)
+midi >> midi.play_target(Time(24, 2, 0), 64)
+midi >> midi.play_target(Time(24, 0, 1), 67)
+
+

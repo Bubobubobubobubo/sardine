@@ -311,7 +311,6 @@ asyncio.create_task(clock.send_start(initial=True))
 
 
 cur_time = clock.get_tick_time()
-print(f"{cur_time}")
 
 clock >> clock.play_target(name="[bold red] a", cur_time=cur_time, target=Time(24, 1), note=48)
 clock >> clock.play_target(name="[bold red] b", cur_time=cur_time, target=Time(24, 1), note=60)

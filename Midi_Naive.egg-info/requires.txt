@@ -1,4 +1,0 @@
-mido
-rich
-uvloop
-ipython

@@ -1,7 +1,0 @@
-README.md
-setup.py
-Midi_Naive.egg-info/PKG-INFO
-Midi_Naive.egg-info/SOURCES.txt
-Midi_Naive.egg-info/dependency_links.txt
-Midi_Naive.egg-info/requires.txt
-Midi_Naive.egg-info/top_level.txt

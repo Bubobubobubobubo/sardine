@@ -5,7 +5,7 @@ import pathlib
 here = pathlib.Path(__file__).parent.resolve()
 
 setup(
-    name="Midi Naive",
+    name="Bibu",
     version="0.0.1",
     description="MIDI Live Coding in Python",
     author="Raphaël Forment",
@@ -23,7 +23,7 @@ setup(
     ],
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
-    install_requires=["mido", "rich", "uvloop"],
+    install_requires=["mido", "rich", "uvloop", "ipython"],
     # entry_points={  # Optional
     #     "console_scripts": [
     #         "sample=sample:main",

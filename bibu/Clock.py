@@ -6,6 +6,49 @@ import time
 from rich import print
 from typing import Union
 from math import floor
+from concurrent.futures import ThreadPoolExecutor
+import threading
+
+
+class MIDIIo(threading.Thread):
+
+    """
+    blabla
+    """
+
+    def __init__(self, port_name: str= None):
+        threading.Thread.__init__(self)
+        self._midi_ports = mido.get_output_names()
+        if port_name:
+            try:
+                self._midi = mido.open_output()
+            except Exception as error:
+                print(f"[bold red]Init error: {error}[/bold red]")
+        else:
+            try:
+                self._midi = mido.open_output(self._midi_ports[0])
+            except Exception as error:
+                print(f"[bold red]Init error: {error}[/bold red]")
+
+    def send(self, message: mido.Message) -> None:
+        self._midi.send(message)
+
+    def send_stop(self) -> None:
+        """ MIDI Start message """
+        self._midi.send(mido.Message('stop'))
+
+    def send_reset(self) -> None:
+        """ MIDI Reset message """
+        self._midi.send(mido.Message('reset'))
+        self._reset_internal_clock_state()
+
+    def send_clock(self) -> None:
+        """ MIDI Clock Message """
+        self._midi.send(mido.Message('clock'))
+
+    def send_start(self, initial: bool = False) -> None:
+        """ MIDI Start message """
+        self._midi.send(mido.Message('start'))
 
 
 class Time:
@@ -33,8 +76,14 @@ class Time:
         """ Return the number of PPQN to reach target """
         return self.beat + self.bar + self.phase
 
+    def __sub__(self, other):
+        """ Substraction between a time and another time """
+        print(f"A: {self.bar} {self.beat} {self.phase}")
+        print(f"B: {other.bar} {other.beat} {other.phase}")
+        print(f"C: {self.bar - other.bar} {self.beat - other.beat} {self.phase - other.phase}")
 
-class MidiIO:
+
+class Clock:
 
     """
     Very naive MIDI Clock. Lots of jitter and time problems.
@@ -51,17 +100,8 @@ class MidiIO:
                  bpm: Union[float, int] = 250,
                  beat_per_bar: int = 4):
 
-        self._midi_ports = mido.get_output_names()
-        if port_name:
-            try:
-                self._midi = mido.open_output()
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
-        else:
-            try:
-                self._midi = mido.open_output(self._midi_ports[0])
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
+        self._midi = MIDIIo()
+        self._pool = ThreadPoolExecutor(max_workers=32)
 
         # Clock maintenance related
         self.tasks = {}
@@ -70,6 +110,7 @@ class MidiIO:
         self._debug = False
         # Timing related
         self._bpm = bpm
+        self.delta = 0
         self.beat = -1
         self.ppqn = 24
         self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
@@ -81,7 +122,6 @@ class MidiIO:
         self.elapsed_bars = 0
         self.tick_duration = self._get_tick_duration()
         self.tick_time = 0
-        self.delta = 0
 
     # ---------------------------------------------------------------------- #
     # Setters and getters
@@ -111,7 +151,7 @@ class MidiIO:
     # Private methods
 
     def _get_tick_duration(self):
-        return (60 / self.bpm) / self.ppqn
+        return ((60 / self.bpm) / self.ppqn) - self.delta
 
     def _reset_internal_clock_state(self):
         """ Reset internal clock state with MIDI message """
@@ -170,22 +210,15 @@ class MidiIO:
 
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
+        self._midi.send_start()
         self._midi.send(mido.Message('start'))
         if initial:
             asyncio.create_task(self.run_clock())
 
-    def send_stop(self) -> None:
-        """ MIDI Start message """
-        self._midi.send(mido.Message('stop'))
 
-    def send_reset(self) -> None:
-        """ MIDI Reset message """
-        self._midi.send(mido.Message('reset'))
-        self._reset_internal_clock_state()
-
-    def send_clock(self) -> None:
-        """ MIDI Clock Message """
-        self._midi.send(mido.Message('clock'))
+    def next_beat_absolute(self):
+        """ Return time between now and next beat in absolute time """
+        return self.tick_duration * (self.ppqn - self.phase)
 
     def log(self) -> None:
 
@@ -201,6 +234,7 @@ class MidiIO:
         print(color + f"BPM:{self._bpm} @{beat} Bar: {bar} Delta: {delta:2f} Phase: {phase}")
         print(color + f" Current: {self.current_beat}/{self.beat_per_bar}")
 
+
     async def run_clock(self):
 
         """
@@ -214,11 +248,13 @@ class MidiIO:
         debug: bool -- print debug messages on stdout.
         """
 
-        print(f"[bold red]Start clock with port {self._midi_ports[0]}")
+        print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
         while self.running:
+            self.tick_duration = self._get_tick_duration()
+            self.delta = 0 # reset delta
             begin = time.perf_counter()
-            await asyncio.sleep(self.tick_duration - self.delta)
-            self.send_clock()
+            await asyncio.sleep(self.tick_duration)
+            self._midi.send_clock()
             self.beat += 1
             self.tick_time += 1
             self._update_phase()
@@ -230,6 +266,10 @@ class MidiIO:
             self.delta = end - begin
             if self._debug:
                 self.log()
+
+    def get_tick_time(self):
+        """ Indirection to get tick time """
+        return self.tick_time
 
     async def play(self, beat: int, note: int):
         """
@@ -243,40 +283,41 @@ class MidiIO:
 
         self.__rshift__(self.play(beat, note))
 
-    async def play_target(self, cur_time: int, target: Time, note: int):
+    async def play_target(self, name: str, cur_time: int, target: Time, 
+                          note: int):
         """ Play a note in the future at given Time target """
-        while self.tick_time != cur_time + target.target():
+        # print(f"{name}: {cur_time}")
+        while self.tick_time < cur_time + target.target():
             await asyncio.sleep(0.0)
         await self.play_note(note)
-
+        # print(f"{name} : {self.get_tick_time()}")
+ 
         self.__rshift__(self.play_target(
-            cur_time=self.tick_time,
+            name=name, cur_time=clock.get_tick_time(),
             target=target, note=note))
 
 # ----------------------------------------------------------------------
 # Playground: test code to be imported with library here :)
 
-
 uvloop.install()
-midi = MidiIO("MIDI Bus 1")
+clock = Clock("MIDI Bus 1")
 # midi.debug = True
 
 def reset():
     midi.send_stop()
     midi.send_reset()
 
-asyncio.create_task(midi.send_start(initial=True))
+asyncio.create_task(clock.send_start(initial=True))
 
-# This should ideally be perfectly in sync. It is not 
-# because of messy management of IO.
-# midi >> midi.play_target(Time(24, 0.5, 0), 48)
-# midi >> midi.play_target(Time(24, 1, 0), 60)
-# midi >> midi.play_target(Time(24, 2, 0), 64)
-# midi >> midi.play_target(Time(24, 0, 1), 67)
 
-cur_time = midi.tick_time
-midi >> midi.play_target(cur_time=cur_time, target=Time(24, 1, 0), note=48)
-midi >> midi.play_target(cur_time=cur_time, target=Time(24, 0, 2), note=60)
-midi >> midi.play_target(cur_time=cur_time, target=Time(24, 1, 0), note=64)
-midi >> midi.play_target(cur_time=cur_time, target=Time(24, 0, 2), note=67)
+cur_time = clock.get_tick_time()
+print(f"{cur_time}")
 
+clock >> clock.play_target(name="[bold red] a", cur_time=cur_time, target=Time(24, 1), note=48)
+clock >> clock.play_target(name="[bold red] b", cur_time=cur_time, target=Time(24, 1), note=60)
+clock >> clock.play_target(name="[bold red] c", cur_time=cur_time, target=Time(24, 1), note=64)
+clock >> clock.play_target(name="[bold red] d", cur_time=cur_time, target=Time(24, 1), note=67)
+clock >> clock.play_target(name="[bold yellow] 1", cur_time=cur_time, target=Time(24, 0, 3), note=48+24)
+clock >> clock.play_target(name="[bold yellow] 2", cur_time=cur_time, target=Time(24, 0, 3), note=60+24)
+clock >> clock.play_target(name="[bold yellow] 3", cur_time=cur_time, target=Time(24, 0, 3), note=64+24)
+clock >> clock.play_target(name="[bold yellow] 4", cur_time=cur_time, target=Time(24, 0, 3), note=67+24)

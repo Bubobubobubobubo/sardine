@@ -1,3 +1,4 @@
 mido
 rich
 uvloop
+ipython

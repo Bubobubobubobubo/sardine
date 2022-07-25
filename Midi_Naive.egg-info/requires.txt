@@ -1,1 +1,3 @@
 mido
+rich
+uvloop

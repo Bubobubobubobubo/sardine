@@ -1,4 +1,5 @@
 import asyncio
+import uvloop
 import itertools
 import mido
 import time
@@ -47,7 +48,7 @@ class MidiIO:
     """
 
     def __init__(self, port_name: str,
-                 bpm: Union[float, int] = 120,
+                 bpm: Union[float, int] = 250,
                  beat_per_bar: int = 4):
 
         self._midi_ports = mido.get_output_names()
@@ -61,7 +62,6 @@ class MidiIO:
                 self._midi = mido.open_output(self._midi_ports[0])
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
-        self._pool = Pool(processes=20)
 
         # Clock maintenance related
         self.tasks = {}
@@ -81,6 +81,7 @@ class MidiIO:
         self.elapsed_bars = 0
         self.tick_duration = self._get_tick_duration()
         self.tick_time = 0
+        self.delta = 0
 
     # ---------------------------------------------------------------------- #
     # Setters and getters
@@ -216,7 +217,7 @@ class MidiIO:
         print(f"[bold red]Start clock with port {self._midi_ports[0]}")
         while self.running:
             begin = time.perf_counter()
-            await asyncio.sleep(self.tick_duration)
+            await asyncio.sleep(self.tick_duration - self.delta)
             self.send_clock()
             self.beat += 1
             self.tick_time += 1
@@ -242,19 +243,21 @@ class MidiIO:
 
         self.__rshift__(self.play(beat, note))
 
-    async def play_target(self, target: Time, note: int):
+    async def play_target(self, cur_time: int, target: Time, note: int):
         """ Play a note in the future at given Time target """
-        cur_time = self.tick_time
         while self.tick_time != cur_time + target.target():
             await asyncio.sleep(0.0)
         await self.play_note(note)
 
-        self.__rshift__(self.play_target(target, note))
+        self.__rshift__(self.play_target(
+            cur_time=self.tick_time,
+            target=target, note=note))
 
 # ----------------------------------------------------------------------
 # Playground: test code to be imported with library here :)
 
 
+uvloop.install()
 midi = MidiIO("MIDI Bus 1")
 # midi.debug = True
 
@@ -266,9 +269,14 @@ asyncio.create_task(midi.send_start(initial=True))
 
 # This should ideally be perfectly in sync. It is not 
 # because of messy management of IO.
-midi >> midi.play_target(Time(24, 0.5, 0), 48)
-midi >> midi.play_target(Time(24, 1, 0), 60)
-midi >> midi.play_target(Time(24, 2, 0), 64)
-midi >> midi.play_target(Time(24, 0, 1), 67)
+# midi >> midi.play_target(Time(24, 0.5, 0), 48)
+# midi >> midi.play_target(Time(24, 1, 0), 60)
+# midi >> midi.play_target(Time(24, 2, 0), 64)
+# midi >> midi.play_target(Time(24, 0, 1), 67)
 
+cur_time = midi.tick_time
+midi >> midi.play_target(cur_time=cur_time, target=Time(24, 1, 0), note=48)
+midi >> midi.play_target(cur_time=cur_time, target=Time(24, 0, 2), note=60)
+midi >> midi.play_target(cur_time=cur_time, target=Time(24, 1, 0), note=64)
+midi >> midi.play_target(cur_time=cur_time, target=Time(24, 0, 2), note=67)
 

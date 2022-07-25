@@ -1,4 +1,4 @@
-# MIDI Naive
+# Bibu
 
 MIDI Naive is a small fun summer project made using asyncio and the [mido MIDI Library](https://github.com/mido/mido). It is an attempt to get a small MIDI Clock and MIDI scheduling library ready for sequencing synthesizers and hardware drum machines on-the-fly. For the time being, I will try to support the whole range of MIDI messages before trying to branch out using OSC.
 

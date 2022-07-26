@@ -33,6 +33,10 @@ class MIDIIo(threading.Thread):
     def send(self, message: mido.Message) -> None:
         self._midi.send(message)
 
+    async def send_async(self, message: mido.Message) -> None:
+        self._midi.send(message)
+
+
     def send_stop(self) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('stop'))
@@ -46,7 +50,12 @@ class MIDIIo(threading.Thread):
         """ MIDI Clock Message """
         self._midi.send(mido.Message('clock'))
 
-    def send_start(self, initial: bool = False) -> None:
+    async def send_clock_async(self) -> None:
+        """ MIDI Clock Message """
+        self._midi.send(mido.Message('clock'))
+
+
+    async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
 
@@ -97,7 +106,7 @@ class Clock:
     """
 
     def __init__(self, port_name: str,
-                 bpm: Union[float, int] = 250,
+                 bpm: Union[float, int] = 120,
                  beat_per_bar: int = 4):
 
         self._midi = MIDIIo()
@@ -176,7 +185,10 @@ class Clock:
 
     def __rshift__(self, coroutine):
         """ Add a new task to the scheduler """
-        self.tasks[coroutine.__qualname__] = asyncio.create_task(coroutine)
+        # async def wrap_it():
+        #     asyncio.sleep(self.how_long_until_next_bar() * self.tick_duration)
+        #     self.tasks[coroutine.__qualname__] = asyncio.create_task(coroutine)
+        asyncio.create_task(coroutine)
 
     def __lshift__(self, coroutine):
         """ Remove a task from the scheuler """
@@ -185,11 +197,19 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Public methods
 
+    def how_long_until_next_bar(self) -> None:
+        """ How long until next bar ? """
+        remaining_beats = self.beat - self.beat_per_bar
+        return (remaining_beats * 24) - self.phase
+
     async def play_note(self, note: int = 60, channel: int = 0,
                         velocity: int = 127,
                         duration: Union[float, int] = 1) -> None:
         """
         Dumb method that will play a note for a given duration.
+        This function might introduce some latency because it 
+        relies on IO. I should try to do something to speed it
+        up.
         
         Keyword arguments:
         note: int -- the MIDI note to be played (default 1.0)
@@ -198,11 +218,15 @@ class Clock:
         velocity: int -- MIDI velocity (default 127)
         """
 
+        async def send_something(message):
+            """ inner non blocking function """
+            asyncio.create_task(self._midi.send_async(message))
+
         note_on = mido.Message('note_on', note=note, channel=channel, velocity=velocity)
         note_off = mido.Message('note_off', note=note, channel=channel, velocity=velocity)
-        self._midi.send(note_on)
+        await send_something(note_on)
         await asyncio.sleep(self.tick_duration * duration)
-        self._midi.send(note_off)
+        await send_something(note_off)
 
     async def run_clock_initial(self):
         """ The MIDIClock needs to start """
@@ -210,7 +234,6 @@ class Clock:
 
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
-        self._midi.send_start()
         self._midi.send(mido.Message('start'))
         if initial:
             asyncio.create_task(self.run_clock())
@@ -248,13 +271,18 @@ class Clock:
         debug: bool -- print debug messages on stdout.
         """
 
-        print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
-        while self.running:
-            self.tick_duration = self._get_tick_duration()
-            self.delta = 0 # reset delta
+        async def _clock_update():
+            """ Things the clock should do every tick """
+            self._tick_duration = self._get_tick_duration()
             begin = time.perf_counter()
+            self.delta = 0
+            begin = time.perf_counter()
+            end = time.perf_counter()
+            self.delta = end - begin
+            self.tick_duration = self._get_tick_duration()
+            self.delta = 0  # reset delta
             await asyncio.sleep(self.tick_duration)
-            self._midi.send_clock()
+            asyncio.create_task(self._midi.send_clock_async())
             self.beat += 1
             self.tick_time += 1
             self._update_phase()
@@ -266,6 +294,10 @@ class Clock:
             self.delta = end - begin
             if self._debug:
                 self.log()
+
+        print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
+        while self.running:
+            await _clock_update()
 
     def get_tick_time(self):
         """ Indirection to get tick time """
@@ -279,18 +311,20 @@ class Clock:
         note: int -- MIDI note to be played.
         """
         if self.current_beat == beat:
-            await self.play_note(note)
+            asyncio.create_task(self.play_note(notej))
 
         self.__rshift__(self.play(beat, note))
 
-    async def play_target(self, name: str, cur_time: int, target: Time, 
-                          note: int):
+    async def play_target(self, name: str, cur_time: int,
+                          target: Union[Time, int],  note: int):
         """ Play a note in the future at given Time target """
-        # print(f"{name}: {cur_time}")
-        while self.tick_time < cur_time + target.target():
-            await asyncio.sleep(0.0)
-        await self.play_note(note)
-        # print(f"{name} : {self.get_tick_time()}")
+
+        i_or_t = target.target() if isinstance(target, Time) else target
+        t_until_t = ((cur_time + i_or_t) - self.tick_time) * self._get_tick_duration()
+        await asyncio.sleep(t_until_t - 20)
+        while self.tick_time < cur_time + i_or_t:
+            await asyncio.sleep(self._get_tick_duration())
+        asyncio.create_task(self.play_note(note))
  
         self.__rshift__(self.play_target(
             name=name, cur_time=clock.get_tick_time(),
@@ -301,22 +335,16 @@ class Clock:
 
 uvloop.install()
 clock = Clock("MIDI Bus 1")
-# midi.debug = True
+clock.debug = False
 
 def reset():
     midi.send_stop()
     midi.send_reset()
 
 asyncio.create_task(clock.send_start(initial=True))
-
-
 cur_time = clock.get_tick_time()
 
-clock >> clock.play_target(name="[bold red] a", cur_time=cur_time, target=Time(24, 1), note=48)
-clock >> clock.play_target(name="[bold red] b", cur_time=cur_time, target=Time(24, 1), note=60)
-clock >> clock.play_target(name="[bold red] c", cur_time=cur_time, target=Time(24, 1), note=64)
-clock >> clock.play_target(name="[bold red] d", cur_time=cur_time, target=Time(24, 1), note=67)
-clock >> clock.play_target(name="[bold yellow] 1", cur_time=cur_time, target=Time(24, 0, 3), note=48+24)
-clock >> clock.play_target(name="[bold yellow] 2", cur_time=cur_time, target=Time(24, 0, 3), note=60+24)
-clock >> clock.play_target(name="[bold yellow] 3", cur_time=cur_time, target=Time(24, 0, 3), note=64+24)
-clock >> clock.play_target(name="[bold yellow] 4", cur_time=cur_time, target=Time(24, 0, 3), note=67+24)
+clock >> clock.play_target(name="[bold red] a", cur_time=cur_time, target=24, note=48)
+clock >> clock.play_target(name="[bold red] b", cur_time=cur_time, target=24*4, note=60)
+clock >> clock.play_target(name="[bold red] c", cur_time=cur_time, target=24*8, note=64)
+clock >> clock.play_target(name="[bold red] d", cur_time=cur_time, target=24*16, note=67)

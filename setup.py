@@ -23,7 +23,7 @@ setup(
     ],
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
-    install_requires=["mido", "rich", "uvloop", "ipython"],
+    install_requires=["mido", "rich", "uvloop", "ipython", "osc4py3"],
     # entry_points={  # Optional
     #     "console_scripts": [
     #         "sample=sample:main",

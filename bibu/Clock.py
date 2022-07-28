@@ -1,13 +1,31 @@
 import asyncio
+import inspect
 import uvloop
 import itertools
 import mido
 import time
 from rich import print
-from typing import Union
+from typing import Union, List, Any, Callable, Awaitable
 from math import floor
 from concurrent.futures import ThreadPoolExecutor
 import threading
+from .Sound import Sound
+from dataclasses import dataclass
+from functools import wraps
+
+
+@dataclass
+class SyncRunner:
+    function: Any
+    delay: int
+    kwargs: list
+
+
+@dataclass
+class AsyncRunner:
+    function: Any
+    delay: int
+    kwargs: list
 
 
 class MIDIIo(threading.Thread):
@@ -36,7 +54,6 @@ class MIDIIo(threading.Thread):
     async def send_async(self, message: mido.Message) -> None:
         self._midi.send(message)
 
-
     def send_stop(self) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('stop'))
@@ -44,7 +61,7 @@ class MIDIIo(threading.Thread):
     def send_reset(self) -> None:
         """ MIDI Reset message """
         self._midi.send(mido.Message('reset'))
-        self._reset_internal_clock_state()
+        # self._reset_internal_clock_state()
 
     def send_clock(self) -> None:
         """ MIDI Clock Message """
@@ -110,18 +127,18 @@ class Clock:
                  beat_per_bar: int = 4):
 
         self._midi = MIDIIo()
-        self._pool = ThreadPoolExecutor(max_workers=32)
 
         # Clock maintenance related
-        self.tasks = {}
+        self.child = {}
 
-        self.running = True
+        self.running = False
         self._debug = False
         # Timing related
         self._bpm = bpm
+        self.initial_time = 0
         self.delta = 0
         self.beat = -1
-        self.ppqn = 24
+        self.ppqn = 24 * 2
         self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
         self.phase = 0
         self.beat_per_bar = beat_per_bar
@@ -185,28 +202,131 @@ class Clock:
 
     def __rshift__(self, coroutine):
         """ Add a new task to the scheduler """
-        # async def wrap_it():
-        #     asyncio.sleep(self.how_long_until_next_bar() * self.tick_duration)
-        #     self.tasks[coroutine.__qualname__] = asyncio.create_task(coroutine)
         asyncio.create_task(coroutine)
+    
+    def _auto_schedule(self, function, delay, **kwargs):
+        asyncio.create_task(self._schedule(
+                function=function,
+                delay=delay,
+                **kwargs))
 
-    def __lshift__(self, coroutine):
-        """ Remove a task from the scheuler """
-        del self.tasks[coroutine.__qualname__]
+    def schedule(self, function, delay, **kwargs):
+
+        """
+        Outer layer of the schedule function. Deals with registering.
+        Two types of functions can be scheduled: sync and async funcs.
+        They should not be scheduled the same because async functions
+        can handle time on their own.
+
+        SyncRunner -- a synchronous runner. Before start, the function
+        should be transformed into an async runner but it will still be
+        identified as a synchronous runner because it has been wrapped.
+
+        AsyncRunner -- an asynchronous runner. The function will start
+        immediately but should be able to reschedule itself with a call
+        back once it comes back.
+
+        TODO: Fix tempo stuff
+
+        """
+
+        def to_coroutine(f: Callable[..., Any]):
+            """ turn function into async func """
+            @wraps(f)
+            async def wrapper(*args, **kwargs):
+                return f(*args, **kwargs)
+            return wrapper
+
+        def force_awaitable(
+                function: Union[Callable[..., Awaitable[Any]], Callable[..., Any]]
+                ) -> Callable[..., Awaitable[Any]]:
+            """ force function to be awaitable """
+            if inspect.iscoroutinefunction(function):
+                return function
+            else:
+                return to_coroutine(function)
+
+        if function.__name__ in self.child.keys():
+            # For asynchronous functions
+            if inspect.iscoroutinefunction(function):
+                self.child[function.__name__].function = function
+            # For synchronous functions
+            else:
+                self.child[function.__name__].function = (
+                        force_awaitable(function))
+            self.child[function.__name__].delay = delay
+            self.child[function.__name__].kwagrgs = kwargs
+            return
+
+        else:
+            # For asynchronous functions
+            if inspect.iscoroutinefunction(function):
+                self.child[function.__name__] = AsyncRunner(
+                        function=function, delay=delay, kwargs=kwargs)
+
+            # For synchronous functions
+            else:
+                self.child[function.__name__] = SyncRunner(
+                        function=force_awaitable(function),
+                        delay=delay, kwargs=kwargs)
+
+            asyncio.create_task(
+                    self._schedule(
+                        function=self.child[function.__name__].function,
+                        delay=self.child[function.__name__].delay,
+                        init=True,
+                        **self.child[function.__name__].kwargs))
+
+    def remove(self, function):
+        """ Remove a function from the scheduler """
+        if function.__name__ in self.child.keys():
+            del self.child[function.__name__]
+
+
+    async def _schedule(self, function, delay, init=False, **kwargs):
+        """ Inner scheduling """
+
+        while self.phase != 1:
+            await asyncio.sleep(self._get_tick_duration())
+
+        # Busy waiting until execution time
+        now = self.get_tick_time()
+        target_time = ((now + delay) - self.tick_time) * self._get_tick_duration()
+        await asyncio.sleep(target_time - 5)
+        while self.tick_time < now + delay:
+            await asyncio.sleep(self._get_tick_duration())
+
+        # Execution time
+        if function.__name__ in self.child.keys():
+            asyncio.create_task(
+                    self.child[function.__name__].function(
+                        **self.child[function.__name__].kwargs))
+
+        # Rescheduling time
+            self._auto_schedule(
+                function=self.child[function.__name__].function,
+                delay=self.child[function.__name__].delay,
+                init=False,
+                **self.child[function.__name__].kwargs)
 
     # ---------------------------------------------------------------------- #
     # Public methods
 
-    def how_long_until_next_bar(self) -> None:
-        """ How long until next bar ? """
-        remaining_beats = self.beat - self.beat_per_bar
-        return (remaining_beats * 24) - self.phase
+    def print_children(self):
+        """ Print all children on clock """
+        [print(child) for child in self.child]
+
+    def ticks_to_next_bar(self) -> None:
+        """ How many ticks until next bar? """
+        return (self.ppqn - self.phase - 1) * self._get_tick_duration()
 
     async def play_note(self, note: int = 60, channel: int = 0,
                         velocity: int = 127,
                         duration: Union[float, int] = 1) -> None:
+
         """
         Dumb method that will play a note for a given duration.
+        Here for test purposes.
         This function might introduce some latency because it 
         relies on IO. I should try to do something to speed it
         up.
@@ -232,9 +352,21 @@ class Clock:
         """ The MIDIClock needs to start """
         self.run_clock()
 
+    def send_stop(self):
+        """ Stop the running clock and send stop message """
+        self.running = False
+        self._midi.send_stop()
+
+    def send_reset(self) -> None:
+        """ MIDI Reset message """
+        self.send_stop()
+        self._midi.send(mido.Message('reset'))
+        self._reset_internal_clock_state()
+
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
+        self.running = True
         if initial:
             asyncio.create_task(self.run_clock())
 
@@ -329,22 +461,3 @@ class Clock:
         self.__rshift__(self.play_target(
             name=name, cur_time=clock.get_tick_time(),
             target=target, note=note))
-
-# ----------------------------------------------------------------------
-# Playground: test code to be imported with library here :)
-
-uvloop.install()
-clock = Clock("MIDI Bus 1")
-clock.debug = False
-
-def reset():
-    midi.send_stop()
-    midi.send_reset()
-
-asyncio.create_task(clock.send_start(initial=True))
-cur_time = clock.get_tick_time()
-
-clock >> clock.play_target(name="[bold red] a", cur_time=cur_time, target=24, note=48)
-clock >> clock.play_target(name="[bold red] b", cur_time=cur_time, target=24*4, note=60)
-clock >> clock.play_target(name="[bold red] c", cur_time=cur_time, target=24*8, note=64)
-clock >> clock.play_target(name="[bold red] d", cur_time=cur_time, target=24*16, note=67)

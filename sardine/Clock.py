@@ -6,33 +6,25 @@ import mido
 import time
 from rich import print
 from rich.console import Console
-from typing import Union, List, Any, Callable, Awaitable
+from typing import Union, Any, Callable, Awaitable
 from math import floor
-from concurrent.futures import ThreadPoolExecutor
 import threading
-from .Sound import Sound
 from dataclasses import dataclass
 from functools import wraps
 
 
 @dataclass
-class SyncRunner:
-    function: Any
-    delay: int
-    kwargs: list
-
-
-@dataclass
 class AsyncRunner:
     function: Any
-    delay: int
     kwargs: list
 
 
 class MIDIIo(threading.Thread):
 
     """
-    blabla
+    Direct MIDI I/O Using Mido. MIDI is also available indirectly
+    through SuperDirt. I need to do something to address the redun-
+    dancy.
     """
 
     def __init__(self, port_name: Union[str, None] = None):
@@ -87,7 +79,6 @@ class MIDIIo(threading.Thread):
         """ MIDI Clock Message """
         self._midi.send(mido.Message('clock'))
 
-
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
@@ -98,9 +89,12 @@ class Time:
                  beat: Union[int, float] = 0, phase: int = 0):
 
         """
-        Generate a time target in the future. The function needs a PPQN
-        to be used as reference. The PPQN will be used to decompose bars
-        and beats in a given nb of PPQN to reach the target.
+        OBSOLETE // DO NOT USE THIS CLASS
+
+        Generate a time target in the future. The function needs
+        a PPQN to be used as reference. The PPQN will be used to
+        decompose bars and beats in a given nb of PPQN to reach the
+        target.
 
         ppqn: int -- How many PPQN are used by the system
         bar:  Union[int, float]  -- How many bars in the future
@@ -118,19 +112,13 @@ class Time:
         """ Return the number of PPQN to reach target """
         return self.beat + self.bar + self.phase
 
-    def __sub__(self, other):
-        """ Substraction between a time and another time """
-        print(f"A: {self.bar} {self.beat} {self.phase}")
-        print(f"B: {other.bar} {other.beat} {other.phase}")
-        print(f"C: {self.bar - other.bar} {self.beat - other.beat} {self.phase - other.phase}")
-
 
 class Clock:
 
     """
-    Very naive MIDI Clock. Lots of jitter and time problems.
-    The reason is that everything, including blocking I/O is
-    still running in the same thread.
+    Naive MIDI Clock and scheduler implementation. This class
+    is the core of Sardine. It generates an asynchronous MIDI
+    clock and will schedule functions on it accordingly.
 
     Keyword arguments:
     port_name: str -- Exact String for the MIDIOut Port.
@@ -215,18 +203,9 @@ class Clock:
 
     # ---------------------------------------------------------------------- #
     # Scheduler methods
-
-    def __rshift__(self, coroutine):
-        """ Add a new task to the scheduler """
-        asyncio.create_task(coroutine)
     
-    def _auto_schedule(self, function, delay, **kwargs):
-        asyncio.create_task(self._schedule(
-                function=function,
-                delay=delay,
-                **kwargs))
 
-    def schedule(self, function, delay, **kwargs):
+    def schedule(self, function, **kwargs):
 
         """
         Outer layer of the schedule function. Deals with registering.
@@ -234,73 +213,39 @@ class Clock:
         They should not be scheduled the same because async functions
         can handle time on their own.
 
-        SyncRunner -- a synchronous runner. Before start, the function
-        should be transformed into an async runner but it will still be
-        identified as a synchronous runner because it has been wrapped.
-
         AsyncRunner -- an asynchronous runner. The function will start
         immediately but should be able to reschedule itself with a call
         back once it comes back.
 
-        TODO: Fix tempo stuff
+        The next step is to support argument passing to next iteration
+        through keyword arguments!
 
         """
 
-        def to_coroutine(f: Callable[..., Any]):
-            """ turn function into async func """
-            @wraps(f)
-            async def wrapper(*args, **kwargs):
-                return f(*args, **kwargs)
-            return wrapper
-
-        def force_awaitable(
-                function: Union[Callable[..., Awaitable[Any]], Callable[..., Any]]
-                ) -> Callable[..., Awaitable[Any]]:
-            """ force function to be awaitable """
-            if inspect.iscoroutinefunction(function):
-                return function
-            else:
-                return to_coroutine(function)
-
         if function.__name__ in self.child.keys():
-            # For asynchronous functions
-            if inspect.iscoroutinefunction(function):
-                self.child[function.__name__].function = function
-            # For synchronous functions
-            else:
-                self.child[function.__name__].function = (
-                        force_awaitable(function))
-            self.child[function.__name__].delay = delay
-            self.child[function.__name__].kwagrgs = kwargs
+            self.child[function.__name__].function = function
+            self.child[function.__name__].kwargs = kwargs
             return
 
         else:
-            # For asynchronous functions
-            if inspect.iscoroutinefunction(function):
-                self.child[function.__name__] = AsyncRunner(
-                        function=function, delay=delay, kwargs=kwargs)
-
-            # For synchronous functions
-            else:
-                self.child[function.__name__] = SyncRunner(
-                        function=force_awaitable(function),
-                        delay=delay, kwargs=kwargs)
-
+            self.child[function.__name__] = AsyncRunner(
+                    function=function, kwargs=kwargs)
             asyncio.create_task(
                     self._schedule(
                         function=self.child[function.__name__].function,
-                        delay=self.child[function.__name__].delay,
-                        init=True,
-                        **self.child[function.__name__].kwargs))
+                        init=True, **self.child[function.__name__].kwargs))
 
-    def remove(self, function):
-        """ Remove a function from the scheduler """
-        if function.__name__ in self.child.keys():
-            del self.child[function.__name__]
-
-
-    async def _schedule(self, function, delay, init=False, **kwargs):
+    async def _schedule(self, function, init=False, *args, **kwargs):
         """ Inner scheduling """
+
+        def grab_arguments_from_coroutine(cr):
+            """ Grab arguments from coroutine frame """
+            arguments = cr.cr_frame
+            arguments = arguments.f_locals
+            return arguments
+
+        arguments = grab_arguments_from_coroutine(function)
+        delay = arguments["delay"]
 
         if init:
             while self.phase != 1:
@@ -315,19 +260,28 @@ class Clock:
 
         # Execution time
         if function.__name__ in self.child.keys():
-            asyncio.create_task(
-                    self.child[function.__name__].function(
-                        **self.child[function.__name__].kwargs))
+            asyncio.create_task(self.child[function.__name__].function)
 
-        # Rescheduling time
-            self._auto_schedule(
-                function=self.child[function.__name__].function,
-                delay=self.child[function.__name__].delay,
-                init=False,
-                **self.child[function.__name__].kwargs)
+    def _auto_schedule(self, function, **kwargs):
+        """ Loop mechanism """
+
+        if function.__name__ in self.child.keys():
+            self.child[function.__name__].function = function
+            self.child[function.__name__].kwargs = kwargs
+
+        asyncio.create_task(self._schedule(
+            function=self.child[function.__name__].function, **kwargs))
+
+    def remove(self, function):
+        """ Remove a function from the scheduler """
+        if function.__name__ in self.child.keys():
+            del self.child[function.__name__]
 
     # ---------------------------------------------------------------------- #
     # Public methods
+
+    def get_phase(self):
+        return self.phase
 
     def print_children(self):
         """ Print all children on clock """
@@ -342,11 +296,8 @@ class Clock:
                         duration: Union[float, int] = 1) -> None:
 
         """
+        OBSOLETE // Was used to test things but should be removed.
         Dumb method that will play a note for a given duration.
-        Here for test purposes.
-        This function might introduce some latency because it 
-        relies on IO. I should try to do something to speed it
-        up.
         
         Keyword arguments:
         note: int -- the MIDI note to be played (default 1.0)
@@ -387,7 +338,6 @@ class Clock:
         if initial:
             asyncio.create_task(self.run_clock())
 
-
     def next_beat_absolute(self):
         """ Return time between now and next beat in absolute time """
         return self.tick_duration * (self.ppqn - self.phase)
@@ -410,9 +360,8 @@ class Clock:
     async def run_clock(self):
 
         """
-        Naive MIDI clock implementation. Drift will happen
-        because of IO and miscalculations of time and will
-        not be corrected.
+        Main Method for the MIDI Clock. Full of errors and things that
+        msut be fixed. Drift can happen, and it might need a full rewrite.
 
         TODO: do better!
 
@@ -426,8 +375,8 @@ class Clock:
             begin = time.perf_counter()
             self.delta = 0
             begin = time.perf_counter()
-            end = time.perf_counter()
-            self.delta = end - begin
+            # end = time.perf_counter()
+            # self.delta = end - begin
             self.tick_duration = self._get_tick_duration()
             self.delta = 0  # reset delta
             await asyncio.sleep(self.tick_duration)

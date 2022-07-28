@@ -5,6 +5,7 @@ import itertools
 import mido
 import time
 from rich import print
+from rich.console import Console
 from typing import Union, List, Any, Callable, Awaitable
 from math import floor
 from concurrent.futures import ThreadPoolExecutor
@@ -13,9 +14,6 @@ from .Sound import Sound
 from dataclasses import dataclass
 from functools import wraps
 
-"""
-Nouveau problème : je ne comprends plus rien au BPM et à la durée des notes.
-"""
 
 @dataclass
 class SyncRunner:
@@ -37,19 +35,34 @@ class MIDIIo(threading.Thread):
     blabla
     """
 
-    def __init__(self, port_name: str= None):
+    def __init__(self, port_name: Union[str, None] = None):
         threading.Thread.__init__(self)
         self._midi_ports = mido.get_output_names()
         if port_name:
             try:
-                self._midi = mido.open_output()
+                self._midi = mido.open_output(port_name)
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
         else:
             try:
-                self._midi = mido.open_output(self._midi_ports[0])
+                self._midi = mido.open_output(self.choose_midi_port())
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
+
+    def choose_midi_port(self) -> str:
+        """ ASCII MIDI Port chooser """
+        ports = mido.get_output_names()
+        console = Console()
+        for (i, item) in enumerate(ports, start=1):
+            print(f"[color({i})] [{i}] {item}")
+        nb = console.input("[bold yellow] Choose a MIDI Port: [/bold yellow]")
+        try:
+            nb = int(nb) - 1
+            print(f'[yellow]You picked[/yellow] [green]{ports[nb]}[/green].')
+            return ports[nb]
+        except Exception as error:
+            print(f"Input can only take valid number in range, not {nb}.")
+            exit()
 
     def send(self, message: mido.Message) -> None:
         self._midi.send(message)
@@ -125,7 +138,7 @@ class Clock:
     beats_per_bar: int -- Number of beats in a given bar
     """
 
-    def __init__(self, port_name: str,
+    def __init__(self, port_name: Union[str, None] = None,
                  bpm: Union[float, int] = 120,
                  beat_per_bar: int = 4):
 
@@ -431,7 +444,7 @@ class Clock:
             if self._debug:
                 self.log()
 
-        print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
+        # print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
         while self.running:
             await _clock_update()
 

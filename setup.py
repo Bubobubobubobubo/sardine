@@ -5,7 +5,7 @@ import pathlib
 here = pathlib.Path(__file__).parent.resolve()
 
 setup(
-    name="Bibu",
+    name="Sardine",
     version="0.0.1",
     description="MIDI Live Coding in Python",
     author="Raphaël Forment",

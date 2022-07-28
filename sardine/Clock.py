@@ -423,7 +423,3 @@ class Clock:
         while self.tick_time < cur_time + i_or_t:
             await asyncio.sleep(self._get_tick_duration())
         asyncio.create_task(self.play_note(note))
- 
-        self.__rshift__(self.play_target(
-            name=name, cur_time=clock.get_tick_time(),
-            target=target, note=note))

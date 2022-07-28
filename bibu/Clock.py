@@ -13,6 +13,9 @@ from .Sound import Sound
 from dataclasses import dataclass
 from functools import wraps
 
+"""
+Nouveau problème : je ne comprends plus rien au BPM et à la durée des notes.
+"""
 
 @dataclass
 class SyncRunner:
@@ -138,7 +141,7 @@ class Clock:
         self.initial_time = 0
         self.delta = 0
         self.beat = -1
-        self.ppqn = 24 * 2
+        self.ppqn = 12
         self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
         self.phase = 0
         self.beat_per_bar = beat_per_bar
@@ -286,8 +289,9 @@ class Clock:
     async def _schedule(self, function, delay, init=False, **kwargs):
         """ Inner scheduling """
 
-        while self.phase != 1:
-            await asyncio.sleep(self._get_tick_duration())
+        if init:
+            while self.phase != 1:
+                await asyncio.sleep(self._get_tick_duration())
 
         # Busy waiting until execution time
         now = self.get_tick_time()

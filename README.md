@@ -2,12 +2,11 @@
 
 ## Current list of issues
 
-- **[EASY]** Tasks are not being deleted from self.child.tasks
+- **[EASY]** Tasks are not being deleted from `self.child.tasks`.
 - **[HARD]** Phase issues: patterns can shift in and out of phase randomly.
   - two functions scheduled at 1*self.ppqn will drift in and out of phase periodically depending on multiple factors:
-    - CPU load
+    - CPU Load
     - Switching between apps
-    - etc..
 - **[EASY]** Clock cannot be stopped and restarted using `clock.send_stop()` and `clock.send_reset()`
 - **[EASY]** Find a better name for the `delay` parameter and declare a default parameter `delay=1` for every coroutine.
 - **[HARD]** The `Sound` class was not initially meant for this project. It needs a rewrite:
@@ -16,7 +15,7 @@
 
 ## Overview
 
-Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP and much more things :). Because `Sardine` is fairly simple and barebones, you can also use it to schedule the execution of custom Python functions on a musical clock!
+Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP, etc... Because `Sardine` is fairly simple and barebone, you can also use it to schedule the execution of custom Python functions on a musical clock!
 
 I am indexing my work on this repository but the library is far from being usable. I made it public in order to share it without having to add contributors every time. You are also welcome to make pull requests if you think that you can bring something new! `Sardine` may and will crash.
 
@@ -39,7 +38,7 @@ The installation process is fairly simple:
 
 ### Code-editing with Sardine
 
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using Vim[]() or Neovim[]() [slime]() plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using Vim[]() or Neovim[]() [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
 
 ## Debug
 
@@ -75,7 +74,7 @@ More functions will be added to take care of scheduling on the clock. I still ha
 
 ### Temporal recursive functions
 
-For an introduction about temporal recursion, please read this [short paper](http://extempore.moso.com.au/temporal_recursion.html) written by Andrew Sorensen. Even though the examples are written in Scheme, I am following a very similar design for `Sardine`. Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
+For an introduction about temporal recursion, please read this [short paper](http://extempore.moso.com.au/temporal_recursion.html) written by Andrew Sorensen. Even though the examples in the paper are written in Scheme, I am trying to follow a very similar design for `Sardine`. Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
 
 ```python
 # A basic temporal recursive function

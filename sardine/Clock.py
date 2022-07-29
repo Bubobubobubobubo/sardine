@@ -1,22 +1,19 @@
 import asyncio
-import inspect
-import uvloop
 import itertools
 import mido
 import time
 from rich import print
 from rich.console import Console
-from typing import Union, Any, Callable, Awaitable
+from typing import Union, Any
 from math import floor
 import threading
 from dataclasses import dataclass
-from functools import wraps
 
 
 @dataclass
 class AsyncRunner:
     function: Any
-    kwargs: list
+    tasks: list[Any, ...]
 
 
 class MIDIIo(threading.Thread):
@@ -52,7 +49,7 @@ class MIDIIo(threading.Thread):
             nb = int(nb) - 1
             print(f'[yellow]You picked[/yellow] [green]{ports[nb]}[/green].')
             return ports[nb]
-        except Exception as error:
+        except Exception:
             print(f"Input can only take valid number in range, not {nb}.")
             exit()
 
@@ -130,7 +127,7 @@ class Clock:
                  bpm: Union[float, int] = 120,
                  beat_per_bar: int = 4):
 
-        self._midi = MIDIIo()
+        self._midi = MIDIIo(port_name=port_name)
 
         # Clock maintenance related
         self.child = {}
@@ -203,9 +200,9 @@ class Clock:
 
     # ---------------------------------------------------------------------- #
     # Scheduler methods
-    
 
-    def schedule(self, function, **kwargs):
+
+    def schedule(self, function):
 
         """
         Outer layer of the schedule function. Deals with registering.
@@ -224,18 +221,16 @@ class Clock:
 
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
-            self.child[function.__name__].kwargs = kwargs
             return
 
         else:
-            self.child[function.__name__] = AsyncRunner(
-                    function=function, kwargs=kwargs)
+            self.child[function.__name__] = AsyncRunner(function=function)
             asyncio.create_task(
                     self._schedule(
                         function=self.child[function.__name__].function,
-                        init=True, **self.child[function.__name__].kwargs))
+                        init=True))
 
-    async def _schedule(self, function, init=False, *args, **kwargs):
+    async def _schedule(self, function, init=False):
         """ Inner scheduling """
 
         def grab_arguments_from_coroutine(cr):
@@ -254,7 +249,7 @@ class Clock:
         # Busy waiting until execution time
         now = self.get_tick_time()
         target_time = ((now + delay) - self.tick_time) * self._get_tick_duration()
-        await asyncio.sleep(target_time - 5)
+        await asyncio.sleep(target_time - 10) # what is this magic number?
         while self.tick_time < now + delay:
             await asyncio.sleep(self._get_tick_duration())
 
@@ -262,23 +257,34 @@ class Clock:
         if function.__name__ in self.child.keys():
             asyncio.create_task(self.child[function.__name__].function)
 
-    def _auto_schedule(self, function, **kwargs):
+    def _auto_schedule(self, function):
         """ Loop mechanism """
 
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
-            self.child[function.__name__].kwargs = kwargs
 
-        asyncio.create_task(self._schedule(
-            function=self.child[function.__name__].function, **kwargs))
+            asyncio.create_task(self._schedule(
+                function=self.child[function.__name__].function))
+
+    def __rshift__(self, function):
+        """ Alias to _auto_schedule """
+        print(f"Func: {function.__name__}")
+        print(f"{type(function)}")
+        self._auto_schedule(function=function)
+
+    def __lshift__(self, function):
+        """ Alias to remove """
+        self.remove(function=function)
+
+    # ---------------------------------------------------------------------- #
+    # Public methods
 
     def remove(self, function):
         """ Remove a function from the scheduler """
         if function.__name__ in self.child.keys():
+            # Trying to cancel something here
+            self.child[function.__name__].function.cancel()
             del self.child[function.__name__]
-
-    # ---------------------------------------------------------------------- #
-    # Public methods
 
     def get_phase(self):
         return self.phase
@@ -298,7 +304,7 @@ class Clock:
         """
         OBSOLETE // Was used to test things but should be removed.
         Dumb method that will play a note for a given duration.
-        
+
         Keyword arguments:
         note: int -- the MIDI note to be played (default 1.0)
         duration: Union [int, float] -- MIDI tick time multiplier (default 1.0)
@@ -393,33 +399,9 @@ class Clock:
             if self._debug:
                 self.log()
 
-        # print(f"[bold red]Start clock with port {self._midi._midi_ports[0]}")
         while self.running:
             await _clock_update()
 
     def get_tick_time(self):
         """ Indirection to get tick time """
         return self.tick_time
-
-    async def play(self, beat: int, note: int):
-        """
-        Test by playing a note on a given beat.
-
-        beat: int -- targetted beat in the bar.
-        note: int -- MIDI note to be played.
-        """
-        if self.current_beat == beat:
-            asyncio.create_task(self.play_note(notej))
-
-        self.__rshift__(self.play(beat, note))
-
-    async def play_target(self, name: str, cur_time: int,
-                          target: Union[Time, int],  note: int):
-        """ Play a note in the future at given Time target """
-
-        i_or_t = target.target() if isinstance(target, Time) else target
-        t_until_t = ((cur_time + i_or_t) - self.tick_time) * self._get_tick_duration()
-        await asyncio.sleep(t_until_t - 20)
-        while self.tick_time < cur_time + i_or_t:
-            await asyncio.sleep(self._get_tick_duration())
-        asyncio.create_task(self.play_note(note))

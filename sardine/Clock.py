@@ -4,10 +4,8 @@ import mido
 import time
 from rich import print
 from rich.console import Console
-from typing import Union, Any
-from math import floor
+from typing import Union
 import threading
-from dataclasses import dataclass
 from .AsyncRunner import AsyncRunner
 
 class MIDIIo(threading.Thread):
@@ -75,35 +73,6 @@ class MIDIIo(threading.Thread):
         self._midi.send(mido.Message('start'))
 
 
-class Time:
-    def __init__(self, ppqn: int, bar: Union[int, float] = 0,
-                 beat: Union[int, float] = 0, phase: int = 0):
-
-        """
-        OBSOLETE // DO NOT USE THIS CLASS
-
-        Generate a time target in the future. The function needs
-        a PPQN to be used as reference. The PPQN will be used to
-        decompose bars and beats in a given nb of PPQN to reach the
-        target.
-
-        ppqn: int -- How many PPQN are used by the system
-        bar:  Union[int, float]  -- How many bars in the future
-        beat: Union[int, float]  -- How many beats in the future
-        phase: Union[int, float] -- How many PPQN in the future
-        """
-
-        self.ppqn = ppqn
-        bar_standard, beat_standard = ppqn * 4, ppqn
-        self.bar = floor(bar_standard * bar)
-        self.beat = floor(beat_standard * beat)
-        self.phase = phase
-
-    def target(self) -> int:
-        """ Return the number of PPQN to reach target """
-        return self.beat + self.bar + self.phase
-
-
 class Clock:
 
     """
@@ -133,7 +102,7 @@ class Clock:
         self.initial_time = 0
         self.delta = 0
         self.beat = -1
-        self.ppqn = 12
+        self.ppqn = 48
         self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
         self.phase = 0
         self.beat_per_bar = beat_per_bar
@@ -227,6 +196,7 @@ class Clock:
 
     async def _schedule(self, function, init=False):
         """ Inner scheduling """
+        cur_bar = self.elapsed_bars
 
         def grab_arguments_from_coroutine(cr):
             """ Grab arguments from coroutine frame """
@@ -237,16 +207,18 @@ class Clock:
         arguments = grab_arguments_from_coroutine(function)
         delay = arguments["delay"]
 
-        if init:
-            while self.phase != 1:
-                await asyncio.sleep(self._get_tick_duration())
+        # Transform delay into multiple or division of ppqn
+        delay = self.ppqn * delay
 
-        # Busy waiting until execution time
-        now = self.get_tick_time()
-        target_time = ((now + delay) - self.tick_time) * self._get_tick_duration()
-        await asyncio.sleep(target_time - 10) # what is this magic number?
-        while self.tick_time < now + delay:
-            await asyncio.sleep(self._get_tick_duration())
+        if init:
+            print(f"[Init {function.__name__}]")
+            while (self.phase != 1 and self.elapsed_bars != cur_bar + 1):
+                await asyncio.sleep(self._get_tick_duration())
+        else:
+            # Busy waiting until execution time
+            now = self.get_tick_time()
+            while self.tick_time < now + delay:
+                await asyncio.sleep(self._get_tick_duration())
 
         # Execution time
         if function.__name__ in self.child.keys():
@@ -361,12 +333,10 @@ class Clock:
         Used for debugging purposes. Not to be used when playing,
         can be very verbose. Will overflow the console in no-time.
         """
-
-        color = "[bold yellow]"
-        beat, bar, delta, phase = (self.beat, self.elapsed_bars,
-                                   self.delta, self.phase)
-        print(color + f"BPM:{self._bpm} @{beat} Bar: {bar} Delta: {delta:2f} Phase: {phase}")
-        print(color + f" Current: {self.current_beat}/{self.beat_per_bar}")
+        color = "[bold red]" if self.phase == 1 else "[bold yellow]"
+        first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self.delta:2f}"
+        second = color + f" || [{self.tick_time}] {self.current_beat}/{self.beat_per_bar}"
+        print(first + second)
 
 
     async def run_clock(self):
@@ -383,23 +353,26 @@ class Clock:
 
         async def _clock_update():
             """ Things the clock should do every tick """
-            self._tick_duration = self._get_tick_duration()
+
+            self.tick_duration = self._get_tick_duration() - self.delta
+
             begin = time.perf_counter()
             self.delta = 0
-            begin = time.perf_counter()
-            # end = time.perf_counter()
-            # self.delta = end - begin
-            self.tick_duration = self._get_tick_duration()
-            self.delta = 0  # reset delta
+
             await asyncio.sleep(self.tick_duration)
             asyncio.create_task(self._midi.send_clock_async())
-            self.beat += 1
+
+            # Time grains
             self.tick_time += 1
             self._update_phase()
+
+            # XPPQN = 1 Beat
             if self.phase == 1:
                 self._update_current_beat()
-            if self.beat % self.ppqn == 0:
+            if self.phase == 1 and self.current_beat == 1:
                 self.elapsed_bars += 1
+
+            # End of it
             end = time.perf_counter()
             self.delta = end - begin
             if self._debug:

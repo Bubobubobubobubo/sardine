@@ -2,10 +2,9 @@ from .Clock import Clock
 from .Sound import Sound as S
 from rich import print
 import uvloop
-from math import floor
 import asyncio
-import random
-import itertools
+
+# Dirty hack
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -30,14 +29,13 @@ cs, cr, td = c.schedule, c.remove, c._get_tick_duration
 loop = c._auto_schedule
 
 async def bd(delay=24):
-    S('bd').out()
+    S('bd', legato=0.1).out()
     loop(bd(delay=delay))
 
-async def incr(delay=24, num=0):
-    num += 1
-    print(f"Num: {num}")
-    loop(incr(delay=delay, num=num))
+async def bass(delay=24,speed=1):
+    S('jvbass', speed=speed, legato=0.1).out()
+    loop(bass(delay=delay, speed=speed))
 
-c.ppqn = 96
 # cs(incr(delay=24, num=0))
-# cs(bd(delay=24))
+# cs(bd(delay=1))
+# cs(bass(delay=1))

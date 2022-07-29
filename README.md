@@ -1,11 +1,24 @@
 # Sardine
 
-## Overview
+## Current list of issues
 
+- **[EASY]** Tasks are not being deleted from self.child.tasks
+- **[HARD]** Phase issues: patterns can shift in and out of phase randomly.
+  - two functions scheduled at 1*self.ppqn will drift in and out of phase periodically depending on multiple factors:
+    - CPU load
+    - Switching between apps
+    - etc..
+- **[EASY]** Clock cannot be stopped and restarted using `clock.send_stop()` and `clock.send_reset()`
+- **[EASY]** Find a better name for the `delay` parameter and declare a default parameter `delay=1` for every coroutine.
+- **[HARD]** The `Sound` class was not initially meant for this project. It needs a rewrite:
+    - **[HARD]** automate the declaration of new SuperDirt parameters to be exposed.
+    - **[EASY]** add a file configurable by the user to declare and expose new parameters.
+
+## Overview
 
 Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP and much more things :). Because `Sardine` is fairly simple and barebones, you can also use it to schedule the execution of custom Python functions on a musical clock!
 
-I am indexing my work on this repository but the library is not yet usable / released. I made it public in order to share it without having to add contributors every time. You are also welcome to make pull requests if you think that you can bring something new!
+I am indexing my work on this repository but the library is far from being usable. I made it public in order to share it without having to add contributors every time. You are also welcome to make pull requests if you think that you can bring something new! `Sardine` may and will crash.
 
 ## Installation
 
@@ -22,7 +35,7 @@ The installation process is fairly simple:
 
 ### SuperDirt
 
-1) Refer to the [SuperDirt]() installation guide for your platform. It will guide you through the installation of [SuperCollider]() and **SuperDirt** for your favorite OS.
+1) Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt** for your favorite OS.
 
 ### Code-editing with Sardine
 
@@ -88,4 +101,44 @@ Temporal recursive functions have only one drawback: they NEED a `delay` argumen
 
 ### Triggering sounds / samples / synthesizers
 
-So far so good, you
+The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. `SuperDirt` must be booted separately from `Sardine`. The `Sound` object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. `Sound` as been aliased to `S` to make it easier to type.
+
+```
+S('bd').out() # a bassdrum (sample 0 from folder 'bd')
+S('bd', n=3, amp=2).out() # third sample, way louder
+S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
+S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) # Python shenanigans
+```
+
+The simplest function you can write using `Sardine` is probably a simple bassdrum:
+
+```python
+async def bd(delay=1):
+    S('bd').out()
+    loop(bd(delay=1))
+cs(bd(1))
+```
+
+You can be more playful and do something by toying with temporal recursion:
+
+
+```python
+async def bd(delay=1, speed=1):
+    S('bd').out()
+    loop(bd(delay=1, speed=randint(1, 5)))
+cs(bd(1, speed=1))
+```
+
+Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being send out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the `.out()` method:
+
+
+```python
+async def indirect_bd(delay=1, speed=1):
+    a = S('bd')
+    a.speed = speed
+    a.out()
+    loop(indirect_bd(delay=1, speed=randint(1, 5)))
+cs(indirect_bd(1, speed=1))
+```
+
+Not all parameters are currently available. SuperDirt parameters have been hardcoded... This should be easy to fix but I never took time to do it properly.

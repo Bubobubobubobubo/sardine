@@ -1,6 +1,6 @@
 # Sardine
 
-## Current list of issues
+## Current list of issues
 
 - **[EASY]** Tasks are not being deleted from self.child.tasks
 - **[HARD]** Phase issues: patterns can shift in and out of phase randomly.
@@ -41,13 +41,13 @@ The installation process is fairly simple:
 
 You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using Vim[]() or Neovim[]() [slime]() plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
 
-## Debug
+## Debug
 
 `Sardine` is crippled with bugs. I am developing `Sardine` for my own usage right now. Some configuration variables might still refer to my own local environment... some packages might need to be installed manually if you encounter an error. Please provide feedback on the installation process!
 
 ## Usage
 
-### The internal Clock
+### The internal Clock
 
 As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced to by the variable `c`. `Clock` is the main MIDI Clock you will be playing with. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods could be used for fun:
 * `c.bpm`: current BPM (can be inexact depending on your `ppqn`)
@@ -73,7 +73,7 @@ cr(hatty_hat)
 
 More functions will be added to take care of scheduling on the clock. I still have some issues to fix with `asyncio`.
 
-### Temporal recursive functions
+### Temporal recursive functions
 
 For an introduction about temporal recursion, please read this [short paper](http://extempore.moso.com.au/temporal_recursion.html) written by Andrew Sorensen. Even though the examples are written in Scheme, I am following a very similar design for `Sardine`. Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
 

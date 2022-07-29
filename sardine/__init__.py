@@ -6,6 +6,8 @@ from math import floor
 import asyncio
 import random
 import itertools
+import warnings
+warnings.filterwarnings("ignore")
 
 sardine = """
 

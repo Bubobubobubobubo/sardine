@@ -8,13 +8,7 @@ from typing import Union, Any
 from math import floor
 import threading
 from dataclasses import dataclass
-
-
-@dataclass
-class AsyncRunner:
-    function: Any
-    tasks: list[Any, ...]
-
+from .AsyncRunner import AsyncRunner
 
 class MIDIIo(threading.Thread):
 
@@ -224,11 +218,12 @@ class Clock:
             return
 
         else:
-            self.child[function.__name__] = AsyncRunner(function=function)
-            asyncio.create_task(
-                    self._schedule(
-                        function=self.child[function.__name__].function,
-                        init=True))
+            self.child[function.__name__] = AsyncRunner(
+                    function=function, tasks=[])
+            self.child[function.__name__].tasks.append(
+                    asyncio.create_task(self._schedule(
+                            function=self.child[function.__name__].function,
+                            init=True)))
 
     async def _schedule(self, function, init=False):
         """ Inner scheduling """
@@ -255,21 +250,25 @@ class Clock:
 
         # Execution time
         if function.__name__ in self.child.keys():
-            asyncio.create_task(self.child[function.__name__].function)
+            self.child[function.__name__].tasks.append(
+                asyncio.create_task(self.child[function.__name__].function))
 
     def _auto_schedule(self, function):
         """ Loop mechanism """
 
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
+            self.child[function.__name__].tasks.append(
+                asyncio.create_task(self._schedule(
+                    function=self.child[function.__name__].function)))
 
-            asyncio.create_task(self._schedule(
-                function=self.child[function.__name__].function))
+            # Delete tasks that are done or cancelled already
+            self.child[function.__name__].tasks = (
+                    [x for x in self.child[function.__name__].tasks
+                       if not x.done() or not x.cancelled()])
 
     def __rshift__(self, function):
         """ Alias to _auto_schedule """
-        print(f"Func: {function.__name__}")
-        print(f"{type(function)}")
         self._auto_schedule(function=function)
 
     def __lshift__(self, function):
@@ -281,9 +280,16 @@ class Clock:
 
     def remove(self, function):
         """ Remove a function from the scheduler """
+
         if function.__name__ in self.child.keys():
-            # Trying to cancel something here
-            self.child[function.__name__].function.cancel()
+
+            # I don't think that this is really doing anything
+            for task in self.child[function.__name__].tasks:
+                try:
+                    task.cancel()
+                except Exception as error:
+                    print(f"Ca plante: {error}")
+
             del self.child[function.__name__]
 
     def get_phase(self):

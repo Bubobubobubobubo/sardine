@@ -27,17 +27,3 @@ c = Clock()
 asyncio.create_task(c.send_start(initial=True))
 cs, cr, td = c.schedule, c.remove, c._get_tick_duration
 loop = c._auto_schedule
-
-async def bd(delay=24):
-    await asyncio.sleep(0.0)
-    S('bd', legato=0.1).out()
-    loop(bd(delay=delay))
-
-async def bass(delay=24,speed=1):
-    await asyncio.sleep(0.0)
-    S('jvbass', speed=speed, legato=0.1).out()
-    loop(bass(delay=delay, speed=speed))
-
-# cs(incr(delay=24, num=0))
-cs(bd(delay=1))
-cs(bass(delay=1))

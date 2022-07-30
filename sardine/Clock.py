@@ -218,7 +218,8 @@ class Clock:
             # Busy waiting until execution time
             now = self.get_tick_time()
             while self.tick_time < now + delay:
-                await asyncio.sleep(self._get_tick_duration())
+                # Because why not?
+                await asyncio.sleep(self._get_tick_duration() / self.ppqn)
 
         # Execution time
         if function.__name__ in self.child.keys():

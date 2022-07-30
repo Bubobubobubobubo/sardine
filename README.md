@@ -3,19 +3,25 @@
 ## Current list of issues
 
 - **[EASY]** Tasks are not being deleted from `self.child.tasks`.
+
+- **[EASY]** Handle defective functions! Currently silenced.
+
 - **[HARD]** Phase issues: patterns can shift in and out of phase randomly.
   - two functions scheduled at 1*self.ppqn will drift in and out of phase periodically depending on multiple factors:
     - CPU Load
     - Switching between apps
+
 - **[EASY]** Clock cannot be stopped and restarted using `clock.send_stop()` and `clock.send_reset()`
+
 - **[EASY]** Find a better name for the `delay` parameter and declare a default parameter `delay=1` for every coroutine.
+
 - **[HARD]** The `Sound` class was not initially meant for this project. It needs a rewrite:
     - **[HARD]** automate the declaration of new SuperDirt parameters to be exposed.
     - **[EASY]** add a file configurable by the user to declare and expose new parameters.
 
 ## Overview
 
-Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP, etc... Because `Sardine` is fairly simple and barebone, you can also use it to schedule the execution of custom Python functions on a musical clock!
+Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP, etc... Because `Sardine` is fairly simple and barebones, you can also use it to schedule the execution of custom Python functions on a musical clock!
 
 I am indexing my work on this repository but the library is far from being usable. I made it public in order to share it without having to add contributors every time. You are also welcome to make pull requests if you think that you can bring something new! `Sardine` may and will crash.
 
@@ -24,10 +30,12 @@ I am indexing my work on this repository but the library is far from being usabl
 ### Sardine Python Package
 
 The installation process is fairly simple:
+
 1) run `setup.py` using `pip3 install -e .` to download required libraries and install the library.
    - **You need to have `python` and `pip` already installed on your computer**.
 2) open a new interactive session using `python3 -m asyncio`
    - **/!\\ Make sure that you are running the asyncio REPL!**
+   - **/!\\ The `IPython` REPL will not work. It is handling asyncio code differently.
 3) import the library `from sardine import *`
 4) Follow the prompt to connect to a MIDI Output.
 5) Read the examples provided in the `examples/` folder to learn more.
@@ -38,11 +46,13 @@ The installation process is fairly simple:
 
 ### Code-editing with Sardine
 
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using Vim[]() or Neovim[]() [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. `Sardine` code can become quite verbose when dealing with complex functions.
+
+As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
 
 ## Debug
 
-`Sardine` is crippled with bugs. I am developing `Sardine` for my own usage right now. Some configuration variables might still refer to my own local environment... some packages might need to be installed manually if you encounter an error. Please provide feedback on the installation process!
+Please provide feedback on the installation process! Everything is pretty new so I might not be able to anticipate how `Sardine` will run on your computer.
 
 ## Usage
 
@@ -70,7 +80,24 @@ cr(my_super_bass_drum)
 cr(hatty_hat)
 ```
 
-More functions will be added to take care of scheduling on the clock. I still have some issues to fix with `asyncio`.
+This is nice and everything but still a bit long to type on-the-fly while you are on stage. You might prefer using the `@swim` and `@die` decorators:
+```python
+@swim
+async def bd(delay=1):
+    """ A simple bass drum """
+    dur = choice([2, 1])
+    S('bd', amp=2).out()
+    loop(bd(delay=dur))
+
+
+@die
+async def iter(delay=1, nb=0):
+    """ A simple recursive iterator """
+    nb += 1
+    print(f"{nb}")
+    loop(iter(delay=1, nb=nb))
+```
+
 
 ### Temporal recursive functions
 
@@ -141,3 +168,8 @@ cs(indirect_bd(1, speed=1))
 ```
 
 Not all parameters are currently available. SuperDirt parameters have been hardcoded... This should be easy to fix but I never took time to do it properly.
+
+## Crash
+
+By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.
+

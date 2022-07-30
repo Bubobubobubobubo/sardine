@@ -8,6 +8,7 @@ from typing import Union
 import threading
 from .AsyncRunner import AsyncRunner
 
+
 class MIDIIo(threading.Thread):
 
     """

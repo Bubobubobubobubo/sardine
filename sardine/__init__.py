@@ -1,3 +1,5 @@
+# https://stackoverflow.com/questions/53689193/how-to-handle-exceptions-from-any-task-in-an-event-loop
+
 from .clock.Clock import Clock
 from .superdirt.Sound import Sound as S
 from .superdirt.AutoBoot import (
@@ -43,15 +45,32 @@ print_pre_alpha_todo()
 print('\n')
 
 uvloop.install()
-c = Clock()
-asyncio.create_task(c.send_start(initial=True))
-cs, cr, td = c.schedule, c.remove, c._get_tick_duration
-loop = c._auto_schedule
+loop = asyncio.get_running_loop()
 
+def my_exception_handler(_, exception):
+    print(f"{type(exception)}")
+
+loop.set_exception_handler(my_exception_handler)
+
+c = Clock()
+cs = c.schedule
+cr = c.remove
+td = c._get_tick_duration
+
+loop = c._auto_schedule
+try:
+    asyncio.create_task(c.send_start(initial=True))
+except Exception as e:
+    print(e)
+
+# Should start, doesn't start
 SC = SuperColliderProcess(
         synth_directory=find_synth_directory(),
         startup_file=find_startup_file())
-asyncio.create_task(SC.boot())
+
+# async def boot_supercollider():
+#     await SC.boot()
+# asyncio.create_task(boot_supercollider())
 
 def swim(fn):
     @wraps(fn)

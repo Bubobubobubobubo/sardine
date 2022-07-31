@@ -165,6 +165,13 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
+    def task_runner(self, awaitable):
+        async def _log_exception(awaitable):
+            try:
+                return await awaitable
+            except Exception as e:
+                print(f"{e}")
+            return asyncio.create_task(_log_exception(awaitable))
 
     def schedule(self, function):
 
@@ -189,11 +196,14 @@ class Clock:
 
         else:
             self.child[function.__name__] = AsyncRunner(
-                    function=function, tasks=[])
+                    function=function,
+                    last_valid_function=function,
+                    tasks=[])
+                    # How to catch errors from these?
             self.child[function.__name__].tasks.append(
                     asyncio.create_task(self._schedule(
-                            function=self.child[function.__name__].function,
-                            init=True)))
+                        function=self.child[function.__name__].function,
+                        init=True)))
 
     async def _schedule(self, function, init=False):
         """ Inner scheduling """
@@ -205,8 +215,13 @@ class Clock:
             arguments = arguments.f_locals
             return arguments
 
+        # Grab the `d` argument. Prevent a function from not having a `d`
+        # argument! It will default to 1*self.ppqn
         arguments = grab_arguments_from_coroutine(function)
-        delay = arguments["delay"]
+        try:
+            delay = arguments["d"]
+        except KeyError:
+            delay = 1
 
         # Transform delay into multiple or division of ppqn
         delay = self.ppqn * delay
@@ -230,13 +245,45 @@ class Clock:
     def _auto_schedule(self, function):
         """ Loop mechanism """
 
+        # Si on arrive jusqu'ici, on a réussi à looper odnc il faudrait enre-
+        # gistrer une nouvelle version de last_valid_function
+
+        # Il faut que je récupère une exception ici si j'obtiens n'importe
+        # quelle exception et que je lance la fonction de récupération en
+        # échange. Problème : je ne sais pas trop comment m'y prendre.
+        # Il faut tester comment je peux faire pour analyser une task qui
+        # foire.
+
+        # Ca ne fonctionne pas car je ne permets pas aux tasks que je crée de
+        # bider et je ne fais rien pour les ramasser à la petite cuillère quand
+        # ces dernières vienent s'écraser. Je dois changer le code pour les await
+        # systématiquement.
+
+        def callback_for_failure(f):
+            """ Callback for looping function that are failing! """
+            print(f"{f.exception()}")
+
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
             self.child[function.__name__].tasks.append(
                 asyncio.create_task(self._schedule(
                     function=self.child[function.__name__].function)))
+            self.child[function.__name__].tasks[-1].add_done_callback(
+                callback_for_failure)
+
+            # This should be able to handle errors!
+            # It doesn't!
+            # if (self.child[function.__name__].tasks[:-1].exception()
+            #         != asyncio.InvalidStateError):
+            #     self.child[function.__name__].function = self.child[
+            #         function.__name__].last_valid_function
+            #     self.child[function.__name__].tasks.append(
+            #         asyncio.create_task(self._schedule(
+            #             function=self.child[function.__name__].function)))
+
 
             # Delete tasks that are done or cancelled already
+            # This doesn't work at all!
             self.child[function.__name__].tasks = (
                     [x for x in self.child[function.__name__].tasks
                        if not x.done() or not x.cancelled()])
@@ -386,3 +433,11 @@ class Clock:
     def get_tick_time(self):
         """ Indirection to get tick time """
         return self.tick_time
+
+    def ramp(self, min: int, max: int):
+        """ Generate a ramp between min and max using phase """
+        return self.phase % (max - min + 1) + min
+
+    def iramp(self, min: int, max: int):
+        """ Generate an inverted ramp between min and max using phase"""
+        return self.ppqn - self.phase % (max - min + 1) + min

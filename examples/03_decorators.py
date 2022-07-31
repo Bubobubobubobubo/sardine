@@ -1,4 +1,5 @@
 from sardine import *
+
 from random import choice
 from random import randint
 
@@ -31,3 +32,10 @@ async def hh(delay=1):
 
 cr(bd)
 cr(hh)
+
+# Exemple minimal
+
+@swim
+async def bd():
+    print('coucou')
+    loop(bd())

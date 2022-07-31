@@ -173,23 +173,15 @@ class Clock:
     def _auto_schedule(self, function):
         """ Loop mechanism """
 
-        # Si on arrive jusqu'ici, on a réussi à looper odnc il faudrait enre-
-        # gistrer une nouvelle version de last_valid_function
-
-        # Il faut que je récupère une exception ici si j'obtiens n'importe
-        # quelle exception et que je lance la fonction de récupération en
-        # échange. Problème : je ne sais pas trop comment m'y prendre.
-        # Il faut tester comment je peux faire pour analyser une task qui
-        # foire.
-
-        # Ca ne fonctionne pas car je ne permets pas aux tasks que je crée de
-        # bider et je ne fais rien pour les ramasser à la petite cuillère quand
-        # ces dernières vienent s'écraser. Je dois changer le code pour les await
-        # systématiquement.
+        # If the code reaches this point, first loop was succesful. It's time
+        # to register a new version of last_valid_function. However, I need
+        # to find a way to catch exceptions right here! Only Task exceptions
+        # will show me if a task failed for some reason.
 
         def callback_for_failure(f):
             """ Callback for looping function that are failing! """
-            print(f"{f.exception()}")
+            # print(f"{f.exception()}")
+            pass
 
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
@@ -198,17 +190,6 @@ class Clock:
                     function=self.child[function.__name__].function)))
             self.child[function.__name__].tasks[-1].add_done_callback(
                 callback_for_failure)
-
-            # This should be able to handle errors!
-            # It doesn't!
-            # if (self.child[function.__name__].tasks[:-1].exception()
-            #         != asyncio.InvalidStateError):
-            #     self.child[function.__name__].function = self.child[
-            #         function.__name__].last_valid_function
-            #     self.child[function.__name__].tasks.append(
-            #         asyncio.create_task(self._schedule(
-            #             function=self.child[function.__name__].function)))
-
 
             # Delete tasks that are done or cancelled already
             # This doesn't work at all!

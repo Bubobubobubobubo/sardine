@@ -1,23 +1,4 @@
-# Sardine
-
-## Current list of issues
-
-- **[EASY]** Tasks are not being deleted from `self.child.tasks`.
-
-- **[EASY]** Handle defective functions! Currently silenced.
-
-- **[HARD]** Phase issues: patterns can shift in and out of phase randomly.
-  - two functions scheduled at 1*self.ppqn will drift in and out of phase periodically depending on multiple factors:
-    - CPU Load
-    - Switching between apps
-
-- **[EASY]** Clock cannot be stopped and restarted using `clock.send_stop()` and `clock.send_reset()`
-
-- **[EASY]** Find a better name for the `delay` parameter and declare a default parameter `delay=1` for every coroutine.
-
-- **[HARD]** The `Sound` class was not initially meant for this project. It needs a rewrite:
-    - **[HARD]** automate the declaration of new SuperDirt parameters to be exposed.
-    - **[EASY]** add a file configurable by the user to declare and expose new parameters.
+![sardine](pictures/sardine.png)
 
 ## Overview
 

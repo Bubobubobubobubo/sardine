@@ -3,11 +3,26 @@ import itertools
 import mido
 import time
 from rich import print
-from rich.console import Console
 from typing import Union
-import threading
+import traceback
 from .AsyncRunner import AsyncRunner
 from ..io.MidiIo import MIDIIo
+
+atask = asyncio.create_task
+sleep = asyncio.sleep
+
+async def safe(coro, *args, **kwargs):
+    while True:
+        try:
+            await coro(*args, **kwargs)
+        except asyncio.CancelledError:
+            # don't interfere with cancellations
+            raise
+        except Exception:
+            print("a"*99999)
+            exit()
+            print("Caught exception")
+            traceback.print_exc()
 
 
 class Clock:
@@ -115,26 +130,27 @@ class Clock:
 
         The next step is to support argument passing to next iteration
         through keyword arguments!
-
         """
+        name = function.__name__
+        keys = self.child.keys()
 
-        if function.__name__ in self.child.keys():
-            self.child[function.__name__].function = function
+        if name in keys:
+            self.child[name].function = function
             return
 
         else:
-            self.child[function.__name__] = AsyncRunner(
+            self.child[name] = AsyncRunner(
                     function=function,
                     last_valid_function=function,
                     tasks=[])
-                    # How to catch errors from these?
-            self.child[function.__name__].tasks.append(
-                    asyncio.create_task(self._schedule(
-                        function=self.child[function.__name__].function,
-                        init=True)))
+
+            self.child[name].tasks.append(atask(self._schedule(
+                function=self.child[name].function,
+                init=True)))
 
     async def _schedule(self, function, init=False):
         """ Inner scheduling """
+        name = function.__name__
         cur_bar = self.elapsed_bars
 
         def grab_arguments_from_coroutine(cr):
@@ -155,20 +171,22 @@ class Clock:
         delay = self.ppqn * delay
 
         if init:
-            print(f"[Init {function.__name__}]")
+            print(f"[Init {name}]")
             while (self.phase != 1 and self.elapsed_bars != cur_bar + 1):
-                await asyncio.sleep(self._get_tick_duration())
+                await sleep(self._get_tick_duration())
         else:
             # Busy waiting until execution time
             now = self.get_tick_time()
             while self.tick_time < now + delay:
-                # Because why not?
-                await asyncio.sleep(self._get_tick_duration() / self.ppqn)
+                # You might increase the resolution even more
+                await sleep(self._get_tick_duration() / self.ppqn)
 
         # Execution time
-        if function.__name__ in self.child.keys():
-            self.child[function.__name__].tasks.append(
-                asyncio.create_task(self.child[function.__name__].function))
+        # Trying something here with safe!
+        if name in self.child.keys():
+            self.child[name].tasks.append(
+                safe(atask(self.child[name].function)))
+
 
     def _auto_schedule(self, function):
         """ Loop mechanism """
@@ -177,25 +195,14 @@ class Clock:
         # to register a new version of last_valid_function. However, I need
         # to find a way to catch exceptions right here! Only Task exceptions
         # will show me if a task failed for some reason.
+        name = function.__name__
 
-        def callback_for_failure(f):
-            """ Callback for looping function that are failing! """
-            # print(f"{f.exception()}")
-            pass
-
-        if function.__name__ in self.child.keys():
-            self.child[function.__name__].function = function
-            self.child[function.__name__].tasks.append(
+        if name in self.child.keys():
+            self.child[name].function = function
+            # on récupère une ancienne tâche
+            self.child[name].tasks.append(
                 asyncio.create_task(self._schedule(
-                    function=self.child[function.__name__].function)))
-            self.child[function.__name__].tasks[-1].add_done_callback(
-                callback_for_failure)
-
-            # Delete tasks that are done or cancelled already
-            # This doesn't work at all!
-            self.child[function.__name__].tasks = (
-                    [x for x in self.child[function.__name__].tasks
-                       if not x.done() or not x.cancelled()])
+                    function=self.child[name].function)))
 
     def __rshift__(self, function):
         """ Alias to _auto_schedule """
@@ -212,14 +219,6 @@ class Clock:
         """ Remove a function from the scheduler """
 
         if function.__name__ in self.child.keys():
-
-            # I don't think that this is really doing anything
-            for task in self.child[function.__name__].tasks:
-                try:
-                    task.cancel()
-                except Exception as error:
-                    print(f"Ca plante: {error}")
-
             del self.child[function.__name__]
 
     def get_phase(self):
@@ -303,8 +302,6 @@ class Clock:
         """
         Main Method for the MIDI Clock. Full of errors and things that
         msut be fixed. Drift can happen, and it might need a full rewrite.
-
-        TODO: do better!
 
         Keyword arguments:
         debug: bool -- print debug messages on stdout.

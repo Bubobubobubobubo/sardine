@@ -1,22 +1,20 @@
 # This file is a playground.
 # This is where I test stuff that might break :)
-from random import random, randint, choice
-
-# C'est bien beau tout ça mais il manque un mécanisme qui pourrait
-# permettre de synchroniser et de tenir ensemble deux fonctions !
 
 from itertools import cycle
+from random import random, randint, choice
+from random import random, randint, choice
 def seq(*args):
     return cycle(list(args))
 a = seq(1,2,3)
 b = cycle(range(1, 20))
 note = cycle([60, 63, 60, 60, 65])
+cr(bd)
 
-@die
+@swim
 async def bd(d=1):
-    # S('amencutup', n=next(a), speed=next(a)).out()
     S('bd' if random() > 0.8 else 'drum').out()
-    loop(bd(d=1))
+    loop(bd(d=0.5))
 
 
 @die

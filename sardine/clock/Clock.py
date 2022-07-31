@@ -7,71 +7,7 @@ from rich.console import Console
 from typing import Union
 import threading
 from .AsyncRunner import AsyncRunner
-
-
-class MIDIIo(threading.Thread):
-
-    """
-    Direct MIDI I/O Using Mido. MIDI is also available indirectly
-    through SuperDirt. I need to do something to address the redun-
-    dancy.
-    """
-
-    def __init__(self, port_name: Union[str, None] = None):
-        threading.Thread.__init__(self)
-        self._midi_ports = mido.get_output_names()
-        if port_name:
-            try:
-                self._midi = mido.open_output(port_name)
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
-        else:
-            try:
-                self._midi = mido.open_output(self.choose_midi_port())
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
-
-    def choose_midi_port(self) -> str:
-        """ ASCII MIDI Port chooser """
-        ports = mido.get_output_names()
-        console = Console()
-        for (i, item) in enumerate(ports, start=1):
-            print(f"[color({i})] [{i}] {item}")
-        nb = console.input("[bold yellow] Choose a MIDI Port: [/bold yellow]")
-        try:
-            nb = int(nb) - 1
-            print(f'[yellow]You picked[/yellow] [green]{ports[nb]}[/green].')
-            return ports[nb]
-        except Exception:
-            print(f"Input can only take valid number in range, not {nb}.")
-            exit()
-
-    def send(self, message: mido.Message) -> None:
-        self._midi.send(message)
-
-    async def send_async(self, message: mido.Message) -> None:
-        self._midi.send(message)
-
-    def send_stop(self) -> None:
-        """ MIDI Start message """
-        self._midi.send(mido.Message('stop'))
-
-    def send_reset(self) -> None:
-        """ MIDI Reset message """
-        self._midi.send(mido.Message('reset'))
-        # self._reset_internal_clock_state()
-
-    def send_clock(self) -> None:
-        """ MIDI Clock Message """
-        self._midi.send(mido.Message('clock'))
-
-    async def send_clock_async(self) -> None:
-        """ MIDI Clock Message """
-        self._midi.send(mido.Message('clock'))
-
-    async def send_start(self, initial: bool = False) -> None:
-        """ MIDI Start message """
-        self._midi.send(mido.Message('start'))
+from ..io.MidiIo import MIDIIo
 
 
 class Clock:
@@ -165,7 +101,6 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-
     def schedule(self, function):
 
         """
@@ -189,11 +124,14 @@ class Clock:
 
         else:
             self.child[function.__name__] = AsyncRunner(
-                    function=function, tasks=[])
+                    function=function,
+                    last_valid_function=function,
+                    tasks=[])
+                    # How to catch errors from these?
             self.child[function.__name__].tasks.append(
                     asyncio.create_task(self._schedule(
-                            function=self.child[function.__name__].function,
-                            init=True)))
+                        function=self.child[function.__name__].function,
+                        init=True)))
 
     async def _schedule(self, function, init=False):
         """ Inner scheduling """
@@ -205,8 +143,13 @@ class Clock:
             arguments = arguments.f_locals
             return arguments
 
+        # Grab the `d` argument. Prevent a function from not having a `d`
+        # argument! It will default to 1*self.ppqn
         arguments = grab_arguments_from_coroutine(function)
-        delay = arguments["delay"]
+        try:
+            delay = arguments["d"]
+        except KeyError:
+            delay = 1
 
         # Transform delay into multiple or division of ppqn
         delay = self.ppqn * delay
@@ -230,13 +173,45 @@ class Clock:
     def _auto_schedule(self, function):
         """ Loop mechanism """
 
+        # Si on arrive jusqu'ici, on a réussi à looper odnc il faudrait enre-
+        # gistrer une nouvelle version de last_valid_function
+
+        # Il faut que je récupère une exception ici si j'obtiens n'importe
+        # quelle exception et que je lance la fonction de récupération en
+        # échange. Problème : je ne sais pas trop comment m'y prendre.
+        # Il faut tester comment je peux faire pour analyser une task qui
+        # foire.
+
+        # Ca ne fonctionne pas car je ne permets pas aux tasks que je crée de
+        # bider et je ne fais rien pour les ramasser à la petite cuillère quand
+        # ces dernières vienent s'écraser. Je dois changer le code pour les await
+        # systématiquement.
+
+        def callback_for_failure(f):
+            """ Callback for looping function that are failing! """
+            print(f"{f.exception()}")
+
         if function.__name__ in self.child.keys():
             self.child[function.__name__].function = function
             self.child[function.__name__].tasks.append(
                 asyncio.create_task(self._schedule(
                     function=self.child[function.__name__].function)))
+            self.child[function.__name__].tasks[-1].add_done_callback(
+                callback_for_failure)
+
+            # This should be able to handle errors!
+            # It doesn't!
+            # if (self.child[function.__name__].tasks[:-1].exception()
+            #         != asyncio.InvalidStateError):
+            #     self.child[function.__name__].function = self.child[
+            #         function.__name__].last_valid_function
+            #     self.child[function.__name__].tasks.append(
+            #         asyncio.create_task(self._schedule(
+            #             function=self.child[function.__name__].function)))
+
 
             # Delete tasks that are done or cancelled already
+            # This doesn't work at all!
             self.child[function.__name__].tasks = (
                     [x for x in self.child[function.__name__].tasks
                        if not x.done() or not x.cancelled()])
@@ -335,6 +310,7 @@ class Clock:
         Used for debugging purposes. Not to be used when playing,
         can be very verbose. Will overflow the console in no-time.
         """
+
         color = "[bold red]" if self.phase == 1 else "[bold yellow]"
         first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self.delta:2f}"
         second = color + f" || [{self.tick_time}] {self.current_beat}/{self.beat_per_bar}"
@@ -386,3 +362,11 @@ class Clock:
     def get_tick_time(self):
         """ Indirection to get tick time """
         return self.tick_time
+
+    def ramp(self, min: int, max: int):
+        """ Generate a ramp between min and max using phase """
+        return self.phase % (max - min + 1) + min
+
+    def iramp(self, min: int, max: int):
+        """ Generate an inverted ramp between min and max using phase"""
+        return self.ppqn - self.phase % (max - min + 1) + min

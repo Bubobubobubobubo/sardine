@@ -1,5 +1,5 @@
-from .Clock import Clock
-from .Sound import Sound as S
+from .clock.Clock import Clock
+from .superdirt.Sound import Sound as S
 from rich import print
 from typing import Union
 from functools import wraps

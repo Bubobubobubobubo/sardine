@@ -7,7 +7,7 @@ from rich.console import Console
 from typing import Union
 import threading
 from .AsyncRunner import AsyncRunner
-from .MidiIo import MIDIIo
+from ..io.MidiIo import MIDIIo
 
 
 class Clock:

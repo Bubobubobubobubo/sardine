@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .Osc import dirt
+from ..io.Osc import dirt
 import operator as opps
 
 

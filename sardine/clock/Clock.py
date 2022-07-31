@@ -173,7 +173,7 @@ class Clock:
     def _auto_schedule(self, function):
         """ Loop mechanism """
 
-        # If the coe reaches this point, first loop was succesful. It's time
+        # If the code reaches this point, first loop was succesful. It's time
         # to register a new version of last_valid_function. However, I need
         # to find a way to catch exceptions right here! Only Task exceptions
         # will show me if a task failed for some reason.

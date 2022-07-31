@@ -2,14 +2,23 @@ from .clock.Clock import Clock
 from .superdirt.Sound import Sound as S
 from .superdirt.AutoBoot import SuperColliderProcess, find_startup_file
 from rich import print
-from typing import Union
+from rich.console import Console
+from rich.markdown import Markdown
 from functools import wraps
 import uvloop
 import asyncio
+import pathlib
 
-# Dirty hack
 import warnings
 warnings.filterwarnings("ignore")
+
+def print_pre_alpha_todo() -> None:
+    """ Print the TODOlist from pre-alpha version """
+    cur_path = pathlib.Path(__file__).parent.resolve()
+    with open("".join([str(cur_path), "/todo.md"])) as f:
+        console = Console()
+        console.print(Markdown(f.read()))
+
 
 sardine = """
 
@@ -28,7 +37,11 @@ SC = SuperColliderProcess(synth_directory=None,
         startup_file=find_startup_file())
 SC.boot()
 
-print(f"[blink]{sardine}[/blink]")
+# Pretty printing
+print(f"[red]{sardine}[/red]")
+print_pre_alpha_todo()
+print('\n')
+
 uvloop.install()
 c = Clock()
 asyncio.create_task(c.send_start(initial=True))

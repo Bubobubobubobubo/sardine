@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import platform, threading, subprocess, os, signal
 from time import sleep
-from os import (walk)
+from os import walk
 from rich import print
 import pathlib
 
@@ -154,6 +154,9 @@ class SuperColliderProcess():
             return "scsynth.exe"
         elif os == "Darwin":
             return "/Applications/SuperCollider.app/Contents/MacOS/sclang"
+        else:
+            # Probably better to raise an exception here
+            return ""
 
     def boot(self) -> None:
         self.send(message="""load("{}")""".format(self._startup_file))

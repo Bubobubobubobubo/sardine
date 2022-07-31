@@ -1,5 +1,7 @@
 ![sardine](pictures/sardine.png)
 
+[Getting Started](#installation) - [Usage](#usage)
+
 ## Overview
 
 Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP, etc... Because `Sardine` is fairly simple and barebones, you can also use it to schedule the execution of custom Python functions on a musical clock!

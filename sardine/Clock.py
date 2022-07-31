@@ -165,14 +165,6 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-    def task_runner(self, awaitable):
-        async def _log_exception(awaitable):
-            try:
-                return await awaitable
-            except Exception as e:
-                print(f"{e}")
-            return asyncio.create_task(_log_exception(awaitable))
-
     def schedule(self, function):
 
         """

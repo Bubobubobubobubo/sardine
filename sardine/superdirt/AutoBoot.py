@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
+import pathlib
 import platform, threading, subprocess, os, signal
 from time import sleep
 from os import walk
 from rich import print
-import pathlib
+from typing import Union
 
 
 def find_startup_file():
     """ Find the startup file when booting Sardine """
     cur_path = pathlib.Path(__file__).parent.resolve()
     return "".join([str(cur_path), "/configuration/startup.scd"])
+
+def find_synth_directory():
+    """ Find the synth directory when booting Sardine """
+    cur_path = pathlib.Path(__file__).parent.resolve()
+    return "".join([str(cur_path), "/configuration/synths/"])
 
 
 class SuperColliderProcess():
@@ -19,7 +25,9 @@ class SuperColliderProcess():
     code directly from the Python side.
     """
 
-    def __init__(self, synth_directory: str, startup_file: str):
+    def __init__(self,
+            synth_directory: Union[str, None],
+            startup_file: str):
 
         self._sclang_path = self.find_sclang_path()
         self._synth_directory = synth_directory
@@ -32,18 +40,7 @@ class SuperColliderProcess():
             bufsize=1,
             universal_newlines=True,
             start_new_session=True)
-        self._proc_thread = None
 
-    def start(self) -> None:
-
-        """
-        Thread the SCLang process
-        """
-
-        self._proc_thread = threading.Thread(
-            target=lambda: self._sclang_proc.wait(),
-            daemon=True)
-        self._proc_thread.start()
 
     def terminate(self) -> None:
 
@@ -70,7 +67,6 @@ class SuperColliderProcess():
             bufsize=1,
             universal_newlines=True,
             start_new_session=True)
-        self.start()
 
     def hard_reset(self) -> None:
 
@@ -158,7 +154,9 @@ class SuperColliderProcess():
             # Probably better to raise an exception here
             return ""
 
-    def boot(self) -> None:
+    async def boot(self) -> None:
+
+        print("[red]Starting SCLang[/red]")
         self.send(message="""load("{}")""".format(self._startup_file))
         sleep(1)
         if self._synth_directory is not None:

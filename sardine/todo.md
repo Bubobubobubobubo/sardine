@@ -7,3 +7,4 @@
 * [ ] Rewrite Sound class
 * [ ] Expose MIDI and OSC Api
 * [ ] User configuration file
+* [ ] Fix the autoboot

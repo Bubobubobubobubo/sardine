@@ -1,5 +1,6 @@
 from .clock.Clock import Clock
 from .superdirt.Sound import Sound as S
+from .superdirt.AutoBoot import SuperColliderProcess, find_startup_file
 from rich import print
 from typing import Union
 from functools import wraps
@@ -8,7 +9,7 @@ import asyncio
 
 # Dirty hack
 import warnings
-# warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore")
 
 sardine = """
 
@@ -22,6 +23,10 @@ sardine = """
 Sardine is a small MIDI/OSC sequencer made for live-
 coding. Check the examples/ folder to learn more. :)
 """
+
+SC = SuperColliderProcess(synth_directory=None,
+        startup_file=find_startup_file())
+SC.boot()
 
 print(f"[blink]{sardine}[/blink]")
 uvloop.install()

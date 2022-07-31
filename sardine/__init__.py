@@ -50,7 +50,19 @@ loop = asyncio.get_running_loop()
 def my_exception_handler(_, exception):
     print(f"{type(exception)}")
 
+async def handled(coro):
+    try:
+        await coro
+    except IOError:
+        print('no IO today')
+
+def factory(loop, coro):
+    task = asyncio.create_task(handled(coro))
+    return task
+
+loop = asyncio.get_running_loop()
 loop.set_exception_handler(my_exception_handler)
+loop.set_task_factory(factory)
 
 c = Clock()
 cs = c.schedule

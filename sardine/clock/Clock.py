@@ -199,7 +199,6 @@ class Clock:
 
         if name in self.child.keys():
             self.child[name].function = function
-            # on récupère une ancienne tâche
             self.child[name].tasks.append(
                 asyncio.create_task(self._schedule(
                     function=self.child[name].function)))

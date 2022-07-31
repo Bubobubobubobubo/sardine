@@ -45,31 +45,13 @@ print_pre_alpha_todo()
 print('\n')
 
 uvloop.install()
-loop = asyncio.get_running_loop()
 
-def my_exception_handler(_, exception):
-    print(f"{type(exception)}")
-
-async def handled(coro):
-    try:
-        await coro
-    except IOError:
-        print('no IO today')
-
-def factory(loop, coro):
-    task = asyncio.create_task(handled(coro))
-    return task
-
-loop = asyncio.get_running_loop()
-loop.set_exception_handler(my_exception_handler)
-loop.set_task_factory(factory)
-
+# Are the aliases good?
 c = Clock()
 cs = c.schedule
 cr = c.remove
-td = c._get_tick_duration
 
-loop = c._auto_schedule
+
 try:
     asyncio.create_task(c.send_start(initial=True))
 except Exception as e:
@@ -79,10 +61,6 @@ except Exception as e:
 SC = SuperColliderProcess(
         synth_directory=find_synth_directory(),
         startup_file=find_startup_file())
-
-# async def boot_supercollider():
-#     await SC.boot()
-# asyncio.create_task(boot_supercollider())
 
 def swim(fn):
     @wraps(fn)
@@ -103,8 +81,24 @@ def die(fn):
             pass
     return decorator(fn)
 
+from random import random, randint, choice
+from itertools import cycle
 
-@swim
-async def bd():
+dur = cycle([0.5, 1, 2])
+
+async def bd(delay=1):
+    dura = next(dur)
     S('bd').out()
-    loop(bd())
+    cs(bd, delay=dura)
+
+async def bd_stable(delay=1):
+    S('bd', shape=0.5).out()
+    cs(bd, delay=1)
+
+# async def bd2(delay=1):
+#    S('bd', speed=2).out() ; cs(bd2, delay=delay)
+
+cs(bd)
+# cs(bd_stable)
+
+# cs(bd2)

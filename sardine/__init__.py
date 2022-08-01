@@ -1,20 +1,28 @@
+# https://stackoverflow.com/questions/53689193/how-to-handle-exceptions-from-any-task-in-an-event-loop
+
+import asyncio
+from functools import wraps
+import pathlib
+import warnings
+
+from rich import print
+from rich.console import Console
+from rich.markdown import Markdown
+try:
+    import uvloop
+except ImportError:
+    warnings.warn('uvloop is not installed, rhythm accuracy may be impacted')
+else:
+    uvloop.install()
+
 from .clock.Clock import Clock
 from .superdirt.Sound import Sound as S
 from .superdirt.AutoBoot import (
         SuperColliderProcess,
         find_startup_file,
         find_synth_directory)
-from rich import print
-from rich.console import Console
-from rich.markdown import Markdown
-from functools import wraps
-from random import random, randint, choice
-from itertools import cycle
-import uvloop
-import platform
-import asyncio
-import pathlib
-import warnings
+
+warnings.filterwarnings("ignore")
 
 def print_pre_alpha_todo() -> None:
     """ Print the TODOlist from pre-alpha version """
@@ -42,11 +50,6 @@ coding. Check the examples/ folder to learn more. :)
 print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
-
-# UVLoop is not supported on Windows
-if platform.system() != "Windows":
-    uvloop.install()
-warnings.filterwarnings("ignore")
 
 c = Clock()
 cs = c.schedule

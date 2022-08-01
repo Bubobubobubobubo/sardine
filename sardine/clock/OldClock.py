@@ -1,18 +1,18 @@
 import asyncio
-import inspect
 import itertools
 import mido
-from rich import print
 import time
-from typing import Callable, Coroutine, Union
-
+from rich import print
+from typing import Union, Callable
+import traceback
+import types
+import functools
+import copy
 from .AsyncRunner import AsyncRunner
 from ..io.MidiIo import MIDIIo
 
-# Aliases
 atask = asyncio.create_task
 sleep = asyncio.sleep
-CoroFunc = Callable[..., Coroutine]
 
 
 class Clock:
@@ -35,7 +35,7 @@ class Clock:
         self._midi = MIDIIo(port_name=port_name)
 
         # Clock maintenance related
-        self.runners: dict[str, AsyncRunner] = {}
+        self.child = {}
 
         self.running = False
         self._debug = False
@@ -106,34 +106,150 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-    def schedule(self, func: CoroFunc, /, *args, **kwargs):
-        """Schedules the given function to be executed."""
-        if not inspect.iscoroutinefunction(func):
-            raise TypeError(f'func must be a coroutine function, not {type(func).__name__}')
+    def schedule(self, function):
 
-        name = func.__name__
-        runner = self.runners.get(name)
-        if runner is None:
-            runner = self.runners[name] = AsyncRunner(self)
+        name = function.__name__
+        keys = self.child.keys()
 
-        runner.push(func, *args, **kwargs)
-        if not runner.started():
-            runner.start()
+        if name in keys:
+            self.child[name].function = function
+            atask(self.schedule_runner(
+                    self.child[name].function, init=False))
+        else:
+            self.child[name] = AsyncRunner(
+                    function=function,
+                    function_save=copy_func(function),
+                    last_valid_function=None)
+
+            atask(self.schedule_runner(
+                function=self.child[name].function, init=True))
+
+
+    async def schedule_runner(self, function, init=False):
+        """ New version of the inner mechanism """
+        failed = False
+        name = function.__name__
+        cur_bar = self.elapsed_bars
+
+        def grab_arguments_from_coroutine(cr):
+            """ Grab arguments from coroutine frame """
+            arguments = cr.cr_frame
+            arguments = arguments.f_locals
+            return arguments
+
+        arguments = grab_arguments_from_coroutine(function)
+        try:
+            delay = arguments["d"]
+        except KeyError:
+            delay = 1
+        delay = self.ppqn * delay
+
+        # Waiting time
+        if init:
+            print(f"[Init {name}]")
+            while (self.phase != 1 and self.elapsed_bars != cur_bar + 1):
+                await sleep(self._get_tick_duration())
+        else:
+            # Busy waiting until execution time
+            now = self.get_tick_time()
+            while self.tick_time < now + delay:
+                # You might increase the resolution even more
+                await sleep(self._get_tick_duration() / self.ppqn)
+
+        # Error catching here! (Working!)
+        if name in self.child.keys():
+            try:
+                await self.child[name].function
+                # This is where we need a fresh coroutine 
+                self.child[name].last_valid_function = self.child[
+                        name].function_save
+            except Exception as e:
+                print(f"Caught exception {e}")
+                failed = True
+
+        if failed:
+            try:
+                # starting the failsafe
+                await self.child[name].last_valid_function
+            except Exception as e:
+                print(f"Le bide est total!: {e}")
+
+
+    async def _schedule(self, function, init=False):
+        """ Inner scheduling """
+        name = function.__name__
+        cur_bar = self.elapsed_bars
+
+        def grab_arguments_from_coroutine(cr):
+            """ Grab arguments from coroutine frame """
+            arguments = cr.cr_frame
+            arguments = arguments.f_locals
+            return arguments
+
+        arguments = grab_arguments_from_coroutine(function)
+        try:
+            delay = arguments["d"]
+        except KeyError:
+            delay = 1
+
+        # Transform delay into multiple or division of ppqn
+        delay = self.ppqn * delay
+
+        if init:
+            print(f"[Init {name}]")
+            while (self.phase != 1 and self.elapsed_bars != cur_bar + 1):
+                await sleep(self._get_tick_duration())
+        else:
+            # Busy waiting until execution time
+            now = self.get_tick_time()
+            while self.tick_time < now + delay:
+                # You might increase the resolution even more
+                await sleep(self._get_tick_duration() / self.ppqn)
+
+        # Execution time
+        # Trying something here with safe!
+        if name in self.child.keys():
+            atask(function)
+
+
+    # def _auto_schedule(self, function):
+    #     """ Loop mechanism """
+
+    #     # If the code reaches this point, first loop was succesful. It's time
+    #     # to register a new version of last_valid_function. However, I need
+    #     # to find a way to catch exceptions right here! Only Task exceptions
+    #     # will show me if a task failed for some reason.
+    #     name = function.__name__
+
+    #     if name in self.child.keys():
+    #         self.child[name].function = function
+    #         self.child[name].tasks.append(
+    #             asyncio.create_task(self._schedule(
+    #                 function=self.child[name].function)))
+
+    def __rshift__(self, function):
+        """ Alias to _auto_schedule """
+        self._auto_schedule(function=function)
+
+    def __lshift__(self, function):
+        """ Alias to remove """
+        self.remove(function=function)
 
     # ---------------------------------------------------------------------- #
     # Public methods
 
-    def remove(self, func: CoroFunc, /):
-        """Schedules the given function to stop execution."""
-        runner = self.runners[func.__name__]
-        runner.stop()
+    def remove(self, function):
+        """ Remove a function from the scheduler """
+
+        if function.__name__ in self.child.keys():
+            del self.child[function.__name__]
 
     def get_phase(self):
         return self.phase
 
     def print_children(self):
         """ Print all children on clock """
-        [print(child) for child in self.runners]
+        [print(child) for child in self.child]
 
     def ticks_to_next_bar(self) -> None:
         """ How many ticks until next bar? """
@@ -217,7 +333,7 @@ class Clock:
         async def _clock_update():
             """ Things the clock should do every tick """
 
-            self.tick_duration = self._get_tick_duration()
+            self.tick_duration = self._get_tick_duration() - self.delta
 
             begin = time.perf_counter()
             self.delta = 0
@@ -237,7 +353,7 @@ class Clock:
 
             # End of it
             end = time.perf_counter()
-            self.delta = end - begin - self.tick_duration
+            self.delta = end - begin
             if self._debug:
                 self.log()
 

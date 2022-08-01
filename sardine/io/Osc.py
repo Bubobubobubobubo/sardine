@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 from time import time
-from osc4py3.as_eventloop import (osc_startup, osc_udp_client, 
+from osc4py3.as_eventloop import (osc_startup, osc_udp_client,
                                   osc_send, osc_process)
 from osc4py3 import oscbuildparse
 from typing import Union
 
-
 class Client:
 
     def __init__(self, ip: str = "127.0.0.1",
-                 port: int = 57120, name: str = "SuperDirt", 
+                 port: int = 57120, name: str = "SuperDirt",
                  ahead_amount: Union[float, int] = 0.5):
 
         """
@@ -25,7 +24,7 @@ class Client:
         self._name, self._ahead_amount = (name, ahead_amount)
         osc_startup()
         osc_udp_client(
-                address=self._ip, 
+                address=self._ip,
                 port=self._port,
                 name=self._name)
 
@@ -53,12 +52,16 @@ class Client:
     def ahead_amount(self, value):
         self._ahead_amount = value
 
-    def send_timed_message(self, message):
-        """ 
-        Build OSC bundles.
-        TODO: can we just send messages?
-        """
+    def send(self, address: str, message):
+        """ Build user-made OSC messages """
+        msg = oscbuildparse.OSCMessage(address, None, message)
+        bun = oscbuildparse.OSCBundle(
+            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg])
+        osc_send(bun, self._name)
+        osc_process()
 
+    def send_timed_message(self, message):
+        """ Build and send OSC bundles """
         msg = oscbuildparse.OSCMessage("/play2", None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg])

@@ -1,7 +1,4 @@
-# https://stackoverflow.com/questions/53689193/how-to-handle-exceptions-from-any-task-in-an-event-loop
-
 import asyncio
-from functools import wraps
 import pathlib
 import warnings
 
@@ -21,6 +18,7 @@ from .superdirt.AutoBoot import (
         SuperColliderProcess,
         find_startup_file,
         find_synth_directory)
+from .io.Osc import Client as OSC
 
 warnings.filterwarnings("ignore")
 
@@ -85,8 +83,14 @@ async def sync():
     while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
         await asyncio.sleep(c._get_tick_duration() / c.ppqn)
 
+# Tests
+
+my_osc = OSC(ip="127.0.0.1",
+        port= 23000, name="Bibu",
+        ahead_amount=0.25)
+
+@swim
 async def bd(delay=1):
     S('bd').out()
+    my_osc.send('/hello', [123, 245])
     cs(bd, delay=1)
-
-cs(bd)

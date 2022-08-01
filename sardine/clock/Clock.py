@@ -116,7 +116,7 @@ class Clock:
         if runner is None:
             runner = self.runners[name] = AsyncRunner(self)
 
-        runner.push(func, *args, *kwargs)
+        runner.push(func, *args, **kwargs)
         if not runner.started():
             runner.start()
 

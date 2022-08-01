@@ -1,27 +1,18 @@
 import asyncio
-from dataclasses import dataclass
 import inspect
 import itertools
 import mido
 from rich import print
 import time
-import traceback
 from typing import Callable, Coroutine, Union
+
+from .AsyncRunner import AsyncRunner
 from ..io.MidiIo import MIDIIo
 
-
-# Aliases
+# Aliases
 atask = asyncio.create_task
 sleep = asyncio.sleep
 CoroFunc = Callable[..., Coroutine]
-
-
-@dataclass
-class AsyncRunner:
-    """Stores the arguments required to call the `Clock._runner()` method."""
-    func: Callable
-    args: tuple
-    kwargs: dict
 
 
 class Clock:
@@ -44,7 +35,7 @@ class Clock:
         self._midi = MIDIIo(port_name=port_name)
 
         # Clock maintenance related
-        self.func_runners: dict[str, list[AsyncRunner]] = {}
+        self.runners: dict[str, AsyncRunner] = {}
 
         self.running = False
         self._debug = False
@@ -115,96 +106,34 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-    def schedule(self, func: CoroFunc, *args, **kwargs):
+    def schedule(self, func: CoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not inspect.iscoroutinefunction(func):
             raise TypeError(f'func must be a coroutine function, not {type(func).__name__}')
 
         name = func.__name__
-        runners = self.func_runners.get(name)
+        runner = self.runners.get(name)
+        if runner is None:
+            runner = self.runners[name] = AsyncRunner(self)
 
-        if runners is None:
-            runners = self.func_runners[name] = []
-
-        initial = False
-
-        if not runners or func is not runners[-1].func:
-            # initialize with new runner
-            runner = AsyncRunner(func, args, kwargs)
-            runners.append(runner)
-            initial = True
-        else:
-            # update the top-most runner with new arguments
-            runner = runners[-1]
-            runner.args = args
-            runner.kwargs = kwargs
-
-        atask(self._runner(func, *args, initial=initial, **kwargs))
-
-    async def _runner(self, func, *args, initial: bool, **kwargs):
-        name = func.__name__
-        cur_bar = self.elapsed_bars
-
-        delay = kwargs.get('delay', 1)
-        delay = delay * self.ppqn
-
-
-        if initial:
-            print(f"[Init {name}]")
-            while (self.phase != 1 and self.elapsed_bars != cur_bar + 1):
-                await sleep(self._get_tick_duration() / (self.ppqn * 2))
-        else:
-            # Busy waiting until execution time
-            next_time = self.get_tick_time() + delay
-            while self.tick_time < next_time:
-                # You might increase the resolution even more
-                await sleep(self._get_tick_duration() / (self.ppqn * 2))
-
-        try:
-            await func(*args, **kwargs)
-        except asyncio.CancelledError:
-            # assume the user has intentionally cancelled and ignore
-            return
-        except Exception as e:
-            print(f'Exception encountered in {name}:')
-            traceback.print_exception(e)
-            self._reschedule(func)
-
-    def _reschedule(self, func: CoroFunc):
-        """
-        Removes the previous AsyncRunner instance for a given function
-        and dispatches any AsyncRunner before it, if it exists.
-        """
-        # pre: runners is not empty
-        runners = self.func_runners[func.__name__]
-        runners.pop()
-
-        if not runners:
-            return
-
-        # reschedule the previous function invoked
-        r = runners[-1]
-
-        # patch the global scope so recursive functions don't
-        # invoke the failed function
-        func.__globals__[func.__name__] = r.func
-
-        atask(self._runner(r.func, r.args, r.kwargs))
-
+        runner.push(func, *args, **kwargs)
+        if not runner.started():
+            runner.start()
 
     # ---------------------------------------------------------------------- #
     # Public methods
 
-    def remove(self, function: CoroFunc):
-        """ Remove a function from the scheduler """
-        self.func_runners.pop(function.__name__)
+    def remove(self, func: CoroFunc, /):
+        """Schedules the given function to stop execution."""
+        runner = self.runners[func.__name__]
+        runner.stop()
 
     def get_phase(self):
         return self.phase
 
     def print_children(self):
         """ Print all children on clock """
-        [print(child) for child in self.func_runners]
+        [print(child) for child in self.runners]
 
     def ticks_to_next_bar(self) -> None:
         """ How many ticks until next bar? """
@@ -288,7 +217,7 @@ class Clock:
         async def _clock_update():
             """ Things the clock should do every tick """
 
-            self.tick_duration = self._get_tick_duration() - self.delta
+            self.tick_duration = self._get_tick_duration()
 
             begin = time.perf_counter()
             self.delta = 0
@@ -308,7 +237,7 @@ class Clock:
 
             # End of it
             end = time.perf_counter()
-            self.delta = end - begin
+            self.delta = end - begin - self.tick_duration
             if self._debug:
                 self.log()
 

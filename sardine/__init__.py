@@ -70,7 +70,7 @@ def swim(fn):
 
 def die(fn):
     """ Remove a function from the clock """
-            cr(fn)
+    cr(fn)
     return fn
 
 async def bd(delay=1):

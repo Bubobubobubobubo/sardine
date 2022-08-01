@@ -217,7 +217,7 @@ class Clock:
         async def _clock_update():
             """ Things the clock should do every tick """
 
-            self.tick_duration = self._get_tick_duration() - self.delta
+            self.tick_duration = self._get_tick_duration()
 
             begin = time.perf_counter()
             self.delta = 0
@@ -237,7 +237,7 @@ class Clock:
 
             # End of it
             end = time.perf_counter()
-            self.delta = end - begin
+            self.delta = end - begin - self.tick_duration
             if self._debug:
                 self.log()
 

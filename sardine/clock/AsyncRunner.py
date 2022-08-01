@@ -1,5 +1,6 @@
 import asyncio
 from dataclasses import dataclass, field
+import inspect
 import traceback
 from typing import Callable, Coroutine, TYPE_CHECKING
 
@@ -99,7 +100,11 @@ class AsyncRunner:
             if initial:
                 await self._wait(0)
             else:
-                delay = state.kwargs.get('delay', 1)
+                delay = state.kwargs.get('delay')
+                if delay is None:
+                    param = inspect.signature(state.func).parameters.get('delay')
+                    delay = getattr(param, 'default', 1)
+
                 await self._wait(delay)
 
             try:
@@ -119,7 +124,7 @@ class AsyncRunner:
         print(f'[Stopped {name}]')
         self.clock.runners.pop(name)
 
-    async def _wait(self, delay: int):
+    async def _wait(self, delay: float | int):
         clock = self.clock
 
         if delay == 0:

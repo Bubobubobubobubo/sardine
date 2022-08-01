@@ -64,25 +64,14 @@ SC = SuperColliderProcess(
         startup_file=find_startup_file())
 
 def swim(fn):
-    """ Push a coroutine on the clock """
-    @wraps(fn)
-    def decorator(fn):
-        try:
-            cs(fn())
-        except Exception:
-            pass
-    decorator(fn)
+    """ Push a function to the clock """
+    cs(fn)
     return fn
 
 def die(fn):
-    """ Remove a coroutine from the clock """
-    @wraps(fn)
-    def decorator(fn):
-        try:
+    """ Remove a function from the clock """
             cr(fn)
-        except Exception:
-            pass
-    return decorator(fn)
+    return fn
 
 async def bd(delay=1):
     S('bd').out()

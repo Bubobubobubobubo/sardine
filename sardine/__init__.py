@@ -73,6 +73,18 @@ def die(fn):
     cr(fn)
     return fn
 
+async def nap(duration):
+    """ Musical sleep inside coroutines """
+    duration = c.tick_time + (duration * c.ppqn)
+    while c.tick_time < duration:
+        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
+
+async def sync():
+    """ Manual resynchronisation """
+    cur_bar = c.elapsed_bars
+    while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
+        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
+
 async def bd(delay=1):
     S('bd').out()
     cs(bd, delay=1)

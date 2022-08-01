@@ -2,11 +2,15 @@
 
 [Getting Started](#installation) - [Usage](#usage)
 
-## Overview
+## Elevator Pitch
 
-Sardine is a fun summer project I am currently working on, based on Python 3.10 `asyncio` library. Sardine is a live coding library exploring the idea of temporal recursion. It is capable of sending a MIDI Clock to external softwares and synthesizers. It can also piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine to trigger or sequence samples, synthesizers, custom DSP, etc... Because `Sardine` is fairly simple and barebones, you can also use it to schedule the execution of custom Python functions on a musical clock!
+Sardine is a Python library made for musical live coding. It is based on a specific type of recursion, the [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). Sardine allows the execution of recursive functions in musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide.
 
-I am indexing my work on this repository but the library is far from being usable. I made it public in order to share it without having to add contributors every time. You are also welcome to make pull requests if you think that you can bring something new! `Sardine` may and will crash.
+The library is far from being usable by random users. I made it public in order to share it easily and to encourage collaboration! Here are the goals for a first public release:
+
+* Solid timing system allowing the execution and synchronisation of temporal recursive functions.
+* Easy and simple to use MIDI/OSC and SuperDirt API.
+* MIDIIn/OSCIn for tweaking functions live using controllers and other devices.
 
 ## Installation
 
@@ -25,7 +29,10 @@ The installation process is fairly simple:
 
 ### SuperDirt
 
-1) Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt** for your favorite OS.
+1) Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt** for your favorite OS. It is usually a three step process:
+    * install SuperCollider.
+    * run `Quarks.install('SuperDirt')` in the SCIDE window.
+    * run `SuperDirt.start` to start the engine.
 
 ### Code-editing with Sardine
 
@@ -45,18 +52,17 @@ As soon as the library is imported (`from sardine import *`), an instance of `Cl
 * `c.bpm`: current BPM (can be inexact depending on your `ppqn`)
 * `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (1-??).
   - be careful. The tempo might fluctuate based on the PPQN you choose.
-* `c.get_tick_duration`: duration of a clock tick.
 
 `c.bpm` and `c.ppqn` can be manually adjusted if you feel like it. Be careful, changing these values can result in a dramatic tempo shift. I still need to work a little bit on the internals to make this correct :). For now, the clock is limited to MIDI output only. It means that you can open a DAW such as Ableton or Bitwig and use `Sardine` as your MIDI Clock. MIDI Clock In is a feature I still need to code in :) and is not yet supported.
 
 There are some sugared methods to schedule coroutines on the clock:
-- `cs` (`c.schedule(coro)`): introduce a new coroutine.
-- `cr` (`c.remove(coro)`): remove a coroutine.
+- `cs` (`c.schedule(coro, *args, **kwargs)`): introduce a new coroutine.
+- `cr` (`c.remove(coro, *args, **kwargs)`): remove a coroutine.
 
 **Example:**
 ```python3
-cs(my_super_bass_drum(delay(50)))
-cs(hatty_hat(delay(100)))
+cs(my_super_bass_drum, delay=2)
+cs(hatty_hat, delay=0.5)
 
 # Bored
 cr(my_super_bass_drum)
@@ -70,7 +76,7 @@ async def bd(delay=1):
     """ A simple bass drum """
     dur = choice([2, 1])
     S('bd', amp=2).out()
-    loop(bd(delay=dur))
+    cs(bd, delay=dur)
 
 
 @die
@@ -78,23 +84,22 @@ async def iter(delay=1, nb=0):
     """ A simple recursive iterator """
     nb += 1
     print(f"{nb}")
-    loop(iter(delay=1, nb=nb))
+    cs(iter, delay=1, nb=nb+1)
 ```
-
 
 ### Temporal recursive functions
 
-For an introduction about temporal recursion, please read this [short paper](http://extempore.moso.com.au/temporal_recursion.html) written by Andrew Sorensen. Even though the examples in the paper are written in Scheme, I am trying to follow a very similar design for `Sardine`. Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
+Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
 
 ```python
 # A basic temporal recursive function
 async def incr(delay=20, num=0):
     num += 1
     print(f"Num: {num}")
-    loop(num(delay=20, num))
+    cs(num, delay=20, num)
 
 # Scheduling it on the clock
-cs(num(delay=20, num=0))
+cs(num, delay=20, num=0)
 
 # Output
 # Num: 1
@@ -106,13 +111,13 @@ cs(num(delay=20, num=0))
 
 This is an incredibely useful feature to keep track of state between iterations of your function. It has some musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make written these less verbose. For now, you are on your own!
 
-Temporal recursive functions have only one drawback: they NEED a `delay` argument that must be an `int`. Without this argument, `Sardine` will likely crash. This `delay` can be modified every loop in order to create rhythms but you need to provide an initial `delay`.
+Temporal recursive functions have only one drawback: they NEED a `delay` argument. If you don't provide it, `Sardine` will default to using `delay=1`, a quarter note.
 
 ### Triggering sounds / samples / synthesizers
 
 The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. `SuperDirt` must be booted separately from `Sardine`. The `Sound` object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. `Sound` as been aliased to `S` to make it easier to type.
 
-```
+```python
 S('bd').out() # a bassdrum (sample 0 from folder 'bd')
 S('bd', n=3, amp=2).out() # third sample, way louder
 S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
@@ -124,8 +129,8 @@ The simplest function you can write using `Sardine` is probably a simple bassdru
 ```python
 async def bd(delay=1):
     S('bd').out()
-    loop(bd(delay=1))
-cs(bd(1))
+    cs(bd, delay=1)
+cs(bd, delay=1)
 ```
 
 You can be more playful and do something by toying with temporal recursion:
@@ -134,8 +139,8 @@ You can be more playful and do something by toying with temporal recursion:
 ```python
 async def bd(delay=1, speed=1):
     S('bd').out()
-    loop(bd(delay=1, speed=randint(1, 5)))
-cs(bd(1, speed=1))
+    cs(bd, delay=1, speed=randint(1, 5))
+cs(bd, delay=1, speed=1)
 ```
 
 Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being send out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the `.out()` method:
@@ -146,8 +151,8 @@ async def indirect_bd(delay=1, speed=1):
     a = S('bd')
     a.speed = speed
     a.out()
-    loop(indirect_bd(delay=1, speed=randint(1, 5)))
-cs(indirect_bd(1, speed=1))
+    cs(indirect_bd, delay=1, speed=randint(1, 5))
+cs(indirect_bd, delay=1, speed=1)
 ```
 
 Not all parameters are currently available. SuperDirt parameters have been hardcoded... This should be easy to fix but I never took time to do it properly.
@@ -155,4 +160,3 @@ Not all parameters are currently available. SuperDirt parameters have been hardc
 ## Crash
 
 By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.
-

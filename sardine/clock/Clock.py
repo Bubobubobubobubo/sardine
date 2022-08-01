@@ -171,7 +171,8 @@ class Clock:
             self._reschedule(func)
 
     def _reschedule(self, func: CoroFunc):
-        """Removes the previous AsyncRunner instance for a given function
+        """
+        Removes the previous AsyncRunner instance for a given function
         and dispatches any AsyncRunner before it, if it exists.
         """
         # pre: runners is not empty

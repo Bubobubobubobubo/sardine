@@ -28,15 +28,11 @@ class Clock:
     beats_per_bar: int -- Number of beats in a given bar
     """
 
-    def __init__(self, port_name: Union[str, None] = None,
-                 bpm: Union[float, int] = 120,
-                 beat_per_bar: int = 4):
+    def __init__(self, bpm: Union[float, int] = 120, beat_per_bar: int = 4):
 
-        self._midi = MIDIIo(port_name=port_name)
-
+        self._midi = MIDIIo()
         # Clock maintenance related
         self.runners: dict[str, AsyncRunner] = {}
-
         self.running = False
         self._debug = False
         # Timing related
@@ -44,6 +40,29 @@ class Clock:
         self.initial_time = 0
         self.delta = 0
         self.beat = -1
+        self.ppqn = 48
+        self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
+        self.phase = 0
+        self.beat_per_bar = beat_per_bar
+        self._current_beat_gen = itertools.cycle(
+                range(1, self.beat_per_bar + 1))
+        self.current_beat = 0
+        self.elapsed_bars = 0
+        self.tick_duration = self._get_tick_duration()
+        self.tick_time = 0
+
+    def init_reset(self,
+            runners: dict[str, AsyncRunner],
+            bpm: Union[float, int],
+            midi: MIDIIo,
+            beat_per_bar: int):
+        self._midi = midi
+        self.runners: dict[str, AsyncRunner] = {}
+        self._debug = False
+        self._bpm = bpm
+        self.initial_time = 0
+        self.delta = 0
+        # self.beat = -1
         self.ppqn = 48
         self._phase_gen = itertools.cycle(range(1, self.ppqn + 1))
         self.phase = 0
@@ -85,16 +104,6 @@ class Clock:
     def _get_tick_duration(self):
         return ((60 / self.bpm) / self.ppqn) - self.delta
 
-    def _reset_internal_clock_state(self):
-        """ Reset internal clock state with MIDI message """
-        self.beat = -1
-        self._phase_gen, self.phase = itertools.cycle(
-                range(1, self.ppqn + 1)), 0
-        self._current_beat_gen, self.current_beat = itertools.cycle(
-                range(1, self.beat_per_bar)), 0
-        self.elapsed_bars = 0
-        self.tick_duration = ((self.bpm / 60) / self.beat_per_bar)
-
     def _update_phase(self) -> None:
         """ Update the current phase in MIDI Clock """
         self.phase = next(self._phase_gen)
@@ -111,14 +120,17 @@ class Clock:
         if not inspect.iscoroutinefunction(func):
             raise TypeError(f'func must be a coroutine function, not {type(func).__name__}')
 
-        name = func.__name__
-        runner = self.runners.get(name)
-        if runner is None:
-            runner = self.runners[name] = AsyncRunner(self)
+        if self.running:
+            name = func.__name__
+            runner = self.runners.get(name)
+            if runner is None:
+                runner = self.runners[name] = AsyncRunner(self)
 
-        runner.push(func, *args, **kwargs)
-        if not runner.started():
-            runner.start()
+            runner.push(func, *args, **kwargs)
+            if not runner.started():
+                runner.start()
+        else:
+            print(f"[red]Can't start {func.__name__} in absence of running clock.")
 
     # ---------------------------------------------------------------------- #
     # Public methods
@@ -168,18 +180,40 @@ class Clock:
         """ The MIDIClock needs to start """
         self.run_clock()
 
-    def send_stop(self):
-        """ Stop the running clock and send stop message """
+    def start(self):
+        """ Restart message """
+        # Switching runners on (will bug)
+        for runner in self.runners.values():
+            runner._stop = False
+            self.remove(runner)
+        if not self.running:
+            asyncio.create_task(self._send_start(initial=True))
+
+    def reset(self) -> None:
+        self.init_reset(
+                runners=self.runners,
+                bpm=self._bpm,
+                midi=self._midi,
+                beat_per_bar=self.beat_per_bar)
+
+    def stop(self) -> None:
+        """
+        MIDI Stop message.
+        """
+        # Kill every runner
+        for runner in self.runners.values():
+            runner._stop = True
+
         self.running = False
         self._midi.send_stop()
+        self._midi.send(mido.Message('stop'))
+        self.init_reset(
+                runners=self.runners,
+                bpm=self._bpm,
+                midi=self._midi,
+                beat_per_bar=self.beat_per_bar)
 
-    def send_reset(self) -> None:
-        """ MIDI Reset message """
-        self.send_stop()
-        self._midi.send(mido.Message('reset'))
-        self._reset_internal_clock_state()
-
-    async def send_start(self, initial: bool = False) -> None:
+    async def _send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
         self.running = True

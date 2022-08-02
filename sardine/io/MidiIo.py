@@ -85,7 +85,7 @@ class MIDIIo(threading.Thread):
             await asyncio.sleep(clock._get_tick_duration() / (clock.ppqn * 2))
         self._midi.send(noteoff)
 
-    def control_change(self, channel, control, value) -> None:
+    async def control_change(self, channel, control, value) -> None:
         """ Control Change message """
         self._midi.send(mido.Message('control_change',
             channel=channel, control=control, value=value))

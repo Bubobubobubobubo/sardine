@@ -75,18 +75,6 @@ SC = SuperColliderProcess(
         synth_directory=find_synth_directory(),
         startup_file=find_startup_file())
 
-def swim(fn):
-    """ Push a function to the clock """
-    if c.running:
-        cs(fn)
-    else:
-        print(f"[red]Can't start {fn} in absence of running clock.")
-    return fn
-
-def die(fn):
-    """ Remove a function from the clock """
-    cr(fn)
-    return fn
 
 async def nap(duration):
     """ Musical sleep inside coroutines """
@@ -101,10 +89,7 @@ async def sync():
         await asyncio.sleep(c._get_tick_duration() / c.ppqn)
 
 # Tests
-
-my_osc = OSC(ip="127.0.0.1",
-        port= 23000, name="Bibu",
-        ahead_amount=0.25)
+# =====
 
 # @swim
 # async def bd(delay=1):
@@ -112,6 +97,15 @@ my_osc = OSC(ip="127.0.0.1",
 #     my_osc.send('/hello', [123, 245])
 #     cs(bd, delay=1)
 
+def swim(fn):
+    """ Push a function to the clock """
+    cs(fn)
+    return fn
+
+def die(fn):
+    """ Remove a function from the clock """
+    cr(fn)
+    return fn
 
 @swim
 async def one(delay=1):

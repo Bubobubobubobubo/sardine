@@ -6,11 +6,12 @@
 
 Sardine is a Python library made for musical live coding. It is based on a specific type of recursion, the [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). Sardine allows the execution of recursive functions in musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide.
 
-The library is far from being usable by random users. I made it public in order to share it easily and to encourage collaboration! Here are the goals for a first public release:
+The library is far from being usable by random users. I made it public in order to share it easily and to encourage collaboration! **Sardine is looking for contributors**. Here are the goals for a first public release:
 
 * Solid timing system allowing the execution and synchronisation of temporal recursive functions.
 * Easy and simple to use MIDI/OSC and SuperDirt API.
 * MIDIIn/OSCIn for tweaking functions live using controllers and other devices.
+* Complete API targetting the `SuperDirt` sound engine.
 
 ## Installation
 
@@ -42,7 +43,11 @@ As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom
 
 ## Debug
 
-Please provide feedback on the installation process! Everything is pretty new so I might not be able to anticipate how `Sardine` will run on your computer.
+Please provide feedback on the installation process! Everything is pretty new so I might not be able to anticipate how `Sardine` will run on your computer. I am discovering new bugs and corner-cases everyday, and I would love to fix them to get a stable release soon :)
+
+### Known bugs and issues
+
+* **[WINDOWS ONLY]**: `uvloop` doesn't work on Windows. Fortunately, you can still run `Sardine` but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
 
 ## Usage
 

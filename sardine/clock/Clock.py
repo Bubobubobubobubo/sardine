@@ -179,13 +179,28 @@ class Clock:
 
     def start(self):
         """ Restart message """
+        # Switching runners on (will bug)
+        for runner in self.runners.values():
+            runner._stop = False
+            self.remove(runner)
         if not self.running:
             asyncio.create_task(self._send_start(initial=True))
+
+    def reset(self) -> None:
+        self.init_reset(
+                runners=self.runners,
+                bpm=self._bpm,
+                midi=self._midi,
+                beat_per_bar=self.beat_per_bar)
 
     def stop(self) -> None:
         """
         MIDI Stop message.
         """
+        # Kill every runner
+        for runner in self.runners.values():
+            runner._stop = True
+
         self.running = False
         self._midi.send_stop()
         self._midi.send(mido.Message('stop'))

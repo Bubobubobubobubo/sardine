@@ -118,4 +118,4 @@ async def one(delay=1):
 @swim
 async def two(delay=0.5):
     note(1, 67, 127, 1)
-    cs(one, delay=0.5)
+    cs(two, delay=0.5)

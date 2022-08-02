@@ -15,7 +15,7 @@ else:
     uvloop.install()
 
 from .clock.Clock import Clock
-from .superdirt.Sound import SuperDirt as Sound
+from .superdirt.SuperDirt import SuperDirt as Sound
 from .superdirt.AutoBoot import (
         SuperColliderProcess,
         find_startup_file,

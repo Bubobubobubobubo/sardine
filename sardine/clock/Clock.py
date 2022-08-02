@@ -73,7 +73,6 @@ class Clock:
         self.elapsed_bars = 0
         self.tick_duration = self._get_tick_duration()
         self.tick_time = 0
-        self.running = True
 
     # ---------------------------------------------------------------------- #
     # Setters and getters
@@ -178,20 +177,18 @@ class Clock:
         """ The MIDIClock needs to start """
         self.run_clock()
 
-    def stop(self):
-        """ Stop the running clock and send stop message """
-        self.running = False
-        self._midi.send_stop()
-
     def start(self):
         """ Restart message """
-        asyncio.create_task(
-                self._send_start(initial=True))
+        if not self.running:
+            asyncio.create_task(self._send_start(initial=True))
 
-    def reset(self) -> None:
-        """ MIDI Reset message """
-        self.stop()
-        self._midi.send(mido.Message('reset'))
+    def stop(self) -> None:
+        """
+        MIDI Stop message.
+        """
+        self.running = False
+        self._midi.send_stop()
+        self._midi.send(mido.Message('stop'))
         self.init_reset(
                 runners=self.runners,
                 bpm=self._bpm,

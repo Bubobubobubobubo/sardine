@@ -78,9 +78,11 @@ class MIDIIo(threading.Thread):
                 note=note, velocity=velocity, channel=channel)
 
         self._midi.send(noteon)
-        duration = clock.tick_time + ((delay * clock.ppqn) - 1)
+        let_it_die = 1 # we need to keep some time to let the note die
+        duration = clock.tick_time + ((delay * clock.ppqn) - let_it_die)
         while clock.tick_time < duration:
-            await asyncio.sleep(clock._get_tick_duration() / clock.ppqn)
+            # Increased temporal resolution for midi messages
+            await asyncio.sleep(clock._get_tick_duration() / (clock.ppqn * 2))
         self._midi.send(noteoff)
 
     def control_change(self, channel, control, value) -> None:

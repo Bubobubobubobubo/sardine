@@ -91,12 +91,6 @@ async def sync():
 # Tests
 # =====
 
-# @swim
-# async def bd(delay=1):
-#     S('bd').out()
-#     my_osc.send('/hello', [123, 245])
-#     cs(bd, delay=1)
-
 def swim(fn):
     """ Push a function to the clock """
     cs(fn)

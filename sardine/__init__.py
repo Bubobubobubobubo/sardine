@@ -51,8 +51,6 @@ print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
 
-config = read_user_configuration()
-print(f"{type(config)}")
 
 #==============================================================================#
 # Initialisation
@@ -62,8 +60,9 @@ print(f"{type(config)}")
 # - Nap and Sync
 #==============================================================================#
 
-c = Clock(midi_port=config.midi)
-cs = c.schedule
+config = read_user_configuration()
+c = Clock(midi_port=config.midi, bpm=config.bpm, ppqn=config.ppqn)
+cs = c.schedule_func
 cr = c.remove
 S = Sound
 SC = SuperColliderProcess(
@@ -71,7 +70,7 @@ SC = SuperColliderProcess(
         startup_file=find_startup_file())
 
 # Exposing some MIDI functions
-def note(delay, note: int=60, velocity: int =127, channel: int=1):
+def note(delay, note: int=60, velocity: int=127, channel: int=1):
     """ Send a MIDI Note """
     asyncio.create_task(c._midi.note(
         clock=c, delay=delay, note=note,
@@ -85,17 +84,17 @@ asyncio.create_task(c._send_start(initial=True))
 
 
 
-async def nap(duration):
-    """ Musical sleep inside coroutines """
-    duration = c.tick_time + (duration * c.ppqn)
-    while c.tick_time < duration:
-        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
+# async def nap(duration):
+#     """ Musical sleep inside coroutines """
+#     duration = c.tick_time + (duration * c.ppqn)
+#     while c.tick_time < duration:
+#         await asyncio.sleep(c._OLD_get_tick_duration() / c.ppqn)
 
-async def sync():
-    """ Manual resynchronisation """
-    cur_bar = c.elapsed_bars
-    while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
-        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
+# async def sync():
+#     """ Manual resynchronisation """
+#     cur_bar = c.elapsed_bars
+#     while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
+#         await asyncio.sleep(c._OLD_get_tick_duration() / c.ppqn)
 
 
 # Tests

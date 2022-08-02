@@ -3,17 +3,29 @@ from dataclasses import dataclass, field
 from rich import print
 import inspect
 import traceback
-from typing import Callable, Coroutine, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING, Union
+
 
 if TYPE_CHECKING:
     from .Clock import Clock
 
-CoroFunc = Callable[..., Coroutine]
+
+def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Discards any kwargs not present in the given signature."""
+    MISSING = object()
+    pass_through = kwargs.copy()
+
+    for param in sig.parameters.values():
+        value = kwargs.get(param.name, MISSING)
+        if value is not MISSING:
+            pass_through[param.name] = value
+
+    return pass_through
 
 
 @dataclass
 class FunctionState:
-    func: CoroFunc
+    func: Callable
     args: tuple
     kwargs: dict
 
@@ -32,9 +44,9 @@ class AsyncRunner:
 
     _swimming: bool = False
     _stop: bool = False
-    _task: asyncio.Task | None = None
+    _task: Union[asyncio.Task, None] = None
 
-    def push(self, func: CoroFunc, *args, **kwargs):
+    def push(self, func: Callable, *args, **kwargs):
         """Pushes a function state to the runner to be called in
         the next iteration."""
         if not self.states or func is not self.states[-1].func:
@@ -81,66 +93,52 @@ class AsyncRunner:
         self._stop = True
 
     async def _runner(self):
-        initial = True
         last_state = self.states[-1]
         name = last_state.func.__name__
         print(f'[yellow][Init {name}][/yellow]')
 
-        while self.states and not self._stop:
-            # `state.func` must schedule itself to keep swimming
-            self._swimming = False
-            state = self.states[-1]
-            name = state.func.__name__
+        try:
+            while self.states and not self._stop:
+                # `state.func` must schedule itself to keep swimming
+                self._swimming = False
+                state = self.states[-1]
+                name = state.func.__name__
 
-            if state is not last_state:
-                pushed = len(self.states) > 1 and self.states[-2] is last_state
-                print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
-                last_state = state
+                if state is not last_state:
+                    pushed = len(self.states) > 1 and self.states[-2] is last_state
+                    print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
+                    last_state = state
 
-            # Introspect arguments to synchronize
-            if initial:
-                await self._wait(0)
-            else:
+                # Remove any kwargs that aren't present in the new function
+                # (prevents TypeError when user reduces the signature)
+                signature = inspect.signature(state.func)
+                kwargs = _discard_kwargs(signature, kwargs)
+
+                # Introspect arguments to synchronize
                 delay = state.kwargs.get('delay')
                 if delay is None:
-                    param = inspect.signature(state.func).parameters.get('delay')
+                    param = signature.parameters.get('delay')
                     delay = getattr(param, 'default', 1)
 
                 await self._wait(delay)
 
-            try:
-                await state.func(*state.args, **state.kwargs)
-            except asyncio.CancelledError:
-                # assume the user has intentionally cancelled
-                return
-            except Exception as e:
-                print(f'Exception encountered in {name}:')
-                traceback.print_exception(e)
+                try:
+                    state.func(*state.args, **state.kwargs)
+                except Exception as e:
+                    print(f'Exception encountered in {name}:')
+                    traceback.print_exception(e)
 
-                self._revert_state()
+                    self._revert_state()
+        finally:
+            # Remove from clock if necessary
+            print(f'[yellow][Stopped {name}]')
+            self.clock.runners.pop(name, None)
 
-            initial = False
-
-        # Remove from clock
-        print(f'[yellow][Stopped {name}]')
-        self.clock.runners.pop(name)
-
-    async def _wait(self, delay: float | int):
+    async def _wait(self, n_beats: Union[float, int]):
+        """Waits until one tick before the given number of beats is reached."""
         clock = self.clock
-
-        if delay == 0:
-            cur_bar = clock.elapsed_bars
-            while clock.phase != 1 and clock.elapsed_bars != cur_bar + 1:
-                await asyncio.sleep(self._wait_resolution)
-        else:
-            next_time = clock.get_tick_time() + delay * clock.ppqn
-            while clock.tick_time < next_time:
-                await asyncio.sleep(self._wait_resolution)
-
-    @property
-    def _wait_resolution(self):
-        # Sleep resolution may be increased here
-        return self.clock._get_tick_duration() / (self.clock.ppqn * 2)
+        ticks = clock.get_beat_ticks(n_beats) - 1
+        await clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):
         failed = self.states.pop()

@@ -68,9 +68,9 @@ class MIDIIo(threading.Thread):
         """ MIDI Clock Message """
         self._midi.send(mido.Message('clock'))
 
-    async def send_clock_async(self) -> None:
-        """ MIDI Clock Message """
-        self._midi.send(mido.Message('clock'))
+    # async def send_clock_async(self) -> None:
+    #     """ MIDI Clock Message """
+    #     self._midi.send(mido.Message('clock'))
 
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """

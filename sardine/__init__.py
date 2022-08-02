@@ -15,7 +15,7 @@ else:
     uvloop.install()
 
 from .clock.Clock import Clock
-from .superdirt.Sound import Sound as S
+from .superdirt.SuperDirt import SuperDirt as Sound
 from .superdirt.AutoBoot import (
         SuperColliderProcess,
         find_startup_file,
@@ -54,6 +54,7 @@ print('\n')
 c = Clock()
 cs = c.schedule
 cr = c.remove
+S = Sound
 
 # Exposing some MIDI functions
 def note(delay, note: int=60, velocity: int =127, channel: int=1):
@@ -85,6 +86,7 @@ async def sync():
     cur_bar = c.elapsed_bars
     while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
         await asyncio.sleep(c._get_tick_duration() / c.ppqn)
+
 
 # Tests
 # =====

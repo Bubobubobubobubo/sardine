@@ -51,9 +51,10 @@ async def printer():
 
 from itertools import cycle
 from random import randint
-arpeggio = cycle([60, 64, 67, 71])
+arpeggio = cycle([36, 48, 60])
+arpeggio2 = cycle([36, 48, 60])
 @die
-async def midi_tester(delay=0.25):
+async def midi_tester(delay=0):
     note(1, next(arpeggio), 127, 1)
-    cc(channel=1, control=20, value=randint(1,127))
-    cs(midi_tester, delay=0.25)
+    note(1, next(arpeggio2) + 24, 127, 1)
+    cs(midi_tester, delay=0.5)

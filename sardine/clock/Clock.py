@@ -257,7 +257,10 @@ class Clock:
             self.delta = 0
 
             await asyncio.sleep(self.tick_duration)
-            asyncio.create_task(self._midi.send_clock_async())
+
+            # test to get right tempo
+            if self.phase % 2 == 0:
+                asyncio.create_task(self._midi.send_clock_async())
 
             # Time grains
             self.tick_time += 1

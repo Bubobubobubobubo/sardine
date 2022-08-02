@@ -125,7 +125,7 @@ Temporal recursive functions have only one drawback: they NEED a `delay` argumen
 
 ### Triggering sounds / samples / synthesizers
 
-The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. `SuperDirt` must be booted separately from `Sardine`. The `Sound` object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. `Sound` as been aliased to `S` to make it easier to type.
+The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. `SuperDirt` must be configured and booted separately from `Sardine`. The `SuperDirt` object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. `SuperDirt` has been aliased to `S` to make it easier to type.
 
 ```python
 S('bd').out() # a bassdrum (sample 0 from folder 'bd')
@@ -159,13 +159,17 @@ Notice the `.out()` method used on the `S`(ound) object? That's because `S` can 
 ```python
 async def indirect_bd(delay=1, speed=1):
     a = S('bd')
-    a.speed = speed
+    a.speed(4)
     a.out()
     cs(indirect_bd, delay=1, speed=randint(1, 5))
 cs(indirect_bd, delay=1, speed=1)
 ```
 
-Not all parameters are currently available. SuperDirt parameters have been hardcoded... This should be easy to fix but I never took time to do it properly.
+Be careful not to override the method by changing an individual parameter (`a.speed =5`). It is a method, you must use parentheses! Seems cumbersome but you will like it when you will start to get into method chaining like so:
+
+```python
+S('bd').shape(random()).speed(randint(1,4))
+```
 
 ## MIDI
 

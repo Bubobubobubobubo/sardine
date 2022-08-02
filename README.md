@@ -48,12 +48,12 @@ Please provide feedback on the installation process! Everything is pretty new so
 
 ### The internal Clock
 
-As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced to by the variable `c`. `Clock` is the main MIDI Clock you will be playing with. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods could be used for fun:
+As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced to by the variable `c`. `Clock` is the main MIDI Clock you will be playing with. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods can be used to have fun:
 * `c.bpm`: current BPM (can be inexact depending on your `ppqn`)
 * `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (1-??).
   - be careful. The tempo might fluctuate based on the PPQN you choose.
 
-`c.bpm` and `c.ppqn` can be manually adjusted if you feel like it. Be careful, changing these values can result in a dramatic tempo shift. I still need to work a little bit on the internals to make this correct :). For now, the clock is limited to MIDI output only. It means that you can open a DAW such as Ableton or Bitwig and use `Sardine` as your MIDI Clock. MIDI Clock In is a feature I still need to code in :) and is not yet supported.
+`c.bpm` and `c.ppqn` can be manually adjusted if you feel like it. Be careful, changing these values can result in a dramatic tempo shift. I still need to work a little bit on the internals to make this correct :). For now, the clock is limited to MIDI output only. It means that you can open a DAW such as Ableton or Bitwig and use `Sardine` as your MIDI Clock. MIDI Clock In is a feature I still need to code in and is not yet supported.
 
 There are some sugared methods to schedule coroutines on the clock:
 - `cs` (`c.schedule(coro, *args, **kwargs)`): introduce a new coroutine.
@@ -86,6 +86,11 @@ async def iter(delay=1, nb=0):
     print(f"{nb}")
     cs(iter, delay=1, nb=nb+1)
 ```
+
+### Usage as a generic MIDI Clock
+
+The `Sardine` clock is a MIDI Clock. Open any DAW and try to manually synchronise with the Clock emitted on the port you chose when booting up. This is not properly implemented yet but you can still manage to be perfectly synchronised by playing around with `c.stop()` and `c.start()'. I advise you not to change the `ppqn` while you are synchronised. This can result in timing errors and desynchronisation. If you are using Ableton Live, you can echo the MIDI Clock as an Ableton Link Clock for synchronising to even more devices.
+
 
 ### Temporal recursive functions
 
@@ -156,6 +161,72 @@ cs(indirect_bd, delay=1, speed=1)
 ```
 
 Not all parameters are currently available. SuperDirt parameters have been hardcoded... This should be easy to fix but I never took time to do it properly.
+
+## MIDI
+
+Right now, `Sardine` is able to do some very basic MIDI sequencing. The timing is not perfect but good enough for most use cases.
+
+### Notes
+
+Here is an exemple of a basic temporal function sending a constant MIDI Note:
+
+```python
+@swim
+async def midi_tester(delay=1):
+    note(1, 60, 127, 1)
+    cs(midi_tester, delay=1)
+```
+
+Let's go further and make an arpeggio using the same technique:
+
+```python
+from itertools import cycle
+arpeggio = cycle([60, 64, 67, 71])
+@swim
+async def midi_tester(delay=0.25):
+    note(1, next(arpeggio), 127, 1)
+    cs(midi_tester, delay=0.25)
+```
+
+### Control Changes
+
+A similar function exists for sending MIDI CC messages. Let's combine it with our arpeggio:
+
+```python
+from itertools import cycle
+from random import randint
+arpeggio = cycle([60, 64, 67, 71])
+@swim
+async def midi_tester(delay=0.25):
+    note(1, next(arpeggio), 127, 1)
+    cc(channel=1, control=20, value=randint(1,127))
+    cs(midi_tester, delay=0.25)
+```
+
+## OSC
+
+You can send OSC (Open Sound Control) messages by declaring your own OSC connexion and sending custom messages. It is very easy to do so. Take a look at the following example:
+
+```python
+from random import randint, random, chance
+
+# Open a new OSC connexion
+my_osc = OSC(ip="127.0.0.1",
+        port= 23000, name="Bibu",
+        ahead_amount=0.25)
+
+# Recursive function sending OSC
+@swim
+async def custom_osc(delay=1):
+    my_osc.send('/coucou', [randint(1,10), randint(1,100)])
+    cs(custom_osc, delay=1)
+
+# Closing and getting rid of the connexion
+
+cr(custom_osc)
+
+del my_osc
+```
 
 ## Crash
 

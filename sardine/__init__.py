@@ -62,11 +62,9 @@ def note(delay, note: int=60, velocity: int =127, channel: int=1):
         clock=c, delay=delay, note=note,
             velocity=velocity, channel=channel))
 
-def cc(value=60, control=127, channel=1):
-    """ Send a MIDI Note """
-    asyncio.create_task(
-            c._midi.control_change(value=value,
-                control=control, channel=channel))
+def cc(channel: int=1, control: int=20, value: int=64):
+    asyncio.create_task(c._midi.control_change(
+        channel=channel, control=control, value=value))
 
 asyncio.create_task(c._send_start(initial=True))
 

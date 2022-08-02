@@ -77,7 +77,10 @@ SC = SuperColliderProcess(
 
 def swim(fn):
     """ Push a function to the clock """
-    cs(fn)
+    if c.running:
+        cs(fn)
+    else:
+        print(f"[red]Can't start {fn} in absence of running clock.")
     return fn
 
 def die(fn):

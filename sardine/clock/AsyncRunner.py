@@ -1,5 +1,6 @@
 import asyncio
 from dataclasses import dataclass, field
+from rich import print
 import inspect
 import traceback
 from typing import Callable, Coroutine, TYPE_CHECKING
@@ -83,7 +84,7 @@ class AsyncRunner:
         initial = True
         last_state = self.states[-1]
         name = last_state.func.__name__
-        print(f'[Init {name}]')
+        print(f'[yellow][Init {name}][/yellow]')
 
         while self.states and not self._stop:
             # `state.func` must schedule itself to keep swimming
@@ -93,7 +94,7 @@ class AsyncRunner:
 
             if state is not last_state:
                 pushed = len(self.states) > 1 and self.states[-2] is last_state
-                print(f'[Reloaded {name}]' if pushed else f'[Restored {name}]')
+                print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
                 last_state = state
 
             # Introspect arguments to synchronize
@@ -121,7 +122,7 @@ class AsyncRunner:
             initial = False
 
         # Remove from clock
-        print(f'[Stopped {name}]')
+        print(f'[yellow][Stopped {name}]')
         self.clock.runners.pop(name)
 
     async def _wait(self, delay: float | int):

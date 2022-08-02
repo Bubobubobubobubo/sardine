@@ -2,7 +2,6 @@ from __future__ import with_statement
 import asyncio
 import pathlib
 import warnings
-from typing import Union
 
 from rich import print
 from rich.console import Console
@@ -14,6 +13,7 @@ except ImportError:
 else:
     uvloop.install()
 
+from .io.UserConfig import read_user_configuration
 from .clock.Clock import Clock
 from .superdirt.SuperDirt import SuperDirt as Sound
 from .superdirt.AutoBoot import (
@@ -51,10 +51,24 @@ print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
 
-c = Clock()
+config = read_user_configuration()
+print(f"{type(config)}")
+
+#==============================================================================#
+# Initialisation
+# - Clock and various aliases
+# - SuperDirtProcess (not working)
+# - MidiIO basic functions
+# - Nap and Sync
+#==============================================================================#
+
+c = Clock(midi_port=config.midi)
 cs = c.schedule
 cr = c.remove
 S = Sound
+SC = SuperColliderProcess(
+        synth_directory=find_synth_directory(),
+        startup_file=find_startup_file())
 
 # Exposing some MIDI functions
 def note(delay, note: int=60, velocity: int =127, channel: int=1):
@@ -69,10 +83,6 @@ def cc(channel: int=1, control: int=20, value: int=64):
 
 asyncio.create_task(c._send_start(initial=True))
 
-# Should start, doesn't start
-SC = SuperColliderProcess(
-        synth_directory=find_synth_directory(),
-        startup_file=find_startup_file())
 
 
 async def nap(duration):

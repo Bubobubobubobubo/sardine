@@ -28,9 +28,12 @@ class Clock:
     beats_per_bar: int -- Number of beats in a given bar
     """
 
-    def __init__(self, bpm: Union[float, int] = 120, beat_per_bar: int = 4):
+    def __init__(self,
+            midi_port: Union[str, None],
+            bpm: Union[float, int] = 120,
+            beat_per_bar: int = 4):
 
-        self._midi = MIDIIo()
+        self._midi = MIDIIo(port_name=midi_port)
         # Clock maintenance related
         self.runners: dict[str, AsyncRunner] = {}
         self.running = False
@@ -251,28 +254,24 @@ class Clock:
         async def _clock_update():
             """ Things the clock should do every tick """
 
+            # Update the actual tick duration
             self.tick_duration = self._get_tick_duration()
-
+            # delta is measuring the time it took to tick
             begin = time.perf_counter()
             self.delta = 0
-
             await asyncio.sleep(self.tick_duration)
-
-            # test to get right tempo
+            # ???
             if self.phase % 2 == 0:
                 asyncio.create_task(self._midi.send_clock_async())
-
-            # Time grains
+            # Update the very basics
             self.tick_time += 1
             self._update_phase()
-
-            # XPPQN = 1 Beat
+            # Update the rest
             if self.phase == 1:
                 self._update_current_beat()
             if self.phase == 1 and self.current_beat == 1:
                 self.elapsed_bars += 1
-
-            # End of it
+            # Calculating delta
             end = time.perf_counter()
             self.delta = end - begin - self.tick_duration
             if self._debug:

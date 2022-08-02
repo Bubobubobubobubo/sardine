@@ -1,6 +1,8 @@
+from __future__ import with_statement
 import asyncio
 import pathlib
 import warnings
+from typing import Union
 
 from rich import print
 from rich.console import Console
@@ -53,8 +55,20 @@ c = Clock()
 cs = c.schedule
 cr = c.remove
 
+# Exposing some MIDI functions
+def note(delay, note: int=60, velocity: int =127, channel: int=1):
+    """ Send a MIDI Note """
+    asyncio.create_task(c._midi.note(
+        clock=c, delay=delay, note=note,
+            velocity=velocity, channel=channel))
 
-asyncio.create_task(c.send_start(initial=True))
+def cc(value=60, control=127, channel=1):
+    """ Send a MIDI Note """
+    asyncio.create_task(
+            c._midi.control_change(value=value,
+                control=control, channel=channel))
+
+asyncio.create_task(c._send_start(initial=True))
 
 # Should start, doesn't start
 SC = SuperColliderProcess(
@@ -89,8 +103,19 @@ my_osc = OSC(ip="127.0.0.1",
         port= 23000, name="Bibu",
         ahead_amount=0.25)
 
+# @swim
+# async def bd(delay=1):
+#     S('bd').out()
+#     my_osc.send('/hello', [123, 245])
+#     cs(bd, delay=1)
+
+
 @swim
-async def bd(delay=1):
-    S('bd').out()
-    my_osc.send('/hello', [123, 245])
-    cs(bd, delay=1)
+async def one(delay=1):
+    note(1, 60, 127, 1)
+    cs(one, delay=1)
+
+@swim
+async def two(delay=0.5):
+    note(1, 67, 127, 1)
+    cs(one, delay=0.5)

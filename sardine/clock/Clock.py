@@ -51,10 +51,13 @@ class Clock:
         self.tick_duration = self._get_tick_duration()
         self.tick_time = 0
 
-    def init_reset(self,  bpm: Union[float, int], midi: MIDIIo, beat_per_bar: int):
+    def init_reset(self,
+            runners: dict[str, AsyncRunner],
+            bpm: Union[float, int],
+            midi: MIDIIo,
+            beat_per_bar: int):
         self._midi = midi
         self.runners: dict[str, AsyncRunner] = {}
-        self.running = False
         self._debug = False
         self._bpm = bpm
         self.initial_time = 0
@@ -70,6 +73,7 @@ class Clock:
         self.elapsed_bars = 0
         self.tick_duration = self._get_tick_duration()
         self.tick_time = 0
+        self.running = True
 
     # ---------------------------------------------------------------------- #
     # Setters and getters
@@ -189,6 +193,7 @@ class Clock:
         self.stop()
         self._midi.send(mido.Message('reset'))
         self.init_reset(
+                runners=self.runners,
                 bpm=self._bpm,
                 midi=self._midi,
                 beat_per_bar=self.beat_per_bar)

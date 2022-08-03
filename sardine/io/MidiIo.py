@@ -14,14 +14,21 @@ class MIDIIo(threading.Thread):
     """
 
     def __init__(self, port_name: Union[str, None] = None):
+
         threading.Thread.__init__(self)
+
         self._midi_ports = mido.get_output_names()
-        if port_name:
+        self.port_name = port_name
+
+        if self.port_name:
+
             try:
                 self._midi = mido.open_output(port_name)
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
+
         else:
+
             try:
                 self._midi = mido.open_output(self.choose_midi_port())
             except Exception as error:
@@ -61,9 +68,9 @@ class MIDIIo(threading.Thread):
         """ MIDI Clock Message """
         self._midi.send(mido.Message('clock'))
 
-    async def send_clock_async(self) -> None:
-        """ MIDI Clock Message """
-        self._midi.send(mido.Message('clock'))
+    # async def send_clock_async(self) -> None:
+    #     """ MIDI Clock Message """
+    #     self._midi.send(mido.Message('clock'))
 
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """

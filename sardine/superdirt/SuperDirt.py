@@ -1,76 +1,73 @@
 #!/usr/bin/env python3
+import asyncio
+import functools
+from typing import TYPE_CHECKING, Union
 
 from ..io.Osc import dirt
-from ..superdirt.superdirt_parameters import params
 
-def partial(func, /, *args, **keywords):
-    """
-    Specialized partial function taken directly from the Python
-    documentation. This one is great because you can have access
-    to __name__
-    """
-    def newfunc(*fargs, **fkeywords):
-        newkeywords = {**keywords, **fkeywords}
-        return func(*args, *fargs, **newkeywords)
-    newfunc.func = func
-    newfunc.args = args
-    newfunc.keywords = keywords
-    return newfunc
+if TYPE_CHECKING:
+    from ..clock.Clock import Clock
 
-class SuperDirt():
+class SuperDirt:
 
-    def __init__(self, sound, **kwargs):
-
-        # A long list of valid SuperDirt parameters
-        self._mono_param_list = params
+    def __init__(
+        self,
+        clock: "Clock",
+        sound: str,
+        at: Union[float, int] = 0,
+        **kwargs
+    ):
+        self.clock = clock
         # Default message when triggering soundfile/synth
         self.content = ["orbit", 0, "trig", 1, "sound", sound]
+        self.after: int = at
 
-        # Iterating over kwargs. If we find the given kwargs in the list of
-        # valid SuperDirt parameters, we add it to self.content
-        for key, value in kwargs.items():
-            if key in self._mono_param_list:
-                self.setorChangeMonoParam(key, value)
-            else:
-                # Is there a method in this class that can handle it?
-                method = getattr(self, key, None)
-                if callable(method):
-                    # calling the given method with the given value
-                    method(value)
+        # Iterating over kwargs. If parameter seems to refer to a
+        # method (usually dynamic SuperDirt parameters), call it
+        for k, v in kwargs.items():
+            method = getattr(self, k, None)
+            if callable(method):
+                method(v)
 
-        self.generate_chainable_methods(params)
+        # for key, value in kwargs.items():
+        #     if key in self._mono_param_list:
+        #         self.setorChangeMonoParam(key, value)
+        #     else:
+        #         # Is there a method in this class that can handle it?
+        #         method = getattr(self, key, None)
+        #         if callable(method):
+        #             # calling the given method with the given value
+        #             method(value)
+
+        # self.generate_chainable_methods(params)
+
+    def __str__(self):
+        return ' '.join(str(e) for e in self.content)
 
     # ------------------------------------------------------------------------
     # GENERIC Mapper: make parameters chainable!
 
-    def generic_mapper(self, amount, name: str):
-        self.addOrChange(name, amount)
-        return self
+    def __getattr__(self, name: str):
+        method = functools.partial(self.addOrChange, name=name)
+        method.__doc__ = f"Updates the sound's {name} parameter."
+        return method
 
-    def generate_chainable_methods(self, params: list):
-        for param in params:
-            setattr(self, param, partial(self.generic_mapper, name=param))
+    # def _generic_mapper(self, amount, name: str):
+    #     self.addOrChange(name, amount)
+    #     return self
 
-    def addOrChange(self, names, values):
+    # def generate_chainable_methods(self, params: list):
+    #     for param in params:
+    #         setattr(self, param, partial(self._generic_mapper, name=param))
 
-        if isinstance(values, (float, int)):
-            values = [values]
-        if isinstance(names, str):
-            names = [names]
-
-        for name, value in zip(names,values):
-            if not self.query_existing_value(name):
-                self.content = self.content + [name, value]
-            else:
-                self.change_existing_value(name, value)
-
-    def setorChangeMonoParam(self, key, value):
-        """Will set a mono-parameter or change it if already in message """
-        if key in self.content:
-            self.content[self.content.index(key) + 1] = value
+    def addOrChange(self, value, name: str):
+        """Will set a parameter or change it if already in message """
+        try:
+            i = self.content.index(name)
+        except ValueError:
+            self.content.extend((name, value))
         else:
-            for elem in [key, value]:
-                self.content.append(elem)
+            self.content[i + 1] = value
 
         return self
 
@@ -97,57 +94,54 @@ class SuperDirt():
         """
         return True if self.query_existing_value("trig") == 1 else False
 
+    def schedule(self, message):
+        async def _waiter():
+            await handle
+            dirt(message)
+
+        ticks = self.clock.get_beat_ticks(self.after, sync=False)
+        # Beat synchronization is disabled since `self.after`
+        # is meant to offset us from the current time
+        handle = self.clock.wait_after(n_ticks=ticks)
+        asyncio.create_task(_waiter(), name='superdirt-scheduler')
+
     def out(self, output=0):
         """Must be able to deal with polyphonic messages """
 
         # It is now possible to specify the orbit in this function.
         if output != 0: self.change_existing_value("orbit", output)
 
-        if self.willPlay():
+        if not self.willPlay():
+            return
 
-            # Algorithm to detect sublists and handle polyphonic messages
-            if any(isinstance(i, list) for i in self.content):
-                nestedListsIndex = {} # we will build a dict of polyphonic key-values
+        common = []
+        polyphonic_pairs: list[tuple[str, list]] = []
 
-                # Building a dictionary of polyphonic values
-                for index, value in enumerate(self.content):
-                    if isinstance(value, list):
-                        nestedListsIndex[self.content[index - 1]] = value
-
-                # Deleting polyphonic values from the current message. Avoiding the for loop.
-                self.content = [e for e in self.content if e not in list(nestedListsIndex.keys())]
-                self.content = [v for v in self.content if v not in list(nestedListsIndex.values())]
-
-                # detecting the longest value in the dict
-                maxLength = max((len(v) for v in nestedListsIndex.values()))
-                keys = nestedListsIndex.keys()
-                tailLists = []
-
-                for i in range(maxLength):
-                    void = []
-                    for j in range(len(keys)):
-                        void.append(list(keys)[j])
-                        try:
-                            void.append(nestedListsIndex[list(keys)[j]][i])
-                        except IndexError:
-                            void.append(None)
-
-                    tailLists.append(void)
-
-
-                for i in tailLists:
-                    #print(self.content + i)
-                    dirt(self.content + i)
-
-            # Simple monophonic message need no care
+        # Separate polyphonic parameters from content
+        for i in range(0, len(self.content), 2):
+            name: str
+            name, value = self.content[i:i+2]
+            if isinstance(value, list):
+                polyphonic_pairs.append((name, value))
             else:
+                common.extend((name, value))
 
-                #print(self.content)
-                dirt(self.content)
+        if not polyphonic_pairs:
+            # Simple monophonic message need no care
+            return self.schedule(common)
 
-        else:
-            return None
+        names, value_table = zip(*polyphonic_pairs)
+        max_values = max(len(values) for values in value_table)
+        tails: list[list] = []
+        for i in range(max_values):
+            # if there is more than one polyphonic pair with differing
+            # lengths, we will wrap around
+            zipping_values = (values[i % len(values)] for values in value_table)
 
-        def __str__(self):
-            return str(self.content)
+            tail = []
+            for pair in zip(names, zipping_values):
+                tail.extend(pair)
+            tails.append(tail)
 
+        for i in tails:
+            self.schedule(common + i)

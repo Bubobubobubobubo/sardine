@@ -3,22 +3,61 @@ from dataclasses import dataclass, field
 from rich import print
 import inspect
 import traceback
-from typing import Callable, Coroutine, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING, Union
+
 
 if TYPE_CHECKING:
     from .Clock import Clock
 
-CoroFunc = Callable[..., Coroutine]
+
+def _assert_function_signature(sig: inspect.Signature, args, kwargs):
+    if args:
+        message = 'Positional arguments cannot be used in scheduling'
+        if missing := _missing_kwargs(sig, args, kwargs):
+            message += '; perhaps you meant `{}`?'.format(
+                ', '.join(f'{k}={v!r}' for k, v in missing.items())
+            )
+        raise TypeError(message)
 
 
-@dataclass
+def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Discards any kwargs not present in the given signature."""
+    MISSING = object()
+    pass_through = kwargs.copy()
+
+    for param in sig.parameters.values():
+        value = kwargs.get(param.name, MISSING)
+        if value is not MISSING:
+            pass_through[param.name] = value
+
+    return pass_through
+
+
+def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
+    required = []
+    defaulted = []
+    for param in sig.parameters.values():
+        if param.kind in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD):
+            continue
+        elif param.name in kwargs:
+            continue
+        elif param.default is param.empty:
+            required.append(param.name)
+        else:
+            defaulted.append(param.name)
+
+    guessed_mapping = dict(zip(required + defaulted, args))
+    return guessed_mapping
+
+
+@dataclass(slots=True)
 class FunctionState:
-    func: CoroFunc
+    func: Callable
     args: tuple
     kwargs: dict
 
 
-@dataclass
+@dataclass(slots=True)
 class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
@@ -30,11 +69,11 @@ class AsyncRunner:
     clock: "Clock"
     states: list[FunctionState] = field(default_factory=list)
 
-    _swimming: bool = False
-    _stop: bool = False
-    _task: asyncio.Task | None = None
+    _swimming: bool = field(default=False, repr=False)
+    _stop: bool = field(default=False, repr=False)
+    _task: Union[asyncio.Task, None] = field(default=None, repr=False)
 
-    def push(self, func: CoroFunc, *args, **kwargs):
+    def push(self, func: Callable, *args, **kwargs):
         """Pushes a function state to the runner to be called in
         the next iteration."""
         if not self.states or func is not self.states[-1].func:
@@ -55,7 +94,6 @@ class AsyncRunner:
         if self._task is not None:
             raise RuntimeError('runner task has already started')
 
-        self.swim()
         self._task = asyncio.create_task(self._runner())
         self._task.add_done_callback(asyncio.Task.result)
 
@@ -81,71 +119,77 @@ class AsyncRunner:
         self._stop = True
 
     async def _runner(self):
-        initial = True
+        self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
         print(f'[yellow][Init {name}][/yellow]')
 
-        while self.states and not self._stop:
-            # `state.func` must schedule itself to keep swimming
-            self._swimming = False
-            state = self.states[-1]
-            name = state.func.__name__
+        try:
+            while self.states and self._swimming and not self._stop:
+                # `state.func` must schedule itself to keep swimming
+                self._swimming = False
+                state = self.states[-1]
+                name = state.func.__name__
 
-            if state is not last_state:
-                pushed = len(self.states) > 1 and self.states[-2] is last_state
-                print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
-                last_state = state
+                if state is not last_state:
+                    pushed = len(self.states) > 1 and self.states[-2] is last_state
+                    print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
+                    last_state = state
 
-            # Introspect arguments to synchronize
-            if initial:
-                await self._wait(0)
-            else:
-                delay = state.kwargs.get('delay')
-                if delay is None:
-                    param = inspect.signature(state.func).parameters.get('delay')
-                    delay = getattr(param, 'default', 1)
+                signature = inspect.signature(state.func)
+
+                try:
+                    _assert_function_signature(signature, state.args, state.kwargs)
+
+                    # Remove any kwargs not present in the new function
+                    # (prevents TypeError when user reduces the signature)
+                    args = state.args
+                    kwargs = _discard_kwargs(signature, state.kwargs)
+
+                    # Introspect arguments to synchronize
+                    delay = kwargs.get('delay')
+                    if delay is None:
+                        param = signature.parameters.get('delay')
+                        delay = getattr(param, 'default', 1)
+
+                    if delay <= 0:
+                        raise ValueError(f'Delay must be >0, not {delay}')
+                except (TypeError, ValueError) as e:
+                    print(f'[red][Bad function definition ({name})]')
+                    traceback.print_exception(e)
+                    self._revert_state()
+                    continue
 
                 await self._wait(delay)
 
-            try:
-                await state.func(*state.args, **state.kwargs)
-            except asyncio.CancelledError:
-                # assume the user has intentionally cancelled
-                return
-            except Exception as e:
-                print(f'Exception encountered in {name}:')
-                traceback.print_exception(e)
+                try:
+                    state.func(*args, **kwargs)
+                except Exception as e:
+                    print(f'[red][Function exception | ({name})]')
+                    traceback.print_exception(e)
+                    self._revert_state()
+                finally:
+                    # `self._wait()` usually leaves us exactly 1 tick away
+                    # from the next interval. If we don't wait, func() will
+                    # be called in an infinite synchronous loop.
+                    # A single tick ensures func() can only be called once per tick.
+                    await self.clock.wait_after(n_ticks=1)
+        finally:
+            # Remove from clock if necessary
+            print(f'[yellow][Stopped {name}]')
+            self.clock.runners.pop(name, None)
 
-                self._revert_state()
-
-            initial = False
-
-        # Remove from clock
-        print(f'[yellow][Stopped {name}]')
-        self.clock.runners.pop(name)
-
-    async def _wait(self, delay: float | int):
+    async def _wait(self, n_beats: Union[float, int]):
+        """Waits until one tick before the given number of beats is reached."""
         clock = self.clock
-
-        if delay == 0:
-            cur_bar = clock.elapsed_bars
-            while clock.phase != 1 and clock.elapsed_bars != cur_bar + 1:
-                await asyncio.sleep(self._wait_resolution)
-        else:
-            next_time = clock.get_tick_time() + delay * clock.ppqn
-            while clock.tick_time < next_time:
-                await asyncio.sleep(self._wait_resolution)
-
-    @property
-    def _wait_resolution(self):
-        # Sleep resolution may be increased here
-        return self.clock._get_tick_duration() / (self.clock.ppqn * 2)
+        ticks = clock.get_beat_ticks(n_beats) - 1
+        await clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):
         failed = self.states.pop()
 
         if self.states:
+            self.swim()
             # patch the global scope so recursive functions don't
             # invoke the failed function
             reverted = self.states[-1]

@@ -23,6 +23,6 @@ setup(
     ],
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
-    install_requires=["mido", "rich", "uvloop", "ipython", "osc4py3", "python-rtmidi"],
+    install_requires=["mido", "rich", "ipython", "osc4py3", "python-rtmidi", "appdirs"],
     extras_require={'speed': ['uvloop']},
 )

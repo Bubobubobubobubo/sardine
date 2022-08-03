@@ -2,7 +2,6 @@ from __future__ import with_statement
 import asyncio
 import pathlib
 import warnings
-from typing import Union
 
 from rich import print
 from rich.console import Console
@@ -14,6 +13,7 @@ except ImportError:
 else:
     uvloop.install()
 
+from .io.UserConfig import read_user_configuration
 from .clock.Clock import Clock
 from .superdirt.SuperDirt import SuperDirt as Sound
 from .superdirt.AutoBoot import (
@@ -21,6 +21,9 @@ from .superdirt.AutoBoot import (
         find_startup_file,
         find_synth_directory)
 from .io.Osc import Client as OSC
+from typing import Union
+from .sequences.Sequence import (
+        bin, euclid)
 
 warnings.filterwarnings("ignore")
 
@@ -51,42 +54,45 @@ print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
 
-c = Clock()
-cs = c.schedule
-cr = c.remove
-S = Sound
 
-# Exposing some MIDI functions
-def note(delay, note: int=60, velocity: int =127, channel: int=1):
+#==============================================================================#
+# Initialisation
+# - Clock and various aliases
+# - SuperDirtProcess (not working)
+# - MidiIO basic functions
+# - Nap and Sync
+#==============================================================================#
+
+config = read_user_configuration()
+c = Clock(
+        midi_port=config.midi,
+        bpm=config.bpm,
+        beats_per_bar=config.beats,
+        ppqn=config.ppqn)
+
+cs, cr = c.schedule_func, c.remove
+children = c.print_children
+
+S = c.note
+
+def hush():
+    """ Stop all runners """
+    for runner in c.runners.values():
+        runner.stop()
+
+
+def note(delay, note: int=60, velocity: int=127, channel: int=1):
     """ Send a MIDI Note """
     asyncio.create_task(c._midi.note(
         clock=c, delay=delay, note=note,
             velocity=velocity, channel=channel))
 
+
 def cc(channel: int=1, control: int=20, value: int=64):
     asyncio.create_task(c._midi.control_change(
         channel=channel, control=control, value=value))
 
-asyncio.create_task(c._send_start(initial=True))
-
-# Should start, doesn't start
-SC = SuperColliderProcess(
-        synth_directory=find_synth_directory(),
-        startup_file=find_startup_file())
-
-
-async def nap(duration):
-    """ Musical sleep inside coroutines """
-    duration = c.tick_time + (duration * c.ppqn)
-    while c.tick_time < duration:
-        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
-
-async def sync():
-    """ Manual resynchronisation """
-    cur_bar = c.elapsed_bars
-    while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
-        await asyncio.sleep(c._get_tick_duration() / c.ppqn)
-
+c.start()
 
 # Tests
 # =====
@@ -101,12 +107,24 @@ def die(fn):
     cr(fn)
     return fn
 
-@swim
-async def one(delay=1):
-    note(1, 60, 127, 1)
-    cs(one, delay=1)
+from random import random
+from itertools import cycle
+
+c1 = cycle([1, 0.5])
+c2 = cycle([0.5, 1])
+c3 = cycle(list(range(1,20)))
 
 @swim
-async def two(delay=0.5):
-    note(1, 67, 127, 1)
-    cs(two, delay=0.5)
+def one(delay=1):
+    S('pluck', speed=next(c1)).out()
+    cs(one)
+
+@swim
+def two(delay=2):
+    S('cp', speed=next(c2)).out()
+    cs(two)
+
+@swim
+def three(delay=0.5):
+    S('amencutup', nb=next(c3)).out()
+    cs(three)

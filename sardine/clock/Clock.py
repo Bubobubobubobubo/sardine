@@ -181,8 +181,9 @@ class Clock:
 
     def remove(self, func: Callable, /):
         """Schedules the given function to stop execution."""
-        runner = self.runners[func.__name__]
-        runner.stop()
+        runner = self.runners.get(func.__name__)
+        if runner is not None:
+            runner.stop()
 
     def wait_until(self, *, tick: int) -> Awaitable[None]:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""

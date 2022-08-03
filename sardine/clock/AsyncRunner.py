@@ -50,14 +50,14 @@ def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, 
     return guessed_mapping
 
 
-@dataclass
+@dataclass(slots=True)
 class FunctionState:
     func: Callable
     args: tuple
     kwargs: dict
 
 
-@dataclass
+@dataclass(slots=True)
 class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.

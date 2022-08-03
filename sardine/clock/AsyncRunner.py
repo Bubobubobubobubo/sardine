@@ -189,6 +189,7 @@ class AsyncRunner:
         failed = self.states.pop()
 
         if self.states:
+            self.swim()
             # patch the global scope so recursive functions don't
             # invoke the failed function
             reverted = self.states[-1]

@@ -115,18 +115,44 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Clock methods
 
-    def get_beat_ticks(self, n_beats: Union[int, float]) -> int:
-        """Returns the number of ticks to wait for N beats to pass."""
+    def get_beat_ticks(self, n_beats: Union[int, float], *, sync: bool = True) -> int:
+        """Determines the number of ticks to wait for N beats to pass.
+
+        :param n_beats: The number of beats to wait for.
+        :param sync:
+            If True, the ticks calculated for the first beat
+            is reduced to synchronize with the clock.
+        :returns: The number of ticks needed to wait.
+
+        """
         interval = int(self.ppqn * n_beats)
+        if interval <= 0:
+            return 0
+        elif not sync:
+            return interval
+
         return interval - self._current_tick % interval
 
-    def get_bar_ticks(self, n_bars: Union[int, float]) -> int:
-        """Returns the number of ticks to wait for N bars to pass."""
+    def get_bar_ticks(self, n_bars: Union[int, float], *, sync: bool = True) -> int:
+        """Determines the number of ticks to wait for N bars to pass.
+
+        :param n_bars: The number of bars to wait for.
+        :param sync:
+            If True, the ticks calculated for the first bar
+            is reduced to synchronize with the clock.
+        :returns: The number of ticks needed to wait.
+
+        """
         interval = int(self.ppqn * self.beat_per_bar * n_bars)
+        if interval <= 0:
+            return 0
+        elif not sync:
+            return interval
+
         return interval - self._current_tick % interval
 
     def _get_tick_duration(self) -> float:
-        """Returns the numbers of seconds the next tick will take.
+        """Determines the numbers of seconds the next tick will take.
 
         Only required when clock is running in active mode.
 

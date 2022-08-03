@@ -110,9 +110,12 @@ class SuperDirt:
 
     def schedule(self, message):
         async def _waiter():
-            await self.clock.wait_after(n_ticks=self.after)
+            ticks = self.clock.get_beat_ticks(self.after, sync=False) - 1
+            # Synchronizing the beat is disabled since `self.after`
+            # is meant to offset us from the current time
+            await self.clock.wait_after(n_ticks=ticks)
             dirt(message)
-        
+
         asyncio.create_task(_waiter(), name='superdirt-scheduler')
 
     def out(self, output=0):

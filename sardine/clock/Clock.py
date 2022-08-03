@@ -19,6 +19,15 @@ class TickHandle:
         self.when = tick
         self.fut = asyncio.Future()
 
+    def __repr__(self):
+        return '<{} {} when={}>'.format(
+            type(self).__name__,
+            'pending' if not self.fut.done()
+            else 'done' if not self.fut.cancelled()
+            else 'cancelled',
+            self.when
+        )
+
     def __eq__(self, other):
         if not isinstance(other, TickHandle):
             return NotImplemented

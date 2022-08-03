@@ -17,6 +17,7 @@ class TickHandle:
     __slots__ = ('when', 'fut')
 
     """A handle that allows waiting for a specific tick to pass in the clock."""
+
     def __init__(self, tick: int):
         self.when = tick
         self.fut = asyncio.Future()
@@ -66,15 +67,16 @@ class Clock:
     def __init__(
         self,
         midi_port: Optional[str],
+        ppqn: int = 48,
         bpm: Union[float, int] = 120,
-        beat_per_bar: int = 4
+        beats_per_bar: int = 4
     ):
         self._midi = MIDIIo(port_name=midi_port)
 
         # Clock parameters
         self.bpm = bpm
-        self.ppqn = 48
-        self.beat_per_bar = beat_per_bar
+        self.ppqn = ppqn
+        self.beat_per_bar = beats_per_bar
         self._accel = 0.0
         self.running = False
         self.debug = False
@@ -114,7 +116,7 @@ class Clock:
 
     @bpm.setter
     def bpm(self, new_bpm: int):
-        if not 1 < new_bpm < 800:
+        if not 1 < new_bpm < 900:
             raise ValueError('bpm must be within 1 and 800')
         self._bpm = new_bpm
 

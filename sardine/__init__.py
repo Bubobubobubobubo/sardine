@@ -65,9 +65,15 @@ print('\n')
 #==============================================================================#
 
 config = read_user_configuration()
-c = Clock(midi_port=config.midi)
-cs = c.schedule_func
-cr = c.remove
+c = Clock(
+        midi_port=config.midi,
+        bpm=config.bpm,
+        beats_per_bar=config.beats,
+        ppqn=config.ppqn)
+
+cs, cr = c.schedule_func, c.remove
+children = c.print_children
+
 S = c.note
 
 def hush():
@@ -75,12 +81,13 @@ def hush():
     for runner in c.runners.values():
         runner.stop()
 
-# Exposing some MIDI functions
+
 def note(delay, note: int=60, velocity: int=127, channel: int=1):
     """ Send a MIDI Note """
     asyncio.create_task(c._midi.note(
         clock=c, delay=delay, note=note,
             velocity=velocity, channel=channel))
+
 
 def cc(channel: int=1, control: int=20, value: int=64):
     asyncio.create_task(c._midi.control_change(

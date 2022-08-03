@@ -10,6 +10,7 @@ from rich import print
 @dataclass
 class Config:
     midi: Union[str, None]
+    beats: int
     parameters: list
     ppqn: int
     bpm: int
@@ -21,6 +22,7 @@ def create_template_configuration_file(file_path: str) -> None:
             'config': {
                 'midi': None,
                 'bpm': 125,
+                'beats': 4,
                 'ppqn': 48,
                 'parameters': []
                 }
@@ -39,6 +41,7 @@ def read_configuration_file(file_path: str) -> Union[Config, None]:
             return Config(
                     midi = data.get('midi'),
                     parameters = data.get('parameters'),
+                    beats = data.get('beats'),
                     ppqn = data.get('ppqn'),
                     bpm = data.get('bpm'))
         except Exception as e:

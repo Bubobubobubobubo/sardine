@@ -67,7 +67,6 @@ class AsyncRunner:
         if self._task is not None:
             raise RuntimeError('runner task has already started')
 
-        self.swim()
         self._task = asyncio.create_task(self._runner())
         self._task.add_done_callback(asyncio.Task.result)
 
@@ -93,12 +92,13 @@ class AsyncRunner:
         self._stop = True
 
     async def _runner(self):
+        self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
         print(f'[yellow][Init {name}][/yellow]')
 
         try:
-            while self.states and not self._stop:
+            while self.states and self._swimming and not self._stop:
                 # `state.func` must schedule itself to keep swimming
                 self._swimming = False
                 state = self.states[-1]

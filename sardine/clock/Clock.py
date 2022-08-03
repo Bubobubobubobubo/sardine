@@ -127,10 +127,10 @@ class Clock:
 
     def _get_tick_duration(self) -> float:
         """Returns the numbers of seconds the next tick will take.
-        
+
         Only required when clock is running in active mode.
-        
-        """        
+
+        """
         accel = 1 - self.accel / 100
         interval = 60 / self.bpm / self.ppqn * accel
         return interval - self._delta
@@ -172,7 +172,9 @@ class Clock:
                 runner = self.runners[name] = AsyncRunner(self)
 
             runner.push(func, *args, **kwargs)
-            if not runner.started():
+            if runner.started():
+                runner.swim()
+            else:
                 runner.start()
         else:
             print(f"[red]Can't start {func.__name__} in absence of running clock.")
@@ -262,10 +264,9 @@ class Clock:
 
             if self.debug:
                 self.log()
-    
+
     async def run_passive(self):
         """
         Main runner for the passive mode (slave)
         """
         # on clock signal, increment internal counter
-        

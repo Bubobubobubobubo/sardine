@@ -191,8 +191,9 @@ class Clock:
             elif tick >= handle.when:
                 handle.fut.set_result(None)
                 heapq.heappop(self.tick_handles)
-            # all handles afterwards are either still waiting or cancelled
-            break
+            else:
+                # all handles afterwards are either still waiting or cancelled
+                break
 
     def ramp(self, min: int, max: int):
         """ Generate a ramp between min and max using phase """

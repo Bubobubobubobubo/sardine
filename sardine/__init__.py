@@ -61,10 +61,10 @@ print('\n')
 #==============================================================================#
 
 config = read_user_configuration()
-c = Clock(midi_port=config.midi, bpm=config.bpm, ppqn=config.ppqn)
+c = Clock(midi_port=config.midi)
 cs = c.schedule_func
 cr = c.remove
-S = Sound
+S = c.note
 SC = SuperColliderProcess(
         synth_directory=find_synth_directory(),
         startup_file=find_startup_file())
@@ -80,7 +80,7 @@ def cc(channel: int=1, control: int=20, value: int=64):
     asyncio.create_task(c._midi.control_change(
         channel=channel, control=control, value=value))
 
-asyncio.create_task(c._send_start(initial=True))
+c.start()
 
 
 
@@ -110,12 +110,24 @@ def die(fn):
     cr(fn)
     return fn
 
-@swim
-async def one(delay=1):
-    note(1, 60, 127, 1)
-    cs(one, delay=1)
+from random import random
+from itertools import cycle
+
+c1 = cycle([1, 0.5])
+c2 = cycle([0.5, 1])
+c3 = cycle(list(range(1,20)))
 
 @swim
-async def two(delay=0.5):
-    note(1, 67, 127, 1)
-    cs(two, delay=0.5)
+def one(delay=1):
+    S('pluck', speed=next(c1)).out()
+    cs(one)
+
+@swim
+def two(delay=2):
+    S('cp', speed=next(c2)).out()
+    cs(two)
+
+@swim
+def three(delay=0.5):
+    S('amencutup', nb=next(c3)).out()
+    cs(three)

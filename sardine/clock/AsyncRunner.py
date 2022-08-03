@@ -42,9 +42,9 @@ class AsyncRunner:
     clock: "Clock"
     states: list[FunctionState] = field(default_factory=list)
 
-    _swimming: bool = False
-    _stop: bool = False
-    _task: Union[asyncio.Task, None] = None
+    _swimming: bool = field(default=False, repr=False)
+    _stop: bool = field(default=False, repr=False)
+    _task: Union[asyncio.Task, None] = field(default=None, repr=False)
 
     def push(self, func: Callable, *args, **kwargs):
         """Pushes a function state to the runner to be called in
@@ -112,10 +112,11 @@ class AsyncRunner:
                 # Remove any kwargs that aren't present in the new function
                 # (prevents TypeError when user reduces the signature)
                 signature = inspect.signature(state.func)
-                kwargs = _discard_kwargs(signature, kwargs)
+                args = state.args
+                kwargs = _discard_kwargs(signature, state.kwargs)
 
                 # Introspect arguments to synchronize
-                delay = state.kwargs.get('delay')
+                delay = kwargs.get('delay')
                 if delay is None:
                     param = signature.parameters.get('delay')
                     delay = getattr(param, 'default', 1)
@@ -123,7 +124,7 @@ class AsyncRunner:
                 await self._wait(delay)
 
                 try:
-                    state.func(*state.args, **state.kwargs)
+                    state.func(*args, **kwargs)
                 except Exception as e:
                     print(f'Exception encountered in {name}:')
                     traceback.print_exception(e)

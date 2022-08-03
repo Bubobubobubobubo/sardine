@@ -9,6 +9,7 @@ from typing import Awaitable, Callable, Optional, Union
 
 from .AsyncRunner import AsyncRunner
 from ..io.MidiIo import MIDIIo
+from ..superdirt.SuperDirt import SuperDirt
 
 
 @functools.total_ordering
@@ -76,7 +77,12 @@ class Clock:
         self._delta = 0.0
 
         # MIDI In Listener
-        self._listener= None
+        self._listener = None
+
+    def __repr__(self):
+        return '<{} running={} tick={}>'.format(
+            type(self).__name__, self.running, self._current_tick
+        )
 
     # ---------------------------------------------------------------------- #
     # Clock properties
@@ -94,7 +100,7 @@ class Clock:
     @property
     def current_beat(self) -> int:
         """The number of beats passed since the initial time."""
-        return self.current_tick // self.ppqn
+        return self._current_tick // self.ppqn
 
     @property
     def current_bar(self) -> int:
@@ -104,7 +110,7 @@ class Clock:
     @property
     def phase(self) -> int:
         """The phase of the current beat in ticks."""
-        return self.current_tick % self.ppqn
+        return self._current_tick % self.ppqn
 
     # ---------------------------------------------------------------------- #
     # Clock methods
@@ -112,12 +118,12 @@ class Clock:
     def get_beat_ticks(self, n_beats: Union[int, float]) -> int:
         """Returns the number of ticks to wait for N beats to pass."""
         interval = int(self.ppqn * n_beats)
-        return interval - self.current_tick % interval
+        return interval - self._current_tick % interval
 
     def get_bar_ticks(self, n_bars: Union[int, float]) -> int:
         """Returns the number of ticks to wait for N bars to pass."""
         interval = int(self.ppqn * self.beat_per_bar * n_bars)
-        return interval - self.current_tick % interval
+        return interval - self._current_tick % interval
 
     def _get_tick_duration(self) -> float:
         """Returns the numbers of seconds the next tick will take.
@@ -197,16 +203,18 @@ class Clock:
         """ Restart message """
         self.reset()
         if not self.running:
-            asyncio.create_task(self._send_start(initial=True))
+            self._midi.send(mido.Message('start'))
+            self.running = True
+            asyncio.create_task(self.run_active())
 
     def reset(self):
         for runner in self.runners.values():
             runner.stop()
-        for _, fut in self.ticks:
-            fut.cancel()
+        for handle in self.tick_handles:
+            handle.cancel()
 
         self.runners.clear()
-        self.ticks.clear()
+        self.tick_handles.clear()
 
     def stop(self) -> None:
         """
@@ -219,13 +227,6 @@ class Clock:
         self._midi.send(mido.Message('stop'))
         self.reset()
 
-    async def _send_start(self, initial: bool = False) -> None:
-        """ MIDI Start message """
-        self._midi.send(mido.Message('start'))
-        self.running = True
-        if initial:
-            asyncio.create_task(self.run_active())
-
     def log(self) -> None:
         """
         Pretty print information about Clock timing on the console.
@@ -237,6 +238,9 @@ class Clock:
         first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
         second = color + f" || [{self.tick_time}] {self.current_beat}/{self.beat_per_bar}"
         print(first + second)
+
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+        return SuperDirt(self, sound, at, **kwargs)
 
     async def run_active(self):
         """

@@ -4,7 +4,6 @@ import functools
 from typing import TYPE_CHECKING, Union
 
 from ..io.Osc import dirt
-from ..superdirt.superdirt_parameters import params
 
 if TYPE_CHECKING:
     from ..clock.Clock import Clock
@@ -75,7 +74,7 @@ class SuperDirt:
     #     for param in params:
     #         setattr(self, param, partial(self._generic_mapper, name=param))
 
-    def addOrChange(self, name: str, value):
+    def addOrChange(self, value, name: str):
         """Will set a parameter or change it if already in message """
         try:
             i = self.content.index(name)

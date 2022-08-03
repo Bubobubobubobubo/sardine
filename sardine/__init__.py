@@ -21,6 +21,9 @@ from .superdirt.AutoBoot import (
         find_startup_file,
         find_synth_directory)
 from .io.Osc import Client as OSC
+from .sequences.Sequence import (
+        bin,
+        bjorklund)
 
 warnings.filterwarnings("ignore")
 
@@ -65,9 +68,9 @@ c = Clock(midi_port=config.midi)
 cs = c.schedule_func
 cr = c.remove
 S = c.note
-SC = SuperColliderProcess(
-        synth_directory=find_synth_directory(),
-        startup_file=find_startup_file())
+# SC = SuperColliderProcess(
+#         synth_directory=find_synth_directory(),
+#         startup_file=find_startup_file())
 
 # Exposing some MIDI functions
 def note(delay, note: int=60, velocity: int=127, channel: int=1):
@@ -95,6 +98,15 @@ c.start()
 #     cur_bar = c.elapsed_bars
 #     while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
 #         await asyncio.sleep(c._OLD_get_tick_duration() / c.ppqn)
+
+
+# Adding some funny sequences to play with
+
+def bin(sequence: str):
+    binary = []
+    for char in sequence.replace(' ', ''):
+        binary.append(True) if char=="1" else binary.append(False)
+    return itertools.cycle(binary)
 
 
 # Tests

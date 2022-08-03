@@ -58,3 +58,39 @@ async def midi_tester(delay=0):
     note(1, next(arpeggio), 127, 1)
     note(1, next(arpeggio2) + 24, 127, 1)
     cs(midi_tester, delay=0.5)
+
+from random import random
+import itertools
+
+
+def bin(sequence: str):
+    binary = []
+    for char in sequence.replace(' ', ''):
+        binary.append(True) if char=="1" else binary.append(False)
+    return itertools.cycle(binary)
+
+a = bin('10101010')
+b = bin('00000010'*2)
+c = bin('10'*4)
+arpeg = itertools.cycle([60,72]*2 + [58, 58, 55, 60]*2)
+@swim
+def two(delay=0.5):
+    S('jvbass', midinote=next(arpeg) + 12, amp=1.5).out()
+    S('kicklinn', trig= next(a), shape=0.5, amp=1.2).out()
+    S('808:9', trig= next(b), shape=0.5, amp=1.2).out()
+    S('808:7', trig= next(c), shape=0.5, amp=1.2).out()
+    cs(two, delay=0.5)
+
+@die
+def one(delay=1):
+    S('pluck', midinote=next(arpeggio)).out()
+    S('pluck', speed=next(c3) - 2).out()
+    cs(one, delay=0.25)
+
+
+@swim
+def three(delay=2):
+    S('cp', nb=next(c3)).out()
+    cs(three, delay=2)
+
+cr(three)

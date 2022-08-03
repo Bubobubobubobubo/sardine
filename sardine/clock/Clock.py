@@ -191,19 +191,16 @@ class Clock:
         if not inspect.isfunction(func):
             raise TypeError(f'func must be a function, not {type(func).__name__}')
 
-        if self.running:
-            name = func.__name__
-            runner = self.runners.get(name)
-            if runner is None:
-                runner = self.runners[name] = AsyncRunner(self)
+        name = func.__name__
+        runner = self.runners.get(name)
+        if runner is None:
+            runner = self.runners[name] = AsyncRunner(self)
 
-            runner.push(func, *args, **kwargs)
-            if runner.started():
-                runner.swim()
-            else:
-                runner.start()
+        runner.push(func, *args, **kwargs)
+        if runner.started():
+            runner.swim()
         else:
-            print(f"[red]Can't start {func.__name__} in absence of running clock.")
+            runner.start()
 
     def remove(self, func: Callable, /):
         """Schedules the given function to stop execution."""

@@ -10,6 +10,16 @@ if TYPE_CHECKING:
     from .Clock import Clock
 
 
+def _assert_function_signature(sig: inspect.Signature, args, kwargs):
+    if args:
+        message = 'Positional arguments cannot be used in scheduling'
+        if missing := _missing_kwargs(sig, args, kwargs):
+            message += '; perhaps you meant `{}`?'.format(
+                ', '.join(f'{k}={v!r}' for k, v in missing.items())
+            )
+        raise TypeError(message)
+
+
 def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
     """Discards any kwargs not present in the given signature."""
     MISSING = object()
@@ -21,6 +31,23 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
             pass_through[param.name] = value
 
     return pass_through
+
+
+def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
+    required = []
+    defaulted = []
+    for param in sig.parameters.values():
+        if param.kind in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD):
+            continue
+        elif param.name in kwargs:
+            continue
+        elif param.default is param.empty:
+            required.append(param.name)
+        else:
+            defaulted.append(param.name)
+
+    guessed_mapping = dict(zip(required + defaulted, args))
+    return guessed_mapping
 
 
 @dataclass
@@ -109,20 +136,27 @@ class AsyncRunner:
                     print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
                     last_state = state
 
-                # Remove any kwargs that aren't present in the new function
-                # (prevents TypeError when user reduces the signature)
                 signature = inspect.signature(state.func)
-                args = state.args
-                kwargs = _discard_kwargs(signature, state.kwargs)
 
-                # Introspect arguments to synchronize
-                delay = kwargs.get('delay')
-                if delay is None:
-                    param = signature.parameters.get('delay')
-                    delay = getattr(param, 'default', 1)
+                try:
+                    _assert_function_signature(signature, state.args, state.kwargs)
 
-                if delay <= 0:
-                    print(f'[yellow][Bad delay for {name} (must be >0, not {delay})]')
+                    # Remove any kwargs not present in the new function
+                    # (prevents TypeError when user reduces the signature)
+                    args = state.args
+                    kwargs = _discard_kwargs(signature, state.kwargs)
+
+                    # Introspect arguments to synchronize
+                    delay = kwargs.get('delay')
+                    if delay is None:
+                        param = signature.parameters.get('delay')
+                        delay = getattr(param, 'default', 1)
+
+                    if delay <= 0:
+                        raise ValueError(f'Delay must be >0, not {delay}')
+                except (TypeError, ValueError) as e:
+                    print(f'[red][Bad function definition ({name})]')
+                    traceback.print_exception(e)
                     self._revert_state()
                     continue
 
@@ -131,9 +165,8 @@ class AsyncRunner:
                 try:
                     state.func(*args, **kwargs)
                 except Exception as e:
-                    print(f'Exception encountered in {name}:')
+                    print(f'[red][Function exception | ({name})]')
                     traceback.print_exception(e)
-
                     self._revert_state()
                 finally:
                     # `self._wait()` usually leaves us exactly 1 tick away

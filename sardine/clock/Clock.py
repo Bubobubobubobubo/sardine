@@ -187,7 +187,12 @@ class Clock:
     def wait_until(self, *, tick: int) -> Awaitable[None]:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
-        heapq.heappush(self.tick_handles, handle)
+
+        if self._current_tick >= tick:
+            handle.fut.set_result(None)
+        else:
+            heapq.heappush(self.tick_handles, handle)
+
         return handle
 
     def wait_after(self, *, n_ticks: int) -> Awaitable[None]:

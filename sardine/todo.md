@@ -5,6 +5,13 @@
     * opening up new connexions to other MIDI Ports
     * holding open multiple connexions
 * [ ] User configuration file
-    * SuperDirt real configuration
+    * luperDirt configuration
 * [ ] Fix the autoboot
-    * start a default session of SuperDirt
+    * boot, hold and manage a SuperCollider process.
+    * stdin / stdout / stderr streams
+    * API from Sardine to SuperCollider / SuperDirt
+* [ ] Clock related:
+    * adding an offset to function start (argument?)
+    * small delay when restoring a function
+    * accel can go higher than 100?
+    * high-delta resulting in negative tick duration corner case.

@@ -8,20 +8,6 @@ from ..io.Osc import dirt
 if TYPE_CHECKING:
     from ..clock.Clock import Clock
 
-def partial(func, /, *args, **keywords):
-    """
-    Specialized partial function taken directly from the Python
-    documentation. This one is great because you can have access
-    to __name__
-    """
-    def newfunc(*fargs, **fkeywords):
-        newkeywords = {**keywords, **fkeywords}
-        return func(*args, *fargs, **newkeywords)
-    newfunc.func = func
-    newfunc.args = args
-    newfunc.keywords = keywords
-    return newfunc
-
 class SuperDirt:
 
     def __init__(

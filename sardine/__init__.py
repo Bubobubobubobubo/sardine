@@ -21,6 +21,7 @@ from .superdirt.AutoBoot import (
         find_startup_file,
         find_synth_directory)
 from .io.Osc import Client as OSC
+from typing import Union
 from .sequences.Sequence import (
         bin,
         bjorklund)
@@ -68,9 +69,11 @@ c = Clock(midi_port=config.midi)
 cs = c.schedule_func
 cr = c.remove
 S = c.note
-# SC = SuperColliderProcess(
-#         synth_directory=find_synth_directory(),
-#         startup_file=find_startup_file())
+
+def hush():
+    """ Stop all runners """
+    for runner in c.runners.values():
+        runner.stop()
 
 # Exposing some MIDI functions
 def note(delay, note: int=60, velocity: int=127, channel: int=1):
@@ -84,30 +87,6 @@ def cc(channel: int=1, control: int=20, value: int=64):
         channel=channel, control=control, value=value))
 
 c.start()
-
-
-
-# async def nap(duration):
-#     """ Musical sleep inside coroutines """
-#     duration = c.tick_time + (duration * c.ppqn)
-#     while c.tick_time < duration:
-#         await asyncio.sleep(c._OLD_get_tick_duration() / c.ppqn)
-
-# async def sync():
-#     """ Manual resynchronisation """
-#     cur_bar = c.elapsed_bars
-#     while c.phase != 1 and c.elapsed_bars != cur_bar + 1:
-#         await asyncio.sleep(c._OLD_get_tick_duration() / c.ppqn)
-
-
-# Adding some funny sequences to play with
-
-def bin(sequence: str):
-    binary = []
-    for char in sequence.replace(' ', ''):
-        binary.append(True) if char=="1" else binary.append(False)
-    return itertools.cycle(binary)
-
 
 # Tests
 # =====

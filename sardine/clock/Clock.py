@@ -189,7 +189,7 @@ class Clock:
     def schedule_func(self, func: Callable, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not inspect.isfunction(func):
-            raise TypeError(f'func must be a coroutine function, not {type(func).__name__}')
+            raise TypeError(f'func must be a function, not {type(func).__name__}')
 
         if self.running:
             name = func.__name__

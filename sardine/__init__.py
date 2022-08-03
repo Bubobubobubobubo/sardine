@@ -23,8 +23,7 @@ from .superdirt.AutoBoot import (
 from .io.Osc import Client as OSC
 from typing import Union
 from .sequences.Sequence import (
-        bin,
-        bjorklund)
+        bin, euclid)
 
 warnings.filterwarnings("ignore")
 

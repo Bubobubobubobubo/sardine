@@ -12,46 +12,50 @@ def bin(sequence: str):
     return itertools.cycle(binary)
 
 
-def bjorklund(steps, pulses):
+def euclidean_rhythm(beats, pulses):
+    """Computes Euclidean rhythm of beats/pulses
+
+    Examples:
+        euclidean_rhythm(8, 5) -> [1, 0, 1, 0, 1, 0, 1, 1]
+        euclidean_rhythm(7, 3) -> [1, 0, 0, 1, 0, 1, 0]
+
+    Args:
+        beats  (int): Beats of the rhythm
+        pulses (int): Pulses to distribute. Should be <= beats
+
+    Returns:
+        list: 1s are pulses, zeros rests
+
+    Taken from: https://kountanis.com/2017/06/13/python-euclidean/
     """
-    Bjorklund alorithm used for the generation of euclidian
-    rhythms. Stolen from a GitHub repository :
-    https://github.com/brianhouse/bjorklund/blob/master/__init__.py
+    if pulses is None or pulses < 0:
+        pulses = 0
+    if beats is None or beats < 0:
+        beats = 0
+    if pulses > beats:
+        beats, pulses = pulses, beats
+    if beats == 0:
+        return []
 
-    Note: this algorithm doesn't support rotation but it could
-    be added later.
-    """
-    steps = int(steps)
-    pulses = int(pulses)
-    if pulses > steps:
-        raise ValueError
-    pattern = []
-    counts = []
-    remainders = []
-    divisor = steps - pulses
-    remainders.append(pulses)
-    level = 0
-    while True:
-        counts.append(divisor // remainders[level])
-        remainders.append(divisor % remainders[level])
-        divisor = remainders[level]
-        level = level + 1
-        if remainders[level] <= 1:
-            break
-    counts.append(divisor)
+    rests = beats - pulses
+    result = [1] * pulses
+    pivot = 1
+    interval = 2
 
-    def build(level):
-        if level == -1:
-            pattern.append(0)
-        elif level == -2:
-            pattern.append(1)
-        else:
-            for i in range(0, counts[level]):
-                build(level - 1)
-            if remainders[level] != 0:
-                build(level - 2)
+    while rests > 0:
+        if pivot > len(result):
+            pivot = 1
+            interval += 1
 
-    build(level)
-    i = pattern.index(1)
-    pattern = pattern[i:] + pattern[0:i]
-    return pattern
+        result.insert(pivot, 0)
+
+        pivot += interval
+        rests -= 1
+
+    return result
+
+euclid = euclidean_rhythm
+
+if __name__ == "__main__":
+    print(f"{euclid(beats=2, pulses=4)}")
+    print(f"{euclid(beats=4, pulses=9)}")

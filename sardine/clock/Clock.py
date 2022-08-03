@@ -104,6 +104,10 @@ class Clock:
     def accel(self) -> int:
         return self._accel
 
+    @property
+    def tick(self) -> int:
+        return self._current_tick
+
     @accel.setter
     def accel(self, value: int):
         if value >= 100:

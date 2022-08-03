@@ -64,7 +64,7 @@ class Clock:
         self.bpm = bpm
         self.ppqn = 48
         self.beat_per_bar = beat_per_bar
-        self.accel = 0.0
+        self._accel = 0.0
         self.running = False
         self.debug = False
 
@@ -86,6 +86,16 @@ class Clock:
 
     # ---------------------------------------------------------------------- #
     # Clock properties
+
+    @property
+    def accel(self) -> int:
+        return self._accel
+
+    @accel.setter
+    def accel(self, value: int):
+        if value >= 100:
+            raise ValueError('cannot set accel above 100')
+        self._accel = value
 
     @property
     def bpm(self) -> int:
@@ -157,8 +167,8 @@ class Clock:
         Only required when clock is running in active mode.
 
         """
-        accel = 1 - self.accel / 100
-        interval = 60 / self.bpm / self.ppqn * accel
+        accel_mult = 1 - self.accel / 100
+        interval = 60 / self.bpm / self.ppqn * accel_mult
         return interval - self._delta
 
     def _increment_clock(self):

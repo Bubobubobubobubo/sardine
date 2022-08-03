@@ -121,6 +121,11 @@ class AsyncRunner:
                     param = signature.parameters.get('delay')
                     delay = getattr(param, 'default', 1)
 
+                if delay <= 0:
+                    print(f'[yellow][Bad delay for {name} (must be >0, not {delay})]')
+                    self._revert_state()
+                    continue
+
                 await self._wait(delay)
 
                 try:
@@ -130,6 +135,12 @@ class AsyncRunner:
                     traceback.print_exception(e)
 
                     self._revert_state()
+                finally:
+                    # `self._wait()` usually leaves us exactly 1 tick away
+                    # from the next interval. If we don't wait, func() will
+                    # be called in an infinite synchronous loop.
+                    # A single tick ensures func() can only be called once per tick.
+                    await self.clock.wait_after(n_ticks=1)
         finally:
             # Remove from clock if necessary
             print(f'[yellow][Stopped {name}]')

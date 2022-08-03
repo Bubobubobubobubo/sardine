@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from rich import print
-from appdirs import *
-from typing import Union
-import os
 import json
+from pathlib import Path
+from typing import Union
+
+from appdirs import *
+from rich import print
 
 
 @dataclass
@@ -47,32 +48,28 @@ def read_configuration_file(file_path: str) -> Union[Config, None]:
 def read_user_configuration() -> Union[Config, None]:
     """ Read or create user configuration file """
     appname, appauthor = "Sardine", "Bubobubobubo"
-    user_dir = user_data_dir(appname, appauthor)
+    user_dir = Path(user_data_dir(appname, appauthor))
+    config_file = user_dir / "config.json"
 
     # Check if the configuration folder exists
-    if os.path.isdir(user_dir):
-        print(f"[green][1/3] Found configuration folder at {user_dir}![/green]")
+    if user_dir.is_dir():
+        print(f"[green][1/3] Found configuration folder at {user_dir}[/green]")
 
-        # Default configuration file path
-        configuration_file_path = "/".join([user_dir, "config.json"])
-
-        # Check if folder exists and create / read the file
-        if os.path.exists(configuration_file_path):
+        if config_file.exists():
             print(f"[green][2/3] Found configuration file[/green]")
-            return read_configuration_file(configuration_file_path)
+            return read_configuration_file(config_file)
         else:
             print(f"[green][2/3] Created template configuration file[/green]")
-            create_template_configuration_file(configuration_file_path)
-            return read_configuration_file(configuration_file_path)
+            create_template_configuration_file(config_file)
+            return read_configuration_file(config_file)
 
     # If the configuration folder doesn't exist, create it and create config
     else:
         print(f"[green][1/3] Creating configuration folder[/green]")
-        os.mkdir(user_dir)
-        configuration_file_path = "/".join([user_dir, "config.json"])
+        user_dir.mkdir(parents=True)
         print(f"[green][2/3] Creating configuration file[/green]")
-        create_template_configuration_file(configuration_file_path)
-        return read_configuration_file(configuration_file_path)
+        create_template_configuration_file(config_file)
+        return read_configuration_file(config_file)
 
 if __name__ == "__main__":
     config = read_user_configuration()

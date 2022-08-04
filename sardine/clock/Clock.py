@@ -3,7 +3,7 @@ import functools
 import heapq
 import inspect
 import time
-from typing import Awaitable, Callable, Optional, Union
+from typing import Callable, Optional, Union
 
 import mido
 from rich import print
@@ -17,9 +17,8 @@ __all__ = ('Clock', 'TickHandle')
 
 @functools.total_ordering
 class TickHandle:
-    __slots__ = ('when', 'fut')
-
     """A handle that allows waiting for a specific tick to pass in the clock."""
+    __slots__ = ('when', 'fut')
 
 
     def __init__(self, tick: int):
@@ -41,6 +40,8 @@ class TickHandle:
             return NotImplemented
         return self.when == other.when and self.fut == other.fut
 
+    def __hash__(self):
+        return hash((self.when, self.fut))
 
     def __lt__(self, other):
         if not isinstance(other, TickHandle):
@@ -83,10 +84,10 @@ class Clock:
         self._midi = MIDIIo(port_name=midi_port)
 
         # Clock parameters
-        self.bpm = bpm
-        self.ppqn = ppqn
-        self.beat_per_bar = beats_per_bar
         self._accel = 0.0
+        self._bpm = bpm
+        self._ppqn = ppqn
+        self.beat_per_bar = beats_per_bar
         self.running = False
         self.debug = False
 
@@ -113,15 +114,24 @@ class Clock:
     def accel(self) -> int:
         return self._accel
 
-    @property
-    def tick(self) -> int:
-        return self._current_tick
-
     @accel.setter
     def accel(self, value: int):
         if value >= 100:
             raise ValueError('cannot set accel above 100')
         self._accel = value
+        self._reload_runners()
+
+    @property
+    def tick(self) -> int:
+        return self._current_tick
+
+    @tick.setter
+    def tick(self, new_tick: int) -> int:
+        change = new_tick - self._current_tick
+        self._current_tick = new_tick
+        self._shift_handles(change)
+        self._reload_runners()
+        self._update_handles()
 
     @property
     def bpm(self) -> int:
@@ -132,6 +142,16 @@ class Clock:
         if not 1 < new_bpm < 900:
             raise ValueError('bpm must be within 1 and 800')
         self._bpm = new_bpm
+        self._reload_runners()
+
+    @property
+    def ppqn(self) -> int:
+        return self._ppqn
+
+    @ppqn.setter
+    def ppqn(self, pulses_per_quarter_note: int) -> int:
+        self._ppqn = pulses_per_quarter_note
+        self._reload_runners()
 
     @property
     def current_beat(self) -> int:
@@ -198,14 +218,24 @@ class Clock:
         return interval - self._delta
 
     def _increment_clock(self):
-        # this is implemented very similarly to asyncio.BaseEventLoop
-        self._current_tick = tick = self._current_tick + 1
+        self._current_tick += 1
+        self._update_handles()
 
+    def _reload_runners(self):
+        for runner in self.runners.values():
+            runner.reload()
+
+    def _shift_handles(self, n_ticks: int):
+        for handle in self.tick_handles:
+            handle.when += n_ticks
+
+    def _update_handles(self):
+        # this is implemented very similarly to asyncio.BaseEventLoop
         while self.tick_handles:
             handle = self.tick_handles[0]
             if handle.cancelled():
                 heapq.heappop(self.tick_handles)
-            elif tick >= handle.when:
+            elif self.tick >= handle.when:
                 handle.fut.set_result(None)
                 heapq.heappop(self.tick_handles)
             else:
@@ -228,6 +258,7 @@ class Clock:
 
         runner.push(func, *args, **kwargs)
         if runner.started():
+            runner.reload()
             runner.swim()
         else:
             runner.start()
@@ -238,7 +269,7 @@ class Clock:
         if runner is not None:
             runner.stop()
 
-    def wait_until(self, *, tick: int) -> Awaitable[None]:
+    def wait_until(self, *, tick: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
 
@@ -249,7 +280,7 @@ class Clock:
 
         return handle
 
-    def wait_after(self, *, n_ticks: int) -> Awaitable[None]:
+    def wait_after(self, *, n_ticks: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to pass N ticks from now."""
         return self.wait_until(tick=self._current_tick + n_ticks)
 

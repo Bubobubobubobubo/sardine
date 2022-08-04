@@ -38,6 +38,9 @@ class TickHandle:
             return NotImplemented
         return self.when == other.when and self.fut == other.fut
 
+    def __hash__(self):
+        return hash((self.when, self.fut))
+
     def __lt__(self, other):
         if not isinstance(other, TickHandle):
             return NotImplemented
@@ -204,6 +207,9 @@ class Clock:
     def _shift_handles(self, n_ticks: int):
         for handle in self.tick_handles:
             handle.when += n_ticks
+
+        for runner in self.runners.values():
+            runner.reload()
 
     def _update_handles(self):
         # this is implemented very similarly to asyncio.BaseEventLoop

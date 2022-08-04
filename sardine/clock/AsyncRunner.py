@@ -8,7 +8,7 @@ import traceback
 from typing import Any, Callable, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from . import Clock
+    from . import Clock, TickHandle
 
 __all__ = ('AsyncRunner', 'FunctionState')
 
@@ -79,6 +79,7 @@ class AsyncRunner:
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)
     _task: Union[asyncio.Task, None] = field(default=None, repr=False)
+    _reload_event: asyncio.Event = field(default_factory=asyncio.Event)
 
     def push(self, func: Callable, *args, **kwargs):
         """Pushes a function state to the runner to be called in
@@ -90,6 +91,15 @@ class AsyncRunner:
         state = self.states[-1]
         state.args = args
         state.kwargs = kwargs
+
+    def reload(self):
+        """Triggers an immediate state reload.
+
+        This method is useful when changes to the clock occur,
+        or when a new function is pushed to the runner.
+
+        """
+        self._reload_event.set()
 
     def start(self):
         """Initializes the background runner task.
@@ -165,9 +175,17 @@ class AsyncRunner:
                     print(f'[red][Bad function definition ({name})]')
                     traceback.print_exception(e)
                     self._revert_state()
+                    self.swim()
                     continue
 
-                await self._wait(delay)
+                handle = self._wait_beats(delay)
+                reload = asyncio.create_task(self._reload_event.wait())
+                done, _ = await asyncio.wait((handle, reload), return_when=asyncio.FIRST_COMPLETED)
+                if reload in done:
+                    self._reload_event.clear()
+                    handle.cancel()
+                    self.swim()
+                    continue
 
                 try:
                     state.func(*args, **kwargs)
@@ -175,6 +193,7 @@ class AsyncRunner:
                     print(f'[red][Function exception | ({name})]')
                     traceback.print_exception(e)
                     self._revert_state()
+                    self.swim()
                 finally:
                     # `self._wait()` usually leaves us exactly 1 tick away
                     # from the next interval. If we don't wait, func() will
@@ -186,17 +205,18 @@ class AsyncRunner:
             print(f'[yellow][Stopped {name}]')
             self.clock.runners.pop(name, None)
 
-    async def _wait(self, n_beats: Union[float, int]):
-        """Waits until one tick before the given number of beats is reached."""
+    def _wait_beats(self, n_beats: Union[float, int]) -> "TickHandle":
+        """Returns a TickHandle waiting until one tick before the
+        given number of beats is reached.
+        """
         clock = self.clock
         ticks = clock.get_beat_ticks(n_beats) - 1
-        await clock.wait_after(n_ticks=ticks)
+        return clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):
         failed = self.states.pop()
 
         if self.states:
-            self.swim()
             # patch the global scope so recursive functions don't
             # invoke the failed function
             reverted = self.states[-1]

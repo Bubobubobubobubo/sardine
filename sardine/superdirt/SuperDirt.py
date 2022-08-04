@@ -13,6 +13,7 @@ __all__ = ('SuperDirt',)
 
 class SuperDirt:
 
+
     def __init__(
         self,
         clock: "Clock",
@@ -32,17 +33,6 @@ class SuperDirt:
             if callable(method):
                 method(v)
 
-        # for key, value in kwargs.items():
-        #     if key in self._mono_param_list:
-        #         self.setorChangeMonoParam(key, value)
-        #     else:
-        #         # Is there a method in this class that can handle it?
-        #         method = getattr(self, key, None)
-        #         if callable(method):
-        #             # calling the given method with the given value
-        #             method(value)
-
-        # self.generate_chainable_methods(params)
 
     def __str__(self):
         return ' '.join(str(e) for e in self.content)
@@ -55,15 +45,6 @@ class SuperDirt:
         method.__doc__ = f"Updates the sound's {name} parameter."
         return method
 
-    # def _generic_mapper(self, amount, name: str):
-    #     self.addOrChange(name, amount)
-    #     return self
-
-    # def generate_chainable_methods(self, params: list):
-    #     for param in params:
-    #         setattr(self, param, partial(self._generic_mapper, name=param))
-
-
 
     def addOrChange(self, value, name: str):
         """Will set a parameter or change it if already in message """
@@ -75,6 +56,7 @@ class SuperDirt:
             self.content[i + 1] = value
 
         return self
+
 
     def query_existing_value(self, index: str) -> Union[int, float]:
         "Find the value associated to a name. Return false if not found."

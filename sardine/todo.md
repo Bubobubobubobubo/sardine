@@ -9,6 +9,7 @@
     * Receive MIDI Notes, MIDI CC and MIDI Clock
     * opening up new connexions to other MIDI Ports
     * holding open multiple connexions
+    * repair MIDI so that MIDI notes can be sent.
 * [ ] User configuration file
     * SuperDirt configuration
 * [ ] Fix the autoboot

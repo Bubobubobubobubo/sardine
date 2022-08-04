@@ -19,24 +19,28 @@ class Config:
     parameters: list
     ppqn: int
     bpm: int
+    superdirt_config_path: str
 
 
-def create_template_configuration_file(file_path: str) -> None:
+def create_template_configuration_file(user_dir: Path, file_path: Path) -> None:
     """ If no configuration file is found, create a template """
+    superdirt_config_path = user_dir / "default_superdirt.scd"
+
     template_configuration = {
             'config': {
                 'midi': None,
                 'bpm': 125,
                 'beats': 4,
                 'ppqn': 48,
-                'parameters': []
+                'parameters': [],
+                'superdirt_config_path': superdirt_config_path,
                 }
             }
     with open(file_path, 'w') as file:
         json.dump(template_configuration, file)
 
 
-def read_configuration_file(file_path: str) -> Union[Config, None]:
+def read_configuration_file(file_path: Path) -> Union[Config, None]:
     """ Read config JSON File """
     with open(file_path, 'r') as f:
         data = json.load(f)
@@ -48,7 +52,8 @@ def read_configuration_file(file_path: str) -> Union[Config, None]:
                     parameters = data.get('parameters'),
                     beats = data.get('beats'),
                     ppqn = data.get('ppqn'),
-                    bpm = data.get('bpm'))
+                    bpm = data.get('bpm'),
+                    superdirt_config_path= data.get('superdirt_config_path'))
         except Exception as e:
             print(f"{e}")
 
@@ -68,7 +73,7 @@ def read_user_configuration() -> Union[Config, None]:
             return read_configuration_file(config_file)
         else:
             print(f"[green][2/3] Created template configuration file[/green]")
-            create_template_configuration_file(config_file)
+            create_template_configuration_file(user_dir, config_file)
             return read_configuration_file(config_file)
 
     # If the configuration folder doesn't exist, create it and create config

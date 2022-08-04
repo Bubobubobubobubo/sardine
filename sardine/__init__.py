@@ -15,10 +15,7 @@ else:
 
 from .io import read_user_configuration
 from .clock import Clock
-from .superdirt import (
-        SuperColliderProcess,
-        find_startup_file,
-        find_synth_directory)
+from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from typing import Union
 from .sequences import *
@@ -60,8 +57,13 @@ print('\n')
 # - MidiIO basic functions
 # - Nap and Sync
 #==============================================================================#
-
 config = read_user_configuration()
+
+# This should exist in the configuration file somewhere
+SC = SuperColliderProcess(
+        startup_file=config.superdirt_config_path)
+
+
 c = Clock(
         midi_port=config.midi,
         bpm=config.bpm,

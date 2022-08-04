@@ -1,27 +1,17 @@
 #!/usr/bin/env python3
 from os import walk
-import pathlib
-import platform, threading, subprocess, os, signal
-from time import sleep
+from appdirs import *
+from pathlib import Path
+import platform, subprocess, os, signal
+import shutil
 from typing import Union
-
 from rich import print
+import psutil
 
-__all__ = ('find_startup_file', 'find_synth_directory', 'SuperColliderProcess')
-
-
-def find_startup_file():
-    """ Find the startup file when booting Sardine """
-    cur_path = pathlib.Path(__file__).parent.resolve()
-    return "".join([str(cur_path), "/configuration/startup.scd"])
-
-def find_synth_directory():
-    """ Find the synth directory when booting Sardine """
-    cur_path = pathlib.Path(__file__).parent.resolve()
-    return "".join([str(cur_path), "/configuration/synths/"])
+# __all__ = ('SuperColliderProcess')
 
 
-class SuperColliderProcess():
+class SuperColliderProcess:
 
     """
     Start SCLang process. Allows the execution of SuperCollider
@@ -29,12 +19,13 @@ class SuperColliderProcess():
     """
 
     def __init__(self,
-            synth_directory: Union[str, None],
-            startup_file: str):
-
+            startup_file: Union[str, None] = None,
+            preemptive=True):
+        appname, appauthor = "Sardine", "Bubobubobubo"
+        self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
-        self._synth_directory = synth_directory
-        self._startup_file = startup_file
+        self._synth_directory = self._find_synths_directory()
+        self._startup_file = self._find_startup_file(user_file=startup_file)
         self._sclang_proc = subprocess.Popen(
             [self._sclang_path],
             stdin=subprocess.PIPE,
@@ -43,24 +34,60 @@ class SuperColliderProcess():
             bufsize=1,
             universal_newlines=True,
             start_new_session=True)
+
+        if preemptive:
+            self.hard_kill()
+
+        self.boot()
+
+
+    def _find_vanilla_startup_file(self):
+        """ Find the startup file when booting Sardine """
+        cur_path = Path(__file__).parent.resolve()
+        return "".join([str(cur_path), "/default_superdirt.scd"])
+
+
+    def _find_startup_file(self, user_file: Union[str, None] = None) -> Path:
+        """Find the SuperDirt startup file"""
+        if not user_file:
+            file_path = Path(
+                    '/'.join([str(self._user_dir), "default_superdirt.scd"]))
+            if file_path.is_file():
+                return file_path
+            else:
+                # This should definitely be a try/except case
+                vanilla_file_path = self._find_vanilla_startup_file()
+                shutil.copy(str(vanilla_file_path), self._user_dir)
+                return file_path
+        else:
+            user_file_path = Path(user_file)
+            if user_file_path.exists() and user_file_path.is_file():
+                return user_file_path
+            else:
+                # recurse to base case with no user_file
+                return self._find_startup_file()
+
+
+    def _find_synths_directory(self) -> Path:
+        """Find or create the synths directory needed"""
+        path = Path('/'.join([str(self._user_dir), "synths/"]))
+        exists = path.is_dir()
+        if exists:
+            return path
+        else:
+            path.mkdir(parents=True)
+            return path
 
 
     def terminate(self) -> None:
+        """Terminate the SCLang process"""
 
-        """
-        Terminate the SCLang process
-        """
-
-        self.send("Server.killAll;")
-        self.send("0.exit")
-        # self._proc_thread.join()
+        self.send("Server.killAll; 0.exit;")
         self._sclang_proc.terminate()
 
-    def reset(self) -> None:
 
-        """
-        Restart the SCLang process
-        """
+    def reset(self) -> None:
+        """Restart the SCLang subprocess"""
 
         self._sclang_proc = subprocess.Popen(
             [self._sclang_path],
@@ -71,22 +98,17 @@ class SuperColliderProcess():
             universal_newlines=True,
             start_new_session=True)
 
-    def hard_reset(self) -> None:
 
-        """
-        Search all running instances of sclang, scsynth and scide.
-        Kill all existing running processes.
-        """
+    def hard_kill(self) -> None:
+        """Look for an instance of SuperCollider, kill it."""
 
-        print("[bold red] Killing SC internal process...[/bold red]")
-        self.terminate()
-        print("[bold red] Killing all SC instances...[/bold red]")
-        for sc_process in ["scsynth", "sclang", "scide"]:
-            for line in os.popen(f"ps ax | grep {sc_process} | grep -v grep"):
-                fields = line.split()
-                os.kill(int(fields[0]),
-                        signal.SIGKILL)
-        self.reset()
+        print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
+        for proc in psutil.process_iter():
+            if any(procstr in proc.name() for procstr in\
+                ['sclang', 'scide', 'scsynth']):
+                print(f'Killing {proc.name()}')
+                proc.kill()
+
 
     def send(self, message: str):
 
@@ -105,23 +127,29 @@ class SuperColliderProcess():
         self._sclang_proc.stdin.write(message)
         self._sclang_proc.stdin.flush()
 
+
     def meter(self) -> None:
-        """ Open SuperCollider mixer view """
+        """Open SuperCollider VUmeter"""
         self.send("s.meter()")
 
+
     def scope(self) -> None:
-        """ Open SuperCollider stethoscope """
+        """Open SuperCollider frequency scope"""
         self.send("s.scope()")
 
+
     def meterscope(self) -> None:
-        """ Open SuperCollider sthethoscope + mixer """
+        """Open SuperCollider frequency scope + VUmeter"""
         self.send("s.scope(); s.meter()")
+
 
     def check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
+
     def startup_file_path(self) -> str:
         return self._startup_file
+
 
     def load_custom_synthdefs(self) -> None:
         buffer = ""
@@ -141,32 +169,30 @@ class SuperColliderProcess():
             for f in files:
                 print("- {}".format(f))
 
-    def find_sclang_path(self) -> str:
 
-        """
-        Finding path to the SCLang CLI on every major platform.
-        """
+    def find_sclang_path(self) -> str:
+        """Find path to sclang binary, cross-platform"""
         os = platform.system()
         if os == "Linux":
             return "sclang"
         elif os == "Windows":
+            # I really have no clue
             return "scsynth.exe"
         elif os == "Darwin":
             return "/Applications/SuperCollider.app/Contents/MacOS/sclang"
         else:
-            # Probably better to raise an exception here
-            return ""
+            raise OSError('This OS is not officially supported by Sardine.')
 
-    async def boot(self) -> None:
 
-        print("[red]Starting SCLang[/red]")
+    def boot(self) -> None:
+
+        print("\n[red]Starting SCLang && SuperDirt[/red]")
         self.send(message="""load("{}")""".format(self._startup_file))
-        sleep(1)
         if self._synth_directory is not None:
             self.load_custom_synthdefs()
 
+
     def kill(self) -> None:
-        """ Kill the connexion with the SC Interpreter """
+        """Kill the connexion with the SC Interpreter"""
         self.send("Server.killAll")
-        sleep(1)
         self.send("0.exit")

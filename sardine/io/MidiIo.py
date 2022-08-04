@@ -37,6 +37,7 @@ class MIDIIo(threading.Thread):
             except Exception as error:
                 print(f"[bold red]Init error: {error}[/bold red]")
 
+
     def choose_midi_port(self) -> str:
         """ ASCII MIDI Port chooser """
         ports = mido.get_output_names()
@@ -52,20 +53,25 @@ class MIDIIo(threading.Thread):
             print(f"Input can only take valid number in range, not {nb}.")
             exit()
 
+
     def send(self, message: mido.Message) -> None:
         self._midi.send(message)
 
+
     async def send_async(self, message: mido.Message) -> None:
         self._midi.send(message)
+
 
     def send_stop(self) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('stop'))
 
+
     def send_reset(self) -> None:
         """ MIDI Reset message """
         self._midi.send(mido.Message('reset'))
         # self._reset_internal_clock_state()
+
 
     def send_clock(self) -> None:
         """ MIDI Clock Message """
@@ -78,6 +84,7 @@ class MIDIIo(threading.Thread):
     async def send_start(self, initial: bool = False) -> None:
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
+
 
     async def note(self,
             clock,
@@ -92,6 +99,7 @@ class MIDIIo(threading.Thread):
         #         note=note, velocity=velocity, channel=channel)
         # noteoff = mido.Message('note_off',
         #         note=note, velocity=velocity, channel=channel)
+
 
     async def control_change(self, channel, control, value) -> None:
         """ Control Change message """

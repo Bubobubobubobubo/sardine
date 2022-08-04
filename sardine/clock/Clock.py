@@ -20,9 +20,11 @@ class TickHandle:
     """A handle that allows waiting for a specific tick to pass in the clock."""
     __slots__ = ('when', 'fut')
 
+
     def __init__(self, tick: int):
         self.when = tick
         self.fut = asyncio.Future()
+
 
     def __repr__(self):
         return '<{} {} when={}>'.format(
@@ -46,11 +48,14 @@ class TickHandle:
             return NotImplemented
         return self.when < other.when
 
+
     def __await__(self):
         return self.fut.__await__()
 
+
     def cancel(self):
         return self.fut.cancel()
+
 
     def cancelled(self):
         return self.fut.cancelled()
@@ -237,13 +242,6 @@ class Clock:
                 # all handles afterwards are either still waiting or cancelled
                 break
 
-    def ramp(self, min: int, max: int):
-        """ Generate a ramp between min and max using phase """
-        return self.phase % (max - min + 1) + min
-
-    def iramp(self, min: int, max: int):
-        """ Generate an inverted ramp between min and max using phase"""
-        return self.ppqn - self.phase % (max - min + 1) + min
 
     # ---------------------------------------------------------------------- #
     # Scheduler methods
@@ -330,7 +328,7 @@ class Clock:
         cbib = (self.current_beat % self.beat_per_bar) + 1
         bar = self.current_bar
 
-        color = "[bold red]" if self.phase == 1 else "[bold yellow]"
+        color = "[bold yellow]"
         first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
@@ -364,6 +362,7 @@ class Clock:
 
             if self.debug:
                 self.log()
+
 
     async def run_passive(self):
         """

@@ -2,14 +2,17 @@ import asyncio
 import functools
 import heapq
 import inspect
-import mido
-from rich import print
 import time
 from typing import Awaitable, Callable, Optional, Union
 
-from .AsyncRunner import AsyncRunner
-from ..io.MidiIo import MIDIIo
-from ..superdirt.SuperDirt import SuperDirt
+import mido
+from rich import print
+
+from . import AsyncRunner
+from ..io import MIDIIo
+from ..superdirt import SuperDirt
+
+__all__ = ('Clock', 'TickHandle')
 
 
 @functools.total_ordering

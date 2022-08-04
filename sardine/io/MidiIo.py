@@ -5,6 +5,9 @@ from rich.console import Console
 from rich import print
 import asyncio
 
+__all__ = ('MIDIIo',)
+
+
 class MIDIIo(threading.Thread):
 
     """

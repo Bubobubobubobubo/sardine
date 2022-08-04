@@ -1,6 +1,9 @@
 import mido
 from mido import open_output
 
+__all__ = ('MidiListener',)
+
+
 class MidiListener():
 
     """

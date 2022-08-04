@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+from os import walk
 import pathlib
 import platform, threading, subprocess, os, signal
 from time import sleep
-from os import walk
-from rich import print
 from typing import Union
+
+from rich import print
+
+__all__ = ('find_startup_file', 'find_synth_directory', 'SuperColliderProcess')
 
 
 def find_startup_file():

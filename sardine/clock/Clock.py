@@ -2,10 +2,11 @@ import asyncio
 import functools
 import heapq
 import inspect
-import mido
-from rich import print
 import time
 from typing import Awaitable, Callable, Optional, Union
+
+import mido
+from rich import print
 
 from . import AsyncRunner
 from ..io import MIDIIo

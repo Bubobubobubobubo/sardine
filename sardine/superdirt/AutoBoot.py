@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+from os import walk
 import pathlib
 import platform, threading, subprocess, os, signal
 from time import sleep
-from os import walk
-from rich import print
 from typing import Union
+
+from rich import print
 
 
 def find_startup_file():

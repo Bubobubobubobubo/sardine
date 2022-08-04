@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from time import time
-from osc4py3.as_eventloop import (osc_startup, osc_udp_client,
-                                  osc_send, osc_process)
-from osc4py3 import oscbuildparse
 from typing import Union
+
+from osc4py3 import oscbuildparse
+from osc4py3.as_eventloop import (
+    osc_startup, osc_udp_client, osc_send, osc_process
+)
 
 __all__ = ('Client', 'client', 'dirt')
 

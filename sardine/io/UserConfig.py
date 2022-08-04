@@ -6,6 +6,11 @@ from typing import Union
 from appdirs import *
 from rich import print
 
+__all__ = (
+    'Config', 'create_template_configuration_file',
+    'read_configuration_file', 'read_user_configuration'
+)
+
 
 @dataclass
 class Config:

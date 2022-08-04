@@ -1,13 +1,18 @@
 import asyncio
+from collections import deque
 from dataclasses import dataclass, field
+import functools
 from rich import print
 import inspect
 import traceback
 from typing import Any, Callable, TYPE_CHECKING, Union
 
-
 if TYPE_CHECKING:
-    from .Clock import Clock
+    from . import Clock
+
+__all__ = ('AsyncRunner', 'FunctionState')
+
+MAX_FUNCTION_STATES = 3
 
 
 def _assert_function_signature(sig: inspect.Signature, args, kwargs):
@@ -50,14 +55,14 @@ def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, 
     return guessed_mapping
 
 
-@dataclass(slots=True)
+@dataclass
 class FunctionState:
     func: Callable
     args: tuple
     kwargs: dict
 
 
-@dataclass(slots=True)
+@dataclass
 class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
@@ -67,7 +72,9 @@ class AsyncRunner:
 
     """
     clock: "Clock"
-    states: list[FunctionState] = field(default_factory=list)
+    states: list[FunctionState] = field(
+        default_factory=functools.partial(deque, (), MAX_FUNCTION_STATES)
+    )
 
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)

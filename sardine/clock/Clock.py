@@ -2,14 +2,17 @@ import asyncio
 import functools
 import heapq
 import inspect
-import mido
-from rich import print
 import time
 from typing import Awaitable, Callable, Optional, Union
 
-from .AsyncRunner import AsyncRunner
-from ..io.MidiIo import MIDIIo
-from ..superdirt.SuperDirt import SuperDirt
+import mido
+from rich import print
+
+from . import AsyncRunner
+from ..io import MIDIIo
+from ..superdirt import SuperDirt
+
+__all__ = ('Clock', 'TickHandle')
 
 
 @functools.total_ordering
@@ -291,14 +294,22 @@ class Clock:
         Used for debugging purposes. Not to be used when playing,
         can be very verbose. Will overflow the console in no-time.
         """
+        cbib = (self.current_beat % self.beat_per_bar) + 1
+        bar = self.current_bar
 
         color = "[bold red]" if self.phase == 1 else "[bold yellow]"
         first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
-        second = color + f" || [{self.tick_time}] {self.current_beat}/{self.beat_per_bar}"
+        second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
+
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
         return SuperDirt(self, sound, at, **kwargs)
+
+
+    def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+        return SuperDirt(self, sound, at, **kwargs)
+
 
     async def run_active(self):
         """

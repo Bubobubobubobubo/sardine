@@ -13,16 +13,15 @@ except ImportError:
 else:
     uvloop.install()
 
-from .io.UserConfig import read_user_configuration
-from .clock.Clock import Clock
-from .superdirt.SuperDirt import SuperDirt as Sound
-from .superdirt.AutoBoot import (
+from .io import read_user_configuration
+from .clock import Clock
+from .superdirt import (
         SuperColliderProcess,
         find_startup_file,
         find_synth_directory)
-from .io.Osc import Client as OSC
+from .io import Client as OSC
 from typing import Union
-from .sequences.Sequence import (
+from .sequences import (
         bin, euclid)
 
 warnings.filterwarnings("ignore")

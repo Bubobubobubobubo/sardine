@@ -3,10 +3,13 @@ import asyncio
 import functools
 from typing import TYPE_CHECKING, Union
 
-from ..io.Osc import dirt
+from ..io import dirt
 
 if TYPE_CHECKING:
-    from ..clock.Clock import Clock
+    from ..clock import Clock
+
+__all__ = ('SuperDirt',)
+
 
 class SuperDirt:
 

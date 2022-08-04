@@ -5,6 +5,9 @@ from osc4py3.as_eventloop import (osc_startup, osc_udp_client,
 from osc4py3 import oscbuildparse
 from typing import Union
 
+__all__ = ('Client', 'client', 'dirt')
+
+
 class Client:
 
     def __init__(self, ip: str = "127.0.0.1",

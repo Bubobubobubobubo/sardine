@@ -247,6 +247,7 @@ class Clock:
 
         runner.push(func, *args, **kwargs)
         if runner.started():
+            runner.reload()
             runner.swim()
         else:
             runner.start()

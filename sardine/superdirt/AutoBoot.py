@@ -103,11 +103,14 @@ class SuperColliderProcess:
         """Look for an instance of SuperCollider, kill it."""
 
         print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
-        for proc in psutil.process_iter():
-            if any(procstr in proc.name() for procstr in\
-                ['sclang', 'scide', 'scsynth']):
-                print(f'Killing {proc.name()}')
-                proc.kill()
+        try:
+            for proc in psutil.process_iter():
+                if any(procstr in proc.name() for procstr in\
+                    ['sclang', 'scide', 'scsynth']):
+                    print(f'Killing {proc.name()}')
+                    proc.kill()
+        except Exception:
+            print(f"[yellow]There was no SC process to kill...")
 
 
     def send(self, message: str):

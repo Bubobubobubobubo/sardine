@@ -1,7 +1,8 @@
 import itertools
+import random
 
 
-def bin(sequence: str):
+def bin(sequence: str, reverse: bool = False):
     """
     Binary sequence: transform a string of 1 and 0 to a list
     of boolean values to be used by the `trig` parameter key.
@@ -9,10 +10,31 @@ def bin(sequence: str):
     binary = []
     for char in sequence.replace(' ', ''):
         binary.append(True) if char=="1" else binary.append(False)
+
+    if reverse:
+        binary.reverse()
+
     return itertools.cycle(binary)
 
 
-def euclidean_rhythm(beats, pulses):
+def xox(sequence: str, reverse: bool = False):
+    """Simple beat sequencer function"""
+    fseq = []
+    for char in sequence:
+        if char=="x":
+            fseq.append(1)
+        elif char == "?":
+            fseq.append(1 if random.random() > 0.5 else 0)
+        elif char == " ":
+            fseq.append(0)
+        else:
+            raise RuntimeError('Characters are limited to "x", " " and "?".')
+    if reverse:
+        fseq.reverse()
+    return itertools.cycle(fseq)
+
+
+def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
     """Computes Euclidean rhythm of beats/pulses
 
     Examples:
@@ -28,6 +50,9 @@ def euclidean_rhythm(beats, pulses):
 
     Taken from: https://kountanis.com/2017/06/13/python-euclidean/
     """
+    def rotate(seq, k):
+        return seq[k:] + seq[:k]
+
     if pulses is None or pulses < 0:
         pulses = 0
     if beats is None or beats < 0:
@@ -52,10 +77,9 @@ def euclidean_rhythm(beats, pulses):
         pivot += interval
         rests -= 1
 
+    if rotate != 0:
+        result = rotate(result, rotation)
+
     return result
 
 euclid = euclidean_rhythm
-
-if __name__ == "__main__":
-    print(f"{euclid(beats=2, pulses=4)}")
-    print(f"{euclid(beats=4, pulses=9)}")

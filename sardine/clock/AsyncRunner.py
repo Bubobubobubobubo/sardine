@@ -134,6 +134,7 @@ class AsyncRunner:
 
         """
         self._stop = True
+        self.reload()
 
     async def _runner(self):
         self.swim()

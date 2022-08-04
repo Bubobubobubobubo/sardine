@@ -76,16 +76,19 @@ class SuperDirt:
 
         return self
 
-    def query_existing_value(self, index):
+    def query_existing_value(self, index: str) -> Union[int, float]:
         "Find the value associated to a name. Return false if not found."
         try:
             posIndex = self.content.index(index)
         except ValueError:
-            return False
+            raise ValueError("can't query existing value {index}")
         return self.content[posIndex + 1]
 
 
-    def change_existing_value(self, index, new_value):
+    def change_existing_value(self,
+            index: str,
+            new_value: Union[int, float]
+        ) -> None:
         "Change the value associated to a name."
         try:
             valueIndex = self.content.index(index)
@@ -94,9 +97,9 @@ class SuperDirt:
         self.content[valueIndex + 1] = new_value
 
 
-    def n(self, number=0):
+    def n(self, number: int = 0) -> None:
         """Change the number of the selected sample"""
-        if not isinstance(number, (int, float, list)):
+        if not isinstance(number, (int, float)):
             return
         current_value = self.query_existing_value("sound")
         if ':' in list(current_value):
@@ -109,12 +112,13 @@ class SuperDirt:
                     new_value=current_value + str(f":{int(number)}"))
 
 
-    def willPlay(self):
+    def willPlay(self) -> bool:
         """
         Return a boolean that will tell if the pattern is planned to be sent
         to SuperDirt or if it will be discarded.
         """
         return True if self.query_existing_value("trig") == 1 else False
+
 
     def schedule(self, message):
         async def _waiter():
@@ -127,11 +131,12 @@ class SuperDirt:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name='superdirt-scheduler')
 
-    def out(self, output=0):
+
+    def out(self, orbit:int = 0) -> None:
         """Must be able to deal with polyphonic messages """
 
         # It is now possible to specify the orbit in this function.
-        if output != 0: self.change_existing_value("orbit", output)
+        if orbit != 0: self.change_existing_value("orbit", orbit)
 
         if not self.willPlay():
             return

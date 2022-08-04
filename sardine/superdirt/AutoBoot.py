@@ -7,6 +7,8 @@ from typing import Union
 
 from rich import print
 
+__all__ = ('find_startup_file', 'find_synth_directory', 'SuperColliderProcess')
+
 
 def find_startup_file():
     """ Find the startup file when booting Sardine """

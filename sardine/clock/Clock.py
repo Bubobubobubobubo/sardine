@@ -14,9 +14,8 @@ from ..superdirt.SuperDirt import SuperDirt
 
 @functools.total_ordering
 class TickHandle:
-    __slots__ = ('when', 'fut')
-
     """A handle that allows waiting for a specific tick to pass in the clock."""
+    __slots__ = ('when', 'fut')
 
     def __init__(self, tick: int):
         self.when = tick

@@ -3,7 +3,7 @@ import functools
 import heapq
 import inspect
 import time
-from typing import Awaitable, Callable, Optional, Union
+from typing import Callable, Optional, Union
 
 import mido
 from rich import print
@@ -106,15 +106,22 @@ class Clock:
     def accel(self) -> int:
         return self._accel
 
-    @property
-    def tick(self) -> int:
-        return self._current_tick
-
     @accel.setter
     def accel(self, value: int):
         if value >= 100:
             raise ValueError('cannot set accel above 100')
         self._accel = value
+
+    @property
+    def tick(self) -> int:
+        return self._current_tick
+
+    @tick.setter
+    def tick(self, new_tick: int) -> int:
+        change = new_tick - self._current_tick
+        self._current_tick = new_tick
+        self._shift_handles(change)
+        self._update_handles()
 
     @property
     def bpm(self) -> int:
@@ -191,14 +198,20 @@ class Clock:
         return interval - self._delta
 
     def _increment_clock(self):
-        # this is implemented very similarly to asyncio.BaseEventLoop
-        self._current_tick = tick = self._current_tick + 1
+        self._current_tick += 1
+        self._update_handles()
 
+    def _shift_handles(self, n_ticks: int):
+        for handle in self.tick_handles:
+            handle.when += n_ticks
+
+    def _update_handles(self):
+        # this is implemented very similarly to asyncio.BaseEventLoop
         while self.tick_handles:
             handle = self.tick_handles[0]
             if handle.cancelled():
                 heapq.heappop(self.tick_handles)
-            elif tick >= handle.when:
+            elif self.tick >= handle.when:
                 handle.fut.set_result(None)
                 heapq.heappop(self.tick_handles)
             else:
@@ -238,7 +251,7 @@ class Clock:
         if runner is not None:
             runner.stop()
 
-    def wait_until(self, *, tick: int) -> Awaitable[None]:
+    def wait_until(self, *, tick: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
 
@@ -249,7 +262,7 @@ class Clock:
 
         return handle
 
-    def wait_after(self, *, n_ticks: int) -> Awaitable[None]:
+    def wait_after(self, *, n_ticks: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to pass N ticks from now."""
         return self.wait_until(tick=self._current_tick + n_ticks)
 

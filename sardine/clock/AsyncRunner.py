@@ -1,13 +1,16 @@
 import asyncio
+from collections import deque
 from dataclasses import dataclass, field
+import functools
 from rich import print
 import inspect
 import traceback
 from typing import Any, Callable, TYPE_CHECKING, Union
 
-
 if TYPE_CHECKING:
     from .Clock import Clock
+
+MAX_FUNCTION_STATES = 3
 
 
 def _assert_function_signature(sig: inspect.Signature, args, kwargs):
@@ -67,7 +70,9 @@ class AsyncRunner:
 
     """
     clock: "Clock"
-    states: list[FunctionState] = field(default_factory=list)
+    states: list[FunctionState] = field(
+        default_factory=functools.partial(deque, (), MAX_FUNCTION_STATES)
+    )
 
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)

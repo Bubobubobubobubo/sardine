@@ -21,8 +21,7 @@ from .superdirt import (
         find_synth_directory)
 from .io import Client as OSC
 from typing import Union
-from .sequences import (
-        bin, euclid)
+from .sequences import *
 
 warnings.filterwarnings("ignore")
 

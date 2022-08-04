@@ -79,21 +79,19 @@ class MIDIIo(threading.Thread):
         """ MIDI Start message """
         self._midi.send(mido.Message('start'))
 
-    async def note(self, clock, delay: Union[int, float],
-            note:int = 60, velocity: int = 127, channel:int = 1) -> None:
-        """ Double message: noteon and noteoff """
-        noteon = mido.Message('note_on',
-                note=note, velocity=velocity, channel=channel)
-        noteoff = mido.Message('note_off',
-                note=note, velocity=velocity, channel=channel)
-
-        self._midi.send(noteon)
-        let_it_die = 1 # we need to keep some time to let the note die
-        duration = clock.tick_time + ((delay * clock.ppqn) - let_it_die)
-        while clock.tick_time < duration:
-            # Increased temporal resolution for midi messages
-            await asyncio.sleep(clock._get_tick_duration() / (clock.ppqn * 2))
-        self._midi.send(noteoff)
+    async def note(self,
+            clock,
+            delay: Union[int, float],
+            note:int = 60,
+            velocity: int = 127,
+            channel:int = 1
+        ) -> None:
+        """ Send a MIDI Note through principal MIDI output """
+        pass
+        # noteon = mido.Message('note_on',
+        #         note=note, velocity=velocity, channel=channel)
+        # noteoff = mido.Message('note_off',
+        #         note=note, velocity=velocity, channel=channel)
 
     async def control_change(self, channel, control, value) -> None:
         """ Control Change message """

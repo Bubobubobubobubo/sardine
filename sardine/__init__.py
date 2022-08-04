@@ -73,6 +73,9 @@ children = c.print_children
 S = c.note
 
 
+n = next
+
+
 def hush():
     """ Stop all runners """
     for runner in c.runners.values():

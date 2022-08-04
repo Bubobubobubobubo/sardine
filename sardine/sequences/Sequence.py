@@ -80,6 +80,6 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
     if rotate != 0:
         result = rotate(result, rotation)
 
-    return result
+    return itertools.cycle(result)
 
 euclid = euclidean_rhythm

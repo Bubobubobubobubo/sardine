@@ -295,14 +295,22 @@ class Clock:
         Used for debugging purposes. Not to be used when playing,
         can be very verbose. Will overflow the console in no-time.
         """
+        cbib = (self.current_beat % self.beat_per_bar) + 1
+        bar = self.current_bar
 
         color = "[bold red]" if self.phase == 1 else "[bold yellow]"
         first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
-        second = color + f" || [{self.tick_time}] {self.current_beat}/{self.beat_per_bar}"
+        second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
+
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
         return SuperDirt(self, sound, at, **kwargs)
+
+
+    def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+        return SuperDirt(self, sound, at, **kwargs)
+
 
     async def run_active(self):
         """

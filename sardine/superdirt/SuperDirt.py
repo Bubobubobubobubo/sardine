@@ -63,6 +63,8 @@ class SuperDirt:
     #     for param in params:
     #         setattr(self, param, partial(self._generic_mapper, name=param))
 
+
+
     def addOrChange(self, value, name: str):
         """Will set a parameter or change it if already in message """
         try:
@@ -82,6 +84,7 @@ class SuperDirt:
             return False
         return self.content[posIndex + 1]
 
+
     def change_existing_value(self, index, new_value):
         "Change the value associated to a name."
         try:
@@ -89,6 +92,22 @@ class SuperDirt:
         except ValueError:
             return
         self.content[valueIndex + 1] = new_value
+
+
+    def n(self, number=0):
+        """Change the number of the selected sample"""
+        if not isinstance(number, (int, float, list)):
+            return
+        current_value = self.query_existing_value("sound")
+        if ':' in list(current_value):
+            self.change_existing_value(
+                    index="sound",
+                    new_value=current_value.split(':')[0] + str(f":{int(number)}"))
+        else:
+            self.change_existing_value(
+                    index="sound",
+                    new_value=current_value + str(f":{int(number)}"))
+
 
     def willPlay(self):
         """

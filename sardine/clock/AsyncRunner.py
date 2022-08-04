@@ -173,6 +173,7 @@ class AsyncRunner:
                     state.func(*args, **kwargs)
                 except Exception as e:
                     print(f'[red][Function exception | ({name})]')
+                    # TODO: Do as imple asyncio.create_talk on restored
                     traceback.print_exception(e)
                     self._revert_state()
                 finally:

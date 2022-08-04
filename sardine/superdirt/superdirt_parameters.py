@@ -1,6 +1,7 @@
 # Add your custom SuperDirt parameters to the list
 
 params = [
+        "n",
         "amp",
         "sound",
         "accelerate",

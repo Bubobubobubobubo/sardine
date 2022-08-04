@@ -70,8 +70,8 @@ c = Clock(
 
 cs, cr = c.schedule_func, c.remove
 children = c.print_children
-
 S = c.note
+
 
 def hush():
     """ Stop all runners """
@@ -90,39 +90,20 @@ def cc(channel: int=1, control: int=20, value: int=64):
     asyncio.create_task(c._midi.control_change(
         channel=channel, control=control, value=value))
 
-c.start()
-
-# Tests
-# =====
 
 def swim(fn):
     """ Push a function to the clock """
     cs(fn)
     return fn
 
+
 def die(fn):
     """ Remove a function from the clock """
     cr(fn)
     return fn
 
-from random import random
-from itertools import cycle
 
-c1 = cycle([1, 0.5])
-c2 = cycle([0.5, 1])
-c3 = cycle(list(range(1,20)))
+c.start()
 
-@swim
-def one(delay=1):
-    S('pluck', speed=next(c1)).out()
-    cs(one)
-
-@swim
-def two(delay=2):
-    S('cp', speed=next(c2)).out()
-    cs(two)
-
-@swim
-def three(delay=0.5):
-    S('amencutup', nb=next(c3)).out()
-    cs(three)
+# Tests
+# =====

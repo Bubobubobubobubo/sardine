@@ -79,7 +79,7 @@ class AsyncRunner:
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)
     _task: Union[asyncio.Task, None] = field(default=None, repr=False)
-    _reload_event: asyncio.Event = field(default_factory=asyncio.Event)
+    _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
 
     def push(self, func: Callable, *args, **kwargs):
         """Pushes a function state to the runner to be called in

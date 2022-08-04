@@ -79,10 +79,10 @@ class Clock:
         self._midi = MIDIIo(port_name=midi_port)
 
         # Clock parameters
-        self.bpm = bpm
-        self.ppqn = ppqn
-        self.beat_per_bar = beats_per_bar
         self._accel = 0.0
+        self._bpm = bpm
+        self._ppqn = ppqn
+        self.beat_per_bar = beats_per_bar
         self.running = False
         self.debug = False
 
@@ -114,6 +114,7 @@ class Clock:
         if value >= 100:
             raise ValueError('cannot set accel above 100')
         self._accel = value
+        self._reload_runners()
 
     @property
     def tick(self) -> int:
@@ -124,6 +125,7 @@ class Clock:
         change = new_tick - self._current_tick
         self._current_tick = new_tick
         self._shift_handles(change)
+        self._reload_runners()
         self._update_handles()
 
     @property
@@ -135,6 +137,16 @@ class Clock:
         if not 1 < new_bpm < 900:
             raise ValueError('bpm must be within 1 and 800')
         self._bpm = new_bpm
+        self._reload_runners()
+
+    @property
+    def ppqn(self) -> int:
+        return self._ppqn
+
+    @ppqn.setter
+    def ppqn(self, pulses_per_quarter_note: int) -> int:
+        self._ppqn = pulses_per_quarter_note
+        self._reload_runners()
 
     @property
     def current_beat(self) -> int:
@@ -204,12 +216,13 @@ class Clock:
         self._current_tick += 1
         self._update_handles()
 
+    def _reload_runners(self):
+        for runner in self.runners.values():
+            runner.reload()
+
     def _shift_handles(self, n_ticks: int):
         for handle in self.tick_handles:
             handle.when += n_ticks
-
-        for runner in self.runners.values():
-            runner.reload()
 
     def _update_handles(self):
         # this is implemented very similarly to asyncio.BaseEventLoop

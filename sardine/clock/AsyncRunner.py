@@ -181,10 +181,12 @@ class AsyncRunner:
 
                 handle = self._wait_beats(delay)
                 reload = asyncio.create_task(self._reload_event.wait())
-                done, _ = await asyncio.wait((handle, reload), return_when=asyncio.FIRST_COMPLETED)
+                done, pending = await asyncio.wait((handle, reload), return_when=asyncio.FIRST_COMPLETED)
+
+                for fut in pending:
+                    fut.cancel()
                 if reload in done:
                     self._reload_event.clear()
-                    handle.cancel()
                     self.swim()
                     continue
 

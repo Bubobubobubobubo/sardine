@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from os import walk
+from os import walk, path
 from appdirs import *
 from pathlib import Path
 import platform, subprocess, os, signal
@@ -179,8 +179,9 @@ class SuperColliderProcess:
         if os == "Linux":
             return "sclang"
         elif os == "Windows":
-            # I really have no clue
-            return "scsynth.exe"
+            prog = Path(path.expandvars('%programfiles%'))
+            sc = tuple(prog.glob('SuperCollider-*'))
+            return str("\\".join([str(sc), "sclang.exe"]))
         elif os == "Darwin":
             return "/Applications/SuperCollider.app/Contents/MacOS/sclang"
         else:

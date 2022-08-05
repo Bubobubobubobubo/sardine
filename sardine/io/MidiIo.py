@@ -116,6 +116,18 @@ class MIDIIo(threading.Thread):
 
 
     async def control_change(self, channel, control, value) -> None:
-        """ Control Change message """
+        """Control Change message"""
         self.schedule(mido.Message('control_change',
             channel=channel, control=control, value=value))
+
+
+    async def program_change(self, channel, program) -> None:
+        """Program change message"""
+        self.schedule(mido.Message( 'program_change',
+            program=program, channel=channel))
+
+
+    async def pitchwheel(self, channel, pitch) -> None:
+        """Program change message"""
+        self.schedule(mido.Message( 'program_change',
+            pitch=pitch, channel=channel))

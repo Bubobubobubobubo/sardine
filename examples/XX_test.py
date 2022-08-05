@@ -37,8 +37,25 @@ def trump(delay=1):
     cs(trump, delay=choice([1, 2/1]))
 
 from random import randint
+import itertools
+
+a = itertools.cycle([50, 54, 57, 60])
+ap = itertools.cycle([50, 54, 57, 60])
+b = itertools.cycle([1/2, 1/4, 1, 1/2])
 @swim
 def test_midi(delay=1/4):
-    midinote(0.1, randint(50, 80))
-    cs(test_midi, delay=1/4)
+    midinote(random() / 100, n(a), channel=0)
+    midinote(random() / 100, n(ap) + 12, channel=0)
+    pgch(channel=0, program=randint(1,120))
+    cs(test_midi, delay=n(b))
+@swim
+def test(delay=1):
+    S('808',
+            n=randint(1,10),
+            legato=0.01,
+            shape=0.8).out()
+    S('bd', trig=1 if random() > 0.8 else 0,
+            shape=0.8).out()
+    cs(test, delay=1/4)
 
+hush()

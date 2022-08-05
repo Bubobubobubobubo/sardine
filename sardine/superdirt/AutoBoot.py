@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 from os import walk, path
-from appdirs import *
 from pathlib import Path
 import platform, subprocess, os, signal
 import shutil
 from typing import Union
-from rich import print
+from appdirs import *
+
 import psutil
+from rich import print
 
 # __all__ = ('SuperColliderProcess')
 

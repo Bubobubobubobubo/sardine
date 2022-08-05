@@ -9,7 +9,7 @@ from appdirs import *
 import psutil
 from rich import print
 
-# __all__ = ('SuperColliderProcess')
+__all__ = ('SuperColliderProcess',)
 
 
 class SuperColliderProcess:

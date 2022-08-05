@@ -84,11 +84,11 @@ def hush():
         runner.stop()
 
 
-def note(delay, note: int=60, velocity: int=127, channel: int=1):
+def midinote(delay, note: int=60, velocity: int=127, channel: int=1):
     """ Send a MIDI Note """
-    asyncio.create_task(c._midi.note(
-        clock=c, delay=delay, note=note,
-            velocity=velocity, channel=channel))
+    asyncio.create_task(
+            c._midi.note(delay=delay, note=note,
+                velocity=velocity, channel=channel))
 
 
 def cc(channel: int=1, control: int=20, value: int=64):

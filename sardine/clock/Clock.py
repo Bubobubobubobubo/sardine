@@ -81,7 +81,9 @@ class Clock:
         bpm: Union[float, int] = 120,
         beats_per_bar: int = 4
     ):
-        self._midi = MIDIIo(port_name=midi_port)
+        self._midi = MIDIIo(
+                port_name=midi_port,
+                clock=self)
 
         # Clock parameters
         self._accel = 0.0

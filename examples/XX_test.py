@@ -1,5 +1,7 @@
 from random import random, randint, choice
 
+from sardine import swim
+
 class Holder:
     pass
 
@@ -33,3 +35,10 @@ def trump(delay=1):
             legato=0.2,
             trig=d4(1)).out()
     cs(trump, delay=choice([1, 2/1]))
+
+from random import randint
+@swim
+def test_midi(delay=1/4):
+    midinote(0.1, randint(50, 80))
+    cs(test_midi, delay=1/4)
+

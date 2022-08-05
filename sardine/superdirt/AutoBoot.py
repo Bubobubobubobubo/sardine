@@ -175,14 +175,23 @@ class SuperColliderProcess:
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""
-        os = platform.system()
-        if os == "Linux":
+        os_name = platform.system()
+        if os_name == "Linux":
             return "sclang"
-        elif os == "Windows":
-            prog = Path(path.expandvars('%programfiles%'))
-            sc = tuple(prog.glob('SuperCollider-*'))
-            return str("\\".join([str(sc), "sclang.exe"]))
-        elif os == "Darwin":
+        elif os_name == "Windows":
+            if shutil.which("sclang"):
+                return "sclang"
+
+            # The Windows installer doesn't usually add sclang to PATH
+            # so we'll try to find it manually
+            prog = Path(path.expandvars("%programfiles%"))
+            colliders = tuple(prog.glob("SuperCollider-*"))
+            if not colliders:
+                raise OSError("SuperCollider could not be found")
+
+            latest_ish = colliders[-1]
+            return str(latest_ish / "sclang.exe")
+        elif os_name == "Darwin":
             return "/Applications/SuperCollider.app/Contents/MacOS/sclang"
         else:
             raise OSError('This OS is not officially supported by Sardine.')

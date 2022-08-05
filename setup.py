@@ -27,6 +27,7 @@ setup(
         "appdirs~=1.4",
         "mido~=1.2",
         "osc4py3~=1.0",
+        "psutil~=5.0",
         "python-rtmidi~=1.4",
         "rich~=12.5"
     ],

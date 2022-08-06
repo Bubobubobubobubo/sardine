@@ -121,8 +121,8 @@ def die(fn):
     return fn
 
 
-c.start(active=True)
-# c.start(active=False)
+# c.start(active=True)
+c.start(active=False)
 
 # Tests
 # =====

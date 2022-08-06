@@ -4,6 +4,8 @@ import heapq
 import inspect
 import time
 from typing import Callable, Optional, Union
+from collections import deque
+
 
 import mido
 from rich import print
@@ -104,6 +106,7 @@ class Clock:
         # MIDI In Listener
         self._midi_port = midi_port
         self._listener = None
+        self._delta_duration_list = deque(maxlen=200)
 
     def __repr__(self):
         return '<{} running={} tick={}>'.format(
@@ -367,6 +370,15 @@ class Clock:
             if self.debug:
                 self.log()
 
+    def _estimate_bpm_from_delta(self, delta: float) -> float:
+        """Estimate the current BPM from delta value"""
+        quarter_duration = delta * self.ppqn
+        return 60 / quarter_duration
+
+
+    def _mean_from_delta(self):
+        """Estimate the current BPM by doing an arithmetic mean"""
+        return sum(self._delta_duration_list) / len(self._delta_duration_list)
 
     async def run_passive(self):
         """Main runner for the passive mode (slave)"""
@@ -374,8 +386,13 @@ class Clock:
         self._current_tick = 0
         self._delta = 0.0
         while self.running:
+            begin = time.perf_counter()
             await asyncio.sleep(0.0)
             self._listener.wait_for_tick()
             self._increment_clock()
+            elapsed = time.perf_counter() - begin
+            self._delta_duration_list.append(
+                    self._estimate_bpm_from_delta(elapsed))
+            self._bpm = self._mean_from_delta()
             if self.debug:
                 self.log()

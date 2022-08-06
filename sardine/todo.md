@@ -6,6 +6,7 @@
 
 * [ ] MIDI related:
     * MIDI In
+        * Check if MidiListener is correct
         * Receive MIDI Notes, MIDI CC and MIDI Clock
         * Open new arbitrary connexions
     * MIDI Out

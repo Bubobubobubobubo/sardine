@@ -14,7 +14,10 @@ else:
     uvloop.install()
 
 from .io import read_user_configuration
-from .io import MidiListener
+from .io import (
+        MidiListener,
+        ControlTarget,
+        NoteTarget)
 from .clock import Clock
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC

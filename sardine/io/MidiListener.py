@@ -138,38 +138,31 @@ class MidiListener():
 
 
 class ClockListener:
-    def __init__(
-            self,
-            port: Optional[str] = None):
-
+    def __init__(self, port: Optional[str] = None):
+        print("Creating MIDIClock Listener")
         self.queue = deque(maxlen=180)
 
         if port:
             try:
                 self._input = open_input(port)
-                self._input.callback = self._callback
                 print(f"MidiListener: listening on port {port}")
             except Exception:
                 raise OSError(f"Couldn't listen on port {port}")
         else:
             try:
                 self._input = open_input()
-                self._input.callback = self._callback
                 listened_port = mido.get_input_names()[0]
                 print(f"MidiListener: listening on port {listened_port}")
             except Exception:
                 raise OSError(f"Couldn't listen on port {port}")
 
 
-    def _callback(self, message):
-        """Callback for MidiListener Port"""
-        if message.type == 'clock':
-            self.queue.append(message)
-
-
-    def get(self) -> Union[Message, None]:
-        """Consume a MIDI Clock Event"""
-        if self.queue:
-            return self.queue.pop()
-        else:
-            raise IOError('Empty ClockListener Queue')
+    def wait_for_tick(self):
+        """Wait for a tick coming from the MIDI Port"""
+        while True:
+            msg = self._input.poll()
+            if msg is None:
+                continue
+            elif msg.type == 'clock':
+                break
+        return msg

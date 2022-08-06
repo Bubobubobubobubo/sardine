@@ -9,7 +9,7 @@ import mido
 from rich import print
 
 from . import AsyncRunner
-from ..io import MIDIIo
+from ..io import MIDIIo, ClockListener
 from ..superdirt import SuperDirt
 
 __all__ = ('Clock', 'TickHandle')
@@ -102,6 +102,7 @@ class Clock:
         self._delta = 0.0
 
         # MIDI In Listener
+        self._midi_port = midi_port
         self._listener = None
 
     def __repr__(self):
@@ -293,13 +294,16 @@ class Clock:
         """ Print all children on clock """
         [print(child) for child in self.runners]
 
-    def start(self):
-        """ Restart message """
+    def start(self, active=True):
+        """Start MIDI Clock"""
         self.reset()
         if not self.running:
             self._midi.send(mido.Message('start'))
             self.running = True
-            asyncio.create_task(self.run_active())
+            if active:
+                asyncio.create_task(self.run_active())
+            else:
+                asyncio.create_task(self.run_passive())
 
     def reset(self):
         for runner in self.runners.values():
@@ -340,14 +344,12 @@ class Clock:
         return SuperDirt(self, sound, at, **kwargs)
 
 
-    def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-        return SuperDirt(self, sound, at, **kwargs)
+    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+    #     return SuperDirt(self, sound, at, **kwargs)
 
 
     async def run_active(self):
-        """
-        Main runner for the active mode (master)
-        """
+        """Main runner for the active mode (master)"""
         self._current_tick = 0
         self._delta = 0.0
 
@@ -367,7 +369,13 @@ class Clock:
 
 
     async def run_passive(self):
-        """
-        Main runner for the passive mode (slave)
-        """
-        # on clock signal, increment internal counter
+        """Main runner for the passive mode (slave)"""
+        self._listener = ClockListener(port=self._midi_port)
+        self._current_tick = 0
+        self._delta = 0.0
+        while self.running:
+            await asyncio.sleep(0.0)
+            self._listener.wait_for_tick()
+            self._increment_clock()
+            if self.debug:
+                self.log()

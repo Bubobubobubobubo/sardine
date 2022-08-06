@@ -121,7 +121,13 @@ def die(fn):
     return fn
 
 
-c.start()
+c.start(active=True)
+# c.start(active=False)
 
 # Tests
 # =====
+
+@swim
+def bd():
+    S('bd').out()
+    cs(bd)

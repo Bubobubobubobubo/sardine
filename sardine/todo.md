@@ -4,8 +4,6 @@
     * accel can go higher than 100?
     * high-delta resulting in negative tick duration corner case.
 * [ ] MIDI related:
-    * MIDI In
-        * Receive MIDI Clock
     * MIDI Out
         * Hold open multiple connexions with simple API
 * [ ] SuperDirt related

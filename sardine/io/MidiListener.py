@@ -10,7 +10,11 @@ from collections import deque
 from dataclasses import dataclass
 
 
-__all__ = ('MidiListener', 'ControlTarget', 'NoteTarget')
+__all__ = (
+        'MidiListener',
+        'ClockListener',
+        'ControlTarget',
+        'NoteTarget')
 
 
 @dataclass

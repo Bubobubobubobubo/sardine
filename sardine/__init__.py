@@ -15,6 +15,7 @@ else:
 
 from .io import read_user_configuration
 from .io import (
+        ClockListener,
         MidiListener,
         ControlTarget,
         NoteTarget)

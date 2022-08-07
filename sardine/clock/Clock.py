@@ -87,6 +87,8 @@ class Clock:
     port_name: str -- Exact String for the MIDIOut Port.
     bpm: Union[int, float] -- Clock Tempo in beats per minute
     beats_per_bar: int -- Number of beats in a given bar
+    deferred_scheduling: bool -- Whether the clock implicitly defers
+                                 sounds sent in functions or not.
     """
 
     def __init__(
@@ -94,7 +96,8 @@ class Clock:
         midi_port: Optional[str],
         ppqn: int = 48,
         bpm: Union[float, int] = 120,
-        beats_per_bar: int = 4
+        beats_per_bar: int = 4,
+        deferred_scheduling: bool = True
     ):
         self._midi = MIDIIo(
                 port_name=midi_port,
@@ -111,6 +114,7 @@ class Clock:
         # Scheduling attributes
         self.runners: dict[str, AsyncRunner] = {}
         self.tick_handles: list[TickHandle] = []
+        self._deferred_scheduling = deferred_scheduling
 
         # Real-time attributes
         self._current_tick = 0
@@ -145,6 +149,17 @@ class Clock:
             raise ValueError('cannot set accel above 100')
         self._accel = value
         self._reload_runners()
+
+    @property
+    def deferred_scheduling(self):
+        return self._deferred_scheduling
+
+    @deferred_scheduling.setter
+    def deferred_scheduling(self, enabled: bool):
+        self._deferred_scheduling = enabled
+
+        for runner in self.runners.values():
+            runner.deferred = enabled
 
     @property
     def tick(self) -> int:
@@ -290,7 +305,9 @@ class Clock:
         name = func.__name__
         runner = self.runners.get(name)
         if runner is None:
-            runner = self.runners[name] = AsyncRunner(self)
+            runner = self.runners[name] = AsyncRunner(
+                clock=self, deferred=self.deferred_scheduling
+            )
 
         runner.push(func, *args, **kwargs)
         if runner.started():

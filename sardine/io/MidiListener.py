@@ -66,7 +66,7 @@ class MidiListener():
 
     def _callback(self, message):
         """Callback for MidiListener Port"""
-        # Add more filters
+        # Add more filters
         if message:
             self.queue.append(message)
 

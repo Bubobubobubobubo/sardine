@@ -64,7 +64,7 @@ def read_user_configuration() -> Union[Config, None]:
     user_dir = Path(user_data_dir(appname, appauthor))
     config_file = user_dir / "config.json"
 
-    # Check if the configuration folder exists
+    # Check if the configuration folder exists
     if user_dir.is_dir():
         print(f"[green][1/3] Found configuration folder at {user_dir}[/green]")
 
@@ -76,7 +76,7 @@ def read_user_configuration() -> Union[Config, None]:
             create_template_configuration_file(user_dir, config_file)
             return read_configuration_file(config_file)
 
-    # If the configuration folder doesn't exist, create it and create config
+    # If the configuration folder doesn't exist, create it and create config
     else:
         print(f"[green][1/3] Creating configuration folder[/green]")
         user_dir.mkdir(parents=True)

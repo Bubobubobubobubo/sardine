@@ -3,7 +3,7 @@ from random import choices as randomChoices
 
 #==============================================================================#
 
-# Inspired by TidalCycles
+# Inspired by TidalCycles
 def always(): return True
 def almostAlways(): return True if random() < 0.90 else False
 def often(): return True if random() < 0.75 else False

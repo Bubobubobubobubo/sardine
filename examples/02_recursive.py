@@ -18,7 +18,7 @@ async def hh(delay=0.5):
 cs(bd, delay = 1)
 cs(hh, delay = 0.5)
 
-# You can reevalute functions on-the-fly when they are scheduled!
+# You can reevalute functions on-the-fly when they are scheduled!
 
 async def hh(delay=0.5):
     """ A simple hihat """

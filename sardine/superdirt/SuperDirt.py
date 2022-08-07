@@ -26,7 +26,7 @@ class SuperDirt:
         self.content = ["orbit", 0, "trig", 1, "sound", sound]
         self.after: int = at
 
-        # Iterating over kwargs. If parameter seems to refer to a
+        # Iterating over kwargs. If parameter seems to refer to a
         # method (usually dynamic SuperDirt parameters), call it
         for k, v in kwargs.items():
             method = getattr(self, k, None)
@@ -38,7 +38,7 @@ class SuperDirt:
         return ' '.join(str(e) for e in self.content)
 
     # ------------------------------------------------------------------------
-    # GENERIC Mapper: make parameters chainable!
+    # GENERIC Mapper: make parameters chainable!
 
     def __getattr__(self, name: str):
         method = functools.partial(self.addOrChange, name=name)

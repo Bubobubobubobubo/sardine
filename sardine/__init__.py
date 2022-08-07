@@ -19,7 +19,7 @@ from .io import (
         MidiListener,
         ControlTarget,
         NoteTarget)
-from .clock import Clock
+from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from typing import Union
@@ -121,10 +121,61 @@ def die(fn):
     return fn
 
 
-async def sleep(n_beats: Union[int, float]):
-    """Sleeps for the given number of beats."""
+def sleep(n_beats: Union[int, float]):
+    """Artificially sleep in the current function for `n_beats`.
+
+    Example usage: ::
+
+        @swim
+        def func(delay=4):
+            sleep(3)
+            for _ in range(3):
+                S('909').out()
+                sleep(1/2)
+            cs(func)
+
+    This should *only* be called inside functions scheduled by the clock.
+    Calling this outside of a scheduled function will result in
+    abnormal behavior such as overlapping sounds and clock desync.
+
+    Using in asynchronous functions
+    -------------------------------
+
+    This can be used in `async def` functions and does *not* need to be awaited.
+
+    Sounds scheduled in asynchronous functions will not be influenced
+    by real time passing. For example, if you sleep for 48 ticks and
+    await a function that takes 5 ticks to complete, any sounds sent
+    afterwards will occur 53 ticks from when the function was called (48 + 5).
+
+    ::
+
+        @swim
+        async def func(delay=4):
+            print(c.tick)  # 0
+
+            sleep(1)       # +48 virtual ticks (assuming c.ppqn = 48)
+            await abc()    # +5 real-time ticks
+
+            S('bd').out()  # occurs 48 ticks from now
+            print(c.tick)  # 53
+            cs(func)
+
+    Technical Details
+    -----------------
+
+    Unlike `time.sleep(n)`, this function does not actually block
+    the function from running. Instead, it temporarily affects the
+    value of `Clock.tick` and extends the perceived time of other
+    Clock methods like `Clock.wait_after()` and `Clock.get_beat_ticks()`.
+
+    In essence, this maintains the precision of sound scheduling
+    without requiring the use of declarative syntax like
+    `S('909', at=1/2).out()`.
+
+    """
     ticks = c.get_beat_ticks(n_beats, sync=False)
-    await c.wait_after(n_ticks=ticks)
+    c.shift_ctx(ticks)
 
 
 # c.start(active=True)

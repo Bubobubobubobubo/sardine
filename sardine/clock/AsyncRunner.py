@@ -198,7 +198,11 @@ class AsyncRunner:
                     continue
 
                 try:
-                    await _maybe_coro(state.func, *args, **kwargs)
+                    # Use copied context in function by creating it as a task
+                    await asyncio.create_task(
+                        _maybe_coro(state.func, *args, **kwargs),
+                        name=f'asyncrunner-func-{name}'
+                    )
                 except Exception as e:
                     print(f'[red][Function exception | ({name})]')
                     # TODO: Do as imple asyncio.create_talk on restored

@@ -1,4 +1,5 @@
 import asyncio
+import contextvars
 import functools
 import heapq
 import inspect
@@ -18,6 +19,15 @@ __all__ = ('Clock', 'TickHandle')
 
 T = TypeVar('T')
 MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
+
+tick_shift = contextvars.ContextVar('tick_shift', default=0)
+"""
+This specifies the number of ticks to offset the clock in the current context.
+
+Usually this tick shift is updated within the context of scheduled functions
+to simulate sleeping without actually blocking the function.
+Behavior is undefined if the tick shift is changed in the global context.
+"""
 
 
 @functools.total_ordering
@@ -112,8 +122,14 @@ class Clock:
         self._delta_duration_list = deque(maxlen=200)
 
     def __repr__(self):
+        shift = tick_shift.get()
+        if shift:
+            tick = f'{self._current_tick}{shift:+}'
+        else:
+            tick = str(self._current_tick)
+
         return '<{} running={} tick={}>'.format(
-            type(self).__name__, self.running, self._current_tick
+            type(self).__name__, self.running, tick
         )
 
     # ---------------------------------------------------------------------- #
@@ -132,7 +148,7 @@ class Clock:
 
     @property
     def tick(self) -> int:
-        return self._current_tick
+        return self._current_tick + tick_shift.get()
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
@@ -165,7 +181,7 @@ class Clock:
     @property
     def current_beat(self) -> int:
         """The number of beats passed since the initial time."""
-        return self._current_tick // self.ppqn
+        return self.tick // self.ppqn
 
     @property
     def current_bar(self) -> int:
@@ -175,7 +191,7 @@ class Clock:
     @property
     def phase(self) -> int:
         """The phase of the current beat in ticks."""
-        return self._current_tick % self.ppqn
+        return self.tick % self.ppqn
 
     # ---------------------------------------------------------------------- #
     # Clock methods
@@ -196,7 +212,7 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
 
     def get_bar_ticks(self, n_bars: Union[int, float], *, sync: bool = True) -> int:
         """Determines the number of ticks to wait for N bars to pass.
@@ -214,7 +230,18 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
+
+    def shift_ctx(self, n_ticks: int):
+        """Shifts the clock by `n_ticks` in the current context.
+
+        This is useful for simulating sleeps without blocking.
+
+        If the real-time clock tick needs to be shifted,
+        assign to the `c.tick` property instead.
+
+        """
+        tick_shift.set(tick_shift.get() + n_ticks)
 
     def _get_tick_duration(self) -> float:
         """Determines the numbers of seconds the next tick will take.
@@ -282,6 +309,7 @@ class Clock:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
 
+        # NOTE: we specifically don't want this influenced by `tick_shift`
         if self._current_tick >= tick:
             handle.fut.set_result(None)
         else:
@@ -291,7 +319,7 @@ class Clock:
 
     def wait_after(self, *, n_ticks: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to pass N ticks from now."""
-        return self.wait_until(tick=self._current_tick + n_ticks)
+        return self.wait_until(tick=self.tick + n_ticks)
 
     # ---------------------------------------------------------------------- #
     # Public methods

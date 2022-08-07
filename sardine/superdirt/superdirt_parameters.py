@@ -1,4 +1,4 @@
-# Add your custom SuperDirt parameters to the list
+# Add your custom SuperDirt parameters to the list
 
 params = [
         "n",

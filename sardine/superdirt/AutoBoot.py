@@ -57,7 +57,7 @@ class SuperColliderProcess:
             if file_path.is_file():
                 return file_path
             else:
-                # This should definitely be a try/except case
+                # This should definitely be a try/except case
                 vanilla_file_path = self._find_vanilla_startup_file()
                 shutil.copy(str(vanilla_file_path), self._user_dir)
                 return file_path
@@ -66,7 +66,7 @@ class SuperColliderProcess:
             if user_file_path.exists() and user_file_path.is_file():
                 return user_file_path
             else:
-                # recurse to base case with no user_file
+                # recurse to base case with no user_file
                 return self._find_startup_file()
 
 

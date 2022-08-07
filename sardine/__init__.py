@@ -49,7 +49,7 @@ coding. Check the examples/ folder to learn more. :)
 """
 
 
-# Pretty printing
+# Pretty printing
 print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
@@ -58,9 +58,9 @@ print('\n')
 #==============================================================================#
 # Initialisation
 # - Clock and various aliases
-# - SuperDirtProcess (not working)
-# - MidiIO basic functions
-# - Nap and Sync
+# - SuperDirtProcess (not working)
+# - MidiIO basic functions
+# - Nap and Sync
 #==============================================================================#
 config = read_user_configuration()
 
@@ -121,10 +121,10 @@ def die(fn):
     return fn
 
 
-# c.start(active=True)
+# c.start(active=True)
 c.start(active=False)
 
-# Tests
+# Tests
 # =====
 
 @swim

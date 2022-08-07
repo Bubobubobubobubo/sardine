@@ -321,7 +321,7 @@ class Clock:
         """
         MIDI Stop message.
         """
-        # Kill every runner
+        # Kill every runner
 
         self.running = False
         self._midi.send_stop()

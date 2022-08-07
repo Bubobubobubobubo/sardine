@@ -143,8 +143,8 @@ def sleep(n_beats: Union[int, float]):
 
     This can be used in `async def` functions and does *not* need to be awaited.
 
-    Sounds scheduled in asynchronous functions will not be influenced
-    by real time passing. For example, if you sleep for 48 ticks and
+    Sounds scheduled in asynchronous functions will be influenced by
+    real time passing. For example, if you sleep for 48 ticks and
     await a function that takes 5 ticks to complete, any sounds sent
     afterwards will occur 53 ticks from when the function was called (48 + 5).
 

@@ -240,3 +240,10 @@ del my_osc
 ## Crash
 
 By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.
+
+
+## Troubleshooting
+
+**pip3 install fails on python-rtmidi build**
+Its probably because the `libjack-dev` lib is missing you can install it with
+`sudo apt-get install libjack-dev` 

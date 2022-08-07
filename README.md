@@ -1,4 +1,4 @@
-![sardine](pictures/sardine.png)
+[sardine](pictures/sardine.png)
 
 [Getting Started](#installation) - [Usage](#usage)
 
@@ -8,10 +8,10 @@ Sardine is a Python library made for musical live coding. It is based on a speci
 
 The library is far from being usable by random users. I made it public in order to share it easily and to encourage collaboration! **Sardine is looking for contributors**. Here are the goals for a first public release:
 
-* Solid timing system allowing the execution and synchronisation of temporal recursive functions.
+* Solid timing system allowing the execution and synchronization of temporal recursive functions.
 * Easy and simple to use MIDI/OSC and SuperDirt API.
 * MIDIIn/OSCIn for tweaking functions live using controllers and other devices.
-* Complete API targetting the `SuperDirt` sound engine.
+* Complete API targeting the `SuperDirt` sound engine.
 
 ## Installation
 
@@ -37,7 +37,7 @@ The installation process is fairly simple:
 
 ### Code-editing with Sardine
 
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. `Sardine` code can become quite verbose when dealing with complex functions.
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. `Sardine` code can become quite verbose when dealing with complex functions.
 
 As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...).
 
@@ -45,7 +45,7 @@ As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom
 
 Please provide feedback on the installation process! Everything is pretty new so I might not be able to anticipate how `Sardine` will run on your computer. I am discovering new bugs and corner-cases everyday, and I would love to fix them to get a stable release soon :)
 
-### Known bugs and issues
+### Known bugs and issues
 
 * **[WINDOWS ONLY]**: `uvloop` doesn't work on Windows. Fortunately, you can still run `Sardine` but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
 
@@ -69,7 +69,7 @@ There are some sugared methods to schedule coroutines on the clock:
 cs(my_super_bass_drum, delay=2)
 cs(hatty_hat, delay=0.5)
 
-# Bored
+# Bored
 cr(my_super_bass_drum)
 cr(hatty_hat)
 ```
@@ -94,7 +94,7 @@ async def iter(delay=1, nb=0):
 
 ### Usage as a generic MIDI Clock
 
-The `Sardine` clock is a MIDI Clock. Open any DAW and try to manually synchronise with the Clock emitted on the port you chose when booting up. This is not properly implemented yet but you can still manage to be perfectly synchronised by playing around with `c.stop()` and `c.start()'. I advise you not to change the `ppqn` while you are synchronised. This can result in timing errors and desynchronisation. If you are using Ableton Live, you can echo the MIDI Clock as an Ableton Link Clock for synchronising to even more devices.
+The `Sardine` clock is a MIDI Clock. Open any DAW and try to manually synchronize with the Clock emitted on the port you chose when booting up. This is not properly implemented yet but you can still manage to be perfectly synchronized by playing around with `c.stop()` and `c.start()'. I advise you not to change the `ppqn` while you are synchronized. This can result in timing errors and desynchronisation. If you are using Ableton Live, you can echo the MIDI Clock as an Ableton Link Clock for synchronizing to even more devices.
 
 
 ### Temporal recursive functions
@@ -102,24 +102,24 @@ The `Sardine` clock is a MIDI Clock. Open any DAW and try to manually synchronis
 Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
 
 ```python
-# A basic temporal recursive function
+# A basic temporal recursive function
 async def incr(delay=20, num=0):
     num += 1
     print(f"Num: {num}")
     cs(num, delay=20, num)
 
-# Scheduling it on the clock
+# Scheduling it on the clock
 cs(num, delay=20, num=0)
 
 # Output
-# Num: 1
-# Num: 2
-# Num: 3
-# Num: 4
-# Num: 5
+# Num: 1
+# Num: 2
+# Num: 3
+# Num: 4
+# Num: 5
 ```
 
-This is an incredibely useful feature to keep track of state between iterations of your function. It has some musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make written these less verbose. For now, you are on your own!
+This is an incredibly useful feature to keep track of state between iterations of your function. It has some musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make written these less verbose. For now, you are on your own!
 
 Temporal recursive functions have only one drawback: they NEED a `delay` argument. If you don't provide it, `Sardine` will default to using `delay=1`, a quarter note.
 
@@ -128,10 +128,10 @@ Temporal recursive functions have only one drawback: they NEED a `delay` argumen
 The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. `SuperDirt` must be configured and booted separately from `Sardine`. The `SuperDirt` object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. `SuperDirt` has been aliased to `S` to make it easier to type.
 
 ```python
-S('bd').out() # a bassdrum (sample 0 from folder 'bd')
-S('bd', n=3, amp=2).out() # third sample, way louder
-S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
-S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) # Python shenanigans
+S('bd').out() # a bassdrum (sample 0 from folder 'bd')
+S('bd', n=3, amp=2).out() # third sample, way louder
+S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
+S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) # Python shenanigans
 ```
 
 The simplest function you can write using `Sardine` is probably a simple bassdrum:
@@ -153,7 +153,7 @@ async def bd(delay=1, speed=1):
 cs(bd, delay=1, speed=1)
 ```
 
-Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being send out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the `.out()` method:
+Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being sent out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the `.out()` method:
 
 
 ```python
@@ -177,7 +177,7 @@ Right now, `Sardine` is able to do some very basic MIDI sequencing. The timing i
 
 ### Notes
 
-Here is an exemple of a basic temporal function sending a constant MIDI Note:
+Here is an example of a basic temporal function sending a constant MIDI Note:
 
 ```python
 @swim
@@ -219,7 +219,7 @@ You can send OSC (Open Sound Control) messages by declaring your own OSC connexi
 ```python
 from random import randint, random, chance
 
-# Open a new OSC connexion
+# Open a new OSC connexion
 my_osc = OSC(ip="127.0.0.1",
         port= 23000, name="Bibu",
         ahead_amount=0.25)
@@ -230,7 +230,7 @@ async def custom_osc(delay=1):
     my_osc.send('/coucou', [randint(1,10), randint(1,100)])
     cs(custom_osc, delay=1)
 
-# Closing and getting rid of the connexion
+# Closing and getting rid of the connexion
 
 cr(custom_osc)
 
@@ -239,4 +239,87 @@ del my_osc
 
 ## Crash
 
+By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.
+
+
+
+# Output
+# Num: 1
+# Num: 2
+# Num: 3
+# Num: 4
+# Num: 5
+This is an incredibly useful feature to keep track of state between iterations of your function. It has some musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make written these less verbose. For now, you are on your own!
+Temporal recursive functions have only one drawback: they NEED a delay argument. If you don't provide it, Sardine will default to using delay=1, a quarter note.
+Triggering sounds / samples / synthesizers
+The easiest way to trigger a sound with Sardine is to send an OSC message to SuperDirt. SuperDirt must be configured and booted separately from Sardine. The SuperDirt object can be used to do so. The syntax is nice and easy and wil remind you of TidalCycles if you are already familiar with it. SuperDirt has been aliased to S to make it easier to type.
+S('bd').out() # a bassdrum (sample 0 from folder 'bd')
+S('bd', n=3, amp=2).out() # third sample, way louder
+S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
+S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) # Python shenanigans
+The simplest function you can write using Sardine is probably a simple bassdrum:
+async def bd(delay=1):
+    S('bd').out()
+    cs(bd, delay=1)
+cs(bd, delay=1)
+You can be more playful and do something by toying with temporal recursion:
+async def bd(delay=1, speed=1):
+    S('bd').out()
+    cs(bd, delay=1, speed=randint(1, 5))
+cs(bd, delay=1, speed=1)
+Notice the .out() method used on the S(ound) object? That's because S can be modified and composed before being sent out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the .out() method:
+async def indirect_bd(delay=1, speed=1):
+    a = S('bd')
+    a.speed(4)
+    a.out()
+    cs(indirect_bd, delay=1, speed=randint(1, 5))
+cs(indirect_bd, delay=1, speed=1)
+Be careful not to override the method by changing an individual parameter (a.speed =5). It is a method, you must use parentheses! Seems cumbersome but you will like it when you will start to get into method chaining like so:
+S('bd').shape(random()).speed(randint(1,4))
+MIDI
+Right now, Sardine is able to do some very basic MIDI sequencing. The timing is not perfect but good enough for most use cases.
+Notes
+Here is an example of a basic temporal function sending a constant MIDI Note:
+@swim
+async def midi_tester(delay=1):
+    note(1, 60, 127, 1)
+    cs(midi_tester, delay=1)
+Let's go further and make an arpeggio using the same technique:
+from itertools import cycle
+arpeggio = cycle([60, 64, 67, 71])
+@swim
+async def midi_tester(delay=0.25):
+    note(1, next(arpeggio), 127, 1)
+    cs(midi_tester, delay=0.25)
+Control Changes
+A similar function exists for sending MIDI CC messages. Let's combine it with our arpeggio:
+from itertools import cycle
+from random import randint
+arpeggio = cycle([60, 64, 67, 71])
+@swim
+async def midi_tester(delay=0.25):
+    note(1, next(arpeggio), 127, 1)
+    cc(channel=1, control=20, value=randint(1,127))
+    cs(midi_tester, delay=0.25)
+OSC
+You can send OSC (Open Sound Control) messages by declaring your own OSC connexion and sending custom messages. It is very easy to do so. Take a look at the following example:
+from random import randint, random, chance
+
+# Open a new OSC connexion
+my_osc = OSC(ip="127.0.0.1",
+        port= 23000, name="Bibu",
+        ahead_amount=0.25)
+
+# Recursive function sending OSC
+@swim
+async def custom_osc(delay=1):
+    my_osc.send('/coucou', [randint(1,10), randint(1,100)])
+    cs(custom_osc, delay=1)
+
+# Closing and getting rid of the connexion
+
+cr(custom_osc)
+
+del my_osc
+Crash
 By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.

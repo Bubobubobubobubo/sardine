@@ -146,6 +146,7 @@ class AsyncRunner:
             while self.states and self._swimming and not self._stop:
                 # `state.func` must schedule itself to keep swimming
                 self._swimming = False
+                self._reload_event.clear()
                 state = self.states[-1]
                 name = state.func.__name__
 
@@ -179,14 +180,13 @@ class AsyncRunner:
                     self.swim()
                     continue
 
-                handle = self._wait_beats(delay)
-                reload = asyncio.create_task(self._reload_event.wait())
+                handle = asyncio.ensure_future(self._wait_beats(delay))
+                reload = asyncio.ensure_future(self._reload_event.wait())
                 done, pending = await asyncio.wait((handle, reload), return_when=asyncio.FIRST_COMPLETED)
 
                 for fut in pending:
                     fut.cancel()
                 if reload in done:
-                    self._reload_event.clear()
                     self.swim()
                     continue
 

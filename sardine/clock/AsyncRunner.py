@@ -5,10 +5,11 @@ import functools
 from rich import print
 import inspect
 import traceback
-from typing import Any, Callable, TYPE_CHECKING, Union
+from typing import Any, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from . import Clock, TickHandle
+    from .Clock import MaybeCoroFunc
 
 __all__ = ('AsyncRunner', 'FunctionState')
 
@@ -55,9 +56,15 @@ def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, 
     return guessed_mapping
 
 
+async def _maybe_coro(func, *args, **kwargs):
+    if inspect.iscoroutinefunction(func):
+        return await func(*args, **kwargs)
+    return func(*args, **kwargs)
+
+
 @dataclass
 class FunctionState:
-    func: Callable
+    func: "MaybeCoroFunc"
     args: tuple
     kwargs: dict
 
@@ -73,7 +80,7 @@ class AsyncRunner:
     """
     clock: "Clock"
     states: list[FunctionState] = field(
-        default_factory=functools.partial(deque, (), MAX_FUNCTION_STATES)
+        default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES)
     )
 
     _swimming: bool = field(default=False, repr=False)
@@ -81,7 +88,7 @@ class AsyncRunner:
     _task: Union[asyncio.Task, None] = field(default=None, repr=False)
     _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
 
-    def push(self, func: Callable, *args, **kwargs):
+    def push(self, func: "MaybeCoroFunc", *args, **kwargs):
         """Pushes a function state to the runner to be called in
         the next iteration."""
         if not self.states or func is not self.states[-1].func:
@@ -191,7 +198,7 @@ class AsyncRunner:
                     continue
 
                 try:
-                    state.func(*args, **kwargs)
+                    await _maybe_coro(state.func, *args, **kwargs)
                 except Exception as e:
                     print(f'[red][Function exception | ({name})]')
                     # TODO: Do as imple asyncio.create_talk on restored

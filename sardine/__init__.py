@@ -121,6 +121,12 @@ def die(fn):
     return fn
 
 
+async def sleep(n_beats: Union[int, float]):
+    """Sleeps for the given number of beats."""
+    ticks = c.get_beat_ticks(n_beats, sync=False)
+    await c.wait_after(n_ticks=ticks)
+
+
 # c.start(active=True)
 c.start(active=False)
 

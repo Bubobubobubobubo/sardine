@@ -73,7 +73,8 @@ c = Clock(
         midi_port=config.midi,
         bpm=config.bpm,
         beats_per_bar=config.beats,
-        ppqn=config.ppqn)
+        ppqn=config.ppqn,
+        deferred_scheduling=config.deferred_scheduling)
 
 cs, cr = c.schedule_func, c.remove
 children = c.print_children
@@ -178,8 +179,8 @@ def sleep(n_beats: Union[int, float]):
     c.shift_ctx(ticks)
 
 
-# c.start(active=True)
-c.start(active=False)
+c.start(active=True)
+# c.start(active=False)
 
 # Tests
 # =====

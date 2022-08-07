@@ -20,21 +20,24 @@ class Config:
     ppqn: int
     bpm: int
     superdirt_config_path: str
+    deferred_scheduling: bool
 
 
 def create_template_configuration_file(user_dir: Path, file_path: Path) -> None:
     """ If no configuration file is found, create a template """
-    superdirt_config_path = user_dir / "default_superdirt.scd"
-
+    # This is causing issues
+    # superdirt_config_path = (user_dir / "default_superdirt.scd")
+    sc_config_path = "/".join([
+        str(user_dir),
+        "default_superdirt.scd"])
     template_configuration = {
-            'config': {
-                'midi': None,
-                'bpm': 125,
-                'beats': 4,
-                'ppqn': 48,
-                'parameters': [],
-                'superdirt_config_path': superdirt_config_path,
-                }
+            'midi': None,
+            'bpm': 125,
+            'beats': 4,
+            'ppqn': 48,
+            'parameters': [],
+            'superdirt_config_path': sc_config_path,
+            'deferred_scheduling': True
             }
     with open(file_path, 'w') as file:
         json.dump(template_configuration, file)
@@ -44,7 +47,7 @@ def read_configuration_file(file_path: Path) -> Union[Config, None]:
     """ Read config JSON File """
     with open(file_path, 'r') as f:
         data = json.load(f)
-        data = data['config']
+        # data = data['config']
         try:
             print("[green][3/3] Returning configuration[/green]")
             return Config(
@@ -53,7 +56,8 @@ def read_configuration_file(file_path: Path) -> Union[Config, None]:
                     beats = data.get('beats'),
                     ppqn = data.get('ppqn'),
                     bpm = data.get('bpm'),
-                    superdirt_config_path= data.get('superdirt_config_path'))
+                    superdirt_config_path= data.get('superdirt_config_path'),
+                    deferred_scheduling= data.get('deferred_scheduling'))
         except Exception as e:
             print(f"{e}")
 

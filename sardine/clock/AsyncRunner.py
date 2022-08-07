@@ -79,6 +79,7 @@ class AsyncRunner:
 
     """
     clock: "Clock"
+    deferred: bool = field(default=True)
     states: list[FunctionState] = field(
         default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES)
     )
@@ -200,25 +201,34 @@ class AsyncRunner:
                 try:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
-                        _maybe_coro(state.func, *args, **kwargs),
+                        self._call_func(delay, state.func, *args, **kwargs),
                         name=f'asyncrunner-func-{name}'
                     )
                 except Exception as e:
                     print(f'[red][Function exception | ({name})]')
-                    # TODO: Do as imple asyncio.create_talk on restored
                     traceback.print_exception(e)
                     self._revert_state()
                     self.swim()
                 finally:
-                    # `self._wait()` usually leaves us exactly 1 tick away
-                    # from the next interval. If we don't wait, func() will
-                    # be called in an infinite synchronous loop.
-                    # A single tick ensures func() can only be called once per tick.
+                    # `self._wait_beats()` may leave us exactly 1 tick away
+                    # from the next interval. If we don't wait 1 tick, we
+                    # might get stuck in an infinite synchronous loop.
                     await self.clock.wait_after(n_ticks=1)
         finally:
             # Remove from clock if necessary
             print(f'[yellow][Stopped {name}]')
             self.clock.runners.pop(name, None)
+
+    async def _call_func(self, delay, func, *args, **kwargs):
+        """Calls the given function and optionally applies an initial
+        tick shift of `delay` beats when the `deferred` attribute is
+        set to True.
+        """
+        if self.deferred:
+            ticks = self.clock.get_beat_ticks(delay) - 1
+            self.clock.shift_ctx(ticks)
+
+        return await _maybe_coro(func, *args, **kwargs)
 
     def _wait_beats(self, n_beats: Union[float, int]) -> "TickHandle":
         """Returns a TickHandle waiting until one tick before the

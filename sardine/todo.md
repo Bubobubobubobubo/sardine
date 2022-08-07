@@ -3,6 +3,7 @@
     * adding an offset to function start (argument?)
     * accel can go higher than 100?
     * high-delta resulting in negative tick duration corner case.
+    * Add user config option for `deferred_scheduling` parameter
 * [ ] MIDI related:
     * MIDI Out
         * Hold open multiple connexions with simple API

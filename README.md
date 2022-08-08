@@ -322,7 +322,6 @@ del my_osc
 Note that you need to provide the clock as the first argument of the `send()` method. It is probably better to write a dedicated function to avoid having to specify the address everytime you want to send something at a specific address:
 
 ```python
-@swim
 def coucou(*args): my_osc.send(c, '/coucou', list(args))
 ```
 

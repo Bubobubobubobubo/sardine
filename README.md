@@ -12,6 +12,7 @@ Livecoding in python with MIDI and OSC support ✨
   - [Debug](#debug)
     - [Known bugs and issues](#known-bugs-and-issues)
   - [Usage](#usage)
+    - [Configuration file](#configuration-file)
     - [Clock and Scheduling System](#the-internal-clock)
     - [Usage as a generic MIDI Clock](#usage-as-a-generic-midi-clock)
     - [Temporal recursive functions](#temporal-recursive-functions)
@@ -73,6 +74,26 @@ Please provide feedback on the installation process! Everything is pretty new so
 * **[WINDOWS ONLY]**: `uvloop` doesn't work on Windows. Fortunately, you can still run `Sardine` but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
 
 * **[LINUX/MACOS]**: `pip3 install` fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
+
+## Configuration File
+
+Sardine will automatically create a configuration folder and configuration files the first time the library is imported:
+- `config.json`: Main configuration file.
+- `default_superdirt.scd`: Server configuration file.
+- `synths` folder.
+
+
+The location of this folder is assumed to be the best possible defaut depending on your OS:
+- **MacOS**: `Users/xxx/Library/Application\ Support/Sardine/`
+* **Linux**: `.config` folder.
+* **Windows**: `%appdata%/Sardine`
+
+(**May be incorrect**)
+
+
+The `config.json` file will allow you to fine-tune your Sardine experience by providing a default MIDI port, by choosing a default PPQN and BPM, etc... The `default_superdirt.scd` is your default `SuperDirt` configuration. You must edit it if you are willing to load more audio samples, change your audio outputs or add anything that you need on the SuperCollider side.
+
+The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time.
 
 ## Usage
 
@@ -141,9 +162,9 @@ cs(num, delay=20, num=0)
 # Num: 5
 ```
 
-This is an incredibely useful feature to keep track of state between iterations of your function. Sardine users refer to these functions as **swimming functions**. They have some nice musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make these less verbose for the end-user. For now, you are on your own!
+This is an incredibly useful feature to keep track of state between iterations of your function. Sardine users refer to these functions as **swimming functions**. They have some nice musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make these less verbose for the end-user. For now, you are on your own!
 
-Temporal recursive functions have only one drawback: they NEED a `delay` argument. If you don't provide it, `Sardine` will default to using `delay=1`, a quarter note.
+Temporal recursive functions have only one drawback: they **NEED** a `delay` argument. If you don't provide it, `Sardine` will default to using `delay=1`, a quarter note.
 
 ### Triggering sounds / samples / synthesizers
 
@@ -203,7 +224,7 @@ S('bd').shape(random()).speed(randint(1,4))
 
 `Sardine` supports all the basic messages one can send and receive through MIDI, but will support many more in the future.
 
-### MIDI Out
+### MIDI Out
 
 Here is an exemple of a **swimming function** sending a constant MIDI Note:
 
@@ -244,7 +265,7 @@ def midi_tester(delay=0.25):
     cs(midi_tester, delay=0.25)
 ```
 
-### MIDI In
+### MIDI In
 
 MIDIIn is supported through the use of a special object, the `MidiListener` object. This object will open a connexion listening to incoming MIDI messages. There are only a few types of messages you should be able to listen to:
 * MIDI Notes through the `NoteTarget` object

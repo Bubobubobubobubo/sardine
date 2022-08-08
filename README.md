@@ -296,7 +296,7 @@ a = MidiListener('other_midi_port', target=ControlTarget(40, 4))
 
 ## OSC
 
-You can send OSC (Open Sound Control) messages by declaring your own OSC connexion and sending custom messages. It is very easy to do so. Take a look at the following example:
+You can send OSC (**Open Sound Control**) messages by declaring your own OSC connexion and sending custom messages. It is very easy to do so. Take a look at the following example:
 
 ```python
 from random import randint, random, chance
@@ -309,7 +309,7 @@ my_osc = OSC(ip="127.0.0.1",
 # Recursive function sending OSC
 @swim
 async def custom_osc(delay=1):
-    my_osc.send('/coucou', [randint(1,10), randint(1,100)])
+    my_osc.send(c, '/coucou', [randint(1,10), randint(1,100)])
     cs(custom_osc, delay=1)
 
 # Closing and getting rid of the connexion
@@ -317,6 +317,13 @@ async def custom_osc(delay=1):
 cr(custom_osc)
 
 del my_osc
+```
+
+Note that you need to provide the clock as the first argument of the `send()` method. It is probably better to write a dedicated function to avoid having to specify the address everytime you want to send something at a specific address:
+
+```python
+@swim
+def coucou(*args): my_osc.send(c, '/coucou', list(args))
 ```
 
 ## Crash

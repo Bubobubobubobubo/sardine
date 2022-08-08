@@ -61,7 +61,7 @@ class Config:
 def create_template_configuration_file(file_path: Path) -> Config:
     """ If no configuration file is found, create a template """
     with open(file_path, 'w') as file:
-        json.dump(TEMPLATE_CONFIGURATION, file)
+        json.dump(TEMPLATE_CONFIGURATION, file, indent=4, sort_keys=True)
     return Config.from_dict(TEMPLATE_CONFIGURATION)
 
 

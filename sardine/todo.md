@@ -9,3 +9,8 @@
 * [ ] SuperDirt related
     * how should bpm be communicated to SuperDirt?
         * delay/delayfeedback/etc.. can't work without it.
+* [ ] Configuration related
+    * Make `__init__.py` more configurable
+        * autoboot, no-autoboot
+        * passive clock/active clock
+        * running or importing user-made code

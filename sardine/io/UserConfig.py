@@ -57,12 +57,30 @@ class Config:
             superdirt_config_path=config['superdirt_config_path']
         )
 
+    def to_dict(self) -> dict:
+        return {
+            'config': {
+                'midi': self.midi,
+                'beats': self.beats,
+                'parameters': self.parameters,
+                'ppqn': self.ppqn,
+                'bpm': self.bpm,
+                'superdirt_config_path': self.superdirt_config_path,
+            }
+        }
+
+
+def write_configuration_file(config: Config, file_path: Path):
+    """ Write config JSON file """
+    with open(file_path, 'w') as file:
+        json.dump(config.to_dict(), file, indent=4, sort_keys=True)
+
 
 def create_template_configuration_file(file_path: Path) -> Config:
     """ If no configuration file is found, create a template """
-    with open(file_path, 'w') as file:
-        json.dump(TEMPLATE_CONFIGURATION, file, indent=4, sort_keys=True)
-    return Config.from_dict(TEMPLATE_CONFIGURATION)
+    config = Config.from_dict(TEMPLATE_CONFIGURATION)
+    write_configuration_file(config, file_path)
+    return config
 
 
 def read_configuration_file(file_path: Path) -> Config:
@@ -71,7 +89,13 @@ def read_configuration_file(file_path: Path) -> Config:
     with open(file_path, 'r') as f:
         user_data = json.load(f)
     _recursive_update(base, user_data)
-    return Config.from_dict(base)
+
+    config = Config.from_dict(base)
+
+    # Write any missing keys back to file
+    write_configuration_file(config, file_path)
+
+    return config
 
 
 def read_user_configuration() -> Config:

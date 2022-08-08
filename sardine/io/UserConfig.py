@@ -71,11 +71,7 @@ def read_configuration_file(file_path: Path) -> Config:
     with open(file_path, 'r') as f:
         user_data = json.load(f)
     _recursive_update(base, user_data)
-
-    try:
-        return Config.from_dict(base)
-    except Exception as e:
-        print(f"{e}")
+    return Config.from_dict(base)
 
 
 def read_user_configuration() -> Config:

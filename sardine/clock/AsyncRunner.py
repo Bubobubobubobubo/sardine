@@ -68,7 +68,7 @@ class AsyncRunner:
     the background, with support for run-time function patching.
 
     This class should only be used through a Clock instance via
-    the `Clock.schedule()` method.
+    the `Clock.schedule_func()` method.
 
     """
     clock: "Clock"

@@ -77,6 +77,19 @@ class AsyncRunner:
     This class should only be used through a Clock instance via
     the `Clock.schedule()` method.
 
+    The `deferred` parameter is used to control whether AsyncRunner
+    runs with an implicit tick shift when calling its function or not.
+    This helps improve sound synchronization by giving the function its
+    entire delay period to execute rather than a single tick.
+    For example, assuming bpm = 120 and ppqn = 48, `deferred=False`
+    would require its function to complete within 10ms (1 tick),
+    whereas `deferred=True` would allow a function with `delay=1`
+    to finish execution within 500ms (1 beat) instead.
+
+    In either case, if the function takes too long to execute, it will miss
+    its scheduling deadline and cause an unexpected gap between function calls.
+    Functions must complete within the time span to avoid this issue.
+
     """
     clock: "Clock"
     deferred: bool = field(default=True)

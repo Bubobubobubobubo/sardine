@@ -7,24 +7,21 @@ Livecoding in python with MIDI and OSC support ✨
   - [Elevator Pitch](#elevator-pitch)
   - [Installation](#installation)
     - [Sardine Python Package](#sardine-python-package)
-    - [SuperDirt](#superdirt)
+    - [SuperCollider & SuperDirt](#superdirt)
     - [Code-editing with Sardine](#code-editing-with-sardine)
   - [Debug](#debug)
     - [Known bugs and issues](#known-bugs-and-issues)
   - [Usage](#usage)
-    - [The internal Clock](#the-internal-clock)
+    - [Clock and Scheduling System](#the-internal-clock)
     - [Usage as a generic MIDI Clock](#usage-as-a-generic-midi-clock)
     - [Temporal recursive functions](#temporal-recursive-functions)
     - [Triggering sounds / samples / synthesizers](#triggering-sounds--samples--synthesizers)
   - [MIDI](#midi)
-    - [Notes](#notes)
-    - [Control Changes](#control-changes)
+    - [MIDI Out](#midi-out)
+    - [MIDI In](#midi-in)
   - [OSC](#osc)
   - [Crash](#crash)
   - [Troubleshooting](#troubleshooting)
-
-![sardine](pictures/sardine.png)
-[Getting Started](#installation) - [Usage](#usage)
 
 ## Elevator Pitch
 
@@ -204,18 +201,24 @@ S('bd').shape(random()).speed(randint(1,4))
 
 ## MIDI
 
-`Sardine` supports all the basic messages one can send with MIDI, but will support many more in the future.
+`Sardine` supports all the basic messages one can send and receive through MIDI, but will support many more in the future.
 
-### Notes
+### MIDI Out
 
-Here is an exemple of a basic temporal function sending a constant MIDI Note:
+Here is an exemple of a **swimming function** sending a constant MIDI Note:
 
 ```python
 @swim
-async def midi_tester(delay=1):
-    note(1, 60, 127, 1)
+def midi_tester(delay=1):
+    note(
+        duration=1,
+        note=60,
+        velocity=127,
+        channel=0)
     cs(midi_tester, delay=1)
 ```
+
+Note that the channel count starts at `0`, covering a range from `0` to `15`. The duration for each every note should be written in milliseconds(`ms`) because MIDI is handling MIDI Notes as two separate messages (`note_on` and `note_off`).
 
 Let's go further and make an arpeggio using the same technique:
 
@@ -223,12 +226,10 @@ Let's go further and make an arpeggio using the same technique:
 from itertools import cycle
 arpeggio = cycle([60, 64, 67, 71])
 @swim
-async def midi_tester(delay=0.25):
+def midi_tester(delay=0.25):
     note(1, next(arpeggio), 127, 1)
     cs(midi_tester, delay=0.25)
 ```
-
-### Control Changes
 
 A similar function exists for sending MIDI CC messages. Let's combine it with our arpeggio:
 
@@ -237,10 +238,39 @@ from itertools import cycle
 from random import randint
 arpeggio = cycle([60, 64, 67, 71])
 @swim
-async def midi_tester(delay=0.25):
+def midi_tester(delay=0.25):
     note(1, next(arpeggio), 127, 1)
     cc(channel=1, control=20, value=randint(1,127))
     cs(midi_tester, delay=0.25)
+```
+
+### MIDI In
+
+MIDIIn is supported through the use of a special object, the `MidiListener` object. This object will open a connexion listening to incoming MIDI messages. There are only a few types of messages you should be able to listen to:
+* MIDI Notes through the `NoteTarget` object
+* MIDI CC through the `ControlTarget` object
+
+Additionally, you can listen to incoming Clock messages (`ClockListener`) but you must generally let Sardine handle this by itself.
+
+Every `MidiListener` is expecting a target. You must declare one and await on it using the following syntax:
+
+```python
+a = MidiListener(target=ControlTarget(20, 0))
+
+from random import random
+@die
+def pluck(delay=0.25):
+    S('pluck', midinote=a.get()).out()
+    cs(pluck, delay=0.25)
+```
+
+In this example, we are listening on CC n°20 on the first midi channel (`0`), on the default MIDI port. Sardine cannot assert the value of a given MIDI Control before it receives a first message, so the initial value will be assumed to be `0`.
+
+You can fine tune your listening object by tweaking the parameters:
+
+```python
+# picking a different MIDI Port
+a = MidiListener('other_midi_port', target=ControlTarget(40, 4))
 ```
 
 ## OSC

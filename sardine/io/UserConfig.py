@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 from typing import Union
-
 from appdirs import *
 from rich import print
 
@@ -21,7 +20,10 @@ TEMPLATE_CONFIGURATION = {
         'beats': 4,
         'ppqn': 48,
         'parameters': [],
+        'boot_superdirt': True,
+        'active_clock': True,
         'superdirt_config_path': str(USER_DIR / "default_superdirt.scd"),
+        'user_config_path': str(USER_DIR / "user_configuration.py"),
         'deferred_scheduling': True
     }
 }
@@ -45,6 +47,9 @@ class Config:
     ppqn: int
     bpm: int
     superdirt_config_path: str
+    user_config_path: str
+    boot_superdirt: bool
+    active_clock: bool
     deferred_scheduling: bool
 
     @classmethod
@@ -56,7 +61,10 @@ class Config:
             parameters=config['parameters'],
             ppqn=config['ppqn'],
             bpm=config['bpm'],
+            boot_superdirt=config['boot_superdirt'],
+            active_clock=config['active_clock'],
             superdirt_config_path=config['superdirt_config_path'],
+            user_config_path=config['user_config_path'],
             deferred_scheduling=config['deferred_scheduling']
         )
 
@@ -68,7 +76,10 @@ class Config:
                 'parameters': self.parameters,
                 'ppqn': self.ppqn,
                 'bpm': self.bpm,
+                'boot_superdirt': self.boot_superdirt,
                 'superdirt_config_path': self.superdirt_config_path,
+                'active_clock': self.active_clock,
+                'user_config_path': self.user_config_path,
                 'deferred_scheduling': self.deferred_scheduling
             }
         }

@@ -2,8 +2,10 @@ from __future__ import with_statement
 import asyncio
 import pathlib
 import warnings
+import sys
 
 from rich import print
+from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
 try:
@@ -24,8 +26,8 @@ from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from typing import Union
 from .sequences import *
-
 warnings.filterwarnings("ignore")
+
 
 def print_pre_alpha_todo() -> None:
     """ Print the TODOlist from pre-alpha version """
@@ -47,26 +49,14 @@ sardine = """
 Sardine is a small MIDI/OSC sequencer made for live-
 coding. Check the examples/ folder to learn more. :)
 """
-
-
-# Pretty printing
 print(f"[red]{sardine}[/red]")
 print_pre_alpha_todo()
 print('\n')
-
-
-#==============================================================================#
-# Initialisation
-# - Clock and various aliases
-# - SuperDirtProcess (not working)
-# - MidiIO basic functions
-# - Nap and Sync
-#==============================================================================#
 config = read_user_configuration()
 
-# This should exist in the configuration file somewhere
-SC = SuperColliderProcess(
-        startup_file=config.superdirt_config_path)
+
+if config.boot_superdirt:
+    SC = SuperColliderProcess(startup_file=config.superdirt_config_path)
 
 
 c = Clock(
@@ -75,7 +65,6 @@ c = Clock(
         beats_per_bar=config.beats,
         ppqn=config.ppqn,
         deferred_scheduling=config.deferred_scheduling)
-
 cs, cr = c.schedule_func, c.remove
 children = c.print_children
 S = c.note
@@ -178,14 +167,21 @@ def sleep(n_beats: Union[int, float]):
     ticks = c.get_beat_ticks(n_beats, sync=False)
     c.shift_ctx(ticks)
 
+c.start(active=config.active_clock)
 
-c.start(active=True)
-# c.start(active=False)
 
-# Tests
-# =====
+# Loading user_configuration.py from configuration folder
+import importlib
+if Path(f'{config.user_config_path}').is_file():
+    spec = importlib.util.spec_from_file_location(
+            'user_configuration',
+            config.user_config_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    from user_configuration import *
+else:
+    print(f"[red]No user provided configuration file found...")
 
-@swim
-def bd():
-    S('bd').out()
-    cs(bd)
+
+

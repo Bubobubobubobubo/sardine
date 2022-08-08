@@ -183,7 +183,7 @@ class AsyncRunner:
                         raise ValueError(f'Delay must be >0, not {delay}')
                 except (TypeError, ValueError) as e:
                     print(f'[red][Bad function definition ({name})]')
-                    traceback.print_exception(e)
+                    traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
                     continue
@@ -206,7 +206,7 @@ class AsyncRunner:
                     )
                 except Exception as e:
                     print(f'[red][Function exception | ({name})]')
-                    traceback.print_exception(e)
+                    traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
                 finally:

@@ -201,7 +201,7 @@ class AsyncRunner:
                 try:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
-                        self._call_func(delay, state.func, *args, **kwargs),
+                        self._call_func(delay, state.func, args, kwargs),
                         name=f'asyncrunner-func-{name}'
                     )
                 except Exception as e:
@@ -219,7 +219,7 @@ class AsyncRunner:
             print(f'[yellow][Stopped {name}]')
             self.clock.runners.pop(name, None)
 
-    async def _call_func(self, delay, func, *args, **kwargs):
+    async def _call_func(self, delay, func, args, kwargs):
         """Calls the given function and optionally applies an initial
         tick shift of `delay` beats when the `deferred` attribute is
         set to True.

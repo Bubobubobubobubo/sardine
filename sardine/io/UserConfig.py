@@ -22,6 +22,7 @@ TEMPLATE_CONFIGURATION = {
         'ppqn': 48,
         'parameters': [],
         'superdirt_config_path': str(USER_DIR / "default_superdirt.scd"),
+        'deferred_scheduling': True
     }
 }
 
@@ -44,6 +45,7 @@ class Config:
     ppqn: int
     bpm: int
     superdirt_config_path: str
+    deferred_scheduling: bool
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
@@ -54,7 +56,8 @@ class Config:
             parameters=config['parameters'],
             ppqn=config['ppqn'],
             bpm=config['bpm'],
-            superdirt_config_path=config['superdirt_config_path']
+            superdirt_config_path=config['superdirt_config_path'],
+            deferred_scheduling=config['deferred_scheduling']
         )
 
     def to_dict(self) -> dict:
@@ -66,6 +69,7 @@ class Config:
                 'ppqn': self.ppqn,
                 'bpm': self.bpm,
                 'superdirt_config_path': self.superdirt_config_path,
+                'deferred_scheduling': self.deferred_scheduling
             }
         }
 

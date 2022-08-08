@@ -1,9 +1,10 @@
 import asyncio
+import contextvars
 import functools
 import heapq
 import inspect
 import time
-from typing import Callable, Optional, Union
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
 
 
@@ -15,6 +16,18 @@ from ..io import MIDIIo, ClockListener
 from ..superdirt import SuperDirt
 
 __all__ = ('Clock', 'TickHandle')
+
+T = TypeVar('T')
+MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
+
+tick_shift = contextvars.ContextVar('tick_shift', default=0)
+"""
+This specifies the number of ticks to offset the clock in the current context.
+
+Usually this tick shift is updated within the context of scheduled functions
+to simulate sleeping without actually blocking the function.
+Behavior is undefined if the tick shift is changed in the global context.
+"""
 
 
 @functools.total_ordering
@@ -74,6 +87,8 @@ class Clock:
     port_name: str -- Exact String for the MIDIOut Port.
     bpm: Union[int, float] -- Clock Tempo in beats per minute
     beats_per_bar: int -- Number of beats in a given bar
+    deferred_scheduling: bool -- Whether the clock implicitly defers
+                                 sounds sent in functions or not.
     """
 
     def __init__(
@@ -81,7 +96,8 @@ class Clock:
         midi_port: Optional[str],
         ppqn: int = 48,
         bpm: Union[float, int] = 120,
-        beats_per_bar: int = 4
+        beats_per_bar: int = 4,
+        deferred_scheduling: bool = True
     ):
         self._midi = MIDIIo(
                 port_name=midi_port,
@@ -98,6 +114,7 @@ class Clock:
         # Scheduling attributes
         self.runners: dict[str, AsyncRunner] = {}
         self.tick_handles: list[TickHandle] = []
+        self._deferred_scheduling = deferred_scheduling
 
         # Real-time attributes
         self._current_tick = 0
@@ -109,8 +126,14 @@ class Clock:
         self._delta_duration_list = deque(maxlen=200)
 
     def __repr__(self):
+        shift = tick_shift.get()
+        if shift:
+            tick = f'{self._current_tick}{shift:+}'
+        else:
+            tick = str(self._current_tick)
+
         return '<{} running={} tick={}>'.format(
-            type(self).__name__, self.running, self._current_tick
+            type(self).__name__, self.running, tick
         )
 
     # ---------------------------------------------------------------------- #
@@ -128,8 +151,19 @@ class Clock:
         self._reload_runners()
 
     @property
+    def deferred_scheduling(self):
+        return self._deferred_scheduling
+
+    @deferred_scheduling.setter
+    def deferred_scheduling(self, enabled: bool):
+        self._deferred_scheduling = enabled
+
+        for runner in self.runners.values():
+            runner.deferred = enabled
+
+    @property
     def tick(self) -> int:
-        return self._current_tick
+        return self._current_tick + tick_shift.get()
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
@@ -162,7 +196,7 @@ class Clock:
     @property
     def current_beat(self) -> int:
         """The number of beats passed since the initial time."""
-        return self._current_tick // self.ppqn
+        return self.tick // self.ppqn
 
     @property
     def current_bar(self) -> int:
@@ -172,7 +206,7 @@ class Clock:
     @property
     def phase(self) -> int:
         """The phase of the current beat in ticks."""
-        return self._current_tick % self.ppqn
+        return self.tick % self.ppqn
 
     # ---------------------------------------------------------------------- #
     # Clock methods
@@ -193,7 +227,7 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
 
     def get_bar_ticks(self, n_bars: Union[int, float], *, sync: bool = True) -> int:
         """Determines the number of ticks to wait for N bars to pass.
@@ -211,7 +245,18 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
+
+    def shift_ctx(self, n_ticks: int):
+        """Shifts the clock by `n_ticks` in the current context.
+
+        This is useful for simulating sleeps without blocking.
+
+        If the real-time clock tick needs to be shifted,
+        assign to the `c.tick` property instead.
+
+        """
+        tick_shift.set(tick_shift.get() + n_ticks)
 
     def _get_tick_duration(self) -> float:
         """Determines the numbers of seconds the next tick will take.
@@ -252,7 +297,7 @@ class Clock:
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-    def schedule_func(self, func: Callable, /, *args, **kwargs):
+    def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not inspect.isfunction(func):
             raise TypeError(f'func must be a function, not {type(func).__name__}')
@@ -260,7 +305,9 @@ class Clock:
         name = func.__name__
         runner = self.runners.get(name)
         if runner is None:
-            runner = self.runners[name] = AsyncRunner(self)
+            runner = self.runners[name] = AsyncRunner(
+                clock=self, deferred=self.deferred_scheduling
+            )
 
         runner.push(func, *args, **kwargs)
         if runner.started():
@@ -269,7 +316,7 @@ class Clock:
         else:
             runner.start()
 
-    def remove(self, func: Callable, /):
+    def remove(self, func: MaybeCoroFunc, /):
         """Schedules the given function to stop execution."""
         runner = self.runners.get(func.__name__)
         if runner is not None:
@@ -279,6 +326,7 @@ class Clock:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
 
+        # NOTE: we specifically don't want this influenced by `tick_shift`
         if self._current_tick >= tick:
             handle.fut.set_result(None)
         else:
@@ -288,7 +336,7 @@ class Clock:
 
     def wait_after(self, *, n_ticks: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to pass N ticks from now."""
-        return self.wait_until(tick=self._current_tick + n_ticks)
+        return self.wait_until(tick=self.tick + n_ticks)
 
     # ---------------------------------------------------------------------- #
     # Public methods

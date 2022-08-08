@@ -45,11 +45,24 @@ class Config:
     bpm: int
     superdirt_config_path: str
 
+    @classmethod
+    def from_dict(cls, data: dict) -> "Config":
+        config = data['config']
+        return cls(
+            midi=config['midi'],
+            beats=config['beats'],
+            parameters=config['parameters'],
+            ppqn=config['ppqn'],
+            bpm=config['bpm'],
+            superdirt_config_path=config['superdirt_config_path']
+        )
 
-def create_template_configuration_file(file_path: Path) -> None:
+
+def create_template_configuration_file(file_path: Path) -> Config:
     """ If no configuration file is found, create a template """
     with open(file_path, 'w') as file:
         json.dump(TEMPLATE_CONFIGURATION, file)
+    return Config.from_dict(TEMPLATE_CONFIGURATION)
 
 
 def read_configuration_file(file_path: Path) -> Config:
@@ -59,17 +72,8 @@ def read_configuration_file(file_path: Path) -> Config:
         user_data = json.load(f)
     _recursive_update(base, user_data)
 
-    config = base['config']
     try:
-        print("[green][3/3] Returning configuration[/green]")
-        return Config(
-            midi=config['midi'],
-            parameters=config['parameters'],
-            beats=config['beats'],
-            ppqn=config['ppqn'],
-            bpm=config['bpm'],
-            superdirt_config_path=config['superdirt_config_path']
-        )
+        return Config.from_dict(base)
     except Exception as e:
         print(f"{e}")
 
@@ -77,6 +81,7 @@ def read_configuration_file(file_path: Path) -> Config:
 def read_user_configuration() -> Config:
     """ Read or create user configuration file """
     config_file = USER_DIR / "config.json"
+    config = None
 
     # Check if the configuration folder exists
     if USER_DIR.is_dir():
@@ -84,19 +89,21 @@ def read_user_configuration() -> Config:
 
         if config_file.exists():
             print(f"[green][2/3] Found configuration file[/green]")
-            return read_configuration_file(config_file)
+            config = read_configuration_file(config_file)
         else:
-            print(f"[green][2/3] Created template configuration file[/green]")
-            create_template_configuration_file(config_file)
-            return read_configuration_file(config_file)
+            print(f"[green][2/3] Creating configuration file[/green]")
+            config = create_template_configuration_file(config_file)
 
     # If the configuration folder doesn't exist, create it and create config
     else:
         print(f"[green][1/3] Creating configuration folder[/green]")
         USER_DIR.mkdir(parents=True)
+
         print(f"[green][2/3] Creating configuration file[/green]")
-        create_template_configuration_file(config_file)
-        return read_configuration_file(config_file)
+        config = create_template_configuration_file(config_file)
+
+    print("[green][3/3] Returning configuration[/green]")
+    return config
 
 if __name__ == "__main__":
     config = read_user_configuration()

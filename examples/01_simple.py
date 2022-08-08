@@ -1,6 +1,6 @@
 from sardine import *
 
-c.bpm = 100 # change bpm
+c.bpm = 100 # change bpm
 
 async def bd(delay=1):
     """ A simple bass drum """
@@ -16,6 +16,6 @@ async def hh(delay=0.5):
 cs(bd, delay=1)
 cs(hh, delay=1)
 
-# Remove functions from the loop
+# Remove functions from the loop
 cr(bd)
 cr(hh)

@@ -3,15 +3,15 @@ from sardine import *
 from random import choice
 from random import randint
 
-# Non-recursive functions can be used as helpers
-# They can both be async or synchronous functions
+# Non-recursive functions can be used as helpers
+# They can both be async or synchronous functions
 
 async def random(caller: str = "Nobody"):
     """ Printing a random number"""
     print(f"{caller} : {randint(1,5)}")
 
 
-# Replace @swim by @die to kill the function
+# Replace @swim by @die to kill the function
 @swim
 async def bd(delay=1):
     """ A simple bass drum """
@@ -29,7 +29,7 @@ async def hh(delay=1):
     S('hh', amp=2).out()
     cs(hh, delay=dur)
 
-# Regular clock.schedule() and clock.remove() still work!
+# Regular clock.schedule() and clock.remove() still work!
 
 cr(bd)
 cr(hh)

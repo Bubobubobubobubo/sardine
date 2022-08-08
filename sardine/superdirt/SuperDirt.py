@@ -3,12 +3,16 @@ import asyncio
 import functools
 from typing import TYPE_CHECKING, Union
 
-from ..io.Osc import dirt
+from ..io import dirt
 
 if TYPE_CHECKING:
-    from ..clock.Clock import Clock
+    from ..clock import Clock
+
+__all__ = ('SuperDirt',)
+
 
 class SuperDirt:
+
 
     def __init__(
         self,
@@ -22,43 +26,25 @@ class SuperDirt:
         self.content = ["orbit", 0, "trig", 1, "sound", sound]
         self.after: int = at
 
-        # Iterating over kwargs. If parameter seems to refer to a
+        # Iterating over kwargs. If parameter seems to refer to a
         # method (usually dynamic SuperDirt parameters), call it
         for k, v in kwargs.items():
             method = getattr(self, k, None)
             if callable(method):
                 method(v)
 
-        # for key, value in kwargs.items():
-        #     if key in self._mono_param_list:
-        #         self.setorChangeMonoParam(key, value)
-        #     else:
-        #         # Is there a method in this class that can handle it?
-        #         method = getattr(self, key, None)
-        #         if callable(method):
-        #             # calling the given method with the given value
-        #             method(value)
-
-        # self.generate_chainable_methods(params)
 
     def __str__(self):
         return ' '.join(str(e) for e in self.content)
 
     # ------------------------------------------------------------------------
-    # GENERIC Mapper: make parameters chainable!
+    # GENERIC Mapper: make parameters chainable!
 
     def __getattr__(self, name: str):
         method = functools.partial(self.addOrChange, name=name)
         method.__doc__ = f"Updates the sound's {name} parameter."
         return method
 
-    # def _generic_mapper(self, amount, name: str):
-    #     self.addOrChange(name, amount)
-    #     return self
-
-    # def generate_chainable_methods(self, params: list):
-    #     for param in params:
-    #         setattr(self, param, partial(self._generic_mapper, name=param))
 
     def addOrChange(self, value, name: str):
         """Will set a parameter or change it if already in message """
@@ -71,15 +57,20 @@ class SuperDirt:
 
         return self
 
-    def query_existing_value(self, index):
+
+    def query_existing_value(self, index: str) -> Union[int, float]:
         "Find the value associated to a name. Return false if not found."
         try:
             posIndex = self.content.index(index)
         except ValueError:
-            return False
+            raise ValueError("can't query existing value {index}")
         return self.content[posIndex + 1]
 
-    def change_existing_value(self, index, new_value):
+
+    def change_existing_value(self,
+            index: str,
+            new_value: Union[int, float]
+        ) -> None:
         "Change the value associated to a name."
         try:
             valueIndex = self.content.index(index)
@@ -87,12 +78,29 @@ class SuperDirt:
             return
         self.content[valueIndex + 1] = new_value
 
-    def willPlay(self):
+
+    def n(self, number: int = 0) -> None:
+        """Change the number of the selected sample"""
+        if not isinstance(number, (int, float)):
+            return
+        current_value = self.query_existing_value("sound")
+        if ':' in list(current_value):
+            self.change_existing_value(
+                    index="sound",
+                    new_value=current_value.split(':')[0] + str(f":{int(number)}"))
+        else:
+            self.change_existing_value(
+                    index="sound",
+                    new_value=current_value + str(f":{int(number)}"))
+
+
+    def willPlay(self) -> bool:
         """
         Return a boolean that will tell if the pattern is planned to be sent
         to SuperDirt or if it will be discarded.
         """
         return True if self.query_existing_value("trig") == 1 else False
+
 
     def schedule(self, message):
         async def _waiter():
@@ -105,11 +113,12 @@ class SuperDirt:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name='superdirt-scheduler')
 
-    def out(self, output=0):
+
+    def out(self, orbit:int = 0) -> None:
         """Must be able to deal with polyphonic messages """
 
         # It is now possible to specify the orbit in this function.
-        if output != 0: self.change_existing_value("orbit", output)
+        if orbit != 0: self.change_existing_value("orbit", orbit)
 
         if not self.willPlay():
             return

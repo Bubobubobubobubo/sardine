@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from setuptools import setup, find_packages
+from setuptools import find_namespace_packages, setup
 import pathlib
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -21,8 +21,15 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
     ],
-    packages=find_packages(where="src"),
+    packages=find_namespace_packages(include=['sardine']),
     python_requires=">=3.7, <4",
-    install_requires=["mido", "rich", "ipython", "osc4py3", "python-rtmidi", "appdirs"],
-    extras_require={'speed': ['uvloop']},
+    install_requires=[
+        "appdirs~=1.4",
+        "mido~=1.2",
+        "osc4py3~=1.0",
+        "psutil~=5.0",
+        "python-rtmidi~=1.4",
+        "rich~=12.5"
+    ],
+    extras_require={"speed": ["uvloop"]},
 )

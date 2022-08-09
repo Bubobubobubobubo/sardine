@@ -53,6 +53,7 @@ The installation process is fairly simple:
 1) Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt** for your favorite OS. It is usually a three step process:
     * install SuperCollider.
     * run `Quarks.install("https://github.com/musikinformatik/SuperDirt.git");` in the SCIDE window.
+    * restart Supercollider
     * run `SuperDirt.start` to start the engine.
 
 ### Code-editing with Sardine

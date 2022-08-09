@@ -30,9 +30,12 @@ setup(
         "psutil~=5.0",
         "python-rtmidi~=1.4",
         "rich~=12.5",
-        "picotui~=1.2"
+        "picotui~=1.2",
+        "click~=8.1"
     ],
     extras_require={"speed": ["uvloop"]},
     entry_points={"console_scripts": [
+        "sardine-config-python=cli.main:edit_python_configuration",
+        "sardine-config-superdirt=cli.main:edit_superdirt_configuration",
         "sardine-config=cli.main:main"]}
 )

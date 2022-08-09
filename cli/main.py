@@ -1,6 +1,10 @@
+import tempfile
 import argparse
+import click
 import json
 import sys
+import os
+from subprocess import call
 
 from appdirs import *
 from pathlib import Path
@@ -81,6 +85,34 @@ def main():
         if value is not None:
             data['config'][name] = value
     write_json_file(data)
+
+
+
+def _edit_configuration(file_name: str):
+    configuration_file = USER_DIR / file_name
+    # If the file already exists, we will read it first before opening editor
+    if configuration_file.is_file():
+        with open(configuration_file, 'r') as config:
+            file_content = config.read()
+        edited = click.edit(file_content)
+        if edited is not None:
+            with open(configuration_file, 'w') as config:
+                config.write(edited)
+    else:
+        with open(configuration_file, 'w') as config:
+            config.write('')
+        # recurse to write in the file
+        _edit_configuration(file_name)
+
+
+def edit_python_configuration():
+    """Call $EDITOR to edit Python based user configuration"""
+    _edit_configuration("user_configuration.py")
+
+
+def edit_superdirt_configuration():
+    """Call $EDITOR to edit Python based user configuration"""
+    _edit_configuration("default_superdirt.scd")
 
 
 if __name__ == "__main__":

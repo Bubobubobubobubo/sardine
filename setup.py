@@ -29,7 +29,8 @@ setup(
         "osc4py3~=1.0",
         "psutil~=5.0",
         "python-rtmidi~=1.4",
-        "rich~=12.5"
+        "rich~=12.5",
+        "picotui~=1.2"
     ],
     extras_require={"speed": ["uvloop"]},
 )

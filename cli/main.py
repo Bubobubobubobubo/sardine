@@ -69,6 +69,7 @@ def main():
 
     if len(sys.argv) < 2:
         print(f"[red]{FUNNY_TEXT}")
+        print(f"Your configuration file is located at: {USER_DIR}")
         parser.print_help()
         exit()
 

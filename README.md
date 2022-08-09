@@ -95,6 +95,8 @@ The `config.json` file will allow you to fine-tune your Sardine experience by pr
 
 The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time.
 
+You can also configure Sardine by using a command-line tool that should automatically be installed on your PATH when installing `Sardine`. Run `sardine-config` from your command line and follow the instructions to update your configuration. Note that you need to boot Sardine at least once to be able to edit the configuration file (otherwise it is not existing).
+
 ## Usage
 
 ### The internal Clock

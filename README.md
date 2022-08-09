@@ -95,7 +95,12 @@ The `config.json` file will allow you to fine-tune your Sardine experience by pr
 
 The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time.
 
-You can also configure Sardine by using a command-line tool that should automatically be installed on your PATH when installing `Sardine`. Run `sardine-config` from your command line and follow the instructions to update your configuration. Note that you need to boot Sardine at least once to be able to edit the configuration file (otherwise it is not existing).
+Sardine will be installed along with configuration tools that are meant to make configuration easy and fast. They will be automatically installed on your `$PATH`:
+- `sardine-config` is a CLI meant to edit `config.json` from the command-line.
+- `sardine-config-python` will fire `$EDITOR` to config `user_configuration.py`.
+- `sardine-config-superdirt` will fire `$EDITOR` to config `default_superdirt.scd`.
+
+Sardine will have to be runned at least once for the `config.json` file to be created. `user_configuration.py` does not exist unless created.
 
 ## Usage
 

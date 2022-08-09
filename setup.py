@@ -33,4 +33,6 @@ setup(
         "picotui~=1.2"
     ],
     extras_require={"speed": ["uvloop"]},
+    entry_points={"console_scripts": [
+        "sardine-config=cli.main:main"]}
 )

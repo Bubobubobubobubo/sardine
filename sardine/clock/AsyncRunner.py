@@ -105,13 +105,21 @@ class AsyncRunner:
     def push(self, func: "MaybeCoroFunc", *args, **kwargs):
         """Pushes a function state to the runner to be called in
         the next iteration."""
-        if not self.states or func is not self.states[-1].func:
+        if not self.states:
             return self.states.append(FunctionState(func, args, kwargs))
 
-        # patch the top-most state
-        state = self.states[-1]
-        state.args = args
-        state.kwargs = kwargs
+        last_state = self.states[-1]
+
+        if func is last_state.func:
+            # patch the top-most state
+            last_state.args = args
+            last_state.kwargs = kwargs
+        else:
+            # transfer arguments from last state if possible
+            # (any excess arguments here should be discarded by `_runner()`)
+            args = args + last_state.args[len(args):]
+            kwargs = last_state.kwargs | kwargs
+            self.states.append(FunctionState(func, args, kwargs))
 
     def reload(self):
         """Triggers an immediate state reload.

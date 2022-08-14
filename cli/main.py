@@ -10,6 +10,23 @@ from appdirs import *
 from pathlib import Path
 from rich import print
 from itertools import chain
+from typing import Any
+
+# ============================================================================ #
+# First script: a dead simple argparse configuration tool to edit values stored
+# in config.json. Automatic type-checking / error raise for each value.
+# ============================================================================ #
+
+def str2bool(v):
+    """Boolean validation method for argparse type checking"""
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 FUNNY_TEXT = """
@@ -56,19 +73,25 @@ def main():
         exit()
     data = read_json_file()
 
+    def bool_check(thing: Any):
+        """Boolean validation method"""
+        if thing not in [True, False]:
+            raise ValueError("Boolean attributes must be True or False.")
+
+
     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
     parser.add_argument('--midi', type=str, help="Default MIDI port")
     parser.add_argument('--bpm', type=float, help="Beats per minute")
     parser.add_argument('--beats', type=int, help="Beats per bar")
     parser.add_argument('--ppqn', type=float, help="ppqn")
     parser.add_argument('--parameters', type=str, help="add a custom param")
-    parser.add_argument('--boot', type=bool, help="Boot SC && SuperDirt")
-    parser.add_argument('--deferred', type=bool,
+    parser.add_argument('--boot', type=str2bool, help="Boot SC && SuperDirt")
+    parser.add_argument('--deferred', type=str2bool,
             help="Turn on/off deferred scheduling")
-    parser.add_argument('--clock', type=bool, help="Active or passive Clock")
-    parser.add_argument('--SCconfig', type=bool,
+    parser.add_argument('--clock', type=str2bool, help="Active or passive Clock")
+    parser.add_argument('--SCconfig', type=str,
             help="SuperDirt Configuration Path")
-    parser.add_argument('--User Config Path', type=bool,
+    parser.add_argument('--User Config Path', type=str,
             help="Python User Configuration file")
 
     if len(sys.argv) < 2:
@@ -77,16 +100,21 @@ def main():
         parser.print_help()
         exit()
 
+    # Grabing arguments from parser.parse_args()
     args = parser.parse_args()
     to_update = list(chain.from_iterable([x for x in args._get_kwargs()]))
 
     # Iterating over the collected kwargs and write to file if needed
+    # TODO: add a validation process to check for incorrect data
     for name, value in pairwise(to_update):
         if value is not None:
             data['config'][name] = value
     write_json_file(data)
 
-
+# ============================================================================ #
+# Second script: open EDITOR to edit configuration files without having to
+# move current directory to the folder itself.
+# ============================================================================ #
 
 def _edit_configuration(file_name: str):
     configuration_file = USER_DIR / file_name

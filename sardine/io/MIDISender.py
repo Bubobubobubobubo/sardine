@@ -2,7 +2,7 @@
 import asyncio
 import pprint
 import functools
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, Optional
 from ..io import dirt
 from ..sequences.Parsers import PatternParser
 
@@ -15,7 +15,7 @@ class MIDISender:
 
     def __init__(self,
             clock: 'Clock',
-            midi_client: 'MIDIIo',
+            midi_client: Optional['MIDIIo'] = None,
             note: Union[int, float, str] = 60,
             delay: Union[int, float, str] = 0.1,
             velocity: Union[int, float, str] = 120,
@@ -23,7 +23,10 @@ class MIDISender:
             at: Union[float, int] = 0):
 
         self.clock = clock
-        self.midi_client = midi_client
+        if midi_client is None:
+            self.midi_client = self.clock._midi
+        else:
+            self.midi_client = midi_client
 
         # Delay parsing [1]
         if isinstance(delay, str):
@@ -70,10 +73,10 @@ class MIDISender:
         async def _waiter():
             await handle
             asyncio.create_task(self.midi_client.note(
-                delay=message.delay,
-                note=message.note,
-                velocity=message.velocity,
-                channel=message.channel))
+                delay=message.get('delay'),
+                note=message.get('note'),
+                velocity=message.get('velocity'),
+                channel=message.get('channel')))
 
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)

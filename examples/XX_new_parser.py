@@ -31,3 +31,14 @@ def dumb(delay=0.25, i=0):
     cs(dumb, delay=choice([0.25]), i=i+1)
 
 hush()
+
+@swim
+def midi_test(delay=1, i=0):
+    M(
+            clock=c,
+            midi_client=None,
+            note=60,
+            velocity=120,
+            channel=0,
+            delay=0.1).out(i)
+    cs(midi_test, delay=1, i=i+1)

@@ -93,9 +93,12 @@ class SuperDirtSender:
             self.content |= {'orbit': orbit}
 
         final_message = []
-        if i is None:
 
+        def _message_without_iterator():
+            """Compose a message if no iterator is given"""
             # Sound
+            if self.sound == []:
+                return
             if isinstance(self.sound, list):
                 final_message.extend(['sound', self.sound[0]])
             elif isinstance(self.sound, str):
@@ -103,20 +106,29 @@ class SuperDirtSender:
 
             # Parametric values
             for key, value in self.content.items():
+                if value == []:
+                    continue
                 if isinstance(value, list):
                     value = value[0]
                 final_message.extend([key, float(value)])
             return self.schedule(final_message)
 
-        else:
-            # Iterate over cyclical structures
+        def _message_with_iterator():
+            """Compose a message if an iterator is given"""
+
+            # Sound
+            if self.sound == []:
+                return
             if isinstance(self.sound, list):
                 final_message.extend(['sound',
                         self.sound[i % len(self.sound) - 1]])
             else:
                 final_message.extend(['sound', self.sound])
 
+            # Parametric arguments
             for key, value in self.content.items():
+                if value == []:
+                    continue
                 if isinstance(value, list):
                     value = float(value[i % len(value) - 1])
                     final_message.extend([key, value])
@@ -126,6 +138,11 @@ class SuperDirtSender:
             return self.schedule(final_message)
 
 
+        # Composing and sending messages
+        if i is None:
+            return _message_without_iterator()
+        else:
+            return _message_with_iterator()
 
 
     # def out(self, orbit:int = 0, iterator=Union[None, int]= None) -> None:

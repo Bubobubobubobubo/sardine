@@ -199,7 +199,17 @@ class Clock:
         return self.tick // self.ppqn
 
     @property
+    def beat(self) -> int:
+        """The number of beats passed since the initial time."""
+        return self.tick // self.ppqn
+
+    @property
     def current_bar(self) -> int:
+        """The number of bars passed since the initial time."""
+        return self.current_beat // self.beat_per_bar
+
+    @property
+    def bar(self) -> int:
         """The number of bars passed since the initial time."""
         return self.current_beat // self.beat_per_bar
 

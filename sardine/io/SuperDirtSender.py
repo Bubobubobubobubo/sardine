@@ -21,7 +21,7 @@ class SuperDirtSender:
         # Iterating over kwargs. If parameter seems to refer to a
         # method (usually dynamic SuperDirt parameters), call it
 
-        self.content = {'orbit': 0, 'trig': 1}
+        self.content = {'orbit': 0}
         for k, v in kwargs.items():
             method = getattr(self, k, None)
             if callable(method):
@@ -63,14 +63,6 @@ class SuperDirtSender:
         return self
 
 
-    def willPlay(self) -> bool:
-        """
-        Return a boolean that will tell if the pattern is planned to be sent
-        to SuperDirt or if it will be discarded.
-        """
-        return True if self.content.get('trig') == 1 else False
-
-
     def schedule(self, message):
         async def _waiter():
             await handle
@@ -83,10 +75,11 @@ class SuperDirtSender:
         asyncio.create_task(_waiter(), name='superdirt-scheduler')
 
 
-    def out(self, orbit:int = 0, i: Union[None, int] = None) -> None:
-        """Prototype for the Sender output"""
-        if not self.willPlay():
-            return
+    def out(self, i: Union[None, int] = None, orbit:int = 0) -> None:
+        """
+        Prototype for the Sender output.
+        TODO: make the sample number patternable...
+        """
 
         if orbit != 0:
             self.content |= {'orbit': orbit}
@@ -110,7 +103,13 @@ class SuperDirtSender:
                 if isinstance(value, list):
                     value = value[0]
                 final_message.extend([key, float(value)])
-            return self.schedule(final_message)
+
+            if 'trig' not in final_message:
+                final_message.extend(['trig', 1])
+
+            trig_value = final_message[final_message.index('trig') + 1]
+            if trig_value:
+                return self.schedule(final_message)
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
@@ -134,8 +133,12 @@ class SuperDirtSender:
                 else:
                     final_message.extend([key, float(value)])
 
-            return self.schedule(final_message)
+            if 'trig' not in final_message:
+                final_message.extend(['trig', str(1)])
 
+            trig_value = final_message[final_message.index('trig') + 1]
+            if trig_value:
+                return self.schedule(final_message)
 
         # Composing and sending messages
         if i is None:

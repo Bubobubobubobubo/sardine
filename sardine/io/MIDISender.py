@@ -8,25 +8,29 @@ from ..sequences.Parsers import PatternParser
 
 if TYPE_CHECKING:
     from ..clock import Clock
+    from ..io import MIDIIo
 
 
 class MIDISender:
 
     def __init__(self,
-            clock: "Clock", midi_port: str,
-            velocity=Union[int, float, str],
-            channel=Union[int, float, str],
+            clock: 'Clock',
+            midi_client: 'MIDIIo',
+            velocity: Union[int, float, str] = 120,
+            channel:  Union[int, float, str] = 0,
             at: Union[float, int] = 0,
             **kwargs):
 
         self.clock = clock
-        self.midi_port = self.midi_port
+        self.midi_client = midi_client
 
+        # Velocity parsing
         if isinstance(velocity, str):
             self.velocity = self.parse(velocity)
         else:
             self.velocity = velocity
 
+        # Channel parsing
         if isinstance(channel, str):
             self.channel= self.parse(channel)
         else:
@@ -87,7 +91,9 @@ class MIDISender:
     def schedule(self, message):
         async def _waiter():
             await handle
+            self.midi_client.send(Mido.message())
             dirt(message)
+
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
@@ -98,40 +104,59 @@ class MIDISender:
 
     def out(self) -> None:
         """Must be able to deal with polyphonic messages """
-
         if not self.willPlay():
             return
 
-        common = []
-        polyphonic_pairs: list[tuple[str, list]] = []
+        final_message = {}
+        def _message_without_iterator():
+            """Compose a message if no iterator is given"""
 
-        # Discard the polyphonic messages thingie during refactoring
+            # Velocity
+            if self.velocity == []:
+                return
+            if isinstance(self.velocity, list):
+                final_message['velocity'] = self.velocity[0]
+            elif isinstance(self.velocity, str):
+                final_message['velocity'] = self.velocity[0]
 
-        # Separate polyphonic parameters from content
-        # for i in range(0, len(self.content), 2):
-        #     name: str
-        #     name, value = self.content[i:i+2]
-        #     if isinstance(value, list):
-        #         polyphonic_pairs.append((name, value))
-        #     else:
-        #         common.extend((name, value))
+            # Parametric values: names are mental helpers for the user
+            final_message['message'] = []
+            for _, value in self.content.items():
+                if value == []:
+                    continue
+                if isinstance(value, list):
+                    value = value[0]
+                final_message['message'].append(float(value))
 
-        if not polyphonic_pairs:
-            # Simple monophonic message need no care
-            return self.schedule(common)
+            return self.schedule(message=final_message)
 
-        # names, value_table = zip(*polyphonic_pairs)
-        # max_values = max(len(values) for values in value_table)
-        # tails: list[list] = []
-        # for i in range(max_values):
-        #     # if there is more than one polyphonic pair with differing
-        #     # lengths, we will wrap around
-        #     zipping_values = (values[i % len(values)] for values in value_table)
+        def _message_with_iterator():
+            """Compose a message if an iterator is given"""
 
-        #     tail = []
-        #     for pair in zip(names, zipping_values):
-        #         tail.extend(pair)
-        #     tails.append(tail)
+            # Sound
+            if self.address == []:
+                return
+            if isinstance(self.address, list):
+                final_message['address'] = self.address[
+                        i % len(self.address) - 1]
+            else:
+                final_message['address'] = self.address
 
-        # for i in tails:
-        #     self.schedule(common + i)
+            # Parametric arguments
+            final_message['message'] = []
+            for _, value in self.content.items():
+                if value == []:
+                    continue
+                if isinstance(value, list):
+                    value = float(value[i % len(value) - 1])
+                    final_message['message'].append(value)
+                else:
+                    final_message['message'].append(float(value))
+
+            return self.schedule(message=final_message)
+
+        # Composing and sending messages
+        if i is None:
+            return _message_without_iterator()
+        else:
+            return _message_with_iterator()

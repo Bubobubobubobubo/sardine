@@ -99,6 +99,8 @@ class OSCSender:
 
     def out(self, i: Union[int, None]) -> None:
         """Sender method"""
+        if not self.willPlay():
+            return
 
         final_message = {}
         def _message_without_iterator():

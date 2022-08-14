@@ -34,11 +34,8 @@ hush()
 
 @swim
 def midi_test(delay=1, i=0):
-    M(
-            clock=c,
-            midi_client=None,
-            note=60,
-            velocity=120,
-            channel=0,
-            delay=0.1).out(i)
+    M(c, note=60, velocity=120).out()
+    M(c, note='48 52 57', velocity=120).out(i)
     cs(midi_test, delay=1, i=i+1)
+
+hush()

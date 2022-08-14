@@ -21,11 +21,13 @@ def bd_or_clap(delay=1, iter=0):
 hush()
 
 from random import choice
+
 @swim
 def dumb(delay=0.25, i=0):
-    S('pluck:9', n=1, trig='1').out(i=i)
-    # S('c|a b?', n=9, trig='1 0 1', speed='1:4').out(i=i)
-    # S('e|d|h|b|c', n=int(i % 10), trig='1 1 0 0 1 0', speed='3').out(i=i)
-    cs(dumb, delay=choice([1/3, 2/3]), i=i+1)
+    S('808bd:2', n=1, trig=euclid(2,8)).out(i=i)
+    S('e:2|e:5|e:8', n=1, trig=euclid(1,8)).out(i=i)
+    S('h|hh', n=1, legato='0.01:0.1', speed='4:8',
+            trig=euclid(4,8)).out(i=i)
+    cs(dumb, delay=choice([0.25]), i=i+1)
 
 hush()

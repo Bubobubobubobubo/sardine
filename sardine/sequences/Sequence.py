@@ -14,7 +14,7 @@ def bin(sequence: str, reverse: bool = False):
     if reverse:
         binary.reverse()
 
-    return itertools.cycle(binary)
+    return binary
 
 
 def xox(sequence: str, reverse: bool = False):
@@ -31,7 +31,7 @@ def xox(sequence: str, reverse: bool = False):
             raise RuntimeError('Characters are limited to "x", " " and "?".')
     if reverse:
         fseq.reverse()
-    return itertools.cycle(fseq)
+    return fseq
 
 
 def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
@@ -80,6 +80,6 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
     if rotate != 0:
         result = rotate(result, rotation)
 
-    return itertools.cycle(result)
+    return result
 
 euclid = euclidean_rhythm

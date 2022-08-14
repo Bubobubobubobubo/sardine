@@ -16,41 +16,41 @@ class MIDISender:
     def __init__(self,
             clock: 'Clock',
             midi_client: 'MIDIIo',
+            note: Union[int, float, str] = 60,
+            delay: Union[int, float, str] = 0.1,
             velocity: Union[int, float, str] = 120,
             channel:  Union[int, float, str] = 0,
-            at: Union[float, int] = 0,
-            **kwargs):
+            at: Union[float, int] = 0):
 
         self.clock = clock
         self.midi_client = midi_client
 
-        # Velocity parsing
+        # Delay parsing [1]
+        if isinstance(delay, str):
+            self.delay = self.parse(delay)
+        else:
+            self.delay = delay
+
+        # Velocity parsing [2]
         if isinstance(velocity, str):
             self.velocity = self.parse(velocity)
         else:
             self.velocity = velocity
 
-        # Channel parsing
+        # Channel parsing [3]
         if isinstance(channel, str):
             self.channel= self.parse(channel)
         else:
             self.channel= channel
 
-        self.content = {}
-        for key, value in kwargs.items():
-            if isinstance(value, (int, float)):
-                self.content[key] = value
-            else:
-                self.content[key] = self._parse(value)
+
+        # Note parsing [3]
+        if isinstance(note, str):
+            self.note = self.parse(note)
+        else:
+            self.note = note
 
         self.after: int = at
-
-        # Iterating over kwargs. If parameter seems to refer to a
-        # method (usually dynamic SuperDirt parameters), call it
-        for k, v in kwargs.items():
-            method = getattr(self, k, None)
-            if callable(method):
-                method(v)
 
     def parse(self, pattern: str):
         """Pre-parse MIDI params during __init__"""
@@ -65,93 +65,49 @@ class MIDISender:
     # ------------------------------------------------------------------------
     # GENERIC Mapper: make parameters chainable!
 
-    def __getattr__(self, name: str):
-        method = functools.partial(self.addOrChange, name=name)
-        method.__doc__ = f"Updates the sound's {name} parameter."
-        return method
-
-
-    def addOrChange(self, values, name: str):
-        """Will set a parameter or change it if already in message"""
-
-        # Detect if a given parameter is a pattern, form a valid pattern
-        if isinstance(values, (str)):
-            self.content |= {name: self._parse(values)}
-        return self
-
-
-    def willPlay(self) -> bool:
-        """
-        Return a boolean that will tell if the pattern is planned to be sent
-        to SuperDirt or if it will be discarded.
-        """
-        return True if self.content.get('trig') == 1 else False
-
 
     def schedule(self, message):
         async def _waiter():
             await handle
-            self.midi_client.send(Mido.message())
-            dirt(message)
+            asyncio.create_task(self.midi_client.note(
+                delay=message.delay,
+                note=message.note,
+                velocity=message.velocity,
+                channel=message.channel))
 
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='superdirt-scheduler')
+        asyncio.create_task(_waiter(), name='midi-scheduler')
 
 
-    def out(self) -> None:
+    def out(self, i: Union[int, None]) -> None:
         """Must be able to deal with polyphonic messages """
-        if not self.willPlay():
-            return
+        final_message = {
+                'delay': self.delay,
+                'velocity': self.velocity,
+                'channel': self.channel,
+                'note': self.note}
 
-        final_message = {}
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
 
-            # Velocity
-            if self.velocity == []:
-                return
-            if isinstance(self.velocity, list):
-                final_message['velocity'] = self.velocity[0]
-            elif isinstance(self.velocity, str):
-                final_message['velocity'] = self.velocity[0]
-
-            # Parametric values: names are mental helpers for the user
-            final_message['message'] = []
-            for _, value in self.content.items():
-                if value == []:
-                    continue
-                if isinstance(value, list):
-                    value = value[0]
-                final_message['message'].append(float(value))
+            for key, value in final_message.items():
+                if value == []: return
+                if isinstance(value, (list, str)):
+                    final_message[key] = int(value[0])
 
             return self.schedule(message=final_message)
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
 
-            # Sound
-            if self.address == []:
-                return
-            if isinstance(self.address, list):
-                final_message['address'] = self.address[
-                        i % len(self.address) - 1]
-            else:
-                final_message['address'] = self.address
-
-            # Parametric arguments
-            final_message['message'] = []
-            for _, value in self.content.items():
-                if value == []:
-                    continue
-                if isinstance(value, list):
-                    value = float(value[i % len(value) - 1])
-                    final_message['message'].append(value)
-                else:
-                    final_message['message'].append(float(value))
+            for key, value in final_message.items():
+                if value == []: return
+                if isinstance(value, (list, str)):
+                    final_message[key] = int(value[i % len(value) - 1])
 
             return self.schedule(message=final_message)
 

@@ -81,7 +81,6 @@ class MIDISender:
 
     def out(self, i: Union[int, None]=None) -> None:
         """Must be able to deal with polyphonic messages """
-        trig = self.trig
         final_message = {
                 'delay': self.delay,
                 'velocity': self.velocity,

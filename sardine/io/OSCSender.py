@@ -23,14 +23,12 @@ class OSCSender:
         self.osc_client = osc_client
         self.address = self._parse_osc_addresses(address)
 
-
         self.content = {}
         for key, value in kwargs.items():
             if isinstance(value, (int, float)):
                 self.content[key] = value
             else:
                 self.content[key] = self._parse(value)
-
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -42,15 +40,18 @@ class OSCSender:
             else:
                 self.content[k] = v
 
+
     def _parse_osc_addresses(self, pattern: str):
         """Pre-parse OSC client pattern during __init__"""
         pat = PatternParser(pattern=pattern, type='address')
         return pat.pattern
 
+
     def _parse(self, pattern: str):
         """Pre-parse MIDI params during __init__"""
         pat = PatternParser(pattern=pattern, type='number')
         return pat.pattern
+
 
     def __str__(self):
         """String representation of a sender content"""
@@ -75,17 +76,10 @@ class OSCSender:
         return self
 
 
-    def willPlay(self) -> bool:
-        """
-        Return a boolean that will tell if the pattern is planned to be sent
-        to SuperDirt or if it will be discarded.
-        """
-        return True if self.content.get('trig') == 1 else False
-
-
     def schedule(self, message: dict):
         async def _waiter():
             await handle
+            print(message['message'])
             self.osc_client.send(
                     self.clock,
                     message['address'],
@@ -99,8 +93,6 @@ class OSCSender:
 
     def out(self, i: Union[int, None]) -> None:
         """Sender method"""
-        if not self.willPlay():
-            return
 
         final_message = {}
         def _message_without_iterator():
@@ -121,9 +113,15 @@ class OSCSender:
                     continue
                 if isinstance(value, list):
                     value = value[0]
-                final_message['message'].append(float(value))
+                if _ != 'trig':
+                    final_message['message'].append(float(value))
 
-            return self.schedule(message=final_message)
+            if 'trig' not in self.content.keys():
+                trig = 1
+            else:
+                trig = int(self.content['trig'][0])
+            if trig:
+                return self.schedule(final_message)
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
@@ -144,11 +142,19 @@ class OSCSender:
                     continue
                 if isinstance(value, list):
                     value = float(value[i % len(value) - 1])
-                    final_message['message'].append(value)
+                    if _ != 'trig':
+                        final_message['message'].append(value)
                 else:
-                    final_message['message'].append(float(value))
+                    if _ != 'trig':
+                        final_message['message'].append(float(value))
 
-            return self.schedule(message=final_message)
+            if 'trig' not in self.content.keys():
+                trig = 1
+            else:
+                trig = int(self.content['trig'][
+                    i % len(self.content['trig']) -1])
+            if trig:
+                return self.schedule(final_message)
 
         # Composing and sending messages
         if i is None:

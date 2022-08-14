@@ -14,7 +14,7 @@ class OSCSender:
 
     def __init__(self,
             clock: "Clock",
-            osc_client: str,
+            osc_client,
             address: str,
             at: Union[float, int] = 0,
             **kwargs):
@@ -83,58 +83,75 @@ class OSCSender:
         return True if self.content.get('trig') == 1 else False
 
 
-    def schedule(self, message):
+    def schedule(self, message: dict):
         async def _waiter():
             await handle
-            dirt(message)
+            self.osc_client.send(
+                    self.clock,
+                    message['address'],
+                    message['message'])
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='superdirt-scheduler')
+        asyncio.create_task(_waiter(), name='osc-scheduler')
 
+    def out(self, i: Union[int, None]) -> None:
+        """Sender method"""
 
-    def out(self, orbit:int = 0) -> None:
-        """Must be able to deal with polyphonic messages """
+        final_message = {}
+        def _message_without_iterator():
+            """Compose a message if no iterator is given"""
 
-        # Specify a different orbit using the merge operator (Python 3.9)
-        if orbit != 0:
-            self.content |= {'orbit': orbit}
+            # Address
+            if self.address == []:
+                return
+            if isinstance(self.address, list):
+                final_message['address'] = self.address[0]
+            elif isinstance(self.address, str):
+                final_message['address'] = self.address[0]
 
-        if not self.willPlay():
-            return
+            # Parametric values: names are mental helpers for the user
+            final_message['message'] = []
+            for _, value in self.content.items():
+                if value == []:
+                    continue
+                if isinstance(value, list):
+                    value = value[0]
+                final_message['message'].append(float(value))
 
-        common = []
-        polyphonic_pairs: list[tuple[str, list]] = []
+            print(final_message)
+            return self.schedule(message=final_message)
 
-        # Discard the polyphonic messages thingie during refactoring
+        def _message_with_iterator():
+            """Compose a message if an iterator is given"""
 
-        # Separate polyphonic parameters from content
-        # for i in range(0, len(self.content), 2):
-        #     name: str
-        #     name, value = self.content[i:i+2]
-        #     if isinstance(value, list):
-        #         polyphonic_pairs.append((name, value))
-        #     else:
-        #         common.extend((name, value))
+            # Sound
+            if self.address == []:
+                return
+            if isinstance(self.address, list):
+                final_message['address'] = self.address[
+                        i % len(self.address) - 1]
+            else:
+                final_message['address'] = self.address
 
-        if not polyphonic_pairs:
-            # Simple monophonic message need no care
-            return self.schedule(common)
+            # Parametric arguments
+            final_message['message'] = []
+            for _, value in self.content.items():
+                if value == []:
+                    continue
+                if isinstance(value, list):
+                    value = float(value[i % len(value) - 1])
+                    final_message['message'].append(value)
+                else:
+                    final_message['message'].append(float(value))
 
-        # names, value_table = zip(*polyphonic_pairs)
-        # max_values = max(len(values) for values in value_table)
-        # tails: list[list] = []
-        # for i in range(max_values):
-        #     # if there is more than one polyphonic pair with differing
-        #     # lengths, we will wrap around
-        #     zipping_values = (values[i % len(values)] for values in value_table)
+            print(final_message)
+            return self.schedule(message=final_message)
 
-        #     tail = []
-        #     for pair in zip(names, zipping_values):
-        #         tail.extend(pair)
-        #     tails.append(tail)
-
-        # for i in tails:
-        #     self.schedule(common + i)
+        # Composing and sending messages
+        if i is None:
+            return _message_without_iterator()
+        else:
+            return _message_with_iterator()

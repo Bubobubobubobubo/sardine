@@ -32,10 +32,13 @@ class MIDISender:
         else:
             self.channel= channel
 
-        # This way, we are sure that we have the channel and velocity needed
-        # to form at least a basic message...
-
         self.content = {}
+        for key, value in kwargs.items():
+            if isinstance(value, (int, float)):
+                self.content[key] = value
+            else:
+                self.content[key] = self._parse(value)
+
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -93,12 +96,8 @@ class MIDISender:
         asyncio.create_task(_waiter(), name='superdirt-scheduler')
 
 
-    def out(self, orbit:int = 0) -> None:
+    def out(self) -> None:
         """Must be able to deal with polyphonic messages """
-
-        # Specify a different orbit using the merge operator (Python 3.9)
-        if orbit != 0:
-            self.content |= {'orbit': orbit}
 
         if not self.willPlay():
             return

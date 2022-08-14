@@ -22,7 +22,15 @@ class OSCSender:
         self.clock = clock
         self.osc_client = osc_client
         self.address = self._parse_osc_addresses(address)
+
+
         self.content = {}
+        for key, value in kwargs.items():
+            if isinstance(value, (int, float)):
+                self.content[key] = value
+            else:
+                self.content[key] = self._parse(value)
+
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -36,7 +44,7 @@ class OSCSender:
 
     def _parse_osc_addresses(self, pattern: str):
         """Pre-parse OSC client pattern during __init__"""
-        pat = PatternParser(pattern=pattern, type='sound')
+        pat = PatternParser(pattern=pattern, type='address')
         return pat.pattern
 
     def _parse(self, pattern: str):

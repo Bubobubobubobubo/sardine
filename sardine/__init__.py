@@ -196,10 +196,6 @@ else:
 a = S('bd', speed=2, blibli=2)
 print(a)
 
-# Check if the OSC object is good k
-a = O(c, osc_client='client', address='coucou loulou', blabla=1, blibli=2)
+# Check OSCSender [ ]
+a = O(c, 'client', '/coucou /loulou', blabla=1, blibli='1 2 3')
 print(a)
-
-# Check if the MIDI Object is alright
-# a = M(c)
-# print(a)

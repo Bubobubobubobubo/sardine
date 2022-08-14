@@ -100,7 +100,10 @@ class MIDISender:
             for key, value in final_message.items():
                 if value == []: return
                 if isinstance(value, (list, str)):
-                    final_message[key] = int(value[0])
+                    if key in ['velocity', 'channel', 'note']:
+                        final_message[key] = int(value[0])
+                    else:
+                        final_message[key] = float(value[0])
 
             return self.schedule(message=final_message)
 
@@ -110,7 +113,10 @@ class MIDISender:
             for key, value in final_message.items():
                 if value == []: return
                 if isinstance(value, (list, str)):
-                    final_message[key] = int(value[i % len(value) - 1])
+                    if key in ['velocity', 'channel', 'note']:
+                        final_message[key] = int(value[i % len(value) - 1])
+                    else:
+                        final_message[key] = float(value[i % len(value) - 1])
 
             return self.schedule(message=final_message)
 

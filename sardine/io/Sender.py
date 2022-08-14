@@ -17,12 +17,13 @@ class GenericSender:
     """Not really generic for the moment, more like the old SuperDirt object"""
 
     def __init__(self,
-            clock: "Clock", sound: str,
+            clock: "Clock", main_argument: Union[str, None],
             at: Union[float, int] = 0,
             **kwargs):
 
         self.clock = clock
-        self.sound = self.parse(sound)
+        if main_argument is not None:
+            self.sound = self.parse(main_argument)
         self.content = {'orbit': 0, 'trig': 1}
         self.after: int = at
 
@@ -143,26 +144,45 @@ class SuperDirtSender(GenericSender):
 
 class OSCSender(GenericSender):
     def __init__(self,
-            clock: "Clock", sound: str,
+            clock: "Clock",
+            osc_client,
             at: Union[float, int] = 0,
+            main_argument: Union[str, None] = None,
             **kwargs):
-        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
+        super().__init__(
+                clock=clock,
+                main_argument=main_argument,
+                at=at, **kwargs)
+        self._osc_client = osc_client
+
+    def out(self):
+        """Out function for sending message through an OSC client"""
+        pass
 
     def __str__(self):
         """String representation of a sender content"""
         param_dict = pprint.pformat(self.content)
-        return f"{self.sound}: {param_dict}"
+        return f"{self.osc_client}: {param_dict}"
 
 
 class MIDISender(GenericSender):
     def __init__(self,
-            clock: "Clock", sound: str,
+            clock: "Clock",
+            midi_client: str,
             at: Union[float, int] = 0,
+            main_argument: Union[str, None] = None,
             **kwargs):
-        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
+        super().__init__(
+                clock=clock,
+                main_argument=main_argument,
+                at=at, **kwargs)
+        self._midi_client = midi_client
 
     def __str__(self):
         """String representation of a sender content"""
         param_dict = pprint.pformat(self.content)
-        return f"{self.sound}: {param_dict}"
+        return f"{self.midi_client}: {param_dict}"
 
+    def out(self):
+        """Out function for sending message through a MIDI Client"""
+        pass

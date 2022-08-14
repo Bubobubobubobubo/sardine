@@ -121,7 +121,6 @@ class OSCSender:
                     value = value[0]
                 final_message['message'].append(float(value))
 
-            print(final_message)
             return self.schedule(message=final_message)
 
         def _message_with_iterator():
@@ -147,7 +146,6 @@ class OSCSender:
                 else:
                     final_message['message'].append(float(value))
 
-            print(final_message)
             return self.schedule(message=final_message)
 
         # Composing and sending messages

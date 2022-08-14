@@ -76,7 +76,6 @@ class SuperDirtSender:
             await handle
             dirt(message)
 
-        print(message)
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time

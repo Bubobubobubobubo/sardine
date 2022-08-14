@@ -129,12 +129,40 @@ class GenericSender:
 
 
 class SuperDirtSender(GenericSender):
-    pass
+    def __init__(self,
+            clock: "Clock", sound: str,
+            at: Union[float, int] = 0,
+            **kwargs):
+        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
+
+    def __str__(self):
+        """String representation of a sender content"""
+        param_dict = pprint.pformat(self.content)
+        return f"{self.sound}: {param_dict}"
 
 
 class OSCSender(GenericSender):
-    pass
+    def __init__(self,
+            clock: "Clock", sound: str,
+            at: Union[float, int] = 0,
+            **kwargs):
+        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
+
+    def __str__(self):
+        """String representation of a sender content"""
+        param_dict = pprint.pformat(self.content)
+        return f"{self.sound}: {param_dict}"
 
 
 class MIDISender(GenericSender):
-    pass
+    def __init__(self,
+            clock: "Clock", sound: str,
+            at: Union[float, int] = 0,
+            **kwargs):
+        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
+
+    def __str__(self):
+        """String representation of a sender content"""
+        param_dict = pprint.pformat(self.content)
+        return f"{self.sound}: {param_dict}"
+

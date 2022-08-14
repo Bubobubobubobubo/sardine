@@ -12,8 +12,7 @@ import mido
 from rich import print
 
 from . import AsyncRunner
-from ..io import MIDIIo, ClockListener
-from ..superdirt import SuperDirt
+from ..io import MIDIIo, ClockListener, SuperDirtSender
 
 __all__ = ('Clock', 'TickHandle')
 
@@ -401,12 +400,8 @@ class Clock:
         print(first + second)
 
 
-    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-        return SuperDirt(self, sound, at, **kwargs)
-
-
-    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-    #     return SuperDirt(self, sound, at, **kwargs)
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
+        return SuperDirtSender(self, sound, at, **kwargs)
 
 
     async def run_active(self):

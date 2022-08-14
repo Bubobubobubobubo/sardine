@@ -23,7 +23,7 @@ hush()
 from random import choice
 @swim
 def dumb(delay=0.25, i=0):
-    S('pluck', n=0, trig='1').out(i=i)
+    S('pluck:9', n=1, trig='1').out(i=i)
     # S('c|a b?', n=9, trig='1 0 1', speed='1:4').out(i=i)
     # S('e|d|h|b|c', n=int(i % 10), trig='1 1 0 0 1 0', speed='3').out(i=i)
     cs(dumb, delay=choice([1/3, 2/3]), i=i+1)

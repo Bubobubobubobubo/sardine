@@ -18,8 +18,9 @@ class PatternParser():
 
 
     SOUND_REGEX = re.compile(
+        # (?P<sound>[\w|]+)
         r"""
-        (?P<sound>[\w|]+)
+        (?P<sound>[\w?:\d|]+)
         (?: \?(?P<chance>\d*) )?
         (?:  !(?P<repeat>\d+) )?
         """,

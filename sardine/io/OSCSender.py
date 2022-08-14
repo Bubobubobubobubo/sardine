@@ -9,22 +9,20 @@ from ..sequences.Parsers import PatternParser
 if TYPE_CHECKING:
     from ..clock import Clock
 
-__all__ = ('SuperDirtSender', 'MIDISender', 'OSCSender')
 
-
-class GenericSender:
-
-    """Not really generic for the moment, more like the old SuperDirt object"""
+class OSCSender:
 
     def __init__(self,
-            clock: "Clock", main_argument: Union[str, None],
+            clock: "Clock",
+            osc_client: str,
+            address: str,
             at: Union[float, int] = 0,
             **kwargs):
 
         self.clock = clock
-        if main_argument is not None:
-            self.sound = self.parse(main_argument)
-        self.content = {'orbit': 0, 'trig': 1}
+        self.osc_client = osc_client
+        self.address = self._parse_osc_addresses(address)
+        self.content = {}
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -33,16 +31,23 @@ class GenericSender:
             method = getattr(self, k, None)
             if callable(method):
                 method(v)
+            else:
+                self.content[k] = v
 
-    def parse(self, sound: str):
-        """Pre-parse sound param during __init__"""
-        pat = PatternParser(pattern=sound, type='sound')
+    def _parse_osc_addresses(self, pattern: str):
+        """Pre-parse OSC client pattern during __init__"""
+        pat = PatternParser(pattern=pattern, type='sound')
+        return pat.pattern
+
+    def _parse(self, pattern: str):
+        """Pre-parse MIDI params during __init__"""
+        pat = PatternParser(pattern=pattern, type='number')
         return pat.pattern
 
     def __str__(self):
         """String representation of a sender content"""
         param_dict = pprint.pformat(self.content)
-        return f"{self.sound}: {param_dict}"
+        return f"{self.address}: {param_dict}"
 
     # ------------------------------------------------------------------------
     # GENERIC Mapper: make parameters chainable!
@@ -58,9 +63,7 @@ class GenericSender:
 
         # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, (str)):
-            pattern = PatternParser(pattern=values, type='number')
-            values = pattern.pattern
-        self.content |= {'name': values}
+            self.content |= {name: self._parse(values)}
         return self
 
 
@@ -127,62 +130,3 @@ class GenericSender:
 
         # for i in tails:
         #     self.schedule(common + i)
-
-
-class SuperDirtSender(GenericSender):
-    def __init__(self,
-            clock: "Clock", sound: str,
-            at: Union[float, int] = 0,
-            **kwargs):
-        super().__init__(clock=clock, sound=sound, at=at, **kwargs)
-
-    def __str__(self):
-        """String representation of a sender content"""
-        param_dict = pprint.pformat(self.content)
-        return f"{self.sound}: {param_dict}"
-
-
-class OSCSender(GenericSender):
-    def __init__(self,
-            clock: "Clock",
-            osc_client,
-            at: Union[float, int] = 0,
-            main_argument: Union[str, None] = None,
-            **kwargs):
-        super().__init__(
-                clock=clock,
-                main_argument=main_argument,
-                at=at, **kwargs)
-        self._osc_client = osc_client
-
-    def out(self):
-        """Out function for sending message through an OSC client"""
-        pass
-
-    def __str__(self):
-        """String representation of a sender content"""
-        param_dict = pprint.pformat(self.content)
-        return f"{self.osc_client}: {param_dict}"
-
-
-class MIDISender(GenericSender):
-    def __init__(self,
-            clock: "Clock",
-            midi_client: str,
-            at: Union[float, int] = 0,
-            main_argument: Union[str, None] = None,
-            **kwargs):
-        super().__init__(
-                clock=clock,
-                main_argument=main_argument,
-                at=at, **kwargs)
-        self._midi_client = midi_client
-
-    def __str__(self):
-        """String representation of a sender content"""
-        param_dict = pprint.pformat(self.content)
-        return f"{self.midi_client}: {param_dict}"
-
-    def out(self):
-        """Out function for sending message through a MIDI Client"""
-        pass

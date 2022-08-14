@@ -24,6 +24,9 @@ from .io import (
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
+from .io import (
+        OSCSender,
+        MIDISender)
 from typing import Union
 from .sequences import *
 warnings.filterwarnings("ignore")
@@ -68,6 +71,8 @@ c = Clock(
 cs, cr = c.schedule_func, c.remove
 children = c.print_children
 S = c.note
+O = OSCSender
+M = MIDISender
 n = next
 
 
@@ -185,4 +190,16 @@ else:
     print(f"[red]No user provided configuration file found...")
 
 
+# Test zone strikes back
 
+# Check if the base object is still good [X]
+a = S('bd', speed=2, blibli=2)
+print(a)
+
+# Check if the OSC object is good k
+a = O(c, osc_client='client', address='coucou loulou', blabla=1, blibli=2)
+print(a)
+
+# Check if the MIDI Object is alright
+# a = M(c)
+# print(a)

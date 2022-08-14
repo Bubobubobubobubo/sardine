@@ -401,7 +401,7 @@ class Clock:
 
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
-        return SuperDirtSender(self, sound, at, **kwargs)
+        return SuperDirtSender(self, sound=sound, at=at, **kwargs)
 
 
     async def run_active(self):

@@ -4,7 +4,7 @@ import pprint
 import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
-from ..sequences.Parsers import PatternParser
+from ..sequences import ListParser
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -14,6 +14,7 @@ class SuperDirtSender:
     def __init__(self, clock: "Clock", sound: str,
             at: Union[float, int] = 0, **kwargs):
 
+        self._parser = ListParser()
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at
@@ -27,17 +28,10 @@ class SuperDirtSender:
             if callable(method):
                 method(v)
 
-
-    def _parse_sound(self, sound: str):
+    def _parse_sound(self, sound_pattern: str):
         """Pre-parse sound param during __init__"""
-        pat = PatternParser(pattern=sound, type='sound')
-        return pat.pattern
-
-
-    def _parse_value(self, sound: str):
-        """Pre-parse value param during __init__"""
-        pat = PatternParser(pattern=sound, type='number')
-        return pat.pattern
+        pat = self._parser.parse(sound_pattern)
+        return pat
 
     def __str__(self):
         """String representation of a sender content"""
@@ -57,7 +51,7 @@ class SuperDirtSender:
         """Will set a parameter or change it if already in message"""
         # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, str):
-            self.content |= {name: self._parse_value(values)}
+            self.content |= {name: self._parser.parse(values)}
         else:
             self.content |= {name: values}
         return self
@@ -145,48 +139,3 @@ class SuperDirtSender:
             return _message_without_iterator()
         else:
             return _message_with_iterator()
-
-
-    # def out(self, orbit:int = 0, iterator=Union[None, int]= None) -> None:
-    #     """Must be able to deal with polyphonic messages """
-    #     if not self.willPlay():
-    #         return
-
-    #     # Specify a different orbit using the merge operator (Python 3.9)
-    #     if orbit != 0:
-    #         self.content |= {'orbit': orbit}
-
-
-    #     common = []
-    #     polyphonic_pairs: list[tuple[str, list]] = []
-
-    #     # Discard the polyphonic messages thingie during refactoring
-
-    #     # Separate polyphonic parameters from content
-    #     # for i in range(0, len(self.content), 2):
-    #     #     name: str
-    #     #     name, value = self.content[i:i+2]
-    #     #     if isinstance(value, list):
-    #     #         polyphonic_pairs.append((name, value))
-    #     #     else:
-    #     #         common.extend((name, value))
-
-    #     if not polyphonic_pairs:
-    #         # Simple monophonic message need no care
-    #         return self.schedule(common)
-
-    #     # names, value_table = zip(*polyphonic_pairs)
-    #     # max_values = max(len(values) for values in value_table)
-    #     # tails: list[list] = []
-    #     # for i in range(max_values):
-    #     #     # if there is more than one polyphonic pair with differing
-    #     #     # lengths, we will wrap around
-    #     #     zipping_values = (values[i % len(values)] for values in value_table)
-
-    #     #     tail = []
-    #     #     for pair in zip(names, zipping_values):
-    #     #         tail.extend(pair)
-    #     #     tails.append(tail)
-
-    #     # for i in tails:
-    #     #     self.schedule(common + i)

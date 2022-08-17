@@ -4,7 +4,7 @@ import pprint
 import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
-from ..sequences.Parsers import PatternParser
+from ..sequences import ListParser
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -19,16 +19,17 @@ class OSCSender:
             at: Union[float, int] = 0,
             **kwargs):
 
+        self._parser = ListParser()
         self.clock = clock
         self.osc_client = osc_client
-        self.address = self._parse_osc_addresses(address)
+        self.address = self._parser.parse(address)
 
         self.content = {}
         for key, value in kwargs.items():
             if isinstance(value, (int, float)):
                 self.content[key] = value
             else:
-                self.content[key] = self._parse(value)
+                self.content[key] = self._parser.parse(value)
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -39,18 +40,6 @@ class OSCSender:
                 method(v)
             else:
                 self.content[k] = v
-
-
-    def _parse_osc_addresses(self, pattern: str):
-        """Pre-parse OSC client pattern during __init__"""
-        pat = PatternParser(pattern=pattern, type='address')
-        return pat.pattern
-
-
-    def _parse(self, pattern: str):
-        """Pre-parse MIDI params during __init__"""
-        pat = PatternParser(pattern=pattern, type='number')
-        return pat.pattern
 
 
     def __str__(self):
@@ -72,7 +61,7 @@ class OSCSender:
 
         # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, (str)):
-            self.content |= {name: self._parse(values)}
+            self.content |= {name: self._parser.parse(values)}
         return self
 
 
@@ -91,7 +80,7 @@ class OSCSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name='osc-scheduler')
 
-    def out(self, i: Union[int, None]) -> None:
+    def out(self, i: Union[int, None] = None) -> None:
         """Sender method"""
 
         final_message = {}
@@ -102,9 +91,9 @@ class OSCSender:
             if self.address == []:
                 return
             if isinstance(self.address, list):
-                final_message['address'] = self.address[0]
+                final_message['address'] = "/" + self.address[0].replace('_', '/')
             elif isinstance(self.address, str):
-                final_message['address'] = self.address[0]
+                final_message['address'] = "/" + self.address[0].replace('_', '/')
 
             # Parametric values: names are mental helpers for the user
             final_message['message'] = []
@@ -126,14 +115,14 @@ class OSCSender:
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
 
-            # Sound
+            # Address
             if self.address == []:
                 return
             if isinstance(self.address, list):
-                final_message['address'] = self.address[
-                        i % len(self.address) - 1]
+                final_message['address'] = "/" + self.address[
+                        i % len(self.address) - 1].replace('_', '/')
             else:
-                final_message['address'] = self.address
+                final_message['address'] = "/" + self.address.replace('_', '/')
 
             # Parametric arguments
             final_message['message'] = []

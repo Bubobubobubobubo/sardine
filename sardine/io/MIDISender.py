@@ -4,7 +4,7 @@ import pprint
 import functools
 from typing import TYPE_CHECKING, Union, Optional
 from ..io import dirt
-from ..sequences.Parsers import PatternParser
+from ..sequences import ListParser
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -57,7 +57,7 @@ class MIDISender:
                'delay': self.delay,
                'velocity': self.velocity,
                'channel': self.channel}
-        return f"{self.midi_port}: {pprint.pformat(pat)}"
+        return f"{self.midi_client}: {pprint.pformat(pat)}"
 
     # ------------------------------------------------------------------------
     # GENERIC Mapper: make parameters chainable!
@@ -79,7 +79,7 @@ class MIDISender:
         asyncio.create_task(_waiter(), name='midi-scheduler')
 
 
-    def out(self, i: Union[int, None]=None) -> None:
+    def out(self, i: Union[int, None] = None) -> None:
         """Must be able to deal with polyphonic messages """
         final_message = {
                 'delay': self.delay,

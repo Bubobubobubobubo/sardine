@@ -11,3 +11,5 @@
         * delay/delayfeedback/etc.. can't work without it.
 * [ ] SuperCollider related
     * More verbose output when booting SuperCollider...
+* [ ] Patterning related
+    * Craft a better and more complete REGEX spec

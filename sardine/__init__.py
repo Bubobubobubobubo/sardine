@@ -27,6 +27,7 @@ from .io import Client as OSC
 from .io import (
         OSCSender,
         MIDISender)
+from .sequences import ListParser
 from typing import Union
 from .sequences import *
 warnings.filterwarnings("ignore")
@@ -189,13 +190,7 @@ if Path(f'{config.user_config_path}').is_file():
 else:
     print(f"[red]No user provided configuration file found...")
 
-
-# Test zone strikes back
-
-# Check if the base object is still good [X]
-a = S('bd', speed=2, blibli=2)
-print(a)
-
-# Check OSCSender [ ]
-a = O(c, 'client', '/coucou /loulou', blabla=1, blibli='1 2 3')
-print(a)
+def parser(pattern: str):
+    """Parse a single expression and get result"""
+    parser = ListParser()
+    print(parser.parse(pattern))

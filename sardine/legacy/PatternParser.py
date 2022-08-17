@@ -3,9 +3,7 @@ import random
 import re
 from rich import print
 
-__all__ = ('PatternParser')
-
-class PatternParser():
+class PatternParserOld():
     """Mininotation for sequences"""
 
     OSC_ADDRESS_REGEX = re.compile(
@@ -25,6 +23,7 @@ class PatternParser():
         (?:  !(?P<repeat>\d+) )?
         """,
         re.VERBOSE)
+
 
     NUMBER_REGEX = re.compile(
         r"""
@@ -120,6 +119,8 @@ class PatternParser():
             # Tokenize and parse
             for w in words:
                 # Try to match a symbol, return None if not in spec
+
+
                 m = rule.fullmatch(w)
                 if m is None:
                     raise ValueError(f'unknown number definition: {w!r}')
@@ -144,26 +145,3 @@ class PatternParser():
     def get_pattern(self) -> itertools.cycle:
         """Get pattern as iterator"""
         return itertools.cycle(self.pattern)
-
-
-# if __name__ == "__main__":
-#     random.seed(random.randint(1,100))
-#     nb_tests = 5
-# 
-#     s = '909? cp?30 bd?!3 cp|hh|ll'
-#     print(f"\nRegex for sounds\n")
-#     for i in range(0, nb_tests):
-#         pattern = PatternParser(pattern=s, type='sound')
-#         print(f'run {i}:', pattern.pattern)
-# 
-#     print(f"\nRegex for simple number operations\n")
-#     s = '0 -0 +0 5 5.0 -5.0 +5.0? 12!2'
-#     for i in range(0, nb_tests):
-#         pattern = PatternParser(pattern=s, type='number')
-#         print(f'run {i}:', pattern.pattern)
-# 
-#     print(f"\nRegex for number ramp/list generation\n")
-#     s = '0:20 -10:10 -20:20'
-#     for i in range(0, nb_tests):
-#         pattern = PatternParser(pattern=s, type='number')
-#         print(f'run {i}:', pattern.pattern)

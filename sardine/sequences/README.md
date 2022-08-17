@@ -1,0 +1,3 @@
+# Sequences
+
+This part of Sardine is responsible for patterning / patterns and composition. It contains a variety of tools to deal with musical composition, pattern writing, etc...

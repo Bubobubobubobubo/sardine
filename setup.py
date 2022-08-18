@@ -37,6 +37,6 @@ setup(
     entry_points={"console_scripts": [
         "sardine-config-python    = cli.main:edit_python_configuration",
         "sardine-config-superdirt = cli.main:edit_superdirt_configuration",
-        "sardine-config           = cli.main:main"
+        "sardine-config           = cli.main:main",
     ]}
 )

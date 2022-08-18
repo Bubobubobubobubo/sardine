@@ -1,39 +1,6 @@
 import itertools
 import random
 
-
-def bin(sequence: str, reverse: bool = False):
-    """
-    Binary sequence: transform a string of 1 and 0 to a list
-    of boolean values to be used by the `trig` parameter key.
-    """
-    binary = []
-    for char in sequence.replace(' ', ''):
-        binary.append(True) if char=="1" else binary.append(False)
-
-    if reverse:
-        binary.reverse()
-
-    return binary
-
-
-def xox(sequence: str, reverse: bool = False):
-    """Simple beat sequencer function"""
-    fseq = []
-    for char in sequence:
-        if char=="x":
-            fseq.append(1)
-        elif char == "?":
-            fseq.append(1 if random.random() > 0.5 else 0)
-        elif char == " ":
-            fseq.append(0)
-        else:
-            raise RuntimeError('Characters are limited to "x", " " and "?".')
-    if reverse:
-        fseq.reverse()
-    return fseq
-
-
 def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
     """Computes Euclidean rhythm of beats/pulses
 

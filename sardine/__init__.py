@@ -54,8 +54,7 @@ Sardine is a small MIDI/OSC sequencer made for live-
 coding. Check the examples/ folder to learn more. :)
 """
 print(f"[red]{sardine}[/red]")
-print_pre_alpha_todo()
-print('\n')
+# print_pre_alpha_todo()
 config = read_user_configuration()
 
 
@@ -194,3 +193,13 @@ def parser(pattern: str):
     """Parse a single expression and get result"""
     parser = ListParser()
     print(parser.parse(pattern))
+
+def parser_repl():
+    """Parse a single expression and get result"""
+    parser = ListParser()
+    try:
+        while True:
+            p = parser._parse_debug(pattern=input('> '))
+            print(p)
+    except KeyboardInterrupt:
+        pass

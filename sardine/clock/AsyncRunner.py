@@ -11,17 +11,17 @@ if TYPE_CHECKING:
     from . import Clock, TickHandle
     from .Clock import MaybeCoroFunc
 
-__all__ = ('AsyncRunner', 'FunctionState')
+__all__ = ("AsyncRunner", "FunctionState")
 
 MAX_FUNCTION_STATES = 3
 
 
 def _assert_function_signature(sig: inspect.Signature, args, kwargs):
     if args:
-        message = 'Positional arguments cannot be used in scheduling'
+        message = "Positional arguments cannot be used in scheduling"
         if missing := _missing_kwargs(sig, args, kwargs):
-            message += '; perhaps you meant `{}`?'.format(
-                ', '.join(f'{k}={v!r}' for k, v in missing.items())
+            message += "; perhaps you meant `{}`?".format(
+                ", ".join(f"{k}={v!r}" for k, v in missing.items())
             )
         raise TypeError(message)
 
@@ -39,11 +39,17 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
     return pass_through
 
 
-def _missing_kwargs(sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]) -> dict[str, Any]:
+def _missing_kwargs(
+    sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]
+) -> dict[str, Any]:
     required = []
     defaulted = []
     for param in sig.parameters.values():
-        if param.kind in (param.POSITIONAL_ONLY, param.VAR_POSITIONAL, param.VAR_KEYWORD):
+        if param.kind in (
+            param.POSITIONAL_ONLY,
+            param.VAR_POSITIONAL,
+            param.VAR_KEYWORD,
+        ):
             continue
         elif param.name in kwargs:
             continue
@@ -91,6 +97,7 @@ class AsyncRunner:
     Functions must complete within the time span to avoid this issue.
 
     """
+
     clock: "Clock"
     deferred: bool = field(default=True)
     states: list[FunctionState] = field(
@@ -117,7 +124,7 @@ class AsyncRunner:
         else:
             # transfer arguments from last state if possible
             # (any excess arguments here should be discarded by `_runner()`)
-            args = args + last_state.args[len(args):]
+            args = args + last_state.args[len(args) :]
             kwargs = last_state.kwargs | kwargs
             self.states.append(FunctionState(func, args, kwargs))
 
@@ -138,7 +145,7 @@ class AsyncRunner:
 
         """
         if self._task is not None:
-            raise RuntimeError('runner task has already started')
+            raise RuntimeError("runner task has already started")
 
         self._task = asyncio.create_task(self._runner())
         self._task.add_done_callback(asyncio.Task.result)
@@ -169,7 +176,7 @@ class AsyncRunner:
         self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
-        print(f'[yellow][Init {name}][/yellow]')
+        print(f"[yellow][Init {name}][/yellow]")
 
         try:
             while self.states and self._swimming and not self._stop:
@@ -181,7 +188,11 @@ class AsyncRunner:
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    print(f'[yellow][Reloaded {name}]' if pushed else f'[yellow][Restored {name}]')
+                    print(
+                        f"[yellow][Reloaded {name}]"
+                        if pushed
+                        else f"[yellow][Restored {name}]"
+                    )
                     last_state = state
 
                 signature = inspect.signature(state.func)
@@ -195,15 +206,15 @@ class AsyncRunner:
                     kwargs = _discard_kwargs(signature, state.kwargs)
 
                     # Introspect arguments to synchronize
-                    delay = kwargs.get('delay')
+                    delay = kwargs.get("delay")
                     if delay is None:
-                        param = signature.parameters.get('delay')
-                        delay = getattr(param, 'default', 1)
+                        param = signature.parameters.get("delay")
+                        delay = getattr(param, "default", 1)
 
                     if delay <= 0:
-                        raise ValueError(f'Delay must be >0, not {delay}')
+                        raise ValueError(f"Delay must be >0, not {delay}")
                 except (TypeError, ValueError) as e:
-                    print(f'[red][Bad function definition ({name})]')
+                    print(f"[red][Bad function definition ({name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
@@ -211,7 +222,9 @@ class AsyncRunner:
 
                 handle = asyncio.ensure_future(self._wait_beats(delay))
                 reload = asyncio.ensure_future(self._reload_event.wait())
-                done, pending = await asyncio.wait((handle, reload), return_when=asyncio.FIRST_COMPLETED)
+                done, pending = await asyncio.wait(
+                    (handle, reload), return_when=asyncio.FIRST_COMPLETED
+                )
 
                 for fut in pending:
                     fut.cancel()
@@ -223,10 +236,10 @@ class AsyncRunner:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
                         self._call_func(delay, state.func, args, kwargs),
-                        name=f'asyncrunner-func-{name}'
+                        name=f"asyncrunner-func-{name}",
                     )
                 except Exception as e:
-                    print(f'[red][Function exception | ({name})]')
+                    print(f"[red][Function exception | ({name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
@@ -237,7 +250,7 @@ class AsyncRunner:
                     await self.clock.wait_after(n_ticks=1)
         finally:
             # Remove from clock if necessary
-            print(f'[yellow][Stopped {name}]')
+            print(f"[yellow][Stopped {name}]")
             self.clock.runners.pop(name, None)
 
     async def _call_func(self, delay, func, args, kwargs):

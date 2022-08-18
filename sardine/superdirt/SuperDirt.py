@@ -8,19 +8,11 @@ from ..io import dirt
 if TYPE_CHECKING:
     from ..clock import Clock
 
-__all__ = ('SuperDirt',)
+__all__ = ("SuperDirt",)
 
 
 class SuperDirt:
-
-
-    def __init__(
-        self,
-        clock: "Clock",
-        sound: str,
-        at: Union[float, int] = 0,
-        **kwargs
-    ):
+    def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
         self.clock = clock
         # Default message when triggering soundfile/synth
         self.content = ["orbit", 0, "trig", 1, "sound", sound]
@@ -33,9 +25,8 @@ class SuperDirt:
             if callable(method):
                 method(v)
 
-
     def __str__(self):
-        return ' '.join(str(e) for e in self.content)
+        return " ".join(str(e) for e in self.content)
 
     # ------------------------------------------------------------------------
     # GENERIC Mapper: make parameters chainable!
@@ -45,9 +36,8 @@ class SuperDirt:
         method.__doc__ = f"Updates the sound's {name} parameter."
         return method
 
-
     def addOrChange(self, value, name: str):
-        """Will set a parameter or change it if already in message """
+        """Will set a parameter or change it if already in message"""
         try:
             i = self.content.index(name)
         except ValueError:
@@ -57,7 +47,6 @@ class SuperDirt:
 
         return self
 
-
     def query_existing_value(self, index: str) -> Union[int, float]:
         "Find the value associated to a name. Return false if not found."
         try:
@@ -66,11 +55,7 @@ class SuperDirt:
             raise ValueError("can't query existing value {index}")
         return self.content[posIndex + 1]
 
-
-    def change_existing_value(self,
-            index: str,
-            new_value: Union[int, float]
-        ) -> None:
+    def change_existing_value(self, index: str, new_value: Union[int, float]) -> None:
         "Change the value associated to a name."
         try:
             valueIndex = self.content.index(index)
@@ -78,21 +63,20 @@ class SuperDirt:
             return
         self.content[valueIndex + 1] = new_value
 
-
     def n(self, number: int = 0) -> None:
         """Change the number of the selected sample"""
         if not isinstance(number, (int, float)):
             return
         current_value = self.query_existing_value("sound")
-        if ':' in list(current_value):
+        if ":" in list(current_value):
             self.change_existing_value(
-                    index="sound",
-                    new_value=current_value.split(':')[0] + str(f":{int(number)}"))
+                index="sound",
+                new_value=current_value.split(":")[0] + str(f":{int(number)}"),
+            )
         else:
             self.change_existing_value(
-                    index="sound",
-                    new_value=current_value + str(f":{int(number)}"))
-
+                index="sound", new_value=current_value + str(f":{int(number)}")
+            )
 
     def willPlay(self) -> bool:
         """
@@ -100,7 +84,6 @@ class SuperDirt:
         to SuperDirt or if it will be discarded.
         """
         return True if self.query_existing_value("trig") == 1 else False
-
 
     def schedule(self, message):
         async def _waiter():
@@ -111,14 +94,14 @@ class SuperDirt:
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='superdirt-scheduler')
+        asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-
-    def out(self, orbit:int = 0) -> None:
-        """Must be able to deal with polyphonic messages """
+    def out(self, orbit: int = 0) -> None:
+        """Must be able to deal with polyphonic messages"""
 
         # It is now possible to specify the orbit in this function.
-        if orbit != 0: self.change_existing_value("orbit", orbit)
+        if orbit != 0:
+            self.change_existing_value("orbit", orbit)
 
         if not self.willPlay():
             return
@@ -129,7 +112,7 @@ class SuperDirt:
         # Separate polyphonic parameters from content
         for i in range(0, len(self.content), 2):
             name: str
-            name, value = self.content[i:i+2]
+            name, value = self.content[i : i + 2]
             if isinstance(value, list):
                 polyphonic_pairs.append((name, value))
             else:

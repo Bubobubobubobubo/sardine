@@ -4,23 +4,28 @@ from time import time
 from typing import Union, TYPE_CHECKING
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import (
-    osc_startup, osc_udp_client, osc_send, osc_process,
-    osc_terminate)
+    osc_startup,
+    osc_udp_client,
+    osc_send,
+    osc_process,
+    osc_terminate,
+)
 
 if TYPE_CHECKING:
     from ..clock import Clock
 
-__all__ = ('Client', 'client', 'dirt')
+__all__ = ("Client", "client", "dirt")
 
 
 class Client:
-
-    def __init__(self,
-            ip: str = "127.0.0.1",
-            port: int = 57120,
-            name: str = "SuperDirt",
-            ahead_amount: Union[float, int] = 0.5,
-            at: int = 0):
+    def __init__(
+        self,
+        ip: str = "127.0.0.1",
+        port: int = 57120,
+        name: str = "SuperDirt",
+        ahead_amount: Union[float, int] = 0.5,
+        at: int = 0,
+    ):
 
         """
         Keyword parameters
@@ -35,10 +40,7 @@ class Client:
         self._name, self._ahead_amount = (name, ahead_amount)
         self.after: int = at
         osc_startup()
-        self.client = osc_udp_client(
-                address=self._ip,
-                port=self._port,
-                name=self._name)
+        self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
 
     @property
     def port(self):
@@ -64,34 +66,32 @@ class Client:
     def ahead_amount(self, value):
         self._ahead_amount = value
 
-
-    def send(self,
-            clock: "Clock",
-            address: str,
-            message: oscbuildparse.OSCBundle
-            ) -> None:
+    def send(
+        self, clock: "Clock", address: str, message: oscbuildparse.OSCBundle
+    ) -> None:
         async def _waiter():
             await handle
             self._send(address, message)
+
         ticks = clock.get_beat_ticks(self.after, sync=False)
         handle = clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='osc-scheduler')
-
+        asyncio.create_task(_waiter(), name="osc-scheduler")
 
     def _send(self, address: str, message):
-        """ Build user-made OSC messages """
+        """Build user-made OSC messages"""
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
-            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg])
+            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]
+        )
         osc_send(bun, self._name)
         osc_process()
 
-
     def send_timed_message(self, message):
-        """ Build and send OSC bundles """
+        """Build and send OSC bundles"""
         msg = oscbuildparse.OSCMessage("/play2", None, message)
         bun = oscbuildparse.OSCBundle(
-            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg])
+            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]
+        )
         osc_send(bun, self._name)
         osc_process()
 
@@ -104,5 +104,5 @@ client = Client()
 
 
 def dirt(message):
-    """ Sending messages to SuperDirt/SuperCollider """
+    """Sending messages to SuperDirt/SuperCollider"""
     client.send_timed_message(message)

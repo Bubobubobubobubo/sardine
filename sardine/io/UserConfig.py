@@ -6,25 +6,27 @@ from appdirs import *
 from rich import print
 
 __all__ = (
-    'Config', 'create_template_configuration_file',
-    'read_configuration_file', 'read_user_configuration'
+    "Config",
+    "create_template_configuration_file",
+    "read_configuration_file",
+    "read_user_configuration",
 )
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
 TEMPLATE_CONFIGURATION = {
-    'config': {
-        'midi': None,
-        'bpm': 125,
-        'beats': 4,
-        'ppqn': 48,
-        'parameters': [],
-        'boot_superdirt': True,
-        'active_clock': True,
-        'superdirt_config_path': str(USER_DIR / "default_superdirt.scd"),
-        'user_config_path': str(USER_DIR / "user_configuration.py"),
-        'deferred_scheduling': True
+    "config": {
+        "midi": None,
+        "bpm": 125,
+        "beats": 4,
+        "ppqn": 48,
+        "parameters": [],
+        "boot_superdirt": True,
+        "active_clock": True,
+        "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
+        "user_config_path": str(USER_DIR / "user_configuration.py"),
+        "deferred_scheduling": True,
     }
 }
 
@@ -54,54 +56,54 @@ class Config:
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
-        config = data['config']
+        config = data["config"]
         return cls(
-            midi=config['midi'],
-            beats=config['beats'],
-            parameters=config['parameters'],
-            ppqn=config['ppqn'],
-            bpm=config['bpm'],
-            boot_superdirt=config['boot_superdirt'],
-            active_clock=config['active_clock'],
-            superdirt_config_path=config['superdirt_config_path'],
-            user_config_path=config['user_config_path'],
-            deferred_scheduling=config['deferred_scheduling']
+            midi=config["midi"],
+            beats=config["beats"],
+            parameters=config["parameters"],
+            ppqn=config["ppqn"],
+            bpm=config["bpm"],
+            boot_superdirt=config["boot_superdirt"],
+            active_clock=config["active_clock"],
+            superdirt_config_path=config["superdirt_config_path"],
+            user_config_path=config["user_config_path"],
+            deferred_scheduling=config["deferred_scheduling"],
         )
 
     def to_dict(self) -> dict:
         return {
-            'config': {
-                'midi': self.midi,
-                'beats': self.beats,
-                'parameters': self.parameters,
-                'ppqn': self.ppqn,
-                'bpm': self.bpm,
-                'boot_superdirt': self.boot_superdirt,
-                'superdirt_config_path': self.superdirt_config_path,
-                'active_clock': self.active_clock,
-                'user_config_path': self.user_config_path,
-                'deferred_scheduling': self.deferred_scheduling
+            "config": {
+                "midi": self.midi,
+                "beats": self.beats,
+                "parameters": self.parameters,
+                "ppqn": self.ppqn,
+                "bpm": self.bpm,
+                "boot_superdirt": self.boot_superdirt,
+                "superdirt_config_path": self.superdirt_config_path,
+                "active_clock": self.active_clock,
+                "user_config_path": self.user_config_path,
+                "deferred_scheduling": self.deferred_scheduling,
             }
         }
 
 
 def write_configuration_file(config: Config, file_path: Path):
-    """ Write config JSON file """
-    with open(file_path, 'w') as file:
+    """Write config JSON file"""
+    with open(file_path, "w") as file:
         json.dump(config.to_dict(), file, indent=4, sort_keys=True)
 
 
 def create_template_configuration_file(file_path: Path) -> Config:
-    """ If no configuration file is found, create a template """
+    """If no configuration file is found, create a template"""
     config = Config.from_dict(TEMPLATE_CONFIGURATION)
     write_configuration_file(config, file_path)
     return config
 
 
 def read_configuration_file(file_path: Path) -> Config:
-    """ Read config JSON File """
+    """Read config JSON File"""
     base = TEMPLATE_CONFIGURATION.copy()
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         user_data = json.load(f)
     _recursive_update(base, user_data)
 
@@ -114,7 +116,7 @@ def read_configuration_file(file_path: Path) -> Config:
 
 
 def read_user_configuration() -> Config:
-    """ Read or create user configuration file """
+    """Read or create user configuration file"""
     config_file = USER_DIR / "config.json"
     config = None
 
@@ -139,6 +141,7 @@ def read_user_configuration() -> Config:
 
     print("[green][3/3] Returning configuration[/green]")
     return config
+
 
 if __name__ == "__main__":
     config = read_user_configuration()

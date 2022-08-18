@@ -14,12 +14,12 @@ from rich import print
 from . import AsyncRunner
 from ..io import MIDIIo, ClockListener, SuperDirtSender
 
-__all__ = ('Clock', 'TickHandle')
+__all__ = ("Clock", "TickHandle")
 
-T = TypeVar('T')
+T = TypeVar("T")
 MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
 
-tick_shift = contextvars.ContextVar('tick_shift', default=0)
+tick_shift = contextvars.ContextVar("tick_shift", default=0)
 """
 This specifies the number of ticks to offset the clock in the current context.
 
@@ -32,21 +32,22 @@ Behavior is undefined if the tick shift is changed in the global context.
 @functools.total_ordering
 class TickHandle:
     """A handle that allows waiting for a specific tick to pass in the clock."""
-    __slots__ = ('when', 'fut')
 
+    __slots__ = ("when", "fut")
 
     def __init__(self, tick: int):
         self.when = tick
         self.fut = asyncio.Future()
 
-
     def __repr__(self):
-        return '<{} {} when={}>'.format(
+        return "<{} {} when={}>".format(
             type(self).__name__,
-            'pending' if not self.fut.done()
-            else 'done' if not self.fut.cancelled()
-            else 'cancelled',
-            self.when
+            "pending"
+            if not self.fut.done()
+            else "done"
+            if not self.fut.cancelled()
+            else "cancelled",
+            self.when,
         )
 
     def __eq__(self, other):
@@ -62,14 +63,11 @@ class TickHandle:
             return NotImplemented
         return self.when < other.when
 
-
     def __await__(self):
         return self.fut.__await__()
 
-
     def cancel(self):
         return self.fut.cancel()
-
 
     def cancelled(self):
         return self.fut.cancelled()
@@ -96,11 +94,9 @@ class Clock:
         ppqn: int = 48,
         bpm: Union[float, int] = 120,
         beats_per_bar: int = 4,
-        deferred_scheduling: bool = True
+        deferred_scheduling: bool = True,
     ):
-        self._midi = MIDIIo(
-                port_name=midi_port,
-                clock=self)
+        self._midi = MIDIIo(port_name=midi_port, clock=self)
 
         # Clock parameters
         self._accel = 0.0
@@ -127,13 +123,11 @@ class Clock:
     def __repr__(self):
         shift = tick_shift.get()
         if shift:
-            tick = f'{self._current_tick}{shift:+}'
+            tick = f"{self._current_tick}{shift:+}"
         else:
             tick = str(self._current_tick)
 
-        return '<{} running={} tick={}>'.format(
-            type(self).__name__, self.running, tick
-        )
+        return "<{} running={} tick={}>".format(type(self).__name__, self.running, tick)
 
     # ---------------------------------------------------------------------- #
     # Clock properties
@@ -145,7 +139,7 @@ class Clock:
     @accel.setter
     def accel(self, value: int):
         if value >= 100:
-            raise ValueError('cannot set accel above 100')
+            raise ValueError("cannot set accel above 100")
         self._accel = value
         self._reload_runners()
 
@@ -179,7 +173,7 @@ class Clock:
     @bpm.setter
     def bpm(self, new_bpm: int):
         if not 1 < new_bpm < 900:
-            raise ValueError('bpm must be within 1 and 800')
+            raise ValueError("bpm must be within 1 and 800")
         self._bpm = new_bpm
         self._reload_runners()
 
@@ -302,14 +296,13 @@ class Clock:
                 # all handles afterwards are either still waiting or cancelled
                 break
 
-
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
     def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not inspect.isfunction(func):
-            raise TypeError(f'func must be a function, not {type(func).__name__}')
+            raise TypeError(f"func must be a function, not {type(func).__name__}")
 
         name = func.__name__
         runner = self.runners.get(name)
@@ -351,14 +344,14 @@ class Clock:
     # Public methods
 
     def print_children(self):
-        """ Print all children on clock """
+        """Print all children on clock"""
         [print(child) for child in self.runners]
 
     def start(self, active=True):
         """Start MIDI Clock"""
         self.reset()
         if not self.running:
-            self._midi.send(mido.Message('start'))
+            self._midi.send(mido.Message("start"))
             self.running = True
             if active:
                 asyncio.create_task(self.run_active())
@@ -382,7 +375,7 @@ class Clock:
 
         self.running = False
         self._midi.send_stop()
-        self._midi.send(mido.Message('stop'))
+        self._midi.send(mido.Message("stop"))
         self.reset()
 
     def log(self) -> None:
@@ -395,14 +388,17 @@ class Clock:
         bar = self.current_bar
 
         color = "[bold yellow]"
-        first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
+        first = (
+            color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
+        )
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
 
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+        return SuperDirt(self, sound, at, **kwargs)
 
-    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
-        return SuperDirtSender(self, sound=sound, at=at, **kwargs)
-
+    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
+    #     return SuperDirt(self, sound, at, **kwargs)
 
     async def run_active(self):
         """Main runner for the active mode (master)"""
@@ -428,7 +424,6 @@ class Clock:
         quarter_duration = delta * self.ppqn
         return 60 / quarter_duration
 
-
     def _mean_from_delta(self):
         """Estimate the current BPM by doing an arithmetic mean"""
         return sum(self._delta_duration_list) / len(self._delta_duration_list)
@@ -444,8 +439,7 @@ class Clock:
             self._listener.wait_for_tick()
             self._increment_clock()
             elapsed = time.perf_counter() - begin
-            self._delta_duration_list.append(
-                    self._estimate_bpm_from_delta(elapsed))
+            self._delta_duration_list.append(self._estimate_bpm_from_delta(elapsed))
             self._bpm = self._mean_from_delta()
             if self.debug:
                 self.log()

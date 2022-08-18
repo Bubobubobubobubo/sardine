@@ -335,3 +335,12 @@ def coucou(*args): my_osc.send(c, '/coucou', list(args))
 ## Crash
 
 By coding live, you will soon make mistakes. There is currently no recovery mechanism from a typing/coding error. The function will stop dramatically, leaving you with only silence. A recovery mechanism is on the way, warning you of any mistake you made and feeding an older version of your function instead of your defective one.
+
+## Development
+
+**Sardine* uses [The Black Code Style](https://black.readthedocs.io/en/stable/the_black_code_style/index.html). 
+
+To enforce this code style you must run [black](https://github.com/psf/black):
+```shell
+black .
+```

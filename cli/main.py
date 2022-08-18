@@ -66,10 +66,12 @@ def write_json_file(data: dict):
 def main():
     """Entry method for the argparse parser"""
 
-    # Check if the configuration file exists, otherwise, warn user
+    # Check if the configuration file exists, otherwise, warn user
     if not CONFIG_JSON.is_file():
-        print(f"[red]The configuration file is missing.\
- Please boot Sardine first.")
+        print(
+            f"[red]The configuration file is missing.\
+ Please boot Sardine first."
+        )
         exit()
     data = read_json_file()
 
@@ -80,19 +82,18 @@ def main():
 
 
     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
-    parser.add_argument('--midi', type=str, help="Default MIDI port")
-    parser.add_argument('--bpm', type=float, help="Beats per minute")
-    parser.add_argument('--beats', type=int, help="Beats per bar")
-    parser.add_argument('--ppqn', type=float, help="ppqn")
-    parser.add_argument('--parameters', type=str, help="add a custom param")
-    parser.add_argument('--boot', type=str2bool, help="Boot SC && SuperDirt")
-    parser.add_argument('--deferred', type=str2bool,
-            help="Turn on/off deferred scheduling")
-    parser.add_argument('--clock', type=str2bool, help="Active or passive Clock")
-    parser.add_argument('--SCconfig', type=str,
-            help="SuperDirt Configuration Path")
-    parser.add_argument('--User Config Path', type=str,
-            help="Python User Configuration file")
+    parser.add_argument("--midi", type=str, help="Default MIDI port")
+    parser.add_argument("--bpm", type=float, help="Beats per minute")
+    parser.add_argument("--beats", type=int, help="Beats per bar")
+    parser.add_argument("--ppqn", type=float, help="ppqn")
+    parser.add_argument("--parameters", type=str, help="add a custom param")
+    parser.add_argument("--boot", type=bool, help="Boot SC && SuperDirt")
+    parser.add_argument("--deferred", type=bool, help="Turn on/off deferred scheduling")
+    parser.add_argument("--clock", type=bool, help="Active or passive Clock")
+    parser.add_argument("--SCconfig", type=bool, help="SuperDirt Configuration Path")
+    parser.add_argument(
+        "--User Config Path", type=bool, help="Python User Configuration file"
+    )
 
     if len(sys.argv) < 2:
         print(f"[red]{FUNNY_TEXT}")
@@ -104,32 +105,27 @@ def main():
     args = parser.parse_args()
     to_update = list(chain.from_iterable([x for x in args._get_kwargs()]))
 
-    # Iterating over the collected kwargs and write to file if needed
-    # TODO: add a validation process to check for incorrect data
+    # Iterating over the collected kwargs and write to file if needed
     for name, value in pairwise(to_update):
         if value is not None:
-            data['config'][name] = value
+            data["config"][name] = value
     write_json_file(data)
 
-# ============================================================================ #
-# Second script: open EDITOR to edit configuration files without having to
-# move current directory to the folder itself.
-# ============================================================================ #
 
 def _edit_configuration(file_name: str):
     configuration_file = USER_DIR / file_name
-    # If the file already exists, we will read it first before opening editor
+    # If the file already exists, we will read it first before opening editor
     if configuration_file.is_file():
-        with open(configuration_file, 'r') as config:
+        with open(configuration_file, "r") as config:
             file_content = config.read()
         edited = click.edit(file_content)
         if edited is not None:
-            with open(configuration_file, 'w') as config:
+            with open(configuration_file, "w") as config:
                 config.write(edited)
     else:
-        with open(configuration_file, 'w') as config:
-            config.write('')
-        # recurse to write in the file
+        with open(configuration_file, "w") as config:
+            config.write("")
+        # recurse to write in the file
         _edit_configuration(file_name)
 
 

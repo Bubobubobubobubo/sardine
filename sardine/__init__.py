@@ -48,8 +48,8 @@ sardine = """
 ██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
 ╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-Sardine is a small MIDI/OSC sequencer made for live-
-coding. Check the examples/ folder to learn more. :)
+Sardine is a MIDI/OSC sequencer made for live-coding.
+Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
 # print_pre_alpha_todo()

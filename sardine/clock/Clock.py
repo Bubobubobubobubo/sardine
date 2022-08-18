@@ -394,11 +394,8 @@ class Clock:
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
 
-    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-        return SuperDirt(self, sound, at, **kwargs)
-
-    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-    #     return SuperDirt(self, sound, at, **kwargs)
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
+        return SuperDirtSender(self, sound, at, **kwargs)
 
     async def run_active(self):
         """Main runner for the active mode (master)"""

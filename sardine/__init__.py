@@ -52,7 +52,6 @@ Sardine is a MIDI/OSC sequencer made for live-coding.
 Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
-# print_pre_alpha_todo()
 config = read_user_configuration()
 
 
@@ -67,7 +66,7 @@ c = Clock(
     ppqn=config.ppqn,
     deferred_scheduling=config.deferred_scheduling,
 )
-cs, cr = c.schedule_func, c.remove
+cs, again, cr = c.schedule_func, c.schedule_func, c.remove
 children = c.print_children
 S = c.note
 O = OSCSender

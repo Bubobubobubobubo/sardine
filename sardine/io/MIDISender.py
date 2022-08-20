@@ -23,6 +23,7 @@ class MIDISender:
             trig:  Union[int, float, str] = 1,
             at: Union[float, int] = 0):
 
+        self._parser = ListParser()
         self.clock = clock
         if midi_client is None:
             self.midi_client = self.clock._midi
@@ -47,16 +48,14 @@ class MIDISender:
 
     def _parse_number_pattern(self, pattern: str):
         """Pre-parse MIDI params during __init__"""
-        pat = PatternParser(pattern=pattern, type='number')
-        return pat.pattern
-
+        return self._parser.parse(pattern)
 
     def __str__(self):
         """String representation of a sender content"""
-        pat = {'note': self.note,
+        pat = {'note': int(self.note),
                'delay': self.delay,
-               'velocity': self.velocity,
-               'channel': self.channel}
+               'velocity': int(self.velocity),
+               'channel': int(self.channel)}
         return f"{self.midi_client}: {pprint.pformat(pat)}"
 
     # ------------------------------------------------------------------------
@@ -71,7 +70,6 @@ class MIDISender:
                 velocity=message.get('velocity'),
                 channel=message.get('channel')))
 
-
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
@@ -79,7 +77,7 @@ class MIDISender:
         asyncio.create_task(_waiter(), name='midi-scheduler')
 
 
-    def out(self, i: Union[int, None] = None) -> None:
+    def out(self, i: Union[int, None] = 0) -> None:
         """Must be able to deal with polyphonic messages """
         final_message = {
                 'delay': self.delay,

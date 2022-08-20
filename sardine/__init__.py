@@ -74,9 +74,10 @@ anew = c.schedule_func
 cr =  c.remove
 stop = c.remove
 children = c.print_children
-S = c.note
-O = OSCSender
-M = MIDISender
+S = c.note     # default SuperDirt
+M = c.midinote # default Midi Connexion
+MidiSend = MIDISender
+OscSend  = OSCSender
 n = next
 
 
@@ -88,7 +89,6 @@ def hush(*args):
     else:
         for runner in c.runners.values():
             runner.stop()
-
 
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     """Send a MIDI Note"""

@@ -12,7 +12,7 @@ import mido
 from rich import print
 
 from . import AsyncRunner
-from ..io import MIDIIo, ClockListener, SuperDirtSender
+from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
 
@@ -396,6 +396,24 @@ class Clock:
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
         return SuperDirtSender(self, sound, at, **kwargs)
+
+    def midinote(
+            self,
+            note: Union[int, str],
+            velocity: Union[int, str],
+            channel: Union[int, str],
+            at: int = 0,
+            delay: Union[int, float, str]=0.2,
+            **kwargs) -> MIDISender:
+        return MIDISender(self,
+                self._midi, at=at, delay=delay, note=note,
+                velocity=velocity, channel=channel, **kwargs)
+
+    def oscmessage(self, delay: int, at: int = 0, **kwargs) -> MIDISender:
+        pass
+
+
+
 
     async def run_active(self):
         """Main runner for the active mode (master)"""

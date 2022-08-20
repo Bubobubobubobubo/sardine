@@ -12,7 +12,7 @@ Python based live coding library with MIDI and OSC support ✨
   - [Debug](#debug)
     - [Known bugs and issues](#known-bugs-and-issues)
   - [Usage](#usage)
-    - [Configuration Tools](#configuration-tools)
+    - [Configuration, Config Tools](#configuration-and-config-tools)
     - [Clock and Scheduling System](#the-internal-clock)
     - [Usage as a generic MIDI Clock](#usage-as-a-generic-midi-clock)
     - [Temporal recursive functions](#temporal-recursive-functions)
@@ -95,7 +95,7 @@ Please provide feedback on the installation process! I try to document it as muc
 
 * **[LINUX/MACOS]**: `pip3 install` fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
 
-## Configuration Tools
+## Configuration and Config Tools
 
 When you boot Sardine for the first time, **Sardine** will create its own configuration folder and configuration files. The path will be printed everytime time you boot **Sardine** thereafter. There are three files you can tweak and configure:
 - `config.json`: main **Sardine** configuration file.
@@ -159,7 +159,7 @@ def bd(d=1):
 
 The recursion can (and should) be used to update your arguments between each call of the **swimming function**. Here is an example of a very simple iterator:
 
-```
+```python
 @swim # or die 
 async def iter(d=1, nb=0):
     """A simple recursive iterator"""
@@ -214,7 +214,9 @@ S('bd').shape(random()).speed(randint(1,4))
 
 ## MIDI
 
-`Sardine` supports all the basic messages one can send and receive through MIDI, but will support many more in the future.
+**Sardine** supports all the basic messages one can send and receive through MIDI. It will support many more in the future, including SySex and custom messages. By default, **Sardine** is always associated to a default MIDI port. It can both send and receive information from that port. If the clock is `active`, you already know that clock messages will be forwarded to all your connected softwares/gear.
+
+You can also open arbitrary MIDI ports as long as you know their name on your system. I will not enter into the topic of finding / creating / managing virtual MIDI ports. This subject is outside the scope of what **Sardine** offers and you are on your own to deal with this. A tutorial might come in the future. 
 
 ### MIDI Out
 

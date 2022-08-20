@@ -12,8 +12,7 @@ import mido
 from rich import print
 
 from . import AsyncRunner
-from ..io import MIDIIo, ClockListener
-from ..superdirt import SuperDirt
+from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
 
@@ -193,7 +192,17 @@ class Clock:
         return self.tick // self.ppqn
 
     @property
+    def beat(self) -> int:
+        """The number of beats passed since the initial time."""
+        return self.tick // self.ppqn
+
+    @property
     def current_bar(self) -> int:
+        """The number of bars passed since the initial time."""
+        return self.current_beat // self.beat_per_bar
+
+    @property
+    def bar(self) -> int:
         """The number of bars passed since the initial time."""
         return self.current_beat // self.beat_per_bar
 
@@ -385,11 +394,26 @@ class Clock:
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
 
-    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-        return SuperDirt(self, sound, at, **kwargs)
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
+        return SuperDirtSender(self, sound, at, **kwargs)
 
-    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-    #     return SuperDirt(self, sound, at, **kwargs)
+    def midinote(
+            self,
+            note: Union[int, str],
+            velocity: Union[int, str],
+            channel: Union[int, str],
+            at: int = 0,
+            delay: Union[int, float, str]=0.2,
+            **kwargs) -> MIDISender:
+        return MIDISender(self,
+                self._midi, at=at, delay=delay, note=note,
+                velocity=velocity, channel=channel, **kwargs)
+
+    def oscmessage(self, delay: int, at: int = 0, **kwargs) -> MIDISender:
+        pass
+
+
+
 
     async def run_active(self):
         """Main runner for the active mode (master)"""

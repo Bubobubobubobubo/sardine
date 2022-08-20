@@ -10,6 +10,23 @@ from appdirs import *
 from pathlib import Path
 from rich import print
 from itertools import chain
+from typing import Any
+
+# ============================================================================ #
+# First script: a dead simple argparse configuration tool to edit values stored
+# in config.json. Automatic type-checking / error raise for each value.
+# ============================================================================ #
+
+def str2bool(v):
+    """Boolean validation method for argparse type checking"""
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 FUNNY_TEXT = """
@@ -58,6 +75,12 @@ def main():
         exit()
     data = read_json_file()
 
+    def bool_check(thing: Any):
+        """Boolean validation method"""
+        if thing not in [True, False]:
+            raise ValueError("Boolean attributes must be True or False.")
+
+
     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
     parser.add_argument("--midi", type=str, help="Default MIDI port")
     parser.add_argument("--bpm", type=float, help="Beats per minute")
@@ -78,6 +101,7 @@ def main():
         parser.print_help()
         exit()
 
+    # Grabing arguments from parser.parse_args()
     args = parser.parse_args()
     to_update = list(chain.from_iterable([x for x in args._get_kwargs()]))
 

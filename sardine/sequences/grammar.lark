@@ -1,0 +1,43 @@
+grammar = """
+
+    ?start: sum
+
+    ?sum: product
+        | sum "+" product   -> addition
+        | sum "-" product   -> substraction
+
+    ?product: atom
+        | product "*" atom  -> multiplication
+        | product "/" atom  -> division
+        | product "|" atom  -> choice
+        | product ":" atom  -> random_in_range
+        | product "!" atom  -> extend
+
+    ?name: NAME          -> sample_name
+         | name ":" sum  -> associate_sample_number
+         | name "+" name -> add_name
+         | name "-" name -> sub_name
+         | name "|" name -> choice_name
+         | "[" name ("," name)* ","? "]" -> make_list
+         | "(" name ")"
+
+    ?list: "[" atom ("," atom)* ","? "]" -> make_list
+         | atom "_" atom                 -> generate_ramp
+
+    ?value: NUMBER -> number
+          | list
+
+    ?atom: value
+         | "-" atom         -> negation
+         | "+" atom         -> id
+         | name
+         | "(" sum ")"
+         | "r"              -> get_random_number
+
+    %import common.CNAME -> NAME
+    %import common.NUMBER
+    %import common.WS_INLINE
+    %ignore WS_INLINE
+"""
+
+

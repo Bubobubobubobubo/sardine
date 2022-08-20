@@ -21,6 +21,10 @@ from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
+from .io import (
+        OSCSender,
+        MIDISender)
+from .sequences import ListParser
 from typing import Union
 from .sequences import *
 
@@ -44,12 +48,10 @@ sardine = """
 ██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
 ╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-Sardine is a small MIDI/OSC sequencer made for live-
-coding. Check the examples/ folder to learn more. :)
+Sardine is a MIDI/OSC sequencer made for live-coding.
+Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
-print_pre_alpha_todo()
-print("\n")
 config = read_user_configuration()
 
 
@@ -64,17 +66,29 @@ c = Clock(
     ppqn=config.ppqn,
     deferred_scheduling=config.deferred_scheduling,
 )
-cs, cr = c.schedule_func, c.remove
+
+# Synonyms for swimming function management
+cs =  c.schedule_func
+again = c.schedule_func
+anew = c.schedule_func
+cr =  c.remove
+stop = c.remove
 children = c.print_children
-S = c.note
+S = c.note     # default SuperDirt
+M = c.midinote # default Midi Connexion
+MidiSend = MIDISender
+O = OSCSender
 n = next
 
 
-def hush():
+def hush(*args):
     """Stop all runners"""
-    for runner in c.runners.values():
-        runner.stop()
-
+    if len(args) >= 1:
+        for runner in args:
+            cr(runner)
+    else:
+        for runner in c.runners.values():
+            runner.stop()
 
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     """Send a MIDI Note"""
@@ -182,3 +196,18 @@ if Path(f"{config.user_config_path}").is_file():
     from user_configuration import *
 else:
     print(f"[red]No user provided configuration file found...")
+
+def parser(pattern: str):
+    """Parse a single expression and get result"""
+    parser = ListParser()
+    print(parser.parse(pattern))
+
+def parser_repl():
+    """Parse a single expression and get result"""
+    parser = ListParser()
+    try:
+        while True:
+            p = parser._parse_debug(pattern=input('> '))
+            print(p)
+    except KeyboardInterrupt:
+        pass

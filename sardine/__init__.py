@@ -77,7 +77,7 @@ children = c.print_children
 S = c.note     # default SuperDirt
 M = c.midinote # default Midi Connexion
 MidiSend = MIDISender
-OscSend  = OSCSender
+O = OSCSender
 n = next
 
 

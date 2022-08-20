@@ -31,7 +31,7 @@ grammar = """
          | "[" name ("," name)* ","? "]" -> make_list
          | "(" name ")"
 
-    ?list: "[" atom ("," atom)* ","? "]" -> make_list
+    ?list: "[" sum ("," sum)* ","? "]" -> make_list
          | atom "_" atom                 -> generate_ramp
 
     ?value: NUMBER -> number

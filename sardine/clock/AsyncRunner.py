@@ -89,7 +89,7 @@ class AsyncRunner:
     entire delay period to execute rather than a single tick.
     For example, assuming bpm = 120 and ppqn = 48, `deferred=False`
     would require its function to complete within 10ms (1 tick),
-    whereas `deferred=True` would allow a function with `delay=1`
+    whereas `deferred=True` would allow a function with `d=1`
     to finish execution within 500ms (1 beat) instead.
 
     In either case, if the function takes too long to execute, it will miss
@@ -206,9 +206,9 @@ class AsyncRunner:
                     kwargs = _discard_kwargs(signature, state.kwargs)
 
                     # Introspect arguments to synchronize
-                    delay = kwargs.get("delay")
+                    delay = kwargs.get("d")
                     if delay is None:
-                        param = signature.parameters.get("delay")
+                        param = signature.parameters.get("d")
                         delay = getattr(param, "default", 1)
 
                     if delay <= 0:

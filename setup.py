@@ -30,7 +30,7 @@ setup(
         "osc4py3~=1.0",
         "psutil~=5.0",
         "rich~=12.5",
-        "picotui~=1.2",
+        "lark~=1.1",
         "click~=8.1",
     ],
     extras_require={"speed": ["uvloop"], "dev": ["black"]},

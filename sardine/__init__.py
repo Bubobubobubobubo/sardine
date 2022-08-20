@@ -66,7 +66,13 @@ c = Clock(
     ppqn=config.ppqn,
     deferred_scheduling=config.deferred_scheduling,
 )
-cs, again, cr = c.schedule_func, c.schedule_func, c.remove
+
+# Synonyms for swimming function management
+cs =  c.schedule_func
+again = c.schedule_func
+anew = c.schedule_func
+cr =  c.remove
+stop = c.remove
 children = c.print_children
 S = c.note
 O = OSCSender
@@ -74,10 +80,14 @@ M = MIDISender
 n = next
 
 
-def hush():
+def hush(*args):
     """Stop all runners"""
-    for runner in c.runners.values():
-        runner.stop()
+    if len(args) >= 1:
+        for runner in args:
+            cr(runner)
+    else:
+        for runner in c.runners.values():
+            runner.stop()
 
 
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):

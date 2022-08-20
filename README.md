@@ -1,6 +1,6 @@
 ![sardine](pictures/sardine.png)
 # Sardine
-Livecoding in python with MIDI and OSC support ✨
+Python based live coding library with MIDI and OSC support ✨
 
 
 - [Sardine](#sardine)
@@ -12,7 +12,7 @@ Livecoding in python with MIDI and OSC support ✨
   - [Debug](#debug)
     - [Known bugs and issues](#known-bugs-and-issues)
   - [Usage](#usage)
-    - [Configuration file](#configuration-file)
+    - [Configuration Tools](#configuration-tools)
     - [Clock and Scheduling System](#the-internal-clock)
     - [Usage as a generic MIDI Clock](#usage-as-a-generic-midi-clock)
     - [Temporal recursive functions](#temporal-recursive-functions)
@@ -26,199 +26,184 @@ Livecoding in python with MIDI and OSC support ✨
 
 ## Elevator Pitch
 
-Sardine is a Python library made for musical live coding. It is based on a specific type of recursion, the [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). Sardine allows the execution of recursive functions in musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict timing! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide.
+Sardine is a Python library tailored for musical live coding. It is based on the principle of [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). Sardine allows the execution of recursive functions in musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict timing! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide.
 
-The library is far from being usable by unexperienced users. I made it public in order to share it easily and to encourage collaboration! **Sardine is looking for contributors**. Here are the goals for a first public release:
+Sardine can turn Python into a very fruitful musical instrument or stage control tool for electronic musicians.
 
-* [x] Solid timing system allowing the execution and synchronisation of temporal recursive functions.
-* [ ] Easy and simple to use MIDI/OSC and SuperDirt API.
-* [ ] MIDIIn/OSCIn for tweaking functions live using controllers and other devices.
-* [ ] Complete API targetting the `SuperDirt` sound engine.
+The library is a bit rough on the edges. I made it public in order to share it easily and to encourage collaboration! **Sardine is looking for contributors**. Here are the goals for a first public release:
+
+* [X] Solid timing system allowing the execution and synchronisation of temporal recursive functions.
+* [X] Easy and simple to use MIDI/OSC and SuperDirt API.
+* [X] MIDIIn/OSCIn for tweaking functions live using controllers and other devices.
+* [X] Configuration scripts / tools
+* [ ] Solid and interesting patterning systems for musical parameters
+* [ ] Documentation / Wiki / Easy install process: quality of life for users.
+* [ ] Technical documentation: helping devs and contributors :).
 
 ## Installation
 
 ### Sardine Python Package
 
-The installation process is fairly simple:
+The installation process is fairly simple if you wish to install Sardine system-wide. You will need, that goes without saying, the most recent version of Python you can install on your OS. Some knowledge of the usage of a command prompt/shell is required but only for the installation / configuration process.
 
-1) run `setup.py` using `pip3 install -e .` to download required libraries and install the library.
+0) install **Python** (3.9/3.10) and a suitable code editor ([VSCode](https://code.visualstudio.com/), [Vim](https://www.vim.org/)/[Neovim](https://neovim.io/), [Emacs](https://www.gnu.org/software/emacs/), etc..)
+1) run `git clone https://github.com/Bubobubobubobubo/Sardine` to download Sardine.
+2) run `cd sardine && pip3 install -e .` (can also be `python` on some systems).
    - **You need to have `python` and `pip` already installed on your computer**.
-2) open a new interactive session using `python3 -m asyncio`
+   - **Run the `git clone` commnad wherever you like**.
+   - optionally (but recommended), run `pip3 install uvloop` (MacOS/Linux only).
+3) open a new interactive session using `python3 -m asyncio`
    - **/!\\ Make sure that you are running the asyncio REPL!**
-   - **/!\\ The `IPython` REPL will not work. It is handling asyncio code differently.
-3) import the library `from sardine import *`
-4) Follow the prompt to connect to a MIDI Output.
-5) Read the examples provided in the `examples/` folder to learn more.
+   - **/!\\ The `IPython` REPL will not work. It is handling `asyncio` code differently.
+4) import the library `from sardine import *`
+5) Follow the prompt to connect to a MIDI Output. You will be able to configure the default MIDI interface later.
+6) Configure Sardine to your liking with `sardine-config`, `sardine-config-superdirt` and `sardine-config-python`.
+7) Read the examples provided in the `examples/` folder to learn more.
+   - **/!\\ Some examples might be out of date in the early stages of the project** 
 
 ### SuperDirt
 
+SuperDirt is a nice to have but **optional** output for Sardine. It is a well-known audio engine used by live coders, originally developed by Julian Rohrhuber for [TidalCycles](https://tidalcycles.org/). It provides a simple message-based syntax to speak with SuperCollider, to trigger samples, synthesizers and many other things.
+
 1) Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt** for your favorite OS. It is usually a three step process:
-    * install SuperCollider.
-    * run `Quarks.install('SuperDirt')` in the SCIDE window.
+    * install [SuperCollider](https://supercollider.github.io/).
+    * run `Quarks.install("SuperDirt")` in the SCIDE window.
     * run `SuperDirt.start` to start the engine.
 
-Sardine will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your PATH. Everything should run just fine if you install it in the default folder for your platform. Sardine will automatically try to boot a SuperCollider server and the `SuperDirt` audio engine as soon as you import the library.
+We will assume that you already have some experience dealing with SuperDirt in order to focus more on explaining how **Sardine** works. **Sardine** will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your `$PATH`. Everything should run just fine if you install it in the default folder for your platform. **Sardine** will automatically try to boot a **SuperCollider** server and the `SuperDirt` audio engine as soon as you import the library.
 
 ### Code-editing with Sardine
 
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it. After a while, you will figure out that it is fairly cumbersome and you will likely be searching for a better text editor. `Sardine` code can become quite verbose when dealing with complex *swimming* functions.
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it, but you will be pretty limited in what you can do. It is sometimes enough to run quick tests. After a while, you will figure out that working this way is fairly cumbersome and you will likely be searching for a better text editor. **Sardine** code can become quite verbose when dealing with complex *swimming* functions.
 
-As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. The easiest way to use it is by using [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). Any software providing the same functionality will likely work (VSCode Python plugins, notebooks, etc...). VSCode is assumed to work very well for editing Sardine code as well.
+As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. However, **Sardine** is Python and there are great plugins to deal with interactive code. Here are a few things you can try:
+* [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). 
+* VSCode with the [Jupyter Notebook](https://jupyter.org/) extension
+    - install VSCode and the Jupyter Notebook plugin. Create a new `.ipynb` notebook.
+    - make sure that you are using the right Python version as your kernel (3.9 / 3.10).
+    - run `%pip install -e "path/to/sardine"`, restart the kernel when `pip` is done installing.!
+    - run `from sardine import *` and have fun!
+* Emacs with the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin.
 
 ## Debug
 
-Please provide feedback on the installation process! Everything is pretty new so I might not be able to anticipate how `Sardine` will run on your computer. I am discovering new bugs and corner-cases everyday, and I would love to fix them to get a stable release soon :)
+Please provide feedback on the installation process! I try to document it as much as I can but I lack feedback on the installation process on different systems, etc.. You might also have different use cases that I might not have anticipated.
 
 ### Known bugs and issues
 
-* **[WINDOWS ONLY]**: `uvloop` doesn't work on Windows. Fortunately, you can still run `Sardine` but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
+* **[WINDOWS ONLY]**: `uvloop` does not work on Windows. Fortunately, you can still run **Sardine** but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
 
 * **[LINUX/MACOS]**: `pip3 install` fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
 
-## Configuration File
+## Configuration Tools
 
-Sardine will automatically create a configuration folder and configuration files the first time the library is imported:
-- `config.json`: Main configuration file.
-- `default_superdirt.scd`: Server configuration file.
-- `synths` folder.
+When you boot Sardine for the first time, **Sardine** will create its own configuration folder and configuration files. The path will be printed everytime time you boot **Sardine** thereafter. There are three files you can tweak and configure:
+- `config.json`: main **Sardine** configuration file.
+- `default_superdirt.scd`: **SuperDirt** configuration file.
+- `synths` folder: store new synthesizers written with **SuperCollider**.
 
-
-The location of this folder is assumed to be the best possible defaut depending on your OS:
+The location of the configuration folder is assumed to be the best possible default location based on your OS:
 - **MacOS**: `Users/xxx/Library/Application\ Support/Sardine/`
-* **Linux**: `.config` folder.
-* **Windows**: `%appdata%/Sardine`
+* **Linux**: `.config` folder (???).
+* **Windows**: `%appdata%/Sardine` (???).
 
-(**May be incorrect**)
+The `config.json` file will allow you to finetune **Sardine** by choosing a default MIDI port, a default PPQN and BPM, etc... The `default_superdirt.scd` is your default `SuperDirt` configuration. You must edit it if you are willing to load more audio samples, change your audio outputs or add anything that you need on the SuperCollider side. The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time.
 
+There is another file, `user_configuration.py` that is not created by default. It must be added manually if you wish to use this feature. All the code placed in this file will be imported by default everytime you boot **Sardine**. It is an incredibely useful feature to automate some things:
+* custom user-made functions and aliases.
+* Sardine running in "art installation" mode.
 
-The `config.json` file will allow you to fine-tune your Sardine experience by providing a default MIDI port, by choosing a default PPQN and BPM, etc... The `default_superdirt.scd` is your default `SuperDirt` configuration. You must edit it if you are willing to load more audio samples, change your audio outputs or add anything that you need on the SuperCollider side.
-
-The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time.
-
-Sardine will be installed along with configuration tools that are meant to make configuration easy and fast. They will be automatically installed on your `$PATH`:
+**Sardine** will be installed along with configuration tools that are meant to make configuration easy and fast. They will be automatically installed on your `$PATH`:
 - `sardine-config` is a CLI meant to edit `config.json` from the command-line.
 - `sardine-config-python` will fire `$EDITOR` to config `user_configuration.py`.
 - `sardine-config-superdirt` will fire `$EDITOR` to config `default_superdirt.scd`.
 
-Sardine will have to be runned at least once for the `config.json` file to be created. `user_configuration.py` does not exist unless created.
+Sardine will have to be runned at least once for the `config.json` file to be created. 
 
 ## Usage
 
 ### The internal Clock
 
-As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock you will be playing with. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods can be used to maximize the fun you get:
-* `c.bpm`: current BPM
-* `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note)
-  - be careful. The tempo might fluctuate based on the PPQN you choose.
+As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, this clock is running in `active` mode: it will send a MIDI clock signal every tick on the default MIDI port. It can also be `passive` and listen to the default MIDI port if you prefer. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods can be used to maximize the fun you get:
+
+* `c.bpm`: current BPM (beats per minute).
+* `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (Pulses per Quarter Note, used by MIDI gear).
+  - be careful. The tempo might fluctuate based on the PPQN you choose. Assume that 24 is a default sane PPQN for most synthesizers/drum machines.
 
 `c.bpm` and `c.ppqn` can be manually adjusted if you feel like it. Be careful, changing these values can result in a dramatic tempo shift.
 
-There are some sugared methods to schedule coroutines on the clock:
-- `cs` (`c.schedule(coro, *args, **kwargs)`): introduce a new coroutine.
-- `cr` (`c.remove(coro, *args, **kwargs)`): remove a coroutine.
-
-**Example:**
-```python3
-cs(my_super_bass_drum, delay=2)
-cs(hatty_hat, delay=0.5)
-
-# Bored
-cr(my_super_bass_drum)
-cr(hatty_hat)
-```
-
-This is nice and everything but still a bit long to type on-the-fly while you are on stage. You might prefer using the `@swim` and `@die` decorators:
-```python
-@swim
-async def bd(delay=1):
-    """ A simple bass drum """
-    dur = choice([2, 1])
-    S('bd', amp=2).out()
-    cs(bd, delay=dur)
-
-
-@die
-async def iter(delay=1, nb=0):
-    """ A simple recursive iterator """
-    nb += 1
-    print(f"{nb}")
-    cs(iter, delay=1, nb=nb+1)
-```
-
 The Clock can either be `active` or `passive`. The `active` Clock will emit a Clock signal on the MIDI port you picked by default. The `passive` Clock will await for a MIDI Clock signal coming from elsewhere (DAWs, hardware, other softwares..). Sardine will not behave nicely if no external clock is running while in `passive` mode. Being able to send a MIDI Clock Out or to receive a MIDI Clock In is great for collaborating with other musicians. Live is also able to mirror an Ableton Link clock to a MIDI Clock.
+
+[TODO: clock attributes and temporal helpers]
 
 ### Temporal recursive functions
 
-Asynchronous functions can be scheduled to run periodically on the clock and support temporal recursion! It means that you can write the following and expect the following output:
+In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from recursion.
 
 ```python
-# A basic temporal recursive function
-async def incr(delay=20, num=0):
-    num += 1
-    print(f"Num: {num}")
-    cs(num, delay=20, num)
-
-# Scheduling it on the clock
-cs(num, delay=20, num=0)
-
-# Output
-# Num: 1
-# Num: 2
-# Num: 3
-# Num: 4
-# Num: 5
+@swim # replace me by 'die'
+def bd(d=1):
+    """Loud bass drum"""
+    S('bd', amp=2).out()
+    anew(bd, d=1) # anew == again == cs
 ```
 
-This is an incredibly useful feature to keep track of state between iterations of your function. Sardine users refer to these functions as **swimming functions**. They have some nice musical implications as well! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make these less verbose for the end-user. For now, you are on your own!
+If you don't manually add the recursion to the designated **swimming function**, the function will run once and stop. Recursion must be explicit!
 
-Temporal recursive functions have only one drawback: they **NEED** a `delay` argument. If you don't provide it, `Sardine` will default to using `delay=1`, a quarter note.
+```python
+# Boring
+@swim 
+def bd(d=1):
+    S('bd', amp=2).out()
+```
+
+The recursion can (and should) be used to update your arguments between each call of the **swimming function**. Here is an example of a very simple iterator:
+
+```
+@swim # or die 
+async def iter(d=1, nb=0):
+    """A simple recursive iterator"""
+    print(f"{nb}")
+    anew(iter, d=1, nb=nb+1)
+# 0
+# 1
+# 2
+# 3
+# 4
+```
+
+This is an incredibly useful feature to keep track of state between each call of your function. **Swimming functions** are helpful tools that can be used to produce very musical results! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make some of these less verbose for the end-user. For now, you are (almost) on your own!
+
+**Swimming functions** are great but they have one **BIG** difference compared to a classic temporal recursion: they are *temporal* recursive. They must be given a `delay` argument. The `delay` argument is actually `d` (short is better). If you don't provide it, Sardine will assume that your function uses `d=1`.
 
 ### Triggering sounds / samples / synthesizers
 
-The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. Sardine can either boot its own `SuperDirt` instance or let you do it if you are willing to:
-- **Default:** `SuperDirt` will be booted everytime the library is imported.
-- **Manual:** `SuperDirt` (and `SuperCollider`) needs to be booted independently on the default port (`57120`).
+The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. Most people will use this output instead of plugging multiple synthesizers listening to MIDI or crafting OSC listeners. The interface to SuperDirt is very crude but fully functional. By default, **Sardine** will attempt to boot with its own `SuperCollider` and `SuperDirt` configuration. You can disable this by changing the configuration: `sardine-config --boot False`.
+* **default:** `SuperDirt` will be booted everytime the library is imported.
+* **manual:** `SuperDirt` (and `SuperCollider`) needs to be booted independently on the default port (`57120`).
 
-The configuration file, automatically created the first time you boot Sardine, can help you to tune the defaults.
-
-The `SuperDirt` object is your main interface to `SuperDirt`. The syntax is nice and easy and wil remind you of *TidalCycles* if you are already familiar with it. `SuperDirt` has been aliased to `S` to make it easier to type.
+People familiar with [TidalCycles](https://tidalcycles.org/) will feel at home using the `S()` (for `SuperDirt`) object. It is a simple object made for composing SuperDirt messages:
 
 ```python
-S('bd').out() # a bassdrum (sample 0 from folder 'bd')
-S('bd', n=3, amp=2).out() # third sample, way louder
-S('bd', n=3, amp=1, speed=[0.5,1]).out() # third sample, played twice at different speeds
-S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) # Python shenanigans
+# A bassdrum (sample 0 from folder 'bd')
+S('bd').out() 
+# Fourth sample, way louder!
+S('bd', n=3, amp=2).out() 
+# Patterning a parameter (read the appropriate section) 
+S('bd', n=3, amp=1, speed='1 0.5').out(i) 
+# Introducing some Python in our parameters
+S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) 
 ```
 
-The simplest function you can write using `Sardine` is probably a simple bassdrum:
+Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being sent out. You can take time to develop your functions, add conditions, etc... When you are ready to send a sound, just use the `.out()` method:
 
 ```python
 @swim
-def bd(delay=1):
-    S('bd').out()
-    cs(bd, delay=1)
-```
-
-You can be more playful and do something by toying with temporal recursion:
-
-
-```python
-@swim
-def bd(delay=1, speed=1):
-    S('bd').out()
-    cs(bd, delay=1, speed=randint(1, 5))
-```
-
-Notice the `.out()` method used on the `S`(ound) object? That's because `S` can be modified and composed before being send out. You can take time to develop your functions, add conditions, etc... When you are ready to send the sound out, just use the `.out()` method:
-
-
-```python
-@swim
-def indirect_bd(delay=1, speed=1):
+def indirect_bd(d=1, speed=1):
     a = S('bd')
     a.speed(4)
     a.out()
-    cs(indirect_bd, delay=1, speed=randint(1, 5))
+    anew(indirect_bd, d=1, speed=randint(1, 5))
 ```
 
 Be careful not to override the method by changing an individual parameter (`a.speed=5`). It is a method, you **must** use parentheses! Seems cumbersome but you will like it when you will start to get into method chaining like so:

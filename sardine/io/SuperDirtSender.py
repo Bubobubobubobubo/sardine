@@ -9,10 +9,9 @@ from ..sequences import ListParser
 if TYPE_CHECKING:
     from ..clock import Clock
 
-class SuperDirtSender:
 
-    def __init__(self, clock: "Clock", sound: str,
-            at: Union[float, int] = 0, **kwargs):
+class SuperDirtSender:
+    def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
 
         self._parser = ListParser()
         self.clock = clock
@@ -22,7 +21,7 @@ class SuperDirtSender:
         # Iterating over kwargs. If parameter seems to refer to a
         # method (usually dynamic SuperDirt parameters), call it
 
-        self.content = {'orbit': 0}
+        self.content = {"orbit": 0}
         for k, v in kwargs.items():
             method = getattr(self, k, None)
             if callable(method):
@@ -46,16 +45,14 @@ class SuperDirtSender:
         method.__doc__ = f"Updates the sound's {name} parameter."
         return method
 
-
     def addOrChange(self, values, name: str):
         """Will set a parameter or change it if already in message"""
-        # Detect if a given parameter is a pattern, form a valid pattern
+        # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, str):
             self.content |= {name: self._parser.parse(values)}
         else:
             self.content |= {name: values}
         return self
-
 
     def schedule(self, message):
         async def _waiter():
@@ -66,17 +63,16 @@ class SuperDirtSender:
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='superdirt-scheduler')
+        asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-
-    def out(self, i: Union[None, int] = None, orbit:int = 0) -> None:
+    def out(self, i: Union[None, int] = None, orbit: int = 0) -> None:
         """
         Prototype for the Sender output.
         TODO: make the sample number patternable...
         """
 
         if orbit != 0:
-            self.content |= {'orbit': orbit}
+            self.content |= {"orbit": orbit}
 
         final_message = []
 
@@ -86,11 +82,11 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(['sound', self.sound[0]])
+                final_message.extend(["sound", self.sound[0]])
             elif isinstance(self.sound, str):
-                final_message.extend(['sound', self.sound])
+                final_message.extend(["sound", self.sound])
 
-            # Parametric values
+            # Parametric values
             for key, value in self.content.items():
                 if value == []:
                     continue
@@ -98,26 +94,25 @@ class SuperDirtSender:
                     value = value[0]
                 final_message.extend([key, float(value)])
 
-            if 'trig' not in final_message:
-                final_message.extend(['trig', 1])
+            if "trig" not in final_message:
+                final_message.extend(["trig", 1])
 
-            trig_value = final_message[final_message.index('trig') + 1]
+            trig_value = final_message[final_message.index("trig") + 1]
             if trig_value:
                 return self.schedule(final_message)
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
 
-            # Sound
+            # Sound
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(['sound',
-                        self.sound[i % len(self.sound) - 1]])
+                final_message.extend(["sound", self.sound[i % len(self.sound) - 1]])
             else:
-                final_message.extend(['sound', self.sound])
+                final_message.extend(["sound", self.sound])
 
-            # Parametric arguments
+            # Parametric arguments
             for key, value in self.content.items():
                 if value == []:
                     continue
@@ -127,10 +122,10 @@ class SuperDirtSender:
                 else:
                     final_message.extend([key, float(value)])
 
-            if 'trig' not in final_message:
-                final_message.extend(['trig', str(1)])
+            if "trig" not in final_message:
+                final_message.extend(["trig", str(1)])
 
-            trig_value = final_message[final_message.index('trig') + 1]
+            trig_value = final_message[final_message.index("trig") + 1]
             if trig_value:
                 return self.schedule(final_message)
 

@@ -12,16 +12,17 @@ if TYPE_CHECKING:
 
 
 class MIDISender:
-
-    def __init__(self,
-            clock: 'Clock',
-            midi_client: Optional['MIDIIo'] = None,
-            note: Union[int, float, str] = 60,
-            delay: Union[int, float, str] = 0.1,
-            velocity: Union[int, float, str] = 120,
-            channel:  Union[int, float, str] = 0,
-            trig:  Union[int, float, str] = 1,
-            at: Union[float, int] = 0):
+    def __init__(
+        self,
+        clock: "Clock",
+        midi_client: Optional["MIDIIo"] = None,
+        note: Union[int, float, str] = 60,
+        delay: Union[int, float, str] = 0.1,
+        velocity: Union[int, float, str] = 120,
+        channel: Union[int, float, str] = 0,
+        trig: Union[int, float, str] = 1,
+        at: Union[float, int] = 0,
+    ):
 
         self._parser = ListParser()
         self.clock = clock
@@ -37,14 +38,12 @@ class MIDISender:
         self.note = self.parse_initial_arguments(note)
         self.after: int = at
 
-
     def parse_initial_arguments(self, argument):
-        """Parse arguments at __init__ time """
+        """Parse arguments at __init__ time"""
         if isinstance(argument, str):
             return self._parse_number_pattern(argument)
         else:
             return argument
-
 
     def _parse_number_pattern(self, pattern: str):
         """Pre-parse MIDI params during __init__"""
@@ -52,10 +51,12 @@ class MIDISender:
 
     def __str__(self):
         """String representation of a sender content"""
-        pat = {'note': int(self.note),
-               'delay': self.delay,
-               'velocity': int(self.velocity),
-               'channel': int(self.channel)}
+        pat = {
+            "note": int(self.note),
+            "delay": self.delay,
+            "velocity": int(self.velocity),
+            "channel": int(self.channel),
+        }
         return f"{self.midi_client}: {pprint.pformat(pat)}"
 
     # ------------------------------------------------------------------------
@@ -64,34 +65,38 @@ class MIDISender:
     def schedule(self, message):
         async def _waiter():
             await handle
-            asyncio.create_task(self.midi_client.note(
-                delay=message.get('delay'),
-                note=message.get('note'),
-                velocity=message.get('velocity'),
-                channel=message.get('channel')))
+            asyncio.create_task(
+                self.midi_client.note(
+                    delay=message.get("delay"),
+                    note=message.get("note"),
+                    velocity=message.get("velocity"),
+                    channel=message.get("channel"),
+                )
+            )
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='midi-scheduler')
-
+        asyncio.create_task(_waiter(), name="midi-scheduler")
 
     def out(self, i: Union[int, None] = 0) -> None:
-        """Must be able to deal with polyphonic messages """
+        """Must be able to deal with polyphonic messages"""
         final_message = {
-                'delay': self.delay,
-                'velocity': self.velocity,
-                'channel': self.channel,
-                'note': self.note}
+            "delay": self.delay,
+            "velocity": self.velocity,
+            "channel": self.channel,
+            "note": self.note,
+        }
 
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
 
             for key, value in final_message.items():
-                if value == []: return
+                if value == []:
+                    return
                 if isinstance(value, (list, str)):
-                    if key in ['velocity', 'channel', 'note']:
+                    if key in ["velocity", "channel", "note"]:
                         final_message[key] = int(value[0])
                     else:
                         final_message[key] = float(value[0])
@@ -107,9 +112,10 @@ class MIDISender:
             """Compose a message if an iterator is given"""
 
             for key, value in final_message.items():
-                if value == []: return
+                if value == []:
+                    return
                 if isinstance(value, (list, str)):
-                    if key in ['velocity', 'channel', 'note']:
+                    if key in ["velocity", "channel", "note"]:
                         final_message[key] = int(value[i % len(value) - 1])
                     else:
                         final_message[key] = float(value[i % len(value) - 1])

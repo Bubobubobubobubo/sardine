@@ -189,7 +189,7 @@ class SuperColliderProcess:
 
         print("\n[red]Starting SCLang && SuperDirt[/red]")
         self.send(message="""load("{}")""".format(self._startup_file))
-        # print(f"{self._sclang_proc.communicate()[0]}")
+        # print(f"{self._sclang_proc.communicate()[0]}")
         if self._synth_directory is not None:
             self.load_custom_synthdefs()
 

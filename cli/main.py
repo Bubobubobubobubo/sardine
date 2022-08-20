@@ -13,20 +13,21 @@ from itertools import chain
 from typing import Any
 
 # ============================================================================ #
-# First script: a dead simple argparse configuration tool to edit values stored
-# in config.json. Automatic type-checking / error raise for each value.
+# First script: a dead simple argparse configuration tool to edit values stored
+# in config.json. Automatic type-checking / error raise for each value.
 # ============================================================================ #
+
 
 def str2bool(v):
     """Boolean validation method for argparse type checking"""
     if isinstance(v, bool):
         return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if v.lower() in ("yes", "true", "t", "y", "1"):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         return False
     else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+        raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
 FUNNY_TEXT = """
@@ -79,7 +80,6 @@ def main():
         """Boolean validation method"""
         if thing not in [True, False]:
             raise ValueError("Boolean attributes must be True or False.")
-
 
     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
     parser.add_argument("--midi", type=str, help="Default MIDI port")

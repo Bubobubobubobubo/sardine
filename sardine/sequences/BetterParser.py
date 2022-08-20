@@ -46,7 +46,7 @@ grammar = """
 """
 
 
-@v_args(inline=True)    # Affects the signatures of the methods
+@v_args(inline=True)  # Affects the signatures of the methods
 class CalculateTree(Transformer):
     number = float
 
@@ -65,7 +65,7 @@ class CalculateTree(Transformer):
     def extend(self, left, right):
         """Extend the element on the left x times"""
         if all(map(lambda x: isinstance(x, float), [left, right])):
-            return [left]*int(right)
+            return [left] * int(right)
         if isinstance(left, list) and isinstance(right, (float, int)):
             new_list = []
             for _ in range(int(right)):
@@ -98,9 +98,9 @@ class CalculateTree(Transformer):
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x + y for x, y in zip(cycle(right), left)]
         elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x+left for x in right]
+            return [x + left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x+right for x in left]
+            return [x + right for x in left]
 
     def substraction(self, left, right):
         if all(map(lambda x: isinstance(x, float), [left, right])):
@@ -108,9 +108,9 @@ class CalculateTree(Transformer):
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x - y for x, y in zip(cycle(right), left)]
         elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x-left for x in right]
+            return [x - left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x-right for x in left]
+            return [x - right for x in left]
 
     def multiplication(self, left, right):
         if all(map(lambda x: isinstance(x, float), [left, right])):
@@ -119,9 +119,9 @@ class CalculateTree(Transformer):
             print(left, right)
             return [x * y for x, y in zip(cycle(right), left)]
         if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x*left for x in right]
+            return [x * left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x*right for x in left]
+            return [x * right for x in left]
 
     def division(self, left, right):
         if all(map(lambda x: isinstance(x, float), [left, right])):
@@ -129,17 +129,18 @@ class CalculateTree(Transformer):
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x / y for x, y in zip(cycle(right), left)]
         if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x/left for x in right]
+            return [x / left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x/right for x in left]
+            return [x / right for x in left]
 
-    def sample_name(self, name): return str(name)
+    def sample_name(self, name):
+        return str(name)
+
     def associate_sample_number(self, name, value):
-
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
-        # Possible tyoes for names
+        # Possible tyoes for names
         if isinstance(name, str):
             if isinstance(value, (float, int)):
                 return _simple_association(name, value)
@@ -152,19 +153,24 @@ class CalculateTree(Transformer):
             if isinstance(value, list):
                 return [str(x) + ":" + str(int(y)) for x, y in zip(cycle(name), value)]
 
-    def add_name(self, a, b): return a + b
-    def sub_name(self, a, b): return a.replace(b, '')
-    def choice_name(self, a, b): return random.choice([a, b])
+    def add_name(self, a, b):
+        return a + b
+
+    def sub_name(self, a, b):
+        return a.replace(b, "")
+
+    def choice_name(self, a, b):
+        return random.choice([a, b])
 
 
-calc_parser = Lark(grammar, parser='lalr', transformer=CalculateTree())
+calc_parser = Lark(grammar, parser="lalr", transformer=CalculateTree())
 calc = calc_parser.parse
 
 
 def main():
     while True:
         try:
-            s = input('> ')
+            s = input("> ")
         except EOFError:
             break
         print(calc(s))
@@ -175,6 +181,6 @@ def test():
     print(calc("1+a*-3"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test()
     main()

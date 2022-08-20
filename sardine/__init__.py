@@ -21,9 +21,7 @@ from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
-from .io import (
-        OSCSender,
-        MIDISender)
+from .io import OSCSender, MIDISender
 from .sequences import ListParser
 from typing import Union
 from .sequences import *
@@ -67,15 +65,15 @@ c = Clock(
     deferred_scheduling=config.deferred_scheduling,
 )
 
-# Synonyms for swimming function management
-cs =  c.schedule_func
+# Synonyms for swimming function management
+cs = c.schedule_func
 again = c.schedule_func
 anew = c.schedule_func
-cr =  c.remove
+cr = c.remove
 stop = c.remove
 children = c.print_children
-S = c.note     # default SuperDirt
-M = c.midinote # default Midi Connexion
+S = c.note  # default SuperDirt
+M = c.midinote  # default Midi Connexion
 MidiSend = MIDISender
 O = OSCSender
 n = next
@@ -89,6 +87,7 @@ def hush(*args):
     else:
         for runner in c.runners.values():
             runner.stop()
+
 
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     """Send a MIDI Note"""
@@ -197,17 +196,19 @@ if Path(f"{config.user_config_path}").is_file():
 else:
     print(f"[red]No user provided configuration file found...")
 
+
 def parser(pattern: str):
     """Parse a single expression and get result"""
     parser = ListParser()
     print(parser.parse(pattern))
+
 
 def parser_repl():
     """Parse a single expression and get result"""
     parser = ListParser()
     try:
         while True:
-            p = parser._parse_debug(pattern=input('> '))
+            p = parser._parse_debug(pattern=input("> "))
             print(p)
     except KeyboardInterrupt:
         pass

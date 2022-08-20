@@ -94,16 +94,18 @@ class MIDIIo(threading.Thread):
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
     async def note(
-        self, delay: Union[int, float],
-        note: int = 60, velocity: int = 127,
-        channel: int = 1
+        self,
+        delay: Union[int, float],
+        note: int = 60,
+        velocity: int = 127,
+        channel: int = 1,
     ) -> None:
         """Send a MIDI Note through principal MIDI output"""
-        noteon = mido.Message("note_on",
-                note=int(note), velocity=int(velocity), channel=int(channel))
+        noteon = mido.Message(
+            "note_on", note=int(note), velocity=int(velocity), channel=int(channel)
+        )
         noteoff = mido.Message(
-            "note_off", note=int(note), velocity=int(velocity),
-            channel=int(channel)
+            "note_off", note=int(note), velocity=int(velocity), channel=int(channel)
         )
         self.schedule(noteon)
         await asyncio.sleep(delay)

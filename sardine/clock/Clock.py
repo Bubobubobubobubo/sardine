@@ -398,22 +398,27 @@ class Clock:
         return SuperDirtSender(self, sound, at, **kwargs)
 
     def midinote(
+        self,
+        note: Union[int, str],
+        velocity: Union[int, str],
+        channel: Union[int, str],
+        at: int = 0,
+        delay: Union[int, float, str] = 0.2,
+        **kwargs,
+    ) -> MIDISender:
+        return MIDISender(
             self,
-            note: Union[int, str],
-            velocity: Union[int, str],
-            channel: Union[int, str],
-            at: int = 0,
-            delay: Union[int, float, str]=0.2,
-            **kwargs) -> MIDISender:
-        return MIDISender(self,
-                self._midi, at=at, delay=delay, note=note,
-                velocity=velocity, channel=channel, **kwargs)
+            self._midi,
+            at=at,
+            delay=delay,
+            note=note,
+            velocity=velocity,
+            channel=channel,
+            **kwargs,
+        )
 
     def oscmessage(self, delay: int, at: int = 0, **kwargs) -> MIDISender:
         pass
-
-
-
 
     async def run_active(self):
         """Main runner for the active mode (master)"""

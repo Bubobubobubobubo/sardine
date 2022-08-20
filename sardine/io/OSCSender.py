@@ -11,13 +11,14 @@ if TYPE_CHECKING:
 
 
 class OSCSender:
-
-    def __init__(self,
-            clock: "Clock",
-            osc_client,
-            address: str,
-            at: Union[float, int] = 0,
-            **kwargs):
+    def __init__(
+        self,
+        clock: "Clock",
+        osc_client,
+        address: str,
+        at: Union[float, int] = 0,
+        **kwargs,
+    ):
 
         self._parser = ListParser()
         self.clock = clock
@@ -41,7 +42,6 @@ class OSCSender:
             else:
                 self.content[k] = v
 
-
     def __str__(self):
         """String representation of a sender content"""
         param_dict = pprint.pformat(self.content)
@@ -55,35 +55,31 @@ class OSCSender:
         method.__doc__ = f"Updates the sound's {name} parameter."
         return method
 
-
     def addOrChange(self, values, name: str):
         """Will set a parameter or change it if already in message"""
 
-        # Detect if a given parameter is a pattern, form a valid pattern
+        # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, (str)):
             self.content |= {name: self._parser.parse(values)}
         return self
 
-
     def schedule(self, message: dict):
         async def _waiter():
             await handle
-            print(message['message'])
-            self.osc_client.send(
-                    self.clock,
-                    message['address'],
-                    message['message'])
+            print(message["message"])
+            self.osc_client.send(self.clock, message["address"], message["message"])
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)
-        asyncio.create_task(_waiter(), name='osc-scheduler')
+        asyncio.create_task(_waiter(), name="osc-scheduler")
 
     def out(self, i: Union[int, None] = None) -> None:
         """Sender method"""
 
         final_message = {}
+
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
 
@@ -91,57 +87,57 @@ class OSCSender:
             if self.address == []:
                 return
             if isinstance(self.address, list):
-                final_message['address'] = "/" + self.address[0].replace('_', '/')
+                final_message["address"] = "/" + self.address[0].replace("_", "/")
             elif isinstance(self.address, str):
-                final_message['address'] = "/" + self.address[0].replace('_', '/')
+                final_message["address"] = "/" + self.address[0].replace("_", "/")
 
-            # Parametric values: names are mental helpers for the user
-            final_message['message'] = []
+            # Parametric values: names are mental helpers for the user
+            final_message["message"] = []
             for _, value in self.content.items():
                 if value == []:
                     continue
                 if isinstance(value, list):
                     value = value[0]
-                if _ != 'trig':
-                    final_message['message'].append(float(value))
+                if _ != "trig":
+                    final_message["message"].append(float(value))
 
-            if 'trig' not in self.content.keys():
+            if "trig" not in self.content.keys():
                 trig = 1
             else:
-                trig = int(self.content['trig'][0])
+                trig = int(self.content["trig"][0])
             if trig:
                 return self.schedule(final_message)
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
 
-            # Address
+            # Address
             if self.address == []:
                 return
             if isinstance(self.address, list):
-                final_message['address'] = "/" + self.address[
-                        i % len(self.address) - 1].replace('_', '/')
+                final_message["address"] = "/" + self.address[
+                    i % len(self.address) - 1
+                ].replace("_", "/")
             else:
-                final_message['address'] = "/" + self.address.replace('_', '/')
+                final_message["address"] = "/" + self.address.replace("_", "/")
 
-            # Parametric arguments
-            final_message['message'] = []
+            # Parametric arguments
+            final_message["message"] = []
             for _, value in self.content.items():
                 if value == []:
                     continue
                 if isinstance(value, list):
                     value = float(value[i % len(value) - 1])
-                    if _ != 'trig':
-                        final_message['message'].append(value)
+                    if _ != "trig":
+                        final_message["message"].append(value)
                 else:
-                    if _ != 'trig':
-                        final_message['message'].append(float(value))
+                    if _ != "trig":
+                        final_message["message"].append(float(value))
 
-            if 'trig' not in self.content.keys():
+            if "trig" not in self.content.keys():
                 trig = 1
             else:
-                trig = int(self.content['trig'][
-                    i % len(self.content['trig']) -1])
+                trig = int(self.content["trig"][i % len(self.content["trig"]) - 1])
             if trig:
                 return self.schedule(final_message)
 

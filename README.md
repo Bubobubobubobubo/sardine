@@ -113,6 +113,8 @@ Sardine will have to be runned at least once for the `config.json` file to be cr
 
 # Using Sardine
 
+This tutorial will only cover the very basics of using **Sardine**. To get more information, click on each module in the source tree to read their own `README.md` files. Give me some time to fill out the documentation while I develop the first working release :).
+
 ### The internal Clock
 
 As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, this clock is running in `active` mode: it will send a MIDI clock signal every tick on the default MIDI port. It can also be `passive` and listen to the default MIDI port if you prefer. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods can be used and changed on-the-fly to maximize the fun you get:
@@ -486,14 +488,14 @@ It is not recommended to send messages using the preceding method. You will not 
 my_osc = OSC(ip="127.0.0.1", port=23000, name="Bibu", ahead_amount=0.25)
 
 # Simple address
-O(c, my_osc, 'loulou', value='1 2 3 4').out()
+O(my_osc, 'loulou', value='1 2 3 4').out()
 
 # Composed address (_ equals /)
-O(c, my_osc, 'loulou_yves', value='1 2 3 4').out()
+O(my_osc, 'loulou_yves', value='1 2 3 4').out()
 
 @swim
 def lezgo(d=1, i=0):
-    O(c, my_osc, 'loulou_blabla', 
+    O(my_osc, 'loulou_blabla', 
         value='1 2 3 4', 
         otherv='1 2|4 r*2').out(i)
     anew(lezgo, i=i+1)

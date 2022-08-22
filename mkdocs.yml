@@ -9,7 +9,16 @@ nav:
   - Reference: reference.md
   - About: about.md
 theme:
+  palette:
+    primary: black
+    accent: orange
+  font:
+    code: Roboto Mono
+    text: Roboto Mono
   name: material
+  icon:
+    repo: fontawesome/brands/git-alt
+
 extra:
   generator: false
 plugins:
@@ -22,4 +31,13 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Bubobubobubobubo/Sardine
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RaphBubo
+
+repo_url: https://github.com/Bubobubobubobubo/Sardine
 

@@ -1,5 +1,5 @@
 site_name: Sardine
-site_url: https://sardine.com
+site_url: https://sardine.raphaelforment.fr
 site_author: Raphaël Forment
 nav:
   - Home: index.md
@@ -35,9 +35,8 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/Bubobubobubobubo/Sardine
+      link: https://github.com/Bubobubobubobubo/sardine
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/RaphBubo
 
-repo_url: https://github.com/Bubobubobubobubo/Sardine
-
+repo_url: https://github.com/Bubobubobubobubo/sardine

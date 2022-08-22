@@ -15,3 +15,11 @@ extra:
 plugins:
   - search
 docs_dir: docs
+
+markdown_extensions:
+  - pymdownx.highlight:
+     anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+

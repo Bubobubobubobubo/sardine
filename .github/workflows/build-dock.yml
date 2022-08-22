@@ -19,3 +19,4 @@ jobs:
           #CUSTOM DOMAIN: optionaldomain.com
           CONFIG_FILE: mkdocs.yml
           EXTRA_PACKAGES: build-base
+          REQUIREMENTS: requirements.txt

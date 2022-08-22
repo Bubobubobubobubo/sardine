@@ -9,7 +9,7 @@ nav:
   - Reference: reference.md
   - About: about.md
 theme:
-  name: windmill
+  name: material
 extra:
   generator: false
 plugins:

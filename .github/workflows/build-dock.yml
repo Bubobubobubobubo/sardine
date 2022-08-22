@@ -2,7 +2,7 @@ name: Publish docs via Github Pages
 on:
   push:
     branches:
-      - main
+      - doc
 
 jobs:
   build:

@@ -18,4 +18,3 @@ jobs:
           CUSTOM DOMAIN: sardine.raphaelforment.fr
           CONFIG_FILE: mkdocs.yml
           EXTRA_PACKAGES: build-base
-          REQUIREMENTS: requirements.txt

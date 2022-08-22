@@ -74,9 +74,9 @@ stop = c.remove
 children = c.print_children
 S = c.note  # default SuperDirt
 M = c.midinote  # default Midi Connexion
-O = c.oscmessage # default OSC Sender
+O = c.oscmessage  # default OSC Sender
 MidiSend = MIDISender
-# O = OSCSender
+# O = OSCSender
 n = next
 
 

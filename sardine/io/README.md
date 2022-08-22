@@ -31,9 +31,9 @@ When you import **Sardine**, `MIDISender` and `SuperDirtSender` will already be 
 S('sound', param='1 2 3 4').out()
 ```
 
-The first argument of `S()` is always a string, and must refer to a valid sound source in *SuperDirt*: synthesizer, audio sample, etc... Every other argument must be a keyword argument and should refer to a valid parameter for that sound source. In the example above, `S()` will build and send the following example to *SuperDirt*: `['sound', 'sound', 'orbit', 0.0, 'param', 1.0, 'trig', 1]`. 
+The first argument of `S()` is always a string, and must refer to a valid sound source in *SuperDirt*: synthesizer, audio sample, etc... Every other argument must be a keyword argument and should refer to a valid parameter for that sound source. In the example above, `S()` will build and send the following example to *SuperDirt*: `['sound', 'sound', 'orbit', 0.0, 'param', 1.0, 'trig', 1]`.
 - `sound`: the sound you picked.
-- `orbit`: the orbit, `0` if nothing is mentioned. Orbits are busses used by audio effects you can apply on sounds. 
+- `orbit`: the orbit, `0` if nothing is mentioned. Orbits are busses used by audio effects you can apply on sounds.
 - `param`: a custom parameter, defined in your call to `S()`.
 - `trig`: an internal **Sardine** parameter stating if the message is to be sent (`1`) or discarded (`0`).
 
@@ -43,22 +43,25 @@ The role of `S()` is to compose these messages properly and to carry them out to
 
 ## Composition and delayed messages
 
-It was once possible to build *SuperDirt* messages progressively but that feature was removed later on during a major **Sardine** rework (why?). It should be accessible in the upcoming 0.1 release. This section will act as a placeholder until the feature finds its way back into the current **Sardine**. You can declare a sound without sending it out. Doing this, you can decide to build your message progressively before sending it out using the `.out()` method.
+You can pre-declare a sound before sending it out. This allows you to build your messages incrementely before sending them out using the `.out()` method.
 
 ```python
 @swim
 def delayed(d=0.5):
     sound = S('bd')
     if sometimes():
-        sound.shape=0.5
+        sound.shape(0.5)
     else:
-        sound.speed=4
+        sound.speed(4)
     sound.out()
     again(delayed)
 ```
- 
 
-This is an useful feature if you prefer to write your code in an imperative fashion.
+Do not use the assign operator (`=`). Call the attribute directly (eg: `amp()`). Any attribute can be set but they are not checked for validity. This is an useful feature if you prefer to write your code in an imperative fashion. There are other things to know about delayed composition:
+- attributes can be chained: `S('cp').speed('1 2').room(0.5).out()`
+- attributes **will** be parsed. You can write patterns just like you do when you send the objet out directly.
+
+Attributes are not checked for validity. You can really write anything so be careful: spell out the *SuperDirt* attribute names correctly.
 
 # MIDISender
 

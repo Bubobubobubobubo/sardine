@@ -1,20 +1,20 @@
-name: Publish docs via Github Pages
+name: Publish
 on:
   push:
     branches:
       - main
 jobs:
   build:
-    name: Deploy docs
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Deploy docs
+      - name: Deploy
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           CUSTOM DOMAIN: sardine.raphaelforment.fr
           CONFIG_FILE: mkdocs.yml
           EXTRA_PACKAGES: build-base

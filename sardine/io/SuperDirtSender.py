@@ -11,13 +11,7 @@ if TYPE_CHECKING:
 
 
 class SuperDirtSender:
-    def __init__(
-            self,
-            clock: "Clock",
-            sound: str,
-            at: Union[float, int] = 0,
-            **kwargs
-    ):
+    def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
 
         self._parser = ListParser()
         self.clock = clock

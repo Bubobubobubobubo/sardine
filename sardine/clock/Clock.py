@@ -76,7 +76,7 @@ class TickHandle:
 class Clock:
 
     """
-    MIDI Clock and scheduler implementation. This class is 
+    MIDI Clock and scheduler implementation. This class is
     the core of Sardine. It generates an asynchronous MIDI
     clock and will schedule functions on it accordingly.
 
@@ -417,18 +417,9 @@ class Clock:
             **kwargs,
         )
 
-    def oscmessage(self, 
-                   connexion, 
-                   address: str, 
-                   at: int = 0, 
-                   **kwargs
-    ) -> OSCSender:
+    def oscmessage(self, connexion, address: str, at: int = 0, **kwargs) -> OSCSender:
         return OSCSender(
-            clock=self, 
-            osc_client=connexion, 
-            address=address, 
-            at=at, 
-            **kwargs
+            clock=self, osc_client=connexion, address=address, at=at, **kwargs
         )
 
     async def run_active(self):

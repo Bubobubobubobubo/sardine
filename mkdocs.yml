@@ -1,0 +1,25 @@
+site_name: Sardine
+site_url: https://sardine.com
+site_author: Raphaël Forment
+nav:
+  - Home: index.md
+  - Showcase: showcase.md
+  - Configuration: configuration.md
+  - Tutorial: tutorial.md
+  - Reference: reference.md
+  - About: about.md
+theme:
+  name: material
+extra:
+  generator: false
+plugins:
+  - search
+docs_dir: docs
+
+markdown_extensions:
+  - pymdownx.highlight:
+     anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+

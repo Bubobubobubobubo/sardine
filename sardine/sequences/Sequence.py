@@ -8,8 +8,8 @@ def bin(sequence: str, reverse: bool = False):
     of boolean values to be used by the `trig` parameter key.
     """
     binary = []
-    for char in sequence.replace(' ', ''):
-        binary.append(True) if char=="1" else binary.append(False)
+    for char in sequence.replace(" ", ""):
+        binary.append(True) if char == "1" else binary.append(False)
 
     if reverse:
         binary.reverse()
@@ -21,7 +21,7 @@ def xox(sequence: str, reverse: bool = False):
     """Simple beat sequencer function"""
     fseq = []
     for char in sequence:
-        if char=="x":
+        if char == "x":
             fseq.append(1)
         elif char == "?":
             fseq.append(1 if random.random() > 0.5 else 0)
@@ -34,7 +34,7 @@ def xox(sequence: str, reverse: bool = False):
     return itertools.cycle(fseq)
 
 
-def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
+def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0):
     """Computes Euclidean rhythm of beats/pulses
 
     Examples:
@@ -50,6 +50,7 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
 
     Taken from: https://kountanis.com/2017/06/13/python-euclidean/
     """
+
     def rotate(seq, k):
         return seq[k:] + seq[:k]
 
@@ -80,6 +81,7 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int =0):
     if rotate != 0:
         result = rotate(result, rotation)
 
-    return itertools.cycle(result)
+    return result
+
 
 euclid = euclidean_rhythm

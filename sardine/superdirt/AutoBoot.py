@@ -9,7 +9,7 @@ from appdirs import *
 import psutil
 from rich import print
 
-__all__ = ('SuperColliderProcess',)
+__all__ = ("SuperColliderProcess",)
 
 
 class SuperColliderProcess:
@@ -19,9 +19,7 @@ class SuperColliderProcess:
     code directly from the Python side.
     """
 
-    def __init__(self,
-            startup_file: Union[str, None] = None,
-            preemptive=True):
+    def __init__(self, startup_file: Union[str, None] = None, preemptive=True):
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
@@ -38,22 +36,20 @@ class SuperColliderProcess:
             stderr=subprocess.STDOUT,
             bufsize=1,
             universal_newlines=True,
-            start_new_session=True)
+            start_new_session=True,
+        )
 
         self.boot()
 
-
     def _find_vanilla_startup_file(self):
-        """ Find the startup file when booting Sardine """
+        """Find the startup file when booting Sardine"""
         cur_path = Path(__file__).parent.resolve()
         return "".join([str(cur_path), "/default_superdirt.scd"])
-
 
     def _find_startup_file(self, user_file: Union[str, None] = None) -> Path:
         """Find the SuperDirt startup file"""
         if not user_file:
-            file_path = Path(
-                    '/'.join([str(self._user_dir), "default_superdirt.scd"]))
+            file_path = Path("/".join([str(self._user_dir), "default_superdirt.scd"]))
             if file_path.is_file():
                 return file_path
             else:
@@ -69,10 +65,9 @@ class SuperColliderProcess:
                 # recurse to base case with no user_file
                 return self._find_startup_file()
 
-
     def _find_synths_directory(self) -> Path:
         """Find or create the synths directory needed"""
-        path = Path('/'.join([str(self._user_dir), "synths/"]))
+        path = Path("/".join([str(self._user_dir), "synths/"]))
         exists = path.is_dir()
         if exists:
             return path
@@ -80,13 +75,11 @@ class SuperColliderProcess:
             path.mkdir(parents=True)
             return path
 
-
     def terminate(self) -> None:
         """Terminate the SCLang process"""
 
         self.send("Server.killAll; 0.exit;")
         self._sclang_proc.terminate()
-
 
     def reset(self) -> None:
         """Restart the SCLang subprocess"""
@@ -98,8 +91,8 @@ class SuperColliderProcess:
             stderr=subprocess.STDOUT,
             bufsize=1,
             universal_newlines=True,
-            start_new_session=True)
-
+            start_new_session=True,
+        )
 
     def hard_kill(self) -> None:
         """Look for an instance of SuperCollider, kill it."""
@@ -107,13 +100,13 @@ class SuperColliderProcess:
         print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
         try:
             for proc in psutil.process_iter():
-                if any(procstr in proc.name() for procstr in\
-                    ['sclang', 'scide', 'scsynth']):
-                    print(f'Killing {proc.name()}')
+                if any(
+                    procstr in proc.name() for procstr in ["sclang", "scide", "scsynth"]
+                ):
+                    print(f"Killing {proc.name()}")
                     proc.kill()
         except Exception:
             print(f"[yellow]There was no SC process to kill...")
-
 
     def send(self, message: str):
 
@@ -126,35 +119,30 @@ class SuperColliderProcess:
         message = "".join(message.splitlines())
 
         # Linebreak for the last line..
-        if not message.endswith('\n'): message += '\n'
+        if not message.endswith("\n"):
+            message += "\n"
 
         # Writing messages
         self._sclang_proc.stdin.write(message)
         self._sclang_proc.stdin.flush()
 
-
     def meter(self) -> None:
         """Open SuperCollider VUmeter"""
         self.send("s.meter()")
-
 
     def scope(self) -> None:
         """Open SuperCollider frequency scope"""
         self.send("s.scope()")
 
-
     def meterscope(self) -> None:
         """Open SuperCollider frequency scope + VUmeter"""
         self.send("s.scope(); s.meter()")
 
-
     def check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
-
     def startup_file_path(self) -> str:
         return self._startup_file
-
 
     def load_custom_synthdefs(self) -> None:
         buffer = ""
@@ -173,7 +161,6 @@ class SuperColliderProcess:
             print("Loaded SynthDefs:")
             for f in files:
                 print("- {}".format(f))
-
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""
@@ -196,16 +183,15 @@ class SuperColliderProcess:
         elif os_name == "Darwin":
             return "/Applications/SuperCollider.app/Contents/MacOS/sclang"
         else:
-            raise OSError('This OS is not officially supported by Sardine.')
-
+            raise OSError("This OS is not officially supported by Sardine.")
 
     def boot(self) -> None:
 
         print("\n[red]Starting SCLang && SuperDirt[/red]")
         self.send(message="""load("{}")""".format(self._startup_file))
+        # print(f"{self._sclang_proc.communicate()[0]}")
         if self._synth_directory is not None:
             self.load_custom_synthdefs()
-
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""

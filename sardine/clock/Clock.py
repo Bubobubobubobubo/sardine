@@ -1,9 +1,10 @@
 import asyncio
+import contextvars
 import functools
 import heapq
 import inspect
 import time
-from typing import Callable, Optional, Union
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
 
 
@@ -11,30 +12,42 @@ import mido
 from rich import print
 
 from . import AsyncRunner
-from ..io import MIDIIo, ClockListener
-from ..superdirt import SuperDirt
+from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
-__all__ = ('Clock', 'TickHandle')
+__all__ = ("Clock", "TickHandle")
+
+T = TypeVar("T")
+MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
+
+tick_shift = contextvars.ContextVar("tick_shift", default=0)
+"""
+This specifies the number of ticks to offset the clock in the current context.
+
+Usually this tick shift is updated within the context of scheduled functions
+to simulate sleeping without actually blocking the function.
+Behavior is undefined if the tick shift is changed in the global context.
+"""
 
 
 @functools.total_ordering
 class TickHandle:
     """A handle that allows waiting for a specific tick to pass in the clock."""
-    __slots__ = ('when', 'fut')
 
+    __slots__ = ("when", "fut")
 
     def __init__(self, tick: int):
         self.when = tick
         self.fut = asyncio.Future()
 
-
     def __repr__(self):
-        return '<{} {} when={}>'.format(
+        return "<{} {} when={}>".format(
             type(self).__name__,
-            'pending' if not self.fut.done()
-            else 'done' if not self.fut.cancelled()
-            else 'cancelled',
-            self.when
+            "pending"
+            if not self.fut.done()
+            else "done"
+            if not self.fut.cancelled()
+            else "cancelled",
+            self.when,
         )
 
     def __eq__(self, other):
@@ -50,14 +63,11 @@ class TickHandle:
             return NotImplemented
         return self.when < other.when
 
-
     def __await__(self):
         return self.fut.__await__()
 
-
     def cancel(self):
         return self.fut.cancel()
-
 
     def cancelled(self):
         return self.fut.cancelled()
@@ -66,14 +76,16 @@ class TickHandle:
 class Clock:
 
     """
-    Naive MIDI Clock and scheduler implementation. This class
-    is the core of Sardine. It generates an asynchronous MIDI
+    MIDI Clock and scheduler implementation. This class is 
+    the core of Sardine. It generates an asynchronous MIDI
     clock and will schedule functions on it accordingly.
 
     Keyword arguments:
     port_name: str -- Exact String for the MIDIOut Port.
     bpm: Union[int, float] -- Clock Tempo in beats per minute
     beats_per_bar: int -- Number of beats in a given bar
+    deferred_scheduling: bool -- Whether the clock implicitly defers
+                                 sounds sent in functions or not.
     """
 
     def __init__(
@@ -81,11 +93,10 @@ class Clock:
         midi_port: Optional[str],
         ppqn: int = 48,
         bpm: Union[float, int] = 120,
-        beats_per_bar: int = 4
+        beats_per_bar: int = 4,
+        deferred_scheduling: bool = True,
     ):
-        self._midi = MIDIIo(
-                port_name=midi_port,
-                clock=self)
+        self._midi = MIDIIo(port_name=midi_port, clock=self)
 
         # Clock parameters
         self._accel = 0.0
@@ -98,6 +109,7 @@ class Clock:
         # Scheduling attributes
         self.runners: dict[str, AsyncRunner] = {}
         self.tick_handles: list[TickHandle] = []
+        self._deferred_scheduling = deferred_scheduling
 
         # Real-time attributes
         self._current_tick = 0
@@ -109,9 +121,13 @@ class Clock:
         self._delta_duration_list = deque(maxlen=200)
 
     def __repr__(self):
-        return '<{} running={} tick={}>'.format(
-            type(self).__name__, self.running, self._current_tick
-        )
+        shift = tick_shift.get()
+        if shift:
+            tick = f"{self._current_tick}{shift:+}"
+        else:
+            tick = str(self._current_tick)
+
+        return "<{} running={} tick={}>".format(type(self).__name__, self.running, tick)
 
     # ---------------------------------------------------------------------- #
     # Clock properties
@@ -123,13 +139,24 @@ class Clock:
     @accel.setter
     def accel(self, value: int):
         if value >= 100:
-            raise ValueError('cannot set accel above 100')
+            raise ValueError("cannot set accel above 100")
         self._accel = value
         self._reload_runners()
 
     @property
+    def deferred_scheduling(self):
+        return self._deferred_scheduling
+
+    @deferred_scheduling.setter
+    def deferred_scheduling(self, enabled: bool):
+        self._deferred_scheduling = enabled
+
+        for runner in self.runners.values():
+            runner.deferred = enabled
+
+    @property
     def tick(self) -> int:
-        return self._current_tick
+        return self._current_tick + tick_shift.get()
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
@@ -146,7 +173,7 @@ class Clock:
     @bpm.setter
     def bpm(self, new_bpm: int):
         if not 1 < new_bpm < 900:
-            raise ValueError('bpm must be within 1 and 800')
+            raise ValueError("bpm must be within 1 and 800")
         self._bpm = new_bpm
         self._reload_runners()
 
@@ -162,7 +189,12 @@ class Clock:
     @property
     def current_beat(self) -> int:
         """The number of beats passed since the initial time."""
-        return self._current_tick // self.ppqn
+        return self.tick // self.ppqn
+
+    @property
+    def beat(self) -> int:
+        """The number of beats passed since the initial time."""
+        return self.tick // self.ppqn
 
     @property
     def current_bar(self) -> int:
@@ -170,9 +202,14 @@ class Clock:
         return self.current_beat // self.beat_per_bar
 
     @property
+    def bar(self) -> int:
+        """The number of bars passed since the initial time."""
+        return self.current_beat // self.beat_per_bar
+
+    @property
     def phase(self) -> int:
         """The phase of the current beat in ticks."""
-        return self._current_tick % self.ppqn
+        return self.tick % self.ppqn
 
     # ---------------------------------------------------------------------- #
     # Clock methods
@@ -193,7 +230,7 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
 
     def get_bar_ticks(self, n_bars: Union[int, float], *, sync: bool = True) -> int:
         """Determines the number of ticks to wait for N bars to pass.
@@ -211,7 +248,18 @@ class Clock:
         elif not sync:
             return interval
 
-        return interval - self._current_tick % interval
+        return interval - self.tick % interval
+
+    def shift_ctx(self, n_ticks: int):
+        """Shifts the clock by `n_ticks` in the current context.
+
+        This is useful for simulating sleeps without blocking.
+
+        If the real-time clock tick needs to be shifted,
+        assign to the `c.tick` property instead.
+
+        """
+        tick_shift.set(tick_shift.get() + n_ticks)
 
     def _get_tick_duration(self) -> float:
         """Determines the numbers of seconds the next tick will take.
@@ -248,19 +296,20 @@ class Clock:
                 # all handles afterwards are either still waiting or cancelled
                 break
 
-
     # ---------------------------------------------------------------------- #
     # Scheduler methods
 
-    def schedule_func(self, func: Callable, /, *args, **kwargs):
+    def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not inspect.isfunction(func):
-            raise TypeError(f'func must be a function, not {type(func).__name__}')
+            raise TypeError(f"func must be a function, not {type(func).__name__}")
 
         name = func.__name__
         runner = self.runners.get(name)
         if runner is None:
-            runner = self.runners[name] = AsyncRunner(self)
+            runner = self.runners[name] = AsyncRunner(
+                clock=self, deferred=self.deferred_scheduling
+            )
 
         runner.push(func, *args, **kwargs)
         if runner.started():
@@ -269,7 +318,7 @@ class Clock:
         else:
             runner.start()
 
-    def remove(self, func: Callable, /):
+    def remove(self, func: MaybeCoroFunc, /):
         """Schedules the given function to stop execution."""
         runner = self.runners.get(func.__name__)
         if runner is not None:
@@ -279,6 +328,7 @@ class Clock:
         """Returns a TickHandle that waits for the clock to reach a certain tick."""
         handle = TickHandle(tick)
 
+        # NOTE: we specifically don't want this influenced by `tick_shift`
         if self._current_tick >= tick:
             handle.fut.set_result(None)
         else:
@@ -288,20 +338,20 @@ class Clock:
 
     def wait_after(self, *, n_ticks: int) -> TickHandle:
         """Returns a TickHandle that waits for the clock to pass N ticks from now."""
-        return self.wait_until(tick=self._current_tick + n_ticks)
+        return self.wait_until(tick=self.tick + n_ticks)
 
     # ---------------------------------------------------------------------- #
     # Public methods
 
     def print_children(self):
-        """ Print all children on clock """
+        """Print all children on clock"""
         [print(child) for child in self.runners]
 
     def start(self, active=True):
         """Start MIDI Clock"""
         self.reset()
         if not self.running:
-            self._midi.send(mido.Message('start'))
+            self._midi.send(mido.Message("start"))
             self.running = True
             if active:
                 asyncio.create_task(self.run_active())
@@ -325,7 +375,7 @@ class Clock:
 
         self.running = False
         self._midi.send_stop()
-        self._midi.send(mido.Message('stop'))
+        self._midi.send(mido.Message("stop"))
         self.reset()
 
     def log(self) -> None:
@@ -338,18 +388,48 @@ class Clock:
         bar = self.current_bar
 
         color = "[bold yellow]"
-        first = color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
+        first = (
+            color + f"BPM: {self.bpm}, PHASE: {self.phase:02}, DELTA: {self._delta:2f}"
+        )
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
 
+    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
+        return SuperDirtSender(self, sound, at, **kwargs)
 
-    def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-        return SuperDirt(self, sound, at, **kwargs)
+    def midinote(
+        self,
+        note: Union[int, str],
+        velocity: Union[int, str],
+        channel: Union[int, str],
+        at: int = 0,
+        delay: Union[int, float, str] = 0.2,
+        **kwargs,
+    ) -> MIDISender:
+        return MIDISender(
+            self,
+            self._midi,
+            at=at,
+            delay=delay,
+            note=note,
+            velocity=velocity,
+            channel=channel,
+            **kwargs,
+        )
 
-
-    # def midinote(self, sound: str, at: int = 0, **kwargs) -> SuperDirt:
-    #     return SuperDirt(self, sound, at, **kwargs)
-
+    def oscmessage(self, 
+                   connexion, 
+                   address: str, 
+                   at: int = 0, 
+                   **kwargs
+    ) -> OSCSender:
+        return OSCSender(
+            clock=self, 
+            osc_client=connexion, 
+            address=address, 
+            at=at, 
+            **kwargs
+        )
 
     async def run_active(self):
         """Main runner for the active mode (master)"""
@@ -375,7 +455,6 @@ class Clock:
         quarter_duration = delta * self.ppqn
         return 60 / quarter_duration
 
-
     def _mean_from_delta(self):
         """Estimate the current BPM by doing an arithmetic mean"""
         return sum(self._delta_duration_list) / len(self._delta_duration_list)
@@ -391,8 +470,7 @@ class Clock:
             self._listener.wait_for_tick()
             self._increment_clock()
             elapsed = time.perf_counter() - begin
-            self._delta_duration_list.append(
-                    self._estimate_bpm_from_delta(elapsed))
+            self._delta_duration_list.append(self._estimate_bpm_from_delta(elapsed))
             self._bpm = self._mean_from_delta()
             if self.debug:
                 self.log()

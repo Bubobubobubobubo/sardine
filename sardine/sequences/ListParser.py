@@ -97,18 +97,19 @@ note_grammar = """
          | atom ":" NAME                     -> add_qualifier
          | atom "_" number                   -> invert_chord
 
-    pure_atom: /[A-G]/                       -> make_note_anglo_saxon
+    pure_atom: /[A-Ga-g]/                       -> make_note_anglo_saxon
              | /do|re|ré|mi|fa|sol|la|si/    -> make_note_french_system
     
     ?atom: pure_atom
          | atom "0".."9"                     -> add_octave
          | atom "#"                          -> sharp_simple
          | atom "b"                          -> flat_simple
-         | atom "-"                          -> drop_octave
          | atom "+"                          -> raise_octave
+         | atom "+" number                   -> raise_octave_x
+         | atom "-"                          -> drop_octave
+         | atom "-" number                   -> drop_octave_x
          | atom "#" number                   -> sharp_octave
          | atom "b" number                   -> flat_octave
-         | "(" atom (atom)* ")"
     
     %import common.CNAME -> NAME
 """
@@ -126,16 +127,18 @@ class CalculateTree(Transformer):
 
     # Notes
     def make_note_anglo_saxon(self, symbol):
-        table = {'C':0, 'D':2, 'E':4, 'F':5, 
-                'G':7, 'A':9, 'B':11}
-        return table[symbol]
+        table = {'C':60, 'D':62, 'E':64, 'F':65, 
+                'G':67, 'A':69, 'B':71}
+        return table[symbol.upper()]
     def make_notes(self, symbols):
         return list(symbols)
     def make_note_french_system(self, symbol):
-        table = {'do': 0, 're': 2, 'ré': 2, 'mi':4, 'fa':5, 'sol':7, 'la':9, 'si':11}
+        table = {'do': 60, 're': 62, 'ré': 62, 'mi': 64, 
+                'fa': 65, 'sol': 67, 'la': 69, 'si':71}
         return table[symbol]
     def add_octave(self, note, number):
-        return note + 12*int(number)
+        match_table = {60:0, 62:2, 64:4, 65:5, 67:7, 69:9, 71: 11}
+        return match_table[note] + 12 * int(number)
     def sharp_simple(self, note): return note+1
     def flat_simple(self, note): return note-1
     def sharp_octave(self, note, number): return note+12*int(number)+1
@@ -144,6 +147,8 @@ class CalculateTree(Transformer):
     def repeat_note(self, note, number): return [note]*int(number)
     def drop_octave(self, note): return note - 12
     def raise_octave(self, note): return note + 12
+    def drop_octave_x(self, note, number): return note - 12*int(number)
+    def raise_octave_x(self, note, number): return note + 12*int(number)
     def add_qualifier(self, note, qualifier):
         return [note+x for x in qualifiers[qualifier]]
     def invert_chord(self, notes):

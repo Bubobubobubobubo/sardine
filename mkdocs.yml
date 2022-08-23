@@ -3,8 +3,9 @@ site_url: https://sardine.raphaelforment.fr
 site_author: Raphaël Forment
 nav:
   - Home: index.md
-  - Showcase: showcase.md
+  - Install: installation.md
   - Configuration: configuration.md
+  - Troubleshot: troubleshot.md
   - Tutorial: tutorial.md
   - Reference: reference.md
   - About: about.md
@@ -18,7 +19,11 @@ theme:
   name: material
   icon:
     repo: fontawesome/brands/git-alt
-
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+  logo: images/sardine_logo_single.svg
 extra:
   generator: false
 plugins:
@@ -31,6 +36,12 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
 
 extra:
   social:
@@ -40,3 +51,4 @@ extra:
       link: https://twitter.com/RaphBubo
 
 repo_url: https://github.com/Bubobubobubobubo/sardine
+

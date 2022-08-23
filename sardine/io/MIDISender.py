@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio
+from email import parser
 import pprint
 import functools
 from typing import TYPE_CHECKING, Union, Optional
@@ -24,7 +25,9 @@ class MIDISender:
         at: Union[float, int] = 0,
     ):
 
-        self._parser = ListParser()
+        self._number_parser = ListParser(parser_type='number')
+        self._note_parser = ListParser(parser_type='note')
+
         self.clock = clock
         if midi_client is None:
             self.midi_client = self.clock._midi
@@ -35,7 +38,7 @@ class MIDISender:
         self.delay = self.parse_initial_arguments(delay)
         self.velocity = self.parse_initial_arguments(velocity)
         self.channel = self.parse_initial_arguments(channel)
-        self.note = self.parse_initial_arguments(note)
+        self.note = self.parse_note(note)
         self.after: int = at
 
     def parse_initial_arguments(self, argument):
@@ -45,9 +48,16 @@ class MIDISender:
         else:
             return argument
 
+    def parse_note(self, argument):
+        """Parse arguments at __init__ time"""
+        if isinstance(argument, str):
+            return self._note_parser_parse(argument)
+        else:
+            return argument
+
     def _parse_number_pattern(self, pattern: str):
         """Pre-parse MIDI params during __init__"""
-        return self._parser.parse(pattern)
+        return self._number_parser.parse(pattern)
 
     def __str__(self):
         """String representation of a sender content"""

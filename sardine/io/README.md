@@ -17,7 +17,7 @@ High level:
 
 ## Sender objects
 
-Sender objects are one of the main tools you will be using while playing with **Sardine**. They are objects that compose a single message that can be sent out using the `.out(iter=0)` method. They are your main interface to the outside world (SuperCollider/SuperDirt, MIDI or OSC). These objects can receive various and/or arbitrary parameters depending on their purpose. These arguments can be *integers*, *floats* or *strings*:
+Sender objects are one of the main tools you will be using while playing with **Sardine**. They are objects that compose a single message that can be sent out using the `.out(iter=0)` method. They are your main interface to the outside world (*SuperCollider*/*SuperDirt*, *MIDI* or *OSC*). These objects can receive various and/or arbitrary parameters depending on their purpose. These arguments can be *integers*, *floats* or *strings*:
 - *int*/*float*: parameters used as is.
 - *string* : pre-parsed using a special DSL made for writing patterns and transformed into lists.
 

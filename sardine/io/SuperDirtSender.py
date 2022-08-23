@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 class SuperDirtSender:
     def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
 
-        self._parser = ListParser()
+        self._number_parser = ListParser(parser_type='number')
+        self._name_parser = ListParser(parser_type='name')
+        self._note_parser = ListParser(parser_type='note')
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at
@@ -29,7 +31,7 @@ class SuperDirtSender:
 
     def _parse_sound(self, sound_pattern: str):
         """Pre-parse sound param during __init__"""
-        pat = self._parser.parse(sound_pattern)
+        pat = self._name_parser.parse(sound_pattern)
         return pat
 
     def __str__(self):
@@ -47,9 +49,11 @@ class SuperDirtSender:
 
     def addOrChange(self, values, name: str):
         """Will set a parameter or change it if already in message"""
-        # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, str):
-            self.content |= {name: self._parser.parse(values)}
+            self.content |= {name: 
+                self._number_parser.parse(values) 
+                if not name in ["midinote", "note"]
+                else self._note_parser.parse(values)}
         else:
             self.content |= {name: values}
         return self

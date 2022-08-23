@@ -20,17 +20,18 @@ class OSCSender:
         **kwargs,
     ):
 
-        self._parser = ListParser()
+        self._number_parser = ListParser(parser_type='number')
+        self._name_parser = ListParser(parser_type='name')
         self.clock = clock
         self.osc_client = osc_client
-        self.address = self._parser.parse(address)
+        self.address = self._name_parser.parse(address)
 
         self.content = {}
         for key, value in kwargs.items():
             if isinstance(value, (int, float)):
                 self.content[key] = value
             else:
-                self.content[key] = self._parser.parse(value)
+                self.content[key] = self._number_parser.parse(value)
         self.after: int = at
 
         # Iterating over kwargs. If parameter seems to refer to a
@@ -60,7 +61,7 @@ class OSCSender:
 
         # Detect if a given parameter is a pattern, form a valid pattern
         if isinstance(values, (str)):
-            self.content |= {name: self._parser.parse(values)}
+            self.content |= {name: self._number_parser.parse(values)}
         return self
 
     def schedule(self, message: dict):

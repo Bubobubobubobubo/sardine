@@ -2,14 +2,22 @@ from lark import Lark, Transformer, v_args
 from itertools import cycle, islice, count, chain
 import random
 
-__all__ = ("ListParser",)
+__all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 
 
 class ParsingError(Exception):
     pass
 
+qualifiers = {
+    'maj' : [0, 4, 7],
+    'min' : [0, 3, 7],
+    'sus4': [0, 5, 7],
+    'sus2': [0, 2, 7],
+    'b5': [0, 4, 6],
+    'mb5': [0, 3, 6],
+}
 
-grammar = """
+number_grammar = """
 
     ?start: sum
 
@@ -53,6 +61,29 @@ grammar = """
     %ignore WS_INLINE
 """
 
+note_grammar = """
+    ?start: note
+
+    ?number: /[0-9]/
+
+    ?note: atom
+         | atom "|" atom                 -> choice_note
+         | atom "!" number               -> repeat_note
+         | atom ":" NAME                 -> add_qualifier
+
+    pure_atom: /[a-gA-G]/                    -> make_note_anglo_saxon
+             | /do|re|ré|mi|fa|sol|la|si/    -> make_note_french_system
+    
+    ?atom: pure_atom
+         | atom "0".."9"                 -> add_octave
+         | atom "#"                      -> sharp_simple
+         | atom "b"                      -> flat_simple
+         | atom "#" number               -> sharp_octave
+         | atom "b" number               -> flat_octave
+    
+    %import common.CNAME -> NAME
+"""
+
 
 def floating_point_range(start, end, step):
     assert step != 0
@@ -63,6 +94,26 @@ def floating_point_range(start, end, step):
 @v_args(inline=True)  # Affects the signatures of the methods
 class CalculateTree(Transformer):
     number = float
+
+    # Notes
+    def make_note_anglo_saxon(self, symbol):
+        table = {'c':0, 'd':2, 'e':4, 'f':5, 
+                'g':7, 'a':9, 'b':11}
+        return table[symbol]
+    def make_note_french_system(self, symbol):
+        table = {'do': 0, 're': 2, 'ré': 2, 'mi':4, 'fa':5, 'sol':7, 'la':9, 'si':11}
+        return table[symbol]
+    def add_octave(self, note, number):
+        return note + 12*int(number)
+    def sharp_simple(self, note): return note+1
+    def flat_simple(self, note): return note-1
+    def sharp_octave(self, note, number): return note+12*int(number)+1
+    def flat_octave(self, note, number): return note+12*int(number)-1
+    def choice_note(self, note0, note1): return random.choice([note0, note1])
+    def repeat_note(self, note, number): return [note]*int(number)
+    def add_qualifier(self, note, qualifier):
+        return [note+x for x in qualifiers[qualifier]]
+        
 
     def id(self, a):
         return a
@@ -193,14 +244,22 @@ class CalculateTree(Transformer):
         return [name] * int(value)
 
 
-GRAMMAR = Lark(grammar, parser="lalr", transformer=CalculateTree())
-PARSER = GRAMMAR.parse
-
+name_grammar = number_grammar # temporary, please fix
+NUMBER_GRAMMAR = Lark(number_grammar, parser="lalr", transformer=CalculateTree())
+NOTE_GRAMMAR = Lark(note_grammar, parser="lalr", transformer=CalculateTree())
+NAME_GRAMMAR = Lark(name_grammar, parser="lalr", transformer=CalculateTree())
+NUMBER_PARSER = NUMBER_GRAMMAR.parse
+NOTE_PARSER = NOTE_GRAMMAR.parse
+NAME_PARSER = NAME_GRAMMAR.parse
 
 class ListParser:
-    def __init__(self):
-        # self._parser = Lark(grammar, parser='lalr', transformer=CalculateTree())
-        self.parser = PARSER
+    def __init__(self, parser_type: str='number'):
+        if parser_type=='number':
+            self.parser = NUMBER_PARSER
+        elif parser_type=='note':
+            self.parser = NOTE_PARSER
+        elif parser_type=='name':
+            self.parser = NAME_PARSER
 
     def _flatten_result(self, pat):
         """Flatten a nested pattern result list. Probably not optimised."""
@@ -235,3 +294,21 @@ class ListParser:
 
                 print(f"Error: {e}: {traceback.format_exc()}")
                 continue
+
+
+# Useful utilities
+
+def Pname(pattern: str, i: int = 0):
+    parser = ListParser(parser_type='name')
+    pattern = parser.parse(pattern)
+    return pattern[i % len(pattern)]
+
+def Pnote(pattern: str, i: int = 0):
+    parser = ListParser(parser_type='name')
+    pattern = parser.parse(pattern)
+    return pattern[i % len(pattern)]
+
+def Pnum(pattern: str, i: int = 0):
+    parser = ListParser(parser_type='name')
+    pattern = parser.parse(pattern)
+    return pattern[i % len(pattern)]

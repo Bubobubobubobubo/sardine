@@ -70,9 +70,7 @@ c = Clock(
 )
 
 # Synonyms for swimming function management
-cs = c.schedule_func
-again = c.schedule_func
-anew = c.schedule_func
+cs = again = anew = a  = c.schedule_func
 cr = c.remove
 stop = c.remove
 children = c.print_children

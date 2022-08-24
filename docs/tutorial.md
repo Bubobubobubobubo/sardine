@@ -244,6 +244,7 @@ Think of the pattern language as a novel way to write lists. Lists are defined a
 ['lala:1', 'lala:2', 'lala:3']
 ```
 You get it, the pattern system can become quite complicated even if it only follows simple mathemetical rules. Here is a list of possible operators:
+
 - math unary operators: `+2`, `-2`
 - math binary operators: `+`, `-`, `*`, `/`
 - `r` for a random number between `0.0` and `1.0`.
@@ -264,10 +265,41 @@ parser('r*8!4')
 parser('[r,r,r]/[1,2,3]*2')
 parser('1_5/2_5!!2')
 ```
+#### A grammar for notes
 
-I'm not very confident developing my own lexer/parser system. I hope to add more operators in the future. In the meantime, have fun with what is already available. Some great music can already be produced using these simple rules. 
+There is another special grammar that you will only encounter for some specific arguments such as `note` or `midinote`. This grammar is specialized in writing note sequences, and notes can be written using the anglo-saxon or french system:
 
-#### Using Sardine Grammar
+- `c d e f g a b`: anglo saxon.
+- `do re mi fa sol la si`: french system.
+
+A note is in fact a MIDI note number. `c` will yield `60`, the note C played at the 5th octave on a piano. Notes can receive the modifiers you expect them to receive:
+
+- `#`: make a note sharp. You can stack sharps if you wish: `c####`.
+- `b`: make a note flat. You can stack flats if you wish: `cbbbb`.
+- `0-9`: octave modifier. You can write `c4`, `mi2` or any other note.
+- `+`: make a note an octave higher. You can stack it as well: `c5++`.
+- `-`: make a note an octave lower. You can stack it as well: `c5--`.
+- `:`: feed a **chord qualifier**. They will turn a single note into an array of notes.
+
+I dislike this latter feature quite a lot because it doesn't do anything to account for voice-leading, inversions or octave shifts! I keep it around because it can sometimes be useful. Here is a list of current chord qualifiers you can use:
+
+```python
+'dim'    : [0, 3, 6, 12],      'dim9'   : [0, 3, 6, 9, 14],
+'hdim7'  : [0, 3, 6, 10],      'hdim9'  : [0, 3, 6, 10, 14],
+'hdimb9'  : [0, 3, 6, 10, 13], 'dim7'   : [0, 3, 6, 9],
+'7dim5'  : [0, 4, 6, 10],      'aug'    : [0, 4, 8, 12],
+'augMaj7': [0, 4, 8, 11],      'aug7'   : [0, 4, 8, 10],
+'aug9'   : [0, 4, 10, 14],     'maj'    : [0, 4, 7, 12],
+'maj7'   : [0, 4, 7, 11],      'maj9'   : [0, 4, 11, 14],
+'minmaj7': [0, 3, 7, 11],      '7'      : [0, 4, 7, 10],
+'9'      : [0, 4, 10, 14],     'b9'     : [0, 4, 10, 13],
+'mM9'    : [0, 3, 11, 14],     'min'    : [0, 3, 7, 12],
+'min7'   : [0, 3, 7, 10],      'min9'   : [0, 3, 10, 14],
+'sus4'   : [0, 5, 7, 12],      'sus2'   : [0, 2, 7, 12],
+'b5'     : [0, 4, 6, 12],      'mb5'    : [0, 3, 6, 12],
+```
+
+#### Patterns in senders
 
 Every parameter available with the `S()`, `M()` or `O()` object can be patterned. The **Sardine** grammar is automatically parsed and transformed to a list when used as a parameter of these objects. Take a look at the following example:
 
@@ -324,6 +356,31 @@ def woohoo(d=0.5, i=0):
 ```
 
 Combine the iteration system with the **Sardine** grammar for maximal fun.
+
+#### Patterns everywhere
+
+There are three objects that can be used to play with the patterning system everywhere, and not only with senders objects:
+
+- `Pnum(pattern: str, i: int)`: for the number parser.
+- `Pname(pattern: str, i: int)`: for the name parser.
+- `Pnote(pattern: str, i: int)`: for the note parser.
+
+These objects allow you to play with the patterning system everywhere in your **swimming functions**. It can be particularly interesting for generating rhythmic sequences:
+
+```python
+@swim
+def bd(d=0.5, i=0):
+    S('notes:1',
+            room=0.5,
+            speed='1 0.5 1 2',
+            midinote='c5 e5 g5 a5').out(i)
+    S('notes:1',
+            speed='1 0.5 1 2',
+            midinote='e5 g5 bb5 e6').out(i)
+    a(bd, d=Pnum('1 0.5 0.5 2 0.5 0.5', i), i=i+1)
+```
+
+They are also great for investigating the different available grammars, and complement `parser()` and `parser_repl()` quite well!
 
 ## MIDI
 

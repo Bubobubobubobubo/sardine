@@ -195,7 +195,8 @@ class CalculateTree(Transformer):
             return [-x for x in value]
 
     def addition(self, left, right):
-        if all(map(lambda x: isinstance(x, float), [left, right])):
+        print('trigerred')
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left + right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x + y for x, y in zip(cycle(right), left)]
@@ -205,7 +206,7 @@ class CalculateTree(Transformer):
             return [x + right for x in left]
 
     def substraction(self, left, right):
-        if all(map(lambda x: isinstance(x, float), [left, right])):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left - right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x - y for x, y in zip(cycle(right), left)]
@@ -215,7 +216,7 @@ class CalculateTree(Transformer):
             return [x - right for x in left]
 
     def multiplication(self, left, right):
-        if all(map(lambda x: isinstance(x, float), [left, right])):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left * right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x * y for x, y in zip(cycle(right), left)]
@@ -225,7 +226,7 @@ class CalculateTree(Transformer):
             return [x * right for x in left]
 
     def division(self, left, right):
-        if all(map(lambda x: isinstance(x, float), [left, right])):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left / right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
             return [x / y for x, y in zip(cycle(right), left)]
@@ -234,19 +235,20 @@ class CalculateTree(Transformer):
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x / right for x in left]
 
-    def sample_name(self, name): 
+    def name(self, name): 
         return str(name)
 
     def make_integer(self, value): 
         return int(value)
 
-    def sample_number_name(self, number, name): 
+    def name_from_number_name(self, number, name): 
         return str("".join([str(number), str(name)]))
 
-    def sample_name_number(self, name, number): 
+    def name_from_name_number(self, name, number): 
         return str("".join([str(name), str(number)]))
 
     def associate_sample_number(self, name, value):
+        print(type(name), type(value))
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
@@ -280,21 +282,27 @@ grammars = {"number": grammar_path / "grammars/number.lark",
             "name": grammar_path   / "grammars/name.lark",
             "note": grammar_path   / "grammars/note.lark"}
 
-NUMBER_GRAMMAR = Lark.open(grammars['number'], rel_to=__file__, parser='lalr', transformer=CalculateTree())
-NOTE_GRAMMAR   = Lark.open(grammars['note'],   rel_to=__file__, parser='lalr', transformer=CalculateTree())
-NAME_GRAMMAR   = Lark.open(grammars['name'], rel_to=__file__, parser='lalr', transformer=CalculateTree())
-NUMBER_PARSER, NOTE_PARSER, NAME_PARSER = NUMBER_GRAMMAR.parse, NOTE_GRAMMAR.parse, NAME_GRAMMAR.parse
-
+parsers = {
+    'number': {
+        'raw':  Lark.open(grammars['number'], rel_to=__file__, parser='lalr'),
+        'full': Lark.open(grammars['number'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    },
+    'name': {
+        'raw':  Lark.open(grammars['name'], rel_to=__file__, parser='lalr'),
+        'full': Lark.open(grammars['name'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    },
+    'note': {
+        'raw':  Lark.open(grammars['note'], rel_to=__file__, parser='lalr'),
+        'full': Lark.open(grammars['note'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    },
+}
 
 class ListParser:
     def __init__(self, parser_type: str = "number"):
-        if parser_type == "number":
-            self.parser = NUMBER_PARSER
-        elif parser_type == "note":
-            self.parser = NOTE_PARSER
-        elif parser_type == "name":
-            self.parser = NAME_PARSER
-        else:
+        try:
+            self.parser = parsers[parser_type]['full'].parse
+            self.raw_parser = parsers[parser_type]['raw']
+        except KeyError:
             ParserError(f'Invalid Parser grammar, {parser_type} is not a grammar.')
 
     def _flatten_result(self, pat):
@@ -308,6 +316,10 @@ class ListParser:
     def _parse_token(self, string: str):
         """Parse a single token"""
         return self.parser(string)
+
+    def _parse_token_raw(self, string: str):
+        """Parse a single token"""
+        return self.raw_parser.parse(string)
 
     def parse(self, pattern: str):
         """Parse a whole pattern and return a flattened list"""
@@ -325,6 +337,7 @@ class ListParser:
         for token in pattern.split():
             try:
                 print(self._parse_token(token))
+                print(self._parse_token_raw(token))
             except Exception as e:
                 import traceback
                 print(f"Error: {e}: {traceback.format_exc()}")

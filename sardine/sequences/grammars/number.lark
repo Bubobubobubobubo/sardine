@@ -12,11 +12,14 @@
      | product ":" atom                   -> random_in_range
      | product "!" atom                   -> extend
      | product "!!" atom                  -> extend_repeat
+
 ?list: "[" sum ("," sum)* ","? "]"        -> make_list
      | atom "_" atom                      -> generate_ramp
      | atom "_" atom ":" atom             -> generate_ramp_with_range 
+
 ?value: NUMBER -> number
      | list
+
 ?atom: value
      | "-" atom                           -> negation
      | "+" atom                           -> id

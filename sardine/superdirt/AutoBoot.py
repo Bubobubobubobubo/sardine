@@ -12,9 +12,11 @@ from rich import print
 
 __all__ = ("SuperColliderProcess",)
 
-class SuperColliderProcess:
 
-    def __init__(self, startup_file: Union[str, None] = None, preemptive=True, verbose=False):
+class SuperColliderProcess:
+    def __init__(
+        self, startup_file: Union[str, None] = None, preemptive=True, verbose=False
+    ):
 
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
@@ -23,8 +25,8 @@ class SuperColliderProcess:
         self._startup_file = self._find_startup_file(user_file=startup_file)
         self.temp_file = tempfile.NamedTemporaryFile()
 
-        # If preemptive, all previously running instances of SuperCollider will be 
-        # killed to prevent more issues...
+        # If preemptive, all previously running instances of SuperCollider will be
+        # killed to prevent more issues...
         if preemptive:
             self.hard_kill()
 
@@ -84,6 +86,7 @@ class SuperColliderProcess:
                 self.temp_file.seek(where)
             else:
                 import sys
+
                 sys.__stdout__.write(lines.decode())
                 sys.__stdout__.flush()
         sys.__stdout__.write(self.temp_file.read())
@@ -197,4 +200,3 @@ class SuperColliderProcess:
         """Kill the connexion with the SC Interpreter"""
         self.write_stdin("Server.killAll")
         self.write_stdin("0.exit")
-

@@ -53,7 +53,9 @@ class MIDIIo(threading.Thread):
         console = Console()
         for (i, item) in enumerate(ports, start=1):
             print(f"[color({i})] [{i}] {item}")
-        print("[red]Note: you don't have to hand pick your MIDI Port manually every time.")
+        print(
+            "[red]Note: you don't have to hand pick your MIDI Port manually every time."
+        )
         print("[red]Check sardine-config to enter a permanent default MIDI port.")
         nb = console.input("[bold yellow] Choose a MIDI Port: [/bold yellow]")
         try:

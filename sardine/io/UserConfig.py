@@ -119,6 +119,7 @@ def read_configuration_file(file_path: Path) -> Config:
 
     return config
 
+
 def pretty_print_configuration_file() -> None:
     file_path = USER_DIR / "config.json"
     file_string = read_configuration_file(file_path)

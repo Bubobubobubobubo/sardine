@@ -15,6 +15,6 @@ jobs:
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          CUSTOM DOMAIN: sardine.raphaelforment.fr
+          CUSTOM_DOMAIN: sardine.raphaelforment.fr
           CONFIG_FILE: mkdocs.yml
           EXTRA_PACKAGES: build-base

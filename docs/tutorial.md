@@ -130,7 +130,7 @@ When you import **Sardine**, `MIDISender`, `SuperDirtSender` and `OSCSender` wil
 
 #### SuperDirt output
 
-The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. **SuperDirt** is designed as a tool converting control messages into the appropriate SuperCollider action without having to deal with SuperCollider itself. Most people will use the SuperDirt output instead of plugging multiple synthesizers listening to MIDI or crafting OSC listeners. The interface to SuperDirt is still very crude but fully functional. By default, **Sardine** will attempt to boot with its own `SuperCollider` and `SuperDirt` configuration. You can disable this by changing the configuration: `sardine-config --boot False`.
+The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. **SuperDirt** is designed as a tool converting control messages into the appropriate SuperCollider action without having to deal with SuperCollider itself. Most people will use the SuperDirt output instead of plugging multiple synthesizers listening to MIDI or crafting OSC listeners. The interface to SuperDirt is still very crude but fully functional. By default, **Sardine** will attempt to boot with its own `SuperCollider` and `SuperDirt` configuration. You can disable this by changing the configuration: `sardine-config --boot_superdirt False`.
 
 * **default:** `SuperDirt` will be booted everytime the library is imported.
 * **manual:** `SuperDirt` (and `SuperCollider`) needs to be booted independently on the default port (`57120`).

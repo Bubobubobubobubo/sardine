@@ -68,12 +68,20 @@ class CalculateTree(Transformer):
         return list(symbols)
 
     def make_note_french_system(self, symbol):
-        table = {'do': 60, 're': 62, 'ré': 62, 'mi': 64, 
-                'fa': 65, 'sol': 67, 'la': 69, 'si':71}
+        table = {
+            "do": 60,
+            "re": 62,
+            "ré": 62,
+            "mi": 64,
+            "fa": 65,
+            "sol": 67,
+            "la": 69,
+            "si": 71,
+        }
         return table[symbol]
 
     def add_octave(self, note, number):
-        match_table = {60:0, 62:2, 64:4, 65:5, 67:7, 69:9, 71: 11}
+        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
         return match_table[note] + 12 * int(number)
 
     def sharp_simple(self, note): 
@@ -277,13 +285,14 @@ NOTE_GRAMMAR   = Lark.open(grammars['note'],   rel_to=__file__, parser='lalr', t
 NAME_GRAMMAR   = Lark.open(grammars['name'], rel_to=__file__, parser='lalr', transformer=CalculateTree())
 NUMBER_PARSER, NOTE_PARSER, NAME_PARSER = NUMBER_GRAMMAR.parse, NOTE_GRAMMAR.parse, NAME_GRAMMAR.parse
 
+
 class ListParser:
-    def __init__(self, parser_type: str='number'):
-        if parser_type=='number':
+    def __init__(self, parser_type: str = "number"):
+        if parser_type == "number":
             self.parser = NUMBER_PARSER
-        elif parser_type=='note':
+        elif parser_type == "note":
             self.parser = NOTE_PARSER
-        elif parser_type=='name':
+        elif parser_type == "name":
             self.parser = NAME_PARSER
         else:
             ParserError(f'Invalid Parser grammar, {parser_type} is not a grammar.')
@@ -323,17 +332,20 @@ class ListParser:
 
 # Useful utilities
 
+
 def Pname(pattern: str, i: int = 0):
-    parser = ListParser(parser_type='name')
+    parser = ListParser(parser_type="name")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]
+
 
 def Pnote(pattern: str, i: int = 0):
-    parser = ListParser(parser_type='name')
+    parser = ListParser(parser_type="name")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]
 
+
 def Pnum(pattern: str, i: int = 0):
-    parser = ListParser(parser_type='name')
+    parser = ListParser(parser_type="name")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]

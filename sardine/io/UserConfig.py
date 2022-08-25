@@ -10,6 +10,7 @@ __all__ = (
     "create_template_configuration_file",
     "read_configuration_file",
     "read_user_configuration",
+    "pretty_print_configuration_file",
 )
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
@@ -23,6 +24,7 @@ TEMPLATE_CONFIGURATION = {
         "ppqn": 48,
         "parameters": [],
         "boot_superdirt": True,
+        "verbose_superdirt": False,
         "active_clock": True,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
@@ -49,6 +51,7 @@ class Config:
     ppqn: int
     bpm: int
     superdirt_config_path: str
+    verbose_superdirt: bool
     user_config_path: str
     boot_superdirt: bool
     active_clock: bool
@@ -64,6 +67,7 @@ class Config:
             ppqn=config["ppqn"],
             bpm=config["bpm"],
             boot_superdirt=config["boot_superdirt"],
+            verbose_superdirt=config["verbose_superdirt"],
             active_clock=config["active_clock"],
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
@@ -79,6 +83,7 @@ class Config:
                 "ppqn": self.ppqn,
                 "bpm": self.bpm,
                 "boot_superdirt": self.boot_superdirt,
+                "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,
                 "active_clock": self.active_clock,
                 "user_config_path": self.user_config_path,
@@ -113,6 +118,12 @@ def read_configuration_file(file_path: Path) -> Config:
     write_configuration_file(config, file_path)
 
     return config
+
+
+def pretty_print_configuration_file() -> None:
+    file_path = USER_DIR / "config.json"
+    file_string = read_configuration_file(file_path)
+    print(file_string)
 
 
 def read_user_configuration() -> Config:

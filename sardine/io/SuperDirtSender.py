@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 class SuperDirtSender:
     def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
 
-        self._number_parser = ListParser(parser_type='number')
-        self._name_parser = ListParser(parser_type='name')
-        self._note_parser = ListParser(parser_type='note')
+        self._number_parser = ListParser(parser_type="number")
+        self._name_parser = ListParser(parser_type="name")
+        self._note_parser = ListParser(parser_type="note")
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at
@@ -50,10 +50,11 @@ class SuperDirtSender:
     def addOrChange(self, values, name: str):
         """Will set a parameter or change it if already in message"""
         if isinstance(values, str):
-            self.content |= {name: 
-                self._number_parser.parse(values) 
+            self.content |= {
+                name: self._number_parser.parse(values)
                 if not name in ["midinote", "note"]
-                else self._note_parser.parse(values)}
+                else self._note_parser.parse(values)
+            }
         else:
             self.content |= {name: values}
         return self

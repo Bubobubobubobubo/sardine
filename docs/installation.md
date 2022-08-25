@@ -57,8 +57,17 @@ As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom
 * VSCode with the [Jupyter Notebook](https://jupyter.org/) extension
     - install VSCode and the Jupyter Notebook plugin. Create a new `.ipynb` notebook.
     - make sure that you are using the right Python version as your kernel (3.9 / 3.10).
-    - run `%pip install -e "path/to/sardine"`, restart the kernel when `pip` is done installing.!
-    - run `from sardine import *` and have fun!
+    - run: 
+    ```python
+      import sys; 
+      !{sys.executable} -m pip install "/path/to/sardine"
+    ```
+    - restart the kernel and run:
+    ```python
+    import sys
+    sys.path.insert(0, '/path/to/sardine')
+    from sardine import *
+    ```
 * Emacs with the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin.
 
 Any program or editor allowing you to run Python code dynamically can/should work as long as it is modern enough to support the `asyncio` REPL. I don't really want to develop my own code editor because the more mainstream ones offer so many features that it's hard to compete!

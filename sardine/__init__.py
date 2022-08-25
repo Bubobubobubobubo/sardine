@@ -216,4 +216,4 @@ def parser_repl(parser_type: str):
     except KeyboardInterrupt:
         pass
 
-parser_repl(parser_type='note')
+# parser_repl(parser_type='note')

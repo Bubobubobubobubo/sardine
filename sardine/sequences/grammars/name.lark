@@ -1,0 +1,34 @@
+// Completely broken
+?start: name
+?sum: product
+    | sum "+" product                    -> addition
+    | sum "-" product                    -> substraction
+?product: atom
+    | product "*" atom                   -> multiplication
+    | product "/" atom                   -> division
+    | product "|" atom                   -> choice
+    | product ":" atom                   -> random_in_range
+    | product "!" atom                   -> extend
+    | product "!!" atom                  -> extend_repeat
+?atom: NUMBER
+    | "-" atom                           -> negation
+    | "+" atom                           -> id
+    | "(" sum ")"
+?list: "[" sum("," sum)* ","? "]"        -> make_list
+
+?name: NAME                              -> sample_name
+    | sum NAME                           -> sample_number_name
+    | NAME sum                           -> sample_name_number
+    | NAME                               -> sample_name
+    | name ":" sum                       -> associate_sample_number
+    | name "+" name                      -> add_name
+    | name "-" name                      -> sub_name
+    | name "!" sum                       -> repeat_name
+    | name "|" name                      -> choice_name
+    | "[" name ("," name)* ","? "]"      -> make_list
+    | "(" name ")"
+
+%import common.CNAME                     -> NAME
+%import common.NUMBER                    -> NUMBER
+%import common.WS_INLINE
+%ignore WS_INLINE

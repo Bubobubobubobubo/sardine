@@ -1,0 +1,30 @@
+// Basic music notation grammar
+?start: note
+?number: /[0-9]/
+?numbers: number+                        -> make_number
+?note: atom
+     | atom "/" atom                     -> slash_chord
+     | atom "|" atom                     -> choice_note
+     | atom "!" number                   -> repeat_note
+     | atom ":" NAME                     -> add_qualifier
+     | atom "_" number                   -> invert_chord
+     | atom "^" numbers                  -> transpose_up
+     | atom "v" numbers                  -> transpose_down
+// Pure atoms are the basic note tokens
+pure_atom: /[A-Ga-g]/                    -> make_note_anglo_saxon
+     | /do|re|ré|mi|fa|sol|la|si/        -> make_note_french_system
+     | "r"                               -> random_note
+     | numbers ":" numbers               -> random_note_in_range
+// Atoms are basic tokens with 
+// more composition rules
+?atom: pure_atom
+     | atom "0".."9"                     -> add_octave
+     | atom "#"                          -> sharp_simple
+     | atom "b"                          -> flat_simple
+     | atom "+"                          -> raise_octave
+     | atom "+" number                   -> raise_octave_x
+     | atom "-"                          -> drop_octave
+     | atom "-" number                   -> drop_octave_x
+     | atom "#" number                   -> sharp_octave
+     | atom "b" number                   -> flat_octave
+%import common.CNAME -> NAME

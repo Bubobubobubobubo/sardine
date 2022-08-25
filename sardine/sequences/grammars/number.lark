@@ -1,0 +1,31 @@
+// Basic number parsing syntax (calculator for lists)
+// List of found currently non-parsable expressions:
+// - [12,2]![24,2]
+?start: sum
+?sum: product
+     | sum "+" product                    -> addition
+     | sum "-" product                    -> substraction
+?product: atom
+     | product "*" atom                   -> multiplication
+     | product "/" atom                   -> division
+     | product "|" atom                   -> choice
+     | product ":" atom                   -> random_in_range
+     | product "!" atom                   -> extend
+     | product "!!" atom                  -> extend_repeat
+
+?list: "[" sum ("," sum)* ","? "]"        -> make_list
+     | atom "_" atom                      -> generate_ramp
+     | atom "_" atom ":" atom             -> generate_ramp_with_range 
+
+?value: NUMBER -> number
+     | list
+
+?atom: value
+     | "-" atom                           -> negation
+     | "+" atom                           -> id
+     | "(" sum ")"
+     | "r"                                -> get_random_number
+
+%import common.NUMBER
+%import common.WS_INLINE
+%ignore WS_INLINE

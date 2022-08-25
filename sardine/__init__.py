@@ -202,9 +202,8 @@ def parser_repl(parser_type: str):
     try:
         while True:
             p = parser._parse_debug(pattern=input("> "))
-            print(p)
     except KeyboardInterrupt:
         pass
 
 
-# parser_repl(parser_type='note')
+# parser_repl(parser_type='name')

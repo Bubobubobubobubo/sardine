@@ -16,30 +16,17 @@ except ImportError:
 else:
     uvloop.install()
 
-from .io import read_user_configuration
+from .io import read_user_configuration, pretty_print_configuration_file
 from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from .io import OSCSender, MIDISender
-from .sequences import (
-    ListParser,
-    Pnote,
-    Pnum,
-    Pname)
+from .sequences import ListParser, Pnote, Pnum, Pname
 from typing import Union
 from .sequences import *
 
 warnings.filterwarnings("ignore")
-
-
-def print_pre_alpha_todo() -> None:
-    """Print the TODOlist from pre-alpha version"""
-    cur_path = pathlib.Path(__file__).parent.resolve()
-    with open("".join([str(cur_path), "/todo.md"])) as f:
-        console = Console()
-        console.print(Markdown(f.read()))
-
 
 sardine = """
 
@@ -55,10 +42,13 @@ Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
 config = read_user_configuration()
+print_config = pretty_print_configuration_file
 
 
 if config.boot_superdirt:
-    SC = SuperColliderProcess(startup_file=config.superdirt_config_path)
+    SC = SuperColliderProcess(
+        startup_file=config.superdirt_config_path, verbose=config.verbose_superdirt
+    )
 
 
 c = Clock(
@@ -70,7 +60,7 @@ c = Clock(
 )
 
 # Synonyms for swimming function management
-cs = again = anew = a  = c.schedule_func
+cs = again = anew = a = c.schedule_func
 cr = c.remove
 stop = c.remove
 children = c.print_children
@@ -216,4 +206,5 @@ def parser_repl(parser_type: str):
     except KeyboardInterrupt:
         pass
 
-parser_repl(parser_type='note')
+
+# parser_repl(parser_type='note')

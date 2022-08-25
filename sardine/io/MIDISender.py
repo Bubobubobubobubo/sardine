@@ -25,8 +25,8 @@ class MIDISender:
         at: Union[float, int] = 0,
     ):
 
-        self._number_parser = ListParser(parser_type='number')
-        self._note_parser = ListParser(parser_type='note')
+        self._number_parser = ListParser(parser_type="number")
+        self._note_parser = ListParser(parser_type="note")
 
         self.clock = clock
         if midi_client is None:

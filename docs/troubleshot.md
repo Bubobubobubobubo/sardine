@@ -15,7 +15,7 @@ Please provide feedback on the installation process! I try to document it as muc
 
 * **[ALL]**: I don't hear any sound at all!
 
-    - Check that `--boot` is `True` in your `sardine-config`: `sardine-config --boot True`.
+    - Check that `--boot_superdirt` is `True` in your `sardine-config`: `sardine-config --boot_superdirt True`.
     - Check that your audio output and microphone are running at the sample rate: 44100 or 48000hz. You can check this using your operating system usual configuration tools. Note that pluging in and out a microphone can change the sampling rate automatically.
     - Reboot **Sardine** and run: `S('cp').out()`. You should be hearing a clap.
     - **IF NOT**: boot *SuperDirt* manually and troublecheck using their own documentation.

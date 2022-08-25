@@ -17,7 +17,7 @@ There is another optional file that we will also describe:
 The location of the configuration folder is assumed to be the best possible default location based on your OS:
 
 * **MacOS**: `Users/xxx/Library/Application\ Support/Sardine/`
-* **Linux**: `.config` folder (???).
+* **Linux**: `.local/share/Sardine/` folder (???).
 * **Windows**: `%appdata%/Sardine` (???).
 
 ## The configuration files

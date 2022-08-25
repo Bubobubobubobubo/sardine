@@ -20,8 +20,6 @@ from typing import Any
 
 def str2bool(v):
     """Boolean validation method for argparse type checking"""
-    if isinstance(v, bool):
-        return v
     if v.lower() in ("yes", "true", "t", "y", "1"):
         return True
     elif v.lower() in ("no", "false", "f", "n", "0"):
@@ -61,7 +59,7 @@ def read_json_file():
 def write_json_file(data: dict):
     """Write to JSON File (configuration file)"""
     with open(str(CONFIG_JSON), "w") as jsonFile:
-        json.dump(data, jsonFile)
+        json.dump(data, jsonFile, indent=4, sort_keys=True)
 
 
 def main():
@@ -87,10 +85,10 @@ def main():
     parser.add_argument("--beats", type=int, help="Beats per bar")
     parser.add_argument("--ppqn", type=float, help="ppqn")
     parser.add_argument("--parameters", type=str, help="add a custom param")
-    parser.add_argument("--boot", type=bool, help="Boot SC && SuperDirt")
-    parser.add_argument("--deferred", type=bool, help="Turn on/off deferred scheduling")
-    parser.add_argument("--clock", type=bool, help="Active or passive Clock")
-    parser.add_argument("--SCconfig", type=bool, help="SuperDirt Configuration Path")
+    parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
+    parser.add_argument("--deferred", type=str2bool, help="Turn on/off deferred scheduling")
+    parser.add_argument("--clock", type=str2bool, help="Active or passive Clock")
+    parser.add_argument("--SCconfig", type=str2bool, help="SuperDirt Configuration Path")
     parser.add_argument(
         "--User Config Path", type=bool, help="Python User Configuration file"
     )
@@ -120,10 +118,10 @@ def _edit_configuration(file_name: str):
             file_content = config.read()
         edited = click.edit(file_content)
         if edited is not None:
-            with open(configuration_file, "w") as config:
+            with open(configuration_file, "w+") as config:
                 config.write(edited)
     else:
-        with open(configuration_file, "w") as config:
+        with open(configuration_file, "w+") as config:
             config.write("")
         # recurse to write in the file
         _edit_configuration(file_name)

@@ -32,15 +32,6 @@ from .sequences import *
 
 warnings.filterwarnings("ignore")
 
-
-def print_pre_alpha_todo() -> None:
-    """Print the TODOlist from pre-alpha version"""
-    cur_path = pathlib.Path(__file__).parent.resolve()
-    with open("".join([str(cur_path), "/todo.md"])) as f:
-        console = Console()
-        console.print(Markdown(f.read()))
-
-
 sardine = """
 
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
@@ -216,4 +207,4 @@ def parser_repl(parser_type: str):
     except KeyboardInterrupt:
         pass
 
-parser_repl(parser_type='note')
+# parser_repl(parser_type='note')

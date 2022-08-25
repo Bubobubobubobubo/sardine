@@ -1,45 +1,37 @@
 #!/usr/bin/env python3
 from os import walk, path
 from pathlib import Path
-import platform, subprocess, os, signal
+import platform, subprocess
 import shutil
 from typing import Union
 from appdirs import *
-
+import tempfile
 import psutil
+import asyncio
 from rich import print
 
 __all__ = ("SuperColliderProcess",)
 
-
 class SuperColliderProcess:
 
-    """
-    Start SCLang process. Allows the execution of SuperCollider
-    code directly from the Python side.
-    """
+    def __init__(self, startup_file: Union[str, None] = None, preemptive=True, verbose=False):
 
-    def __init__(self, startup_file: Union[str, None] = None, preemptive=True):
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
         self._synth_directory = self._find_synths_directory()
         self._startup_file = self._find_startup_file(user_file=startup_file)
+        self.temp_file = tempfile.NamedTemporaryFile()
 
+        # If preemptive, all previously running instances of SuperCollider will be 
+        # killed to prevent more issues...
         if preemptive:
             self.hard_kill()
 
-        self._sclang_proc = subprocess.Popen(
-            [self._sclang_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            bufsize=1,
-            universal_newlines=True,
-            start_new_session=True,
-        )
-
         self.boot()
+
+        if verbose:
+            asyncio.create_task(self.monitor())
 
     def _find_vanilla_startup_file(self):
         """Find the startup file when booting Sardine"""
@@ -77,26 +69,28 @@ class SuperColliderProcess:
 
     def terminate(self) -> None:
         """Terminate the SCLang process"""
+        self.write_stdin("Server.killAll; 0.exit;")
+        self._sclang.terminate()
 
-        self.send("Server.killAll; 0.exit;")
-        self._sclang_proc.terminate()
-
-    def reset(self) -> None:
-        """Restart the SCLang subprocess"""
-
-        self._sclang_proc = subprocess.Popen(
-            [self._sclang_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            bufsize=1,
-            universal_newlines=True,
-            start_new_session=True,
-        )
+    async def monitor(self):
+        """Monitoring SuperCollider output using an asynchronous function
+        that runs on a loop and prints to output. Can be quite verbose at
+        boot time!"""
+        while self._sclang.poll() is None:
+            where = self.temp_file.tell()
+            lines = self.temp_file.read()
+            if not lines:
+                await asyncio.sleep(0.1)
+                self.temp_file.seek(where)
+            else:
+                import sys
+                sys.__stdout__.write(lines.decode())
+                sys.__stdout__.flush()
+        sys.__stdout__.write(self.temp_file.read())
+        sys.__stdout__.flush()
 
     def hard_kill(self) -> None:
-        """Look for an instance of SuperCollider, kill it."""
-
+        """Look for all instances of SuperCollider, kill them."""
         print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
         try:
             for proc in psutil.process_iter():
@@ -108,12 +102,8 @@ class SuperColliderProcess:
         except Exception:
             print(f"[yellow]There was no SC process to kill...")
 
-    def send(self, message: str):
-
-        """
-        Pipe strings to SCLang: message: single or multi-line string.
-        TODO: Fix multiline support.
-        """
+    def write_stdin(self, message: str):
+        """Write to sclang stdin using Python strings"""
 
         # Converting messages for multiline-input
         message = "".join(message.splitlines())
@@ -123,20 +113,20 @@ class SuperColliderProcess:
             message += "\n"
 
         # Writing messages
-        self._sclang_proc.stdin.write(message)
-        self._sclang_proc.stdin.flush()
+        self._sclang.stdin.write(message)
+        self._sclang.stdin.flush()
 
     def meter(self) -> None:
         """Open SuperCollider VUmeter"""
-        self.send("s.meter()")
+        self.write_stdin("s.meter()")
 
     def scope(self) -> None:
         """Open SuperCollider frequency scope"""
-        self.send("s.scope()")
+        self.write_stdin("s.scope()")
 
     def meterscope(self) -> None:
         """Open SuperCollider frequency scope + VUmeter"""
-        self.send("s.scope(); s.meter()")
+        self.write_stdin("s.scope(); s.meter()")
 
     def check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
@@ -157,7 +147,7 @@ class SuperColliderProcess:
                         buffer += line
 
             # sending the string to the interpreter
-            self.send(buffer)
+            self.write_stdin(buffer)
             print("Loaded SynthDefs:")
             for f in files:
                 print("- {}".format(f))
@@ -186,14 +176,25 @@ class SuperColliderProcess:
             raise OSError("This OS is not officially supported by Sardine.")
 
     def boot(self) -> None:
-
+        """Booting a background instance of SCLang!"""
         print("\n[red]Starting SCLang && SuperDirt[/red]")
-        self.send(message="""load("{}")""".format(self._startup_file))
-        # print(f"{self._sclang_proc.communicate()[0]}")
+        self._sclang = subprocess.Popen(
+            [self._sclang_path],
+            stdin=subprocess.PIPE,
+            stdout=self.temp_file,
+            stderr=self.temp_file,
+            bufsize=1,
+            universal_newlines=True,
+            start_new_session=True,
+        )
+
+        self.write_stdin(message="""load("{}")""".format(self._startup_file))
+
         if self._synth_directory is not None:
             self.load_custom_synthdefs()
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""
-        self.send("Server.killAll")
-        self.send("0.exit")
+        self.write_stdin("Server.killAll")
+        self.write_stdin("0.exit")
+

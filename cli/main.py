@@ -86,6 +86,7 @@ def main():
     parser.add_argument("--ppqn", type=float, help="ppqn")
     parser.add_argument("--parameters", type=str, help="add a custom param")
     parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
+    parser.add_argument("--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output")
     parser.add_argument("--deferred", type=str2bool, help="Turn on/off deferred scheduling")
     parser.add_argument("--clock", type=str2bool, help="Active or passive Clock")
     parser.add_argument("--SCconfig", type=str2bool, help="SuperDirt Configuration Path")

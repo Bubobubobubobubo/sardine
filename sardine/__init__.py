@@ -52,7 +52,9 @@ print_config = pretty_print_configuration_file
 
 
 if config.boot_superdirt:
-    SC = SuperColliderProcess(startup_file=config.superdirt_config_path)
+    SC = SuperColliderProcess(
+        startup_file=config.superdirt_config_path, 
+        verbose=config.verbose_superdirt)
 
 
 c = Clock(

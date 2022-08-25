@@ -371,20 +371,17 @@ class ListParser:
 
 # Useful utilities
 
-
 def Pname(pattern: str, i: int = 0):
     parser = ListParser(parser_type="name")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]
 
-
 def Pnote(pattern: str, i: int = 0):
-    parser = ListParser(parser_type="name")
+    parser = ListParser(parser_type="note")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]
 
-
 def Pnum(pattern: str, i: int = 0):
-    parser = ListParser(parser_type="name")
+    parser = ListParser(parser_type="number")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]

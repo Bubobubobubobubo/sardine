@@ -10,6 +10,7 @@ __all__ = (
     "create_template_configuration_file",
     "read_configuration_file",
     "read_user_configuration",
+    "pretty_print_configuration_file",
 )
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
@@ -113,6 +114,11 @@ def read_configuration_file(file_path: Path) -> Config:
     write_configuration_file(config, file_path)
 
     return config
+
+def pretty_print_configuration_file() -> None:
+    file_path = USER_DIR / "config.json"
+    file_string = read_configuration_file(file_path)
+    print(file_string)
 
 
 def read_user_configuration() -> Config:

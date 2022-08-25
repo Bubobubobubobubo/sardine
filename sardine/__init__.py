@@ -16,7 +16,9 @@ except ImportError:
 else:
     uvloop.install()
 
-from .io import read_user_configuration
+from .io import (
+    read_user_configuration,
+    pretty_print_configuration_file)
 from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
@@ -46,6 +48,7 @@ Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
 config = read_user_configuration()
+print_config = pretty_print_configuration_file
 
 
 if config.boot_superdirt:

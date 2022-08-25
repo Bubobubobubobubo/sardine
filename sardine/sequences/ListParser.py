@@ -5,63 +5,67 @@ import random
 
 __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 
+
 class ParserError(Exception):
     pass
 
+
 qualifiers = {
-    'dim'    : [0, 3, 6, 12],
-    'dim9'   : [0, 3, 6, 9, 14],
-    'hdim7'  : [0, 3, 6, 10],
-    'hdim9'  : [0, 3, 6, 10, 14],
-    'hdimb9'  : [0, 3, 6, 10, 13],
-    'dim7'   : [0, 3, 6, 9],
-    '7dim5'  : [0, 4, 6, 10],
-    'aug'    : [0, 4, 8, 12],
-    'augMaj7': [0, 4, 8, 11],
-    'aug7'   : [0, 4, 8, 10],
-    'aug9'   : [0, 4, 10, 14],
-    'maj'    : [0, 4, 7, 12],
-    'maj7'   : [0, 4, 7, 11],
-    'maj9'   : [0, 4, 11, 14],
-    'minmaj7': [0, 3, 7, 11],
-    '7'      : [0, 4, 7, 10],
-    '9'      : [0, 4, 10, 14],
-    'b9'     : [0, 4, 10, 13],
-    'mM9'    : [0, 3, 11, 14],
-    'min'    : [0, 3, 7, 12],
-    'min7'   : [0, 3, 7, 10],
-    'min9'   : [0, 3, 10, 14],
-    'sus4'   : [0, 5, 7, 12],
-    'sus2'   : [0, 2, 7, 12],
-    'b5'     : [0, 4, 6, 12],
-    'mb5'    : [0, 3, 6, 12],
+    "dim": [0, 3, 6, 12],
+    "dim9": [0, 3, 6, 9, 14],
+    "hdim7": [0, 3, 6, 10],
+    "hdim9": [0, 3, 6, 10, 14],
+    "hdimb9": [0, 3, 6, 10, 13],
+    "dim7": [0, 3, 6, 9],
+    "7dim5": [0, 4, 6, 10],
+    "aug": [0, 4, 8, 12],
+    "augMaj7": [0, 4, 8, 11],
+    "aug7": [0, 4, 8, 10],
+    "aug9": [0, 4, 10, 14],
+    "maj": [0, 4, 7, 12],
+    "maj7": [0, 4, 7, 11],
+    "maj9": [0, 4, 11, 14],
+    "minmaj7": [0, 3, 7, 11],
+    "7": [0, 4, 7, 10],
+    "9": [0, 4, 10, 14],
+    "b9": [0, 4, 10, 13],
+    "mM9": [0, 3, 11, 14],
+    "min": [0, 3, 7, 12],
+    "min7": [0, 3, 7, 10],
+    "min9": [0, 3, 10, 14],
+    "sus4": [0, 5, 7, 12],
+    "sus2": [0, 2, 7, 12],
+    "b5": [0, 4, 6, 12],
+    "mb5": [0, 3, 6, 12],
     # Scales begin here
     "major": [0, 2, 4, 5, 7, 9, 11],
     "minor": [0, 2, 3, 5, 7, 8, 10],
     "hminor": [0, 2, 3, 5, 7, 8, 11],
-    "^minor": [0, 2, 3, 5, 7, 9, 11], # doesn't work
+    "^minor": [0, 2, 3, 5, 7, 9, 11],  # doesn't work
     "vminor": [0, 2, 3, 5, 7, 8, 10],
     "penta": [0, 2, 4, 7, 9],
 }
+
 
 def floating_point_range(start, end, step):
     assert step != 0
     sample_count = int(abs(end - start) / step)
     return islice(count(start, step), sample_count)
 
+
 @v_args(inline=True)  # Affects the signatures of the methods
 class CalculateTree(Transformer):
     number = float
 
     # Notes
-    def random_note(self): 
+    def random_note(self):
         return random.randint(1, 127)
 
-    def random_note_in_range(self, number0, number1): 
+    def random_note_in_range(self, number0, number1):
         return random.randint(int(number0), int(number1))
 
     def make_note_anglo_saxon(self, symbol):
-        table = {'C':60, 'D':62, 'E':64, 'F':65, 'G':67, 'A':69, 'B':71}
+        table = {"C": 60, "D": 62, "E": 64, "F": 65, "G": 67, "A": 69, "B": 71}
         return table[symbol.upper()]
 
     def make_notes(self, symbols):
@@ -84,49 +88,49 @@ class CalculateTree(Transformer):
         match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
         return match_table[note] + 12 * int(number)
 
-    def sharp_simple(self, note): 
-        return note+1
+    def sharp_simple(self, note):
+        return note + 1
 
-    def flat_simple(self, note): 
-        return note-1
+    def flat_simple(self, note):
+        return note - 1
 
-    def sharp_octave(self, note, number): 
-        match_table = {60:0, 62:2, 64:4, 65:5, 67:7, 69:9, 71: 11}
-        return match_table[note]+12*int(number)+1
+    def sharp_octave(self, note, number):
+        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
+        return match_table[note] + 12 * int(number) + 1
 
-    def flat_octave(self, note, number): 
-        match_table = {60:0, 62:2, 64:4, 65:5, 67:7, 69:9, 71: 11}
-        return match_table[note]+12*int(number)-1
+    def flat_octave(self, note, number):
+        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
+        return match_table[note] + 12 * int(number) - 1
 
-    def choice_note(self, note0, note1): 
+    def choice_note(self, note0, note1):
         return random.choice([note0, note1])
 
-    def repeat_note(self, note, number): 
-        return [note]*int(number)
+    def repeat_note(self, note, number):
+        return [note] * int(number)
 
-    def drop_octave(self, note): 
+    def drop_octave(self, note):
         return note - 12
 
-    def raise_octave(self, note): 
+    def raise_octave(self, note):
         return note + 12
 
-    def drop_octave_x(self, note, number): 
-        return note - 12*int(number)
+    def drop_octave_x(self, note, number):
+        return note - 12 * int(number)
 
-    def raise_octave_x(self, note, number): 
-        return note + 12*int(number)
+    def raise_octave_x(self, note, number):
+        return note + 12 * int(number)
 
     def add_qualifier(self, note, qualifier):
-        return [note+x for x in qualifiers[qualifier]]
+        return [note + x for x in qualifiers[qualifier]]
 
     def invert_chord(self, notes):
         pass
 
     def transpose_up(self, notes, number):
-        return notes+int(number)
+        return notes + int(number)
 
     def transpose_down(self, notes, number):
-        return notes-int(number)
+        return notes - int(number)
 
     def make_number(self, *token):
         return int("".join(token))
@@ -195,7 +199,7 @@ class CalculateTree(Transformer):
             return [-x for x in value]
 
     def addition(self, left, right):
-        print('trigerred')
+        print("trigerred")
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left + right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
@@ -235,20 +239,21 @@ class CalculateTree(Transformer):
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x / right for x in left]
 
-    def name(self, name): 
+    def name(self, name):
         return str(name)
 
-    def make_integer(self, value): 
+    def make_integer(self, value):
         return int(value)
 
-    def name_from_number_name(self, number, name): 
+    def name_from_number_name(self, number, name):
         return str("".join([str(number), str(name)]))
 
-    def name_from_name_number(self, name, number): 
+    def name_from_name_number(self, name, number):
         return str("".join([str(name), str(number)]))
 
     def associate_sample_number(self, name, value):
         print(type(name), type(value))
+
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
@@ -277,33 +282,52 @@ class CalculateTree(Transformer):
     def repeat_name(self, name, value):
         return [name] * int(value)
 
+
 grammar_path = Path(__file__).parent
-grammars = {"number": grammar_path / "grammars/number.lark",
-            "name": grammar_path   / "grammars/name.lark",
-            "note": grammar_path   / "grammars/note.lark"}
+grammars = {
+    "number": grammar_path / "grammars/number.lark",
+    "name": grammar_path / "grammars/name.lark",
+    "note": grammar_path / "grammars/note.lark",
+}
 
 parsers = {
-    'number': {
-        'raw':  Lark.open(grammars['number'], rel_to=__file__, parser='lalr'),
-        'full': Lark.open(grammars['number'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    "number": {
+        "raw": Lark.open(grammars["number"], rel_to=__file__, parser="lalr"),
+        "full": Lark.open(
+            grammars["number"],
+            rel_to=__file__,
+            parser="lalr",
+            transformer=CalculateTree(),
+        ),
     },
-    'name': {
-        'raw':  Lark.open(grammars['name'], rel_to=__file__, parser='lalr'),
-        'full': Lark.open(grammars['name'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    "name": {
+        "raw": Lark.open(grammars["name"], rel_to=__file__, parser="lalr"),
+        "full": Lark.open(
+            grammars["name"],
+            rel_to=__file__,
+            parser="lalr",
+            transformer=CalculateTree(),
+        ),
     },
-    'note': {
-        'raw':  Lark.open(grammars['note'], rel_to=__file__, parser='lalr'),
-        'full': Lark.open(grammars['note'], rel_to=__file__, parser='lalr', transformer=CalculateTree()),
+    "note": {
+        "raw": Lark.open(grammars["note"], rel_to=__file__, parser="lalr"),
+        "full": Lark.open(
+            grammars["note"],
+            rel_to=__file__,
+            parser="lalr",
+            transformer=CalculateTree(),
+        ),
     },
 }
+
 
 class ListParser:
     def __init__(self, parser_type: str = "number"):
         try:
-            self.parser = parsers[parser_type]['full'].parse
-            self.raw_parser = parsers[parser_type]['raw']
+            self.parser = parsers[parser_type]["full"].parse
+            self.raw_parser = parsers[parser_type]["raw"]
         except KeyError:
-            ParserError(f'Invalid Parser grammar, {parser_type} is not a grammar.')
+            ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
 
     def _flatten_result(self, pat):
         """Flatten a nested pattern result list. Probably not optimised."""
@@ -328,7 +352,7 @@ class ListParser:
             try:
                 final_pattern.append(self._parse_token(token))
             except Exception as e:
-                raise ParserError(f"Incorrect token: {token}") from e 
+                raise ParserError(f"Incorrect token: {token}") from e
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):
@@ -340,8 +364,10 @@ class ListParser:
                 print(self._parse_token_raw(token))
             except Exception as e:
                 import traceback
+
                 print(f"Error: {e}: {traceback.format_exc()}")
                 continue
+
 
 # Useful utilities
 

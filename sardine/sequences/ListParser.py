@@ -199,7 +199,6 @@ class CalculateTree(Transformer):
             return [-x for x in value]
 
     def addition(self, left, right):
-        print("trigerred")
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left + right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
@@ -252,7 +251,6 @@ class CalculateTree(Transformer):
         return str("".join([str(name), str(number)]))
 
     def associate_sample_number(self, name, value):
-        print(type(name), type(value))
 
         def _simple_association(name, value):
             return name + ":" + str(int(value))

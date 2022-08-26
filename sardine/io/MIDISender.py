@@ -99,6 +99,8 @@ class MIDISender:
             "note": self.note,
         }
 
+        i = int(i)
+
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
 

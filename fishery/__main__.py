@@ -66,18 +66,8 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
 class REPLThread(threading.Thread):
     def run(self):
         try:
-            banner = (
-                f"asyncio REPL {sys.version} on {sys.platform}\n"
-                f'Use "await" directly instead of "asyncio.run()".\n'
-                f'Type "help", "copyright", "credits" or "license" '
-                f"for more information.\n"
-                f'{getattr(sys, "ps1", ">>> ")}'
-            )
-
-            # console.runsource('import functools')
-
+            banner = ()
             console.push("""from sardine import *""")
-
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
 
         finally:

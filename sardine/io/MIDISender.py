@@ -128,12 +128,12 @@ class MIDISender:
                     return
                 if isinstance(value, (list, str)):
                     if key in ["velocity", "channel", "note"]:
-                        final_message[key] = int(value[i % len(value) - 1])
+                        final_message[key] = int(value[i % len(value)])
                     else:
-                        final_message[key] = float(value[i % len(value) - 1])
+                        final_message[key] = float(value[i % len(value)])
 
             if isinstance(self.trig, list):
-                self.trig = self.trig[i % len(self.trig) - 1]
+                self.trig = self.trig[i % len(self.trig)]
             else:
                 self.trig = int(self.trig)
             if self.trig:

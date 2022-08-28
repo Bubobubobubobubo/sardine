@@ -119,7 +119,7 @@ class OSCSender:
                 return
             if isinstance(self.address, list):
                 final_message["address"] = "/" + self.address[
-                    i % len(self.address) - 1
+                    i % len(self.address)
                 ].replace("_", "/")
             else:
                 final_message["address"] = "/" + self.address.replace("_", "/")
@@ -130,7 +130,7 @@ class OSCSender:
                 if value == []:
                     continue
                 if isinstance(value, list):
-                    value = float(value[i % len(value) - 1])
+                    value = float(value[i % len(value)])
                     if _ != "trig":
                         final_message["message"].append(value)
                 else:
@@ -140,7 +140,7 @@ class OSCSender:
             if "trig" not in self.content.keys():
                 trig = 1
             else:
-                trig = int(self.content["trig"][i % len(self.content["trig"]) - 1])
+                trig = int(self.content["trig"][i % len(self.content["trig"])])
             if trig:
                 return self.schedule(final_message)
 

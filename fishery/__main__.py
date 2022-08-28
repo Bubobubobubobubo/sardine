@@ -17,6 +17,7 @@ from typing import Union
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
+
 @dataclass
 class Config:
     midi: Union[str, None]
@@ -68,6 +69,7 @@ class Config:
             }
         }
 
+
 def read_configuration_file(file_path: Path) -> Config:
     """Read config JSON File"""
     with open(file_path, "r") as f:
@@ -75,8 +77,10 @@ def read_configuration_file(file_path: Path) -> Config:
     config = Config.from_dict(user_data)
     return config
 
+
 config = read_configuration_file(USER_DIR / "config.json")
 INLINE = config.inline_editor
+
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):
     def __init__(self, locals, loop):
@@ -138,7 +142,9 @@ class REPLThread(threading.Thread):
             console.push("""from sardine import *""")
             if INLINE:
                 console.push("""from ptpython.repl import embed""")
-                console.push("""await embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=True)""")
+                console.push(
+                    """await embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=True)"""
+                )
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
 
         finally:

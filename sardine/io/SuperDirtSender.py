@@ -70,11 +70,13 @@ class SuperDirtSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-    def out(self, i: Union[None, int] = None, orbit: int = 0) -> None:
+    def out(self, i: Union[None, int] = 0, orbit: int = 0) -> None:
         """
         Prototype for the Sender output.
         TODO: make the sample number patternable...
         """
+
+        i = int(i)
 
         if orbit != 0:
             self.content |= {"orbit": orbit}

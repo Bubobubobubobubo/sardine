@@ -81,6 +81,8 @@ class OSCSender:
 
         final_message = {}
 
+        i = int(i)
+
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
 

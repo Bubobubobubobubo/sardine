@@ -1,6 +1,4 @@
-from __future__ import with_statement
 import asyncio
-import pathlib
 import warnings
 import sys
 
@@ -204,6 +202,3 @@ def parser_repl(parser_type: str):
             p = parser._parse_debug(pattern=input("> "))
     except KeyboardInterrupt:
         pass
-
-
-# parser_repl(parser_type='name')

@@ -34,6 +34,20 @@ You should now have Sardine installed and ready. Try to start the configuration 
 
 If you are hearing sound, everything is good and you can now have fun with **Sardine**! Let me know how the installation process went. Feel free to open an issue on GitHub or to send me a message directly if you encounter any problem.
 
+### Faster method
+
+There is now an even faster method to run **Sardine** using only one command:
+
+```python
+python3 -m fishery
+```
+
+If you would like to edit **Sardine** code directly from the command prompt, be sure to try out the *unstable* inline editor ([ptpython](https://github.com/prompt-toolkit/ptpython)). I have noticed some timing issues while using it but it is still a fun way to run some examples and to learn **Sardine**. In order to activate it, run the following command from the command line:
+
+```bash
+sardine-config --inline_editor True
+```
+
 ## SuperDirt
 
 SuperDirt is a nice to have but **optional** output for Sardine. It is a well-known audio engine used by live coders, originally developed by Julian Rohrhuber for [TidalCycles](https://tidalcycles.org/). It provides a simple message-based syntax to speak with SuperCollider, to trigger samples, synthesizers and many other things.
@@ -53,13 +67,13 @@ You can use `Sardine` directly from the Python interpreter. There is nothing wro
 
 As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. However, **Sardine** is Python and there are great plugins to deal with interactive code. Here are a few things you can try:
 
-- [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter). 
+- [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter).
 * VSCode with the [Jupyter Notebook](https://jupyter.org/) extension
     - install VSCode and the Jupyter Notebook plugin. Create a new `.ipynb` notebook.
     - make sure that you are using the right Python version as your kernel (3.9 / 3.10).
-    - run: 
+    - run:
     ```python
-      import sys; 
+      import sys;
       !{sys.executable} -m pip install "/path/to/sardine"
     ```
     - restart the kernel and run:

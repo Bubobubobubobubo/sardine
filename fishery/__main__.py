@@ -143,7 +143,7 @@ class REPLThread(threading.Thread):
             if INLINE:
                 console.push("""from ptpython.repl import embed""")
                 console.push(
-                    """await embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=True)"""
+                    """await embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=False)"""
                 )
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
 

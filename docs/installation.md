@@ -34,6 +34,14 @@ You should now have Sardine installed and ready. Try to start the configuration 
 
 If you are hearing sound, everything is good and you can now have fun with **Sardine**! Let me know how the installation process went. Feel free to open an issue on GitHub or to send me a message directly if you encounter any problem.
 
+### Faster method
+
+There is now an even faster method to run **Sardine** using only one command:
+
+```python
+python3 -m fishery
+```
+
 ## SuperDirt
 
 SuperDirt is a nice to have but **optional** output for Sardine. It is a well-known audio engine used by live coders, originally developed by Julian Rohrhuber for [TidalCycles](https://tidalcycles.org/). It provides a simple message-based syntax to speak with SuperCollider, to trigger samples, synthesizers and many other things.

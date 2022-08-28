@@ -22,7 +22,12 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
     ],
-    packages=find_namespace_packages(include=["sardine"]),
+    packages=find_namespace_packages(
+        include=[
+            "sardine",
+            "fishery",
+        ]
+    ),
     python_requires=">=3.7, <4",
     install_requires=[
         "appdirs~=1.4",

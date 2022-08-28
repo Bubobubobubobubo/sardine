@@ -110,8 +110,7 @@ class AsyncRunner:
     _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
 
     def push(self, func: "MaybeCoroFunc", *args, **kwargs):
-        """Pushes a function state to the runner to be called in
-        the next iteration."""
+        """Pushes a function state to the runner to be called in the next iteration."""
         if not self.states:
             return self.states.append(FunctionState(func, args, kwargs))
 

@@ -37,6 +37,7 @@ setup(
         "rich~=12.5",
         "lark~=1.1",
         "click~=8.1",
+        "ptpython~=3.0",
     ],
     extras_require={"speed": ["uvloop"], "dev": ["black"]},
     entry_points={

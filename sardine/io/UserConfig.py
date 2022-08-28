@@ -23,6 +23,7 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "ppqn": 48,
         "parameters": [],
+        "inline_editor": False,
         "boot_superdirt": True,
         "verbose_superdirt": False,
         "active_clock": True,
@@ -50,6 +51,7 @@ class Config:
     parameters: list
     ppqn: int
     bpm: int
+    inline_editor: bool
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
@@ -66,6 +68,7 @@ class Config:
             parameters=config["parameters"],
             ppqn=config["ppqn"],
             bpm=config["bpm"],
+            inline_editor=config["inline_editor"],
             boot_superdirt=config["boot_superdirt"],
             verbose_superdirt=config["verbose_superdirt"],
             active_clock=config["active_clock"],
@@ -82,6 +85,7 @@ class Config:
                 "parameters": self.parameters,
                 "ppqn": self.ppqn,
                 "bpm": self.bpm,
+                "inline_editor": self.inline_editor,
                 "boot_superdirt": self.boot_superdirt,
                 "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,

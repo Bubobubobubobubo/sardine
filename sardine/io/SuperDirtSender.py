@@ -58,8 +58,7 @@ class SuperDirtSender:
             self.content |= {
                 name: self._number_parser.parse(values)
                 if not name in ["midinote", "note"]
-                else self.determine_right_pitch(
-                    values= values, name=name)
+                else self.determine_right_pitch(values=values, name=name)
             }
         else:
             self.content |= {name: values}

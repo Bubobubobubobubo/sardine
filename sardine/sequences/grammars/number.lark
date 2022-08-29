@@ -3,28 +3,27 @@
 // - [12,2]![24,2]
 ?start: sum
 ?sum: product
-     | sum "+" product                    -> addition
-     | sum "-" product                    -> substraction
-?product: atom
-     | product "*" atom                   -> multiplication
-     | product "/" atom                   -> division
-     | product "|" atom                   -> choice
-     | product ":" atom                   -> random_in_range
-     | product "!" atom                   -> extend
-     | product "!!" atom                  -> extend_repeat
-
-?list: "[" sum ("," sum)* ","? "]"        -> make_list
-     | atom "_" atom                      -> generate_ramp
-     | atom "_" atom ":" atom             -> generate_ramp_with_range 
-
-?value: NUMBER -> number
+     | sum "+" product                                      -> addition
+     | sum "-" product                                      -> substraction
+?product: super_atom 
+     | product "*" super_atom                               -> multiplication
+     | product "/" super_atom                               -> division
+     | product "|" super_atom                               -> choice
+     | product ":" super_atom                               -> random_in_range
+     | product "!" super_atom                               -> extend
+     | product "!!" super_atom                              -> extend_repeat
+?list: "[" sum ("," sum)* ","? "]"                          -> make_list
+     | super_atom "_" super_atom                            -> generate_ramp
+     | super_atom "_" super_atom ":" super_atom             -> generate_ramp_with_range 
+?value: NUMBER                                              -> number
      | list
-
-?atom: value
-     | "-" atom                           -> negation
-     | "+" atom                           -> id
-     | "(" sum ")"
-     | "r"                                -> get_random_number
+?super_atom: value
+     | (atom|list) "**" (atom|list)                         -> power
+?atom: value                                      
+     | "-" atom                                             -> negation
+     | "+" atom                                             -> id
+     | "(" sum ")"                                
+     | "r"                                                  -> get_random_number
 
 %import common.NUMBER
 %import common.WS_INLINE

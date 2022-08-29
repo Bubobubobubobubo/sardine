@@ -77,15 +77,22 @@ class Client:
         handle = clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def _send(self, clock: 'Clock', address: str, message):
+    def _send(self, clock: "Clock", address: str, message):
         """Build user-made OSC messages"""
         clock_information = [
-            'cps', (clock.tempo/60/4),
-            's_beat', clock.beat, 
-            's_bar', clock.bar, 
-            's_tick', clock.tick,
-            's_phase', clock.phase,
-            's_accel', clock.accel]
+            "cps",
+            (clock.tempo / 60 / 4),
+            "s_beat",
+            clock.beat,
+            "s_bar",
+            clock.bar,
+            "s_tick",
+            clock.tick,
+            "s_phase",
+            clock.phase,
+            "s_accel",
+            clock.accel,
+        ]
         message.extend(clock_information)
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(

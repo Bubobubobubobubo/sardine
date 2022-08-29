@@ -78,8 +78,12 @@ def read_configuration_file(file_path: Path) -> Config:
     return config
 
 
-config = read_configuration_file(USER_DIR / "config.json")
-INLINE = config.inline_editor
+try:
+    config = read_configuration_file(USER_DIR / "config.json")
+    INLINE = config.inline_editor
+except Exception as e:
+    print("You must boot Sardine once before attempting booting Fishery.")
+    print("Your config file is not yet created!")
 
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):

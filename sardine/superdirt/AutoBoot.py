@@ -75,22 +75,26 @@ class SuperColliderProcess:
         self._sclang.terminate()
 
     async def monitor(self):
-        """Monitoring SuperCollider output using an asynchronous function
+        """
+        Monitoring SuperCollider output using an asynchronous function
         that runs on a loop and prints to output. Can be quite verbose at
-        boot time!"""
-        while self._sclang.poll() is None:
-            where = self.temp_file.tell()
-            lines = self.temp_file.read()
-            if not lines:
-                await asyncio.sleep(0.1)
-                self.temp_file.seek(where)
-            else:
-                import sys
-
-                sys.__stdout__.write(lines.decode())
-                sys.__stdout__.flush()
-        sys.__stdout__.write(self.temp_file.read())
-        sys.__stdout__.flush()
+        boot time!
+        """
+        import sys
+        try:
+            while self._sclang.poll() is None:
+                where = self.temp_file.tell()
+                lines = self.temp_file.read()
+                if not lines:
+                    await asyncio.sleep(0.1)
+                    self.temp_file.seek(where)
+                else:
+                    sys.__stdout__.write(lines.decode())
+                    sys.__stdout__.flush()
+            sys.__stdout__.write(self.temp_file.read())
+            sys.__stdout__.flush()
+        except UnboundLocalError:
+            raise UnboundLocalError("SCLang is not reachable...")
 
     def hard_kill(self) -> None:
         """Look for all instances of SuperCollider, kill them."""

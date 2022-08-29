@@ -58,7 +58,7 @@ def limping(d=4):
     S('hh').out()
     sleep(3)
     S('bd').out()
-    again(oversleep, d=4)
+    again(limping, d=4)
 ```
 
 The **swimming function** `sleeping_demo()` will recurse after a delay of `2`. Think of the time you have in-between as spare time you can use and consume using `sleep()`. You can use that time sending instructions and composing the instructions that form your function. You can also do nothing for most of your time just like in `limping()`. You can write code in an imperative fashion, something that you might have already encountered in live coding systems such as [Sonic Pi](https://sonic-pi.net/) or **SuperCollider** `Tdefs`.

@@ -2,84 +2,20 @@ import ast
 import asyncio
 import code
 import concurrent.futures
-import json
 import inspect
-import sys
 from appdirs import user_data_dir
 import threading
 import types
 import warnings
 from asyncio import futures
 from pathlib import Path
-from dataclasses import dataclass
-from typing import Union
+from .UserConfig import read_user_configuration
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
-
-@dataclass
-class Config:
-    midi: Union[str, None]
-    beats: int
-    parameters: list
-    ppqn: int
-    bpm: int
-    inline_editor: bool
-    superdirt_config_path: str
-    verbose_superdirt: bool
-    user_config_path: str
-    boot_superdirt: bool
-    active_clock: bool
-    deferred_scheduling: bool
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "Config":
-        config = data["config"]
-        return cls(
-            midi=config["midi"],
-            beats=config["beats"],
-            parameters=config["parameters"],
-            ppqn=config["ppqn"],
-            bpm=config["bpm"],
-            inline_editor=config["inline_editor"],
-            boot_superdirt=config["boot_superdirt"],
-            verbose_superdirt=config["verbose_superdirt"],
-            active_clock=config["active_clock"],
-            superdirt_config_path=config["superdirt_config_path"],
-            user_config_path=config["user_config_path"],
-            deferred_scheduling=config["deferred_scheduling"],
-        )
-
-    def to_dict(self) -> dict:
-        return {
-            "config": {
-                "midi": self.midi,
-                "beats": self.beats,
-                "parameters": self.parameters,
-                "ppqn": self.ppqn,
-                "bpm": self.bpm,
-                "inline_editor": self.inline_editor,
-                "boot_superdirt": self.boot_superdirt,
-                "verbose_superdirt": self.verbose_superdirt,
-                "superdirt_config_path": self.superdirt_config_path,
-                "active_clock": self.active_clock,
-                "user_config_path": self.user_config_path,
-                "deferred_scheduling": self.deferred_scheduling,
-            }
-        }
-
-
-def read_configuration_file(file_path: Path) -> Config:
-    """Read config JSON File"""
-    with open(file_path, "r") as f:
-        user_data = json.load(f)
-    config = Config.from_dict(user_data)
-    return config
-
-
 try:
-    config = read_configuration_file(USER_DIR / "config.json")
+    config = read_user_configuration()
     INLINE = config.inline_editor
 except Exception as e:
     print("You must boot Sardine once before attempting booting Fishery.")

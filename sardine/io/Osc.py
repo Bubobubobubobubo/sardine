@@ -77,7 +77,7 @@ class Client:
         handle = clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def _get_clock_information(clock: "Clock") -> List[List[str, Union[float, int]]]:
+    def _get_clock_information(clock: "Clock") -> list:
         """Send out everything you can possibly send about the clock"""
         return  [["/cps", (clock.bpm / 60 / 4)],
                 ["/s_beat", clock.beat],

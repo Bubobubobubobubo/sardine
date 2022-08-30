@@ -282,7 +282,13 @@ class CalculateTree(Transformer):
         return random.random()
 
     def generate_ramp(self, left, right):
-        return list(range(int(left), int(right) + 1))
+        # I really don't understand why this fails
+        if int(left) > int(right):
+            new_list = list(reversed(range(int(right), int(left) + 1)))
+            return new_list
+        else:
+            return list(range(int(left), int(right) + 1))
+            
 
     def generate_ramp_with_range(self, left, right, step):
         return list(floating_point_range(start=left, end=right, step=step))

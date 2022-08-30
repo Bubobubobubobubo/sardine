@@ -67,7 +67,6 @@ class OSCSender:
     def schedule(self, message: dict):
         async def _waiter():
             await handle
-            print(message["message"])
             self.osc_client.send(self.clock, message["address"], message["message"])
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)

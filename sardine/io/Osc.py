@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
 from time import time
-from typing import Union, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING, List
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import (
     osc_startup,
@@ -77,23 +77,17 @@ class Client:
         handle = clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
+    def _get_clock_information(clock: "Clock") -> List[List[str, Union[float, int]]]:
+        """Send out everything you can possibly send about the clock"""
+        return  [["/cps", (clock.bpm / 60 / 4)],
+                ["/s_beat", clock.beat],
+                ["/s_bar", clock.bar],
+                ["/s_tick", clock.tick],
+                ["/s_phase", clock.phase],
+                ["/s_accel", clock.accel]]
+
     def _send(self, clock: "Clock", address: str, message):
         """Build user-made OSC messages"""
-        clock_information = [
-            "cps",
-            (clock.tempo / 60 / 4),
-            "s_beat",
-            clock.beat,
-            "s_bar",
-            clock.bar,
-            "s_tick",
-            clock.tick,
-            "s_phase",
-            clock.phase,
-            "s_accel",
-            clock.accel,
-        ]
-        message.extend(clock_information)
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]

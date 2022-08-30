@@ -50,6 +50,7 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0):
 
     Taken from: https://kountanis.com/2017/06/13/python-euclidean/
     """
+    beats, pulses, rotation = int(beats), int(pulses), int(rotation)
 
     def rotate(seq, k):
         return seq[k:] + seq[:k]

@@ -37,7 +37,8 @@ setup(
         "click>=8.1",
         "ptpython>=3.0",
         "python-rtmidi>=1.4",
-        "jupyterlab>=3.4.5",
+        "jupyterlab>=3.4",
+        "LinkPython>=0.1",
     ],
     extras_require={"speed": ["uvloop"], "dev": ["black"]},
     entry_points={

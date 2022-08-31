@@ -39,8 +39,13 @@ class SuperDirtSender:
         param_dict = pprint.pformat(self.content)
         return f"{self.sound}: {param_dict}"
 
-    # ------------------------------------------------------------------------
-    # GENERIC Mapper: make parameters chainable!
+    def determine_right_pitch(self, values: str, name: str):
+        """Treat "midinote" and "note" differently"""
+        if name == "midinote":
+            notes = self._note_parser.parse(values)
+        elif name == "note":
+            notes = [x - 60 for x in self._note_parser.parse(values)]
+        return notes
 
     def __getattr__(self, name: str):
         method = functools.partial(self.addOrChange, name=name)
@@ -53,7 +58,7 @@ class SuperDirtSender:
             self.content |= {
                 name: self._number_parser.parse(values)
                 if not name in ["midinote", "note"]
-                else self._note_parser.parse(values)
+                else self.determine_right_pitch(values=values, name=name)
             }
         else:
             self.content |= {name: values}
@@ -115,7 +120,7 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(["sound", self.sound[i % len(self.sound) - 1]])
+                final_message.extend(["sound", self.sound[i % len(self.sound)]])
             else:
                 final_message.extend(["sound", self.sound])
 
@@ -124,7 +129,7 @@ class SuperDirtSender:
                 if value == []:
                     continue
                 if isinstance(value, list):
-                    value = float(value[i % len(value) - 1])
+                    value = float(value[i % len(value)])
                     final_message.extend([key, value])
                 else:
                     final_message.extend([key, float(value)])

@@ -1,30 +1,49 @@
 // Basic music notation grammar
-?start: note
-?number: /[0-9]/
-?numbers: number+                        -> make_number
-?note: atom
-     | atom "/" atom                     -> slash_chord
-     | atom "|" atom                     -> choice_note
-     | atom "!" number                   -> repeat_note
-     | atom ":" NAME                     -> add_qualifier
-     | atom "_" number                   -> invert_chord
-     | atom "^" numbers                  -> transpose_up
-     | atom "v" numbers                  -> transpose_down
-// Pure atoms are the basic note tokens
-pure_atom: /[A-Ga-g]/                    -> make_note_anglo_saxon
-     | /do|re|ré|mi|fa|sol|la|si/        -> make_note_french_system
-     | "r"                               -> random_note
-     | numbers ":" numbers               -> random_note_in_range
-// Atoms are basic tokens with 
-// more composition rules
-?atom: pure_atom
-     | atom "0".."9"                     -> add_octave
-     | atom "#"                          -> sharp_simple
-     | atom "b"                          -> flat_simple
-     | atom "+"                          -> raise_octave
-     | atom "+" number                   -> raise_octave_x
-     | atom "-"                          -> drop_octave
-     | atom "-" number                   -> drop_octave_x
-     | atom "#" number                   -> sharp_octave
-     | atom "b" number                   -> flat_octave
-%import common.CNAME -> NAME
+start: collection                             -> id
+collection: upper_note                        -> id
+     | collection "!" numbers                 -> repeat_collection
+     | collection "(" numbers ")"             -> repeat_collection_x
+     | collection "[" (numbers|note) "]"      -> pick_collection_x
+     | collection ":reverse"                  -> reverse_collection
+     | collection ":palindrome"               -> collection_palindrome
+     | collection ":braid"                    -> braid_collection
+     | collection ":shuffle"                  -> shuffle_collection
+     | collection ":expand"                   -> expand_collection
+     | collection ":disco"                    -> disco_collection
+     | collection ":drop2"                    -> collection_drop2
+     | collection ":drop3"                    -> collection_drop3
+     | collection ":drop2&4"                  -> collection_drop2and4
+     | collection "+" (collection|ramp)       -> add_collection
+     | collection "-" (collection|ramp)       -> sub_collection
+upper_note: full_note                         -> id
+     | full_note "/" full_note                -> slash_chord
+     | full_note ":" (numbers? NAME|numbers)  -> add_qualifier
+     | full_note "|" full_note                -> choice_note
+     | full_note "!" numbers                  -> repeat_note
+     | full_note "_" numbers                  -> invert_chord
+     | full_note "^" numbers                  -> transpose_up
+     | full_note "v" numbers                  -> transpose_down
+full_note: note                               -> id
+     | full_note "0".."9"                     -> add_octave
+     | full_note "#"                          -> sharp_simple
+     | full_note "b"                          -> flat_simple
+     | full_note "+"                          -> raise_octave
+     | full_note "+" numbers                  -> raise_octave_x
+     | full_note "-"                          -> drop_octave
+     | full_note "-" numbers                  -> drop_octave_x
+     | full_note "#" numbers                  -> sharp_octave
+     | full_note "b" numbers                  -> flat_octave
+note: /[A-Ga-g]/                              -> make_note_anglo_saxon
+     | /do|re|ré|mi|fa|sol|la|si/             -> make_note_french_system
+     | "r"                                    -> random_note
+
+NAME: (LETTER|DIGIT) (LETTER|DIGIT)*                             
+ramp: numbers "_" numbers                     -> generate_ramp
+numbers: NUMBER                               -> make_number
+
+%import common.LETTER                         -> LETTER
+%import common.DIGIT                          -> DIGIT
+%import common.INT                            -> INT
+%import common.NUMBER                         -> NUMBER
+%import common.WS_INLINE
+%ignore WS_INLINE

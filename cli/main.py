@@ -1,10 +1,9 @@
-import tempfile
+import subprocess
 import argparse
 import click
 import json
 import sys
-import os
-from subprocess import call
+import re
 
 from appdirs import *
 from pathlib import Path
@@ -146,6 +145,12 @@ def edit_superdirt_configuration():
     """Call $EDITOR to edit Python based user configuration"""
     _edit_configuration("default_superdirt.scd")
 
+def is_sclang_cooperative():
+    """
+    Check if SCLang can be booted as a subprocess
+    TODO: cross-platform
+    """
+    pass
 
 if __name__ == "__main__":
     main()

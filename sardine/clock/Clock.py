@@ -11,6 +11,8 @@ from collections import deque
 import mido
 from rich import print
 
+from sardine.io.Osc import Client
+
 from . import AsyncRunner
 from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
@@ -97,6 +99,12 @@ class Clock:
         deferred_scheduling: bool = True,
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
+        self._osc = Client(
+            ip="127.0.0.1",
+            port=12345,
+            name="SardineOsc",
+            ahead_amount=0)
+        self._link = None
 
         # Clock parameters
         self._accel = 0.0
@@ -175,6 +183,8 @@ class Clock:
         if not 1 < new_bpm < 900:
             raise ValueError("bpm must be within 1 and 800")
         self._bpm = new_bpm
+        if self._link:
+            pass
         self._reload_runners()
 
     @property
@@ -213,6 +223,75 @@ class Clock:
 
     # ---------------------------------------------------------------------- #
     # Clock methods
+
+    # ----------------------------------------------------------------------------------------
+    # Link related functions
+
+    def sync_with_link(self):
+        """Synchronise with carabiner through LinkToPy"""
+        import link
+        self._link = link.Link(self.bpm)
+        self._link.enabled = True
+        self._link.startStopSyncEnabled = True
+        self._delta = 0
+
+    def break_with_link(self):
+        del self._link
+        self._link = None
+
+    def _get_link_information(self):
+        """Get information from Ableton Link"""
+        if self._link:
+            s = self._link.captureSessionState()
+            link_time = self._link.clock().micros();
+            tempo_str = '{0:.2f}'.format(s.tempo())
+            beats_str = '{0:.2f}'.format(s.beatAtTime(link_time, 0))
+            playing_str = str(s.isPlaying())
+            phase = s.phaseAtTime(link_time, self.beat_per_bar)
+            return {
+                "tempo": tempo_str,
+                "beats": beats_str,
+                "playing": playing_str,
+                "phase": phase}
+
+    def print_link_information(self):
+        i = self._get_link_information()
+        print(f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}')
+    
+    def _link_phase_to_ppqn(self):
+        """Convert Ableton Link phase to valid Sardine phase based on PPQN"""
+        from math import floor
+        i = self._get_link_information()
+        def scale(x, srcRange, dstRange):
+            return (x-srcRange[0])*(dstRange[1]-dstRange[0])/(srcRange[1]-srcRange[0])+dstRange[0]
+        return int(scale(i["phase"], (0.0, self.beat_per_bar), (-1, self.ppqn)))
+
+    def _link_beat_to_sardine_beat(self):
+        """Convert Ableton Link beats to valid Sardine beat"""
+        i = self._get_link_information()
+        return int(float(i["beats"]))
+
+    def _link_time_to_sardine_time(self):
+        """Conversion from Ableton Link Format to valid Sardine beats"""
+        i = self._get_link_information()
+        return {
+            "tempo": int(float(i["tempo"])),
+            "beats": self._link_beat_to_sardine_beat(),
+            "playing": i["playing"],
+            "phase": self._link_phase_to_ppqn()}
+
+    def _link_time_to_ticks(self):
+        """Convert Ableton Link time to ticks"""
+        i = self._get_link_information()
+        phase = self._link_phase_to_ppqn()           # first: current phase
+        beat  = int(round(float(i["beats"]))) * (self.ppqn) # beats in ticks
+        return beat + phase
+
+
+    def drop_carabiner(self):
+        """Drop connexion to Carabiner if Carabiner"""
+        if self._carabiner:
+            del self._carabiner
 
     def get_beat_ticks(self, n_beats: Union[int, float], *, sync: bool = True) -> int:
         """Determines the number of ticks to wait for N beats to pass.
@@ -272,8 +351,16 @@ class Clock:
         return interval - self._delta
 
     def _increment_clock(self):
-        self._current_tick += 1
-        self._update_handles()
+        if self._link:
+            temporal_info = self._link_time_to_sardine_time()
+            self.bpm = temporal_info["tempo"]
+            self._current_tick = self._link_time_to_ticks() 
+            # self.tick = self._link_time_to_ticks()
+            self._update_handles()
+            return
+        else:
+            self._current_tick += 1
+            self._update_handles()
 
     def _reload_runners(self):
         for runner in self.runners.values():
@@ -422,6 +509,11 @@ class Clock:
             clock=self, osc_client=connexion, address=address, at=at, **kwargs
         )
 
+    def _sardine_beat_to_link_beat(self):
+        integer_part = self.beat + 1
+        floating_part = self.phase / self.ppqn
+        return float(integer_part + floating_part)
+
     async def run_active(self):
         """Main runner for the active mode (master)"""
         self._current_tick = 0
@@ -433,6 +525,7 @@ class Clock:
             duration = self._get_tick_duration()
             await asyncio.sleep(duration)
             self._midi.send_clock()
+            self._osc._send_clock_information(self)
             self._increment_clock()
 
             elapsed = time.perf_counter() - begin

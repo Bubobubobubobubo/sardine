@@ -1,10 +1,9 @@
-from lark import Lark, Transformer, v_args
+from lark import Lark, Transformer, v_args, Tree
 from itertools import cycle, islice, count, chain
 from pathlib import Path
 import random
 
 __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
-
 
 class ParserError(Exception):
     pass
@@ -26,6 +25,8 @@ qualifiers = {
     "maj7": [0, 4, 7, 11],
     "maj9": [0, 4, 11, 14],
     "minmaj7": [0, 3, 7, 11],
+    "5": [0, 7, 12],
+    "6": [0, 4, 7, 9],
     "7": [0, 4, 7, 10],
     "9": [0, 4, 10, 14],
     "b9": [0, 4, 10, 13],
@@ -38,12 +39,74 @@ qualifiers = {
     "b5": [0, 4, 6, 12],
     "mb5": [0, 3, 6, 12],
     # Scales begin here
+    # Based on a very partial list found here:
+    # https://en.wikipedia.org/wiki/List_of_musical_scales_and_modes
     "major": [0, 2, 4, 5, 7, 9, 11],
     "minor": [0, 2, 3, 5, 7, 8, 10],
     "hminor": [0, 2, 3, 5, 7, 8, 11],
     "^minor": [0, 2, 3, 5, 7, 9, 11],  # doesn't work
     "vminor": [0, 2, 3, 5, 7, 8, 10],
     "penta": [0, 2, 4, 7, 9],
+    "acoustic": [0, 2, 4, 6, 7, 9, 10],
+    "aeolian": [0, 2, 3, 5, 7, 8, 10],
+    "algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17],
+    "superlocrian": [0, 1, 3, 4, 6, 8, 10],
+    "augmented": [0, 3, 4, 7, 8, 11],
+    "bebop": [0, 2, 4, 5, 7, 9, 10, 11],
+    "blues": [0, 3, 5, 6, 7, 10],
+    "chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "dorian": [0, 2, 3, 5, 7, 9, 10],
+    "double-harmonic": [0, 1, 4, 5, 8, 11],
+    "enigmatic": [0, 1, 4, 6, 8, 10, 11],
+    "flamenco": [0, 1, 4, 5, 7, 8, 11],
+    "gypsy": [0, 2, 3, 6, 7, 8, 10],
+    "halfdim": [0, 2, 3, 5, 6, 8, 10],
+    "harm-major": [0, 2, 4, 5, 7, 8, 11],
+    "harm-minor": [0, 2, 3, 5, 7, 8, 11],
+    "hirajoshi": [0, 4, 6, 7, 11],
+    "hungarian-minor": [0, 2, 3, 6, 7, 8, 11],
+    "hungarian-major": [0, 3, 4, 6, 7, 9, 10],
+    "in": [0, 1, 5, 7, 8],
+    "insen": [0, 1, 5, 7, 10],
+    "ionian": [0, 2, 4, 5, 7, 9, 11],
+    "istrian": [0, 1, 3, 4, 6, 7],
+    "iwato": [0, 1, 5, 6, 10],
+    "locrian": [0, 1, 3, 5, 6, 8, 10],
+    "lydian-augmented": [0, 2, 4, 6, 8, 9, 11],
+    "lydian": [0, 2, 4, 5, 7, 8, 9, 11],
+    "major-locrian": [0, 2, 4, 5, 6, 8, 10],
+    "major-penta": [0, 2, 4, 7, 9],
+    "melodic-minor-ascending": [0, 2, 3, 5, 7, 9, 11],
+    "melodic-minor-descending": [0, 2, 3, 5, 7, 8, 10],
+    "minor-penta": [0, 3, 5, 7, 10],
+    "mixolydian": [0, 2, 4, 5, 7, 9, 10],
+    "neapolitan": [0, 1, 3, 5, 7, 8, 11],
+    "octatonic": [0, 2, 3, 5, 6, 8, 9, 11],
+    "octatonic2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "persian": [0, 1, 4, 5, 6, 8, 11],
+    "phrygian": [0, 1, 4, 5, 7, 8, 10],
+    "prometheus": [0, 2, 4, 6, 9, 10],
+    "harmonics": [0, 3, 4, 5, 7, 9],
+    "tritone": [0, 1, 4, 6, 7, 10],
+    "two-semitone": [0, 1, 2, 6, 7, 8],
+    "ukrainian": [0, 2, 3, 6, 7, 9, 10],
+    "whole": [0, 2, 4, 6, 8, 10],
+    "yo": [0, 3, 5, 7, 10],
+    "symetrical": [0, 1, 2, 6, 7, 10],
+    "symetrical2": [0, 2, 3, 6, 8, 10],
+    "messiaen1": [0, 2, 4, 6, 8, 10],
+    "messiaen2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11],
+    "messiaen4": [0, 1, 2, 4, 6, 7, 8, 11],
+    "messiaen5": [0, 1, 5, 6, 7, 11],
+    "messiaen6": [0, 2, 4, 5, 6, 8],
+    "messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11],
+    # Structures (other musical objects)
+    "fourths": [0, 4, 10, 15, 20],
+    "fifths": [0, 7, 14, 21, 28],
+    "sixths": [0, 9, 17, 26, 35],
+    "thirds": [0, 4, 8, 12],
+    "octaves": [0, 12, 24, 36, 48],
 }
 
 
@@ -120,8 +183,10 @@ class CalculateTree(Transformer):
     def raise_octave_x(self, note, number):
         return note + 12 * int(number)
 
-    def add_qualifier(self, note, qualifier):
-        return [note + x for x in qualifiers[qualifier]]
+    def add_qualifier(self, note, *quali):
+        quali = list(quali)
+        quali = "".join([str(x) for x in quali])
+        return [note + x for x in qualifiers[str(quali)]]
 
     def invert_chord(self, notes):
         pass
@@ -139,6 +204,74 @@ class CalculateTree(Transformer):
         note0, note1 = [note0], [note1]
         return note0.extend(note1)
 
+    def reverse_collection(self, collection):
+        collection.reverse()
+        return collection
+
+    def collection_palindrome(self, collection):
+        collection.reverse()
+        return collection + list(reversed(collection))
+
+    def shuffle_collection(self, collection):
+        random.shuffle(collection)
+        return collection
+
+    def braid_collection(self, collection):
+        col_len = len(collection) // 2
+        first, second = collection[:col_len], collection[col_len:]
+        return [val for pair in zip(first, second) for val in pair]
+
+    def expand_collection(self, collection):
+        def expand_number(number):
+            expansions = [0, -12, 12]
+            return number + random.choice(expansions)
+
+        return [expand_number(x) for x in collection]
+
+    def disco_collection(self, collection):
+        applier = cycle([lambda x: x - 12, lambda x: self.id(x)])
+        return [next(applier)(x) for x in collection]
+
+    def repeat_collection(self, collection, number):
+        final_list = []
+        for list in [collection] * int(number):
+            final_list.extend(list)
+        return final_list
+
+    def repeat_collection_x(self, collection, number):
+        return self.repeat_collection(collection, number)
+
+    def pick_collection_x(self, collection, number):
+        list = CyclicalList(initial_list=collection)
+        return list[int(number)]
+
+    def add_collection(self, collec0, collec1):
+        longest, list = max(len(collec0), len(collec1)), []
+        collec0, collec1 = cycle(collec0), cycle(collec1)
+        for _ in range(longest):
+            list.append(next(collec0) + next(collec1))
+        return list
+
+    def sub_collection(self, collec0, collec1):
+        longest, list = max(len(collec0), len(collec1)), []
+        collec0, collec1 = cycle(collec0), cycle(collec1)
+        for _ in range(longest):
+            list.append(next(collec0) - next(collec1))
+        return list
+
+    def collection_drop2(self, collection):
+        collection[1] = collection[1] - 12
+        return collection
+
+    def collection_drop3(self, collection):
+        collection[2] = collection[2] - 12
+        return collection
+
+    def collection_drop2and4(self, collection):
+        collection[1] = collection[1] - 12
+        collection[3] = collection[3] - 12
+        return collection
+
     def id(self, a):
         return a
 
@@ -149,7 +282,13 @@ class CalculateTree(Transformer):
         return random.random()
 
     def generate_ramp(self, left, right):
-        return list(range(int(left), int(right) + 1))
+        # I really don't understand why this fails
+        if int(left) > int(right):
+            new_list = list(reversed(range(int(right), int(left) + 1)))
+            return new_list
+        else:
+            return list(range(int(left), int(right) + 1))
+            
 
     def generate_ramp_with_range(self, left, right, step):
         return list(floating_point_range(start=left, end=right, step=step))
@@ -207,6 +346,16 @@ class CalculateTree(Transformer):
             return [x + left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x + right for x in left]
+
+    def power(self, left, right):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return pow(left, right)
+        elif all(map(lambda x: isinstance(x, list), [left, right])):
+            return [pow(x, y) for x, y in zip(cycle(right), left)]
+        elif isinstance(left, (int, float)) and isinstance(right, list):
+            return [pow(left, x) for x in right]
+        elif isinstance(left, list) and isinstance(right, (float, int)):
+            return [pow(right, x) for x in left]
 
     def substraction(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -289,29 +438,59 @@ grammars = {
 
 parsers = {
     "number": {
-        "raw": Lark.open(grammars["number"], rel_to=__file__, parser="lalr"),
+        "raw": Lark.open(
+            grammars["number"],
+            rel_to=__file__,
+            parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
+        ),
         "full": Lark.open(
             grammars["number"],
             rel_to=__file__,
             parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
             transformer=CalculateTree(),
         ),
     },
     "name": {
-        "raw": Lark.open(grammars["name"], rel_to=__file__, parser="lalr"),
+        "raw": Lark.open(
+            grammars["name"],
+            rel_to=__file__,
+            parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
+        ),
         "full": Lark.open(
             grammars["name"],
             rel_to=__file__,
             parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
             transformer=CalculateTree(),
         ),
     },
     "note": {
-        "raw": Lark.open(grammars["note"], rel_to=__file__, parser="lalr"),
+        "raw": Lark.open(
+            grammars["note"],
+            rel_to=__file__,
+            parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
+        ),
         "full": Lark.open(
             grammars["note"],
             rel_to=__file__,
             parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
             transformer=CalculateTree(),
         ),
     },
@@ -320,9 +499,14 @@ parsers = {
 
 class ListParser:
     def __init__(self, parser_type: str = "number"):
+        """
+        Initialise two different parsers:
+        - result_parser: the parser used to generate patterns
+        - printing_parser: the parser used for debugging purposes
+        """
         try:
-            self.parser = parsers[parser_type]["full"].parse
-            self.raw_parser = parsers[parser_type]["raw"]
+            self._result_parser = parsers[parser_type]["full"]
+            self._printing_parser = parsers[parser_type]["raw"]
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
 
@@ -334,13 +518,19 @@ class ListParser:
             return self._flatten_result(pat[0]) + self._flatten_result(pat[1:])
         return pat[:1] + self._flatten_result(pat[1:])
 
-    def _parse_token(self, string: str):
-        """Parse a single token"""
-        return self.parser(string)
+    def pretty_print(self, expression: str):
+        """Pretty print an expression from parser"""
+        print(f"EXPR: {expression}")
+        print(Tree.pretty(self._printing_parser.parse(expression)))
+        print(f"RESULT: {self._result_parser.parse(expression)}")
 
-    def _parse_token_raw(self, string: str):
-        """Parse a single token"""
-        return self.raw_parser.parse(string)
+    def print_tree_only(self, expression: str):
+        """Print only tree for debugging purposes"""
+        print(Tree.pretty(self._printing_parser.parse(expression)))
+
+    def _parse_token(self, string: str):
+        """Parse a single token and return the result for usage"""
+        return self._result_parser.parse(string)
 
     def parse(self, pattern: str):
         """Parse a whole pattern and return a flattened list"""
@@ -349,7 +539,7 @@ class ListParser:
             try:
                 final_pattern.append(self._parse_token(token))
             except Exception as e:
-                raise ParserError(f"Incorrect token: {token}") from e
+                raise ParserError(f"Non valid token: {token}") from e
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):
@@ -357,23 +547,19 @@ class ListParser:
         final_pattern = []
         for token in pattern.split():
             try:
-                print(self._parse_token(token))
-                print(self._parse_token_raw(token))
+                self.pretty_print(expression=token)
             except Exception as e:
                 import traceback
 
                 print(f"Error: {e}: {traceback.format_exc()}")
                 continue
 
-
 # Useful utilities
-
 
 def Pname(pattern: str, i: int = 0):
     parser = ListParser(parser_type="name")
     pattern = parser.parse(pattern)
     return pattern[i % len(pattern)]
-
 
 def Pnote(pattern: str, i: int = 0):
     parser = ListParser(parser_type="note")

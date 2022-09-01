@@ -232,7 +232,7 @@ class LinkInterface:
                         "Socket Connection Timeout, Carabiner could not be started"
                     )
                     break
-                print(".", end='', flush=True)
+                print(".", end="", flush=True)
                 time.sleep(0.1)
 
     def _listener(self):

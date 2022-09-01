@@ -100,10 +100,8 @@ class Clock:
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
         self._osc = Client(
-            ip="127.0.0.1",
-            port=12345,
-            name="SardineOsc",
-            ahead_amount=0)
+            ip="127.0.0.1", port=12345, name="SardineOsc", ahead_amount=0
+        )
         self._link = None
 
         # Clock parameters
@@ -225,73 +223,78 @@ class Clock:
     # Clock methods
 
     # ----------------------------------------------------------------------------------------
-    # Link related functions
+    # Link related functions
 
     def sync_with_link(self):
         """Synchronise with carabiner through LinkToPy"""
         import link
+
         self._link = link.Link(self.bpm)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
         self._delta = 0
 
-    def break_with_link(self):
+    def unlink(self):
+        """Close connexion to Ableton Link"""
         del self._link
         self._link = None
 
-    def _get_link_information(self):
+    def _capture_link_info(self):
         """Get information from Ableton Link"""
         if self._link:
             s = self._link.captureSessionState()
-            link_time = self._link.clock().micros();
-            tempo_str = '{0:.2f}'.format(s.tempo())
-            beats_str = '{0:.2f}'.format(s.beatAtTime(link_time, 0))
+            link_time = self._link.clock().micros()
+            tempo_str = "{0:.2f}".format(s.tempo())
+            beats_str = "{0:.2f}".format(s.beatAtTime(link_time, 0))
             playing_str = str(s.isPlaying())
             phase = s.phaseAtTime(link_time, self.beat_per_bar)
             return {
                 "tempo": tempo_str,
                 "beats": beats_str,
                 "playing": playing_str,
-                "phase": phase}
+                "phase": phase,
+            }
 
-    def print_link_information(self):
-        i = self._get_link_information()
-        print(f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}')
-    
+    def link_log(self):
+        i = self._capture_link_info()
+        print(
+            f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}'
+        )
+
     def _link_phase_to_ppqn(self):
         """Convert Ableton Link phase to valid Sardine phase based on PPQN"""
         from math import floor
-        i = self._get_link_information()
+
+        i = self._capture_link_info()
+
         def scale(x, srcRange, dstRange):
-            return (x-srcRange[0])*(dstRange[1]-dstRange[0])/(srcRange[1]-srcRange[0])+dstRange[0]
+            return (x - srcRange[0]) * (dstRange[1] - dstRange[0]) / (
+                srcRange[1] - srcRange[0]
+            ) + dstRange[0]
+
         return int(scale(i["phase"], (0.0, self.beat_per_bar), (-1, self.ppqn)))
 
     def _link_beat_to_sardine_beat(self):
         """Convert Ableton Link beats to valid Sardine beat"""
-        i = self._get_link_information()
+        i = self._capture_link_info()
         return int(float(i["beats"]))
 
-    def _link_time_to_sardine_time(self):
+    def _format_link_capture(self):
         """Conversion from Ableton Link Format to valid Sardine beats"""
-        i = self._get_link_information()
+        i = self._capture_link_info()
         return {
             "tempo": int(float(i["tempo"])),
             "beats": self._link_beat_to_sardine_beat(),
             "playing": i["playing"],
-            "phase": self._link_phase_to_ppqn()}
+            "phase": self._link_phase_to_ppqn(),
+        }
 
     def _link_time_to_ticks(self):
         """Convert Ableton Link time to ticks"""
-        i = self._get_link_information()
-        phase = self._link_phase_to_ppqn()           # first: current phase
-        beat  = int(round(float(i["beats"]))) * (self.ppqn) # beats in ticks
+        i = self._capture_link_info()
+        phase = self._link_phase_to_ppqn()  # first: current phase
+        beat = int(round(float(i["beats"]))) * (self.ppqn)  # beats in ticks
         return beat + phase
-
-
-    def drop_carabiner(self):
-        """Drop connexion to Carabiner if Carabiner"""
-        if self._carabiner:
-            del self._carabiner
 
     def get_beat_ticks(self, n_beats: Union[int, float], *, sync: bool = True) -> int:
         """Determines the number of ticks to wait for N beats to pass.
@@ -352,10 +355,10 @@ class Clock:
 
     def _increment_clock(self):
         if self._link:
-            temporal_info = self._link_time_to_sardine_time()
+            temporal_info = self._format_link_capture()
             self.bpm = temporal_info["tempo"]
-            self._current_tick = self._link_time_to_ticks() 
-            # self.tick = self._link_time_to_ticks()
+            self._current_tick = self._link_time_to_ticks()
+            # self.tick = self._link_time_to_ticks()
             self._update_handles()
             return
         else:

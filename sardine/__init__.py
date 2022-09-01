@@ -203,28 +203,38 @@ def parser_repl(parser_type: str):
     except KeyboardInterrupt:
         pass
 
+
 from dataclasses import dataclass
+
+
 @dataclass
 class CrudeIterator:
     direction: str
     value: Union[int, float]
 
+
 class I:
     """Stateful iterator class"""
+
     values = {}
-    def __new__(cls, name: str, reset: bool = False, direction: str='up'):
-        if reset: 
-            cls.values[name] = CrudeIterator(direction=direction, value=0 if direction=='up' else 1)
+
+    def __new__(cls, name: str, reset: bool = False, direction: str = "up"):
+        if reset:
+            cls.values[name] = CrudeIterator(
+                direction=direction, value=0 if direction == "up" else 1
+            )
         if name not in cls.values.keys():
-            cls.values[name] = CrudeIterator(direction=direction, value=0 if direction=='up' else 1)
+            cls.values[name] = CrudeIterator(
+                direction=direction, value=0 if direction == "up" else 1
+            )
         else:
             cls._new_value(iter=cls.values[name])
             return cls.values[name].value
 
     def _new_value(iter: CrudeIterator) -> CrudeIterator:
         """Get a new value for a given CrudeIterator"""
-        if iter.direction == 'up':
+        if iter.direction == "up":
             iter.value += 1
-        elif iter.direction == 'down':
+        elif iter.direction == "down":
             iter.value -= 1
         return iter

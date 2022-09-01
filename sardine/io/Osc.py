@@ -79,20 +79,19 @@ class Client:
 
     def _get_clock_information(self, clock: "Clock") -> list:
         """Send out everything you can possibly send about the clock"""
-        return  (["/cps", (clock.bpm / 60 / 4)],
-                ["/bpm", clock.bpm],
-                ["/beat", clock.beat],
-                ["/bar", clock.bar],
-                ["/tick", clock.tick],
-                ["/phase", clock.phase],
-                ["/accel", clock.accel])
+        return (
+            ["/cps", (clock.bpm / 60 / 4)],
+            ["/bpm", clock.bpm],
+            ["/beat", clock.beat],
+            ["/bar", clock.bar],
+            ["/tick", clock.tick],
+            ["/phase", clock.phase],
+            ["/accel", clock.accel],
+        )
 
     def _send_clock_information(self, clock: "Clock"):
         for element in self._get_clock_information(clock):
-            self._send(
-                clock=clock,
-                address=element[0],
-                message=[element[1]])
+            self._send(clock=clock, address=element[0], message=[element[1]])
 
     def _send(self, clock: "Clock", address: str, message):
         """Build user-made OSC messages"""

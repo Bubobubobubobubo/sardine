@@ -145,12 +145,14 @@ def edit_superdirt_configuration():
     """Call $EDITOR to edit Python based user configuration"""
     _edit_configuration("default_superdirt.scd")
 
+
 def is_sclang_cooperative():
     """
     Check if SCLang can be booted as a subprocess
     TODO: cross-platform
     """
     pass
+
 
 if __name__ == "__main__":
     main()

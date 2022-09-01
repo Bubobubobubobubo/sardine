@@ -81,6 +81,7 @@ class SuperColliderProcess:
         boot time!
         """
         import sys
+
         try:
             while self._sclang.poll() is None:
                 where = self.temp_file.tell()

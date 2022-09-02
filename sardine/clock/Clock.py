@@ -21,14 +21,12 @@ __all__ = ("Clock", "TickHandle")
 T = TypeVar("T")
 MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
 
+# This specifies the number of ticks to offset the clock in the
+# current context.  # Usually this tick shift is updated within
+# the context of scheduled functions to simulate sleeping
+# without actually blocking the function. Behavior is undefined
+# if the tick shift is changed in the global context.
 tick_shift = contextvars.ContextVar("tick_shift", default=0)
-"""
-This specifies the number of ticks to offset the clock in the current context.
-
-Usually this tick shift is updated within the context of scheduled functions
-to simulate sleeping without actually blocking the function.
-Behavior is undefined if the tick shift is changed in the global context.
-"""
 
 
 @functools.total_ordering
@@ -105,12 +103,15 @@ class Clock:
         self._link = None
 
         # Clock parameters
-        self._accel = 0.0
-        self._bpm = bpm
-        self._ppqn = ppqn
-        self.beat_per_bar = beats_per_bar
-        self.running = False
-        self.debug = False
+        self._accel: float = 0.0
+        self._nudge: float = 0.0
+        self._midi_nudge: float = 0.0
+        self._superdirt_nudge: float = 0.0
+        self._bpm: float = bpm
+        self._ppqn: int = ppqn
+        self.beat_per_bar: int = beats_per_bar
+        self.running: bool = False
+        self.debug: bool = False
 
         # Scheduling attributes
         self.runners: dict[str, AsyncRunner] = {}
@@ -139,13 +140,67 @@ class Clock:
     # Clock properties
 
     @property
+    def nudge(self) -> int:
+        return self._nudge
+
+    @nudge.setter
+    def nudge(self, value: int):
+        """Nudge the clock to align on another peer.
+        Very similar to accel but temporary. Nudge will
+        reset every time the clock loops around.
+
+        Args:
+            value (int): nudge in ms
+        """
+        self._nudge = value
+        self._reload_runners()
+
+    @property
+    def midi_nudge(self) -> int:
+        return self._nudge
+
+    @midi_nudge.setter
+    def midi_nudge(self, value: int):
+        """Nudge every MIDI Message by a given amount of time
+
+        Args:
+            value (int): nudge amount
+        """
+        self._midi_nudge = value
+
+    @property
+    def superdirt_nudge(self) -> int:
+        return self._superdirt_nudge
+
+    @superdirt_nudge.setter
+    def superdirt_nudge(self, value: int):
+        """Nudge every SuperDirt Message by a given amount of time
+
+        Args:
+            value (int): nudge amount
+        """
+        self._superdirt_nudge = value
+
+    @property
     def accel(self) -> int:
         return self._accel
 
     @accel.setter
     def accel(self, value: int):
+        """Accel stands for acceleration. In active MIDI mode, accel acts as
+        a way to nudge the clock to run faster or slower (from 0 to 100%). It
+        can be quite useful when dealing with a musician that can't really use
+        any synchronisation protocol.
+
+
+        Args:
+            value (int): a nudge factor from 0 to 100%
+
+        Raises:
+            ValueError: if 'value' exceeds 100%
+        """
         if value >= 100:
-            raise ValueError("cannot set accel above 100")
+            raise ValueError("Cannot set acceleration above 100%.")
         self._accel = value
         self._reload_runners()
 
@@ -155,6 +210,11 @@ class Clock:
 
     @deferred_scheduling.setter
     def deferred_scheduling(self, enabled: bool):
+        """Turn on deferred scheduling.
+
+        Args:
+            enabled (bool): True or False
+        """
         self._deferred_scheduling = enabled
 
         for runner in self.runners.values():
@@ -166,6 +226,14 @@ class Clock:
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
+        """Tick is the tiniest amount of time tracked by Sardine
+        Clock. A tick is the time taken by the clock to loop on
+        itself. Ticks are used by the system to deduce all other
+        temporal informations: beat, bar, etc...
+
+        Args:
+            new_tick (int): give a new tick (backwards or forward in time)
+        """
         change = new_tick - self._current_tick
         self._current_tick = new_tick
         self._shift_handles(change)
@@ -178,7 +246,15 @@ class Clock:
 
     @bpm.setter
     def bpm(self, new_bpm: int):
-        if not 1 < new_bpm < 900:
+        """Beats per minute. Tempo for the Sardine Clock.
+
+        Args:
+            new_bpm (int): new tempo value
+
+        Raises:
+            ValueError: if tempo < 20 or tempo > 999 (non-musical values)
+        """
+        if not 20 < new_bpm < 999:
             raise ValueError("bpm must be within 1 and 800")
         self._bpm = new_bpm
         if self._link:
@@ -191,6 +267,16 @@ class Clock:
 
     @ppqn.setter
     def ppqn(self, pulses_per_quarter_note: int) -> int:
+        """Pulse per quarter note: how many pulses to form a quarter
+        note. Typically used by MIDI Clocks, the PPQN is an important
+        value to determine how fast a clock will be ticking and counting
+        beats, measures, etc... It is important to make sure that your PPQN
+        is identic to the PPQN of the device you are trying to synchronise
+        with.
+
+        Args:
+            pulses_per_quarter_note (int): Generally a multiple of 2 (24, 48).
+        """
         self._ppqn = pulses_per_quarter_note
         self._reload_runners()
 
@@ -225,14 +311,18 @@ class Clock:
     # ----------------------------------------------------------------------------------------
     # Link related functions
 
-    def sync_with_link(self):
-        """Synchronise with carabiner through LinkToPy"""
+    def sync(self):
+        """
+        Synchronise Sardine with Ableton Link. This method will call a new
+        instance of link through the LinkPython package (pybind11). As soon as
+        this instance is created, Sardine will instantly try to lock on the new
+        timegrid and share tempo with Link peers.
+        """
         import link
 
         self._link = link.Link(self.bpm)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
-        self._delta = 0
 
     def unlink(self):
         """Close connexion to Ableton Link"""
@@ -245,7 +335,7 @@ class Clock:
             s = self._link.captureSessionState()
             link_time = self._link.clock().micros()
             tempo_str = "{0:.2f}".format(s.tempo())
-            beats_str = "{0:.2f}".format(s.beatAtTime(link_time, 0))
+            beats_str = "{0:.2f}".format(s.beatAtTime(link_time, 4))
             playing_str = str(s.isPlaying())
             phase = s.phaseAtTime(link_time, self.beat_per_bar)
             return {
@@ -263,16 +353,17 @@ class Clock:
 
     def _link_phase_to_ppqn(self):
         """Convert Ableton Link phase to valid Sardine phase based on PPQN"""
-        from math import floor
 
         i = self._capture_link_info()
 
-        def scale(x, srcRange, dstRange):
-            return (x - srcRange[0]) * (dstRange[1] - dstRange[0]) / (
-                srcRange[1] - srcRange[0]
-            ) + dstRange[0]
+        def scale(
+            x: Union[int, float], source: tuple[int, int], destination: tuple[int, int]
+        ):
+            return (x - source[0]) * (destination[1] - destination[0]) / (
+                source[1] - source[0]
+            ) + destination[0]
 
-        return int(scale(i["phase"], (0.0, self.beat_per_bar), (-1, self.ppqn)))
+        return int(scale(i["phase"], (0, self.beat_per_bar), (0, self.ppqn)))
 
     def _link_beat_to_sardine_beat(self):
         """Convert Ableton Link beats to valid Sardine beat"""
@@ -350,8 +441,10 @@ class Clock:
 
         """
         accel_mult = 1 - self.accel / 100
+        nudge = self._nudge
+        self._nudge = 0
         interval = 60 / self.bpm / self.ppqn * accel_mult
-        return interval - self._delta
+        return (interval - self._delta) + nudge
 
     def _increment_clock(self):
         if self._link:
@@ -485,15 +578,15 @@ class Clock:
         print(first + second)
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
-        return SuperDirtSender(self, sound, at, **kwargs)
+        return SuperDirtSender(self, sound, at, nudge=self._superdirt_nudge, **kwargs)
 
     def midinote(
         self,
-        note: Union[int, str],
-        velocity: Union[int, str],
-        channel: Union[int, str],
+        note: Union[int, str] = 60,
+        velocity: Union[int, str] = 100,
+        channel: Union[int, str] = 0,
+        delay: Union[int, float, str] = 0.1,
         at: int = 0,
-        delay: Union[int, float, str] = 0.2,
         **kwargs,
     ) -> MIDISender:
         return MIDISender(
@@ -504,6 +597,7 @@ class Clock:
             note=note,
             velocity=velocity,
             channel=channel,
+            nudge=self._midi_nudge,
             **kwargs,
         )
 
@@ -527,8 +621,9 @@ class Clock:
 
             duration = self._get_tick_duration()
             await asyncio.sleep(duration)
-            self._midi.send_clock()
-            self._osc._send_clock_information(self)
+            if not self._link:
+                self._midi.send_clock()
+                self._osc._send_clock_information(self)
             self._increment_clock()
 
             elapsed = time.perf_counter() - begin

@@ -20,6 +20,7 @@ grammars = {
     "number": grammar_path / "grammars/number.lark",
     "name": grammar_path / "grammars/name.lark",
     "note": grammar_path / "grammars/note.lark",
+    "proto": grammar_path / "grammars/proto.lark",
 }
 
 
@@ -73,6 +74,25 @@ parsers = {
         ),
         "full": Lark.open(
             grammars["note"],
+            rel_to=__file__,
+            parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
+            transformer=CalculateTree(),
+        ),
+    },
+    "proto": {
+        "raw": Lark.open(
+            grammars["proto"],
+            rel_to=__file__,
+            parser="lalr",
+            start="start",
+            cache=True,
+            lexer="contextual",
+        ),
+        "full": Lark.open(
+            grammars["proto"],
             rel_to=__file__,
             parser="lalr",
             start="start",

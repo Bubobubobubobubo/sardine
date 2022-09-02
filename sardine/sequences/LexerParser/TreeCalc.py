@@ -555,6 +555,32 @@ class CalculateTree(Transformer):
         elif isinstance(value, list):
             return [-x for x in value]
 
+    def concat(self, left, right):
+        """List Concatenation: takes a list and extends it with
+        another list. Used by proto parser.
+
+        Args:
+            left (list): The initial list
+            right (list): The list to concatenate
+
+        Results
+            list: One list of of two
+        """
+
+        if isinstance(left, list):
+            if isinstance(right, list):
+                left.extend(right)
+                return left
+            if isinstance(right, (float, int)):
+                left.extend([right])
+                return left
+        if isinstance(left, (int, float)):
+            if isinstance(right, list):
+                [left].extend(right)
+                return left
+            if isinstance(right, (float, int)):
+                return [left, right]
+
     def addition(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left + right

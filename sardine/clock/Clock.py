@@ -317,7 +317,7 @@ class Clock:
     # ----------------------------------------------------------------------------------------
     # Link related functions
 
-    def sync(self):
+    def link(self):
         """
         Synchronise Sardine with Ableton Link. This method will call a new
         instance of link through the LinkPython package (pybind11). As soon
@@ -329,10 +329,11 @@ class Clock:
         are ready for scheduling in your swimming functions!
         """
         import link
-
         self._link = link.Link(self.bpm)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
+        print('[red bold]Joining Link Session: [/red bold]', end='')
+        print(self._capture_link_info())
 
     def unlink(self):
         """
@@ -344,6 +345,7 @@ class Clock:
         """
         del self._link
         self._link = None
+        print('[red bold]Broke away from Link Session[/red bold]')
 
     def _capture_link_info(self):
         """Capture information about the current state of the Ableton Link
@@ -495,7 +497,7 @@ class Clock:
             temporal_info = self._format_link_capture()
             self.bpm = temporal_info["tempo"]
             self._current_tick = self._link_time_to_ticks()
-            self._current_tick += 1 # why not
+            # self._current_tick += 1 # why not
             self._update_handles()
             return
         else:

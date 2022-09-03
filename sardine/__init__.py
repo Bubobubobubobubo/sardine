@@ -19,6 +19,7 @@ from rich import print
 from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
+from rich import pretty
 from .io import read_user_configuration, pretty_print_configuration_file
 from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
@@ -45,6 +46,7 @@ else:
     process.nice(20)
 
 warnings.filterwarnings("ignore")
+pretty.install() # use rich to print data structures
 
 sardine = """
 

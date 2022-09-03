@@ -6,6 +6,9 @@ import inspect
 import time
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
+from random import random
+from math import floor
+from fractions import Fraction
 
 
 import mido
@@ -145,12 +148,11 @@ class Clock:
 
     @nudge.setter
     def nudge(self, value: int):
-        """Nudge the clock to align on another peer.
-        Very similar to accel but temporary. Nudge will
-        reset every time the clock loops around.
+        """Nudge the clock to align on another peer. Very similar to accel
+        but temporary. Nudge will reset every time the clock loops around.
 
         Args:
-            value (int): nudge in ms
+            value (int): nudge factor
         """
         self._nudge = value
         self._reload_runners()
@@ -174,7 +176,11 @@ class Clock:
 
     @superdirt_nudge.setter
     def superdirt_nudge(self, value: int):
-        """Nudge every SuperDirt Message by a given amount of time
+        """Nudge every SuperDirt Message by a given amount of time.
+        Beware, nudging in the clock through this attribute is not
+        the same as nudging the OSC messages themselves. If you get
+        late messages in SuperDirt, please configure ahead_amount for
+        the OSC object.
 
         Args:
             value (int): nudge amount
@@ -314,9 +320,13 @@ class Clock:
     def sync(self):
         """
         Synchronise Sardine with Ableton Link. This method will call a new
-        instance of link through the LinkPython package (pybind11). As soon as
-        this instance is created, Sardine will instantly try to lock on the new
-        timegrid and share tempo with Link peers.
+        instance of link through the LinkPython package (pybind11). As soon
+        as this instance is created, Sardine will instantly try to lock on
+        the new timegrid and share tempo with Link peers.
+
+        NOTE: the Ableton Link mechanism is currently unstable and should be
+        used for test purposes only. You might end up loosing some events that
+        are ready for scheduling in your swimming functions!
         """
         import link
 
@@ -325,17 +335,30 @@ class Clock:
         self._link.startStopSyncEnabled = True
 
     def unlink(self):
-        """Close connexion to Ableton Link"""
+        """
+        Close connexion to Ableton Link by deleting the object. Sardine will
+        continue as if time never stopped ticking from the moment the clock
+        was disconnected from Link Clock (ticks will continue to increase, as
+        well as beat number). Tempo will not be updated to fall back to initial
+        value.
+        """
         del self._link
         self._link = None
 
     def _capture_link_info(self):
-        """Get information from Ableton Link"""
+        """Capture information about the current state of the Ableton Link
+        session. This internal method will try to gather high-res temporal
+        informations for later processing.
+
+        Returns:
+            dict: a dictionnary containing temporal information about the Link
+            session.
+        """
         if self._link:
             s = self._link.captureSessionState()
             link_time = self._link.clock().micros()
-            tempo_str = "{0:.2f}".format(s.tempo())
-            beats_str = "{0:.2f}".format(s.beatAtTime(link_time, 4))
+            tempo_str = s.tempo()
+            beats_str = s.beatAtTime(link_time, self.beat_per_bar)
             playing_str = str(s.isPlaying())
             phase = s.phaseAtTime(link_time, self.beat_per_bar)
             return {
@@ -346,29 +369,49 @@ class Clock:
             }
 
     def link_log(self):
+        """Print state of current Ableton Link session on stdout."""
         i = self._capture_link_info()
         print(
             f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}'
         )
 
     def _link_phase_to_ppqn(self):
-        """Convert Ableton Link phase to valid Sardine phase based on PPQN"""
+        """Convert Ableton Link phase (0 to quantum, aka number of beats)
+        to Sardine phase (based on ticks and pulses per quarter notes).
+        The conversion is done using the internal _scale subfunction.
 
+        There is a great deal of approximation in the implementation that
+        can be the cause of many issues. Converting from a non-deterministic
+        floating point number to integer might cause issues.
+
+        It is currently possible to hear that some events are skipped entirely.
+        I'm not really sure how to solve this bug and I'm almost sure that the
+        solution is to be found by refactoring this method.
+        
+
+        Returns:
+            int: current phase (0 - self.ppqn)
+        """
         i = self._capture_link_info()
 
-        def scale(
-            x: Union[int, float], source: tuple[int, int], destination: tuple[int, int]
+        def _scale(
+            x: Union[int, float],
+            old: tuple[int, int],
+            new: tuple[int, int]
         ):
-            return (x - source[0]) * (destination[1] - destination[0]) / (
-                source[1] - source[0]
-            ) + destination[0]
+            return (x - old[0]) * (new[1] - new[0]) / (
+                old[1] - old[0]) + new[0]
 
-        return int(scale(i["phase"], (0, self.beat_per_bar), (0, self.ppqn)))
+        # This is insanely ugly. I wonder if bugs currently come
+        # from this very hacky solution.
+        t = Fraction(_scale(i["phase"], (0, self.beat_per_bar),
+                     (0, self.ppqn * self.beat_per_bar))) % self.ppqn
+        return abs(t)
 
     def _link_beat_to_sardine_beat(self):
         """Convert Ableton Link beats to valid Sardine beat"""
         i = self._capture_link_info()
-        return int(float(i["beats"]))
+        return float(i["beats"])
 
     def _format_link_capture(self):
         """Conversion from Ableton Link Format to valid Sardine beats"""
@@ -383,8 +426,8 @@ class Clock:
     def _link_time_to_ticks(self):
         """Convert Ableton Link time to ticks"""
         i = self._capture_link_info()
-        phase = self._link_phase_to_ppqn()  # first: current phase
-        beat = int(round(float(i["beats"]))) * (self.ppqn)  # beats in ticks
+        phase = self._link_phase_to_ppqn()
+        beat = int(float(i["beats"])) * (self.ppqn)
         return beat + phase
 
     def get_beat_ticks(self, n_beats: Union[int, float], *, sync: bool = True) -> int:
@@ -444,14 +487,15 @@ class Clock:
         nudge = self._nudge
         self._nudge = 0
         interval = 60 / self.bpm / self.ppqn * accel_mult
-        return (interval - self._delta) + nudge
+        result = (interval - self._delta) + nudge
+        return result if result >= 0 else 0.0
 
     def _increment_clock(self):
         if self._link:
             temporal_info = self._format_link_capture()
             self.bpm = temporal_info["tempo"]
             self._current_tick = self._link_time_to_ticks()
-            # self.tick = self._link_time_to_ticks()
+            self._current_tick += 1 # why not
             self._update_handles()
             return
         else:
@@ -618,13 +662,16 @@ class Clock:
 
         while self.running:
             begin = time.perf_counter()
-
             duration = self._get_tick_duration()
-            await asyncio.sleep(duration)
             if not self._link:
+                await asyncio.sleep(duration)
                 self._midi.send_clock()
                 self._osc._send_clock_information(self)
-            self._increment_clock()
+                self._increment_clock()
+            else:
+                # TODO: remove this, I don't even know why it's here
+                await asyncio.sleep(duration / 4)
+                self._increment_clock()
 
             elapsed = time.perf_counter() - begin
             self._delta = elapsed - duration

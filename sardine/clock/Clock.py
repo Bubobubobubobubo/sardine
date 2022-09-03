@@ -6,10 +6,7 @@ import inspect
 import time
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
-from random import random
-from math import floor
-from fractions import Fraction
-
+from math import floor, ceil
 
 import mido
 from rich import print
@@ -406,14 +403,14 @@ class Clock:
 
         # This is insanely ugly. I wonder if bugs currently come
         # from this very hacky solution.
-        t = Fraction(_scale(i["phase"], (0, self.beat_per_bar),
-                     (0, self.ppqn * self.beat_per_bar))) % self.ppqn
+        t = ceil(_scale(i["phase"], (0, self.beat_per_bar),
+                  (0, self.ppqn * self.beat_per_bar))) % self.ppqn
         return abs(t)
 
     def _link_beat_to_sardine_beat(self):
         """Convert Ableton Link beats to valid Sardine beat"""
         i = self._capture_link_info()
-        return float(i["beats"])
+        return float(i["beats"]) + 1/1024
 
     def _format_link_capture(self):
         """Conversion from Ableton Link Format to valid Sardine beats"""
@@ -497,7 +494,6 @@ class Clock:
             temporal_info = self._format_link_capture()
             self.bpm = temporal_info["tempo"]
             self._current_tick = self._link_time_to_ticks()
-            # self._current_tick += 1 # why not
             self._update_handles()
             return
         else:
@@ -672,9 +668,8 @@ class Clock:
                 self._increment_clock()
             else:
                 # TODO: remove this, I don't even know why it's here
-                await asyncio.sleep(duration / 4)
+                await asyncio.sleep(duration / self.ppqn * self.ppqn)
                 self._increment_clock()
-
             elapsed = time.perf_counter() - begin
             self._delta = elapsed - duration
 

@@ -4,9 +4,10 @@ import functools
 import heapq
 import inspect
 import time
+import random
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
-from math import floor, ceil
+from math import ceil
 
 import mido
 from rich import print
@@ -121,6 +122,7 @@ class Clock:
         # Real-time attributes
         self._current_tick = 0
         self._delta = 0.0
+        self._phase_snapshot = 0
 
         # MIDI In Listener
         self._midi_port = midi_port
@@ -329,8 +331,15 @@ class Clock:
         self._link = link.Link(self.bpm)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
+
+        # We need to capture a first snapshot of time outside of the main
+        # mechanism in order to start calculations somewhere...
+        i = self._capture_link_info()
+        self._phase_snapshot = int(abs(round(self._scale(
+            i["phase"], (0, self.beat_per_bar),
+            (0, self.ppqn * self.beat_per_bar))) % self.ppqn))
+
         print('[red bold]Joining Link Session: [/red bold]', end='')
-        print(self._capture_link_info())
 
     def unlink(self):
         """
@@ -353,19 +362,18 @@ class Clock:
             dict: a dictionnary containing temporal information about the Link
             session.
         """
-        if self._link:
-            s = self._link.captureSessionState()
-            link_time = self._link.clock().micros()
-            tempo_str = s.tempo()
-            beats_str = s.beatAtTime(link_time, self.beat_per_bar)
-            playing_str = str(s.isPlaying())
-            phase = s.phaseAtTime(link_time, self.beat_per_bar)
-            return {
-                "tempo": tempo_str,
-                "beats": beats_str,
-                "playing": playing_str,
-                "phase": phase,
-            }
+        s = self._link.captureSessionState()
+        link_time = self._link.clock().micros()
+        tempo_str = s.tempo()
+        beats_str = s.beatAtTime(link_time, self.beat_per_bar)
+        playing_str = str(s.isPlaying())
+        phase = s.phaseAtTime(link_time, self.beat_per_bar)
+        return {
+            "tempo": tempo_str,
+            "beats": beats_str,
+            "playing": playing_str,
+            "phase": phase,
+        }
 
     def link_log(self):
         """Print state of current Ableton Link session on stdout."""
@@ -374,59 +382,45 @@ class Clock:
             f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}'
         )
 
-    def _link_phase_to_ppqn(self):
+    def _scale(
+        self,
+        x: Union[int, float],
+        old: tuple[int, int],
+        new: tuple[int, int]
+    ):
+        return (x - old[0]) * (new[1] - new[0]) / (old[1] - old[0]) + new[0]
+
+    def _link_phase_to_ppqn(self, captured_info: dict):
         """Convert Ableton Link phase (0 to quantum, aka number of beats)
         to Sardine phase (based on ticks and pulses per quarter notes).
         The conversion is done using the internal _scale subfunction.
 
-        There is a great deal of approximation in the implementation that
-        can be the cause of many issues. Converting from a non-deterministic
-        floating point number to integer might cause issues.
-
-        It is currently possible to hear that some events are skipped entirely.
-        I'm not really sure how to solve this bug and I'm almost sure that the
-        solution is to be found by refactoring this method.
-        
-
         Returns:
             int: current phase (0 - self.ppqn)
         """
-        i = self._capture_link_info()
+        new_phase = round(self._scale(
+            captured_info["phase"],
+            (0, self.beat_per_bar),
+            (0, self.ppqn * self.beat_per_bar))) % self.ppqn
 
-        def _scale(
-            x: Union[int, float],
-            old: tuple[int, int],
-            new: tuple[int, int]
-        ):
-            return (x - old[0]) * (new[1] - new[0]) / (
-                old[1] - old[0]) + new[0]
+        # Whatever happens, we need to move forward
+        if self._phase_snapshot == new_phase:
+            new_phase += 1
+        # But we can't tolerate phase discontinuities
+        if new_phase == self._phase_snapshot + 2:
+            new_phase -= 1
 
-        # This is insanely ugly. I wonder if bugs currently come
-        # from this very hacky solution.
-        t = ceil(_scale(i["phase"], (0, self.beat_per_bar),
-                  (0, self.ppqn * self.beat_per_bar))) % self.ppqn
-        return abs(t)
+        self._phase_snapshot = new_phase
+        return int(abs(self._phase_snapshot))
 
-    def _link_beat_to_sardine_beat(self):
+    def _link_beat_to_sardine_beat(self, captured_info: dict):
         """Convert Ableton Link beats to valid Sardine beat"""
-        i = self._capture_link_info()
-        return float(i["beats"]) + 1/1024
+        return int(captured_info["beats"])
 
-    def _format_link_capture(self):
-        """Conversion from Ableton Link Format to valid Sardine beats"""
-        i = self._capture_link_info()
-        return {
-            "tempo": int(float(i["tempo"])),
-            "beats": self._link_beat_to_sardine_beat(),
-            "playing": i["playing"],
-            "phase": self._link_phase_to_ppqn(),
-        }
-
-    def _link_time_to_ticks(self):
-        """Convert Ableton Link time to ticks"""
-        i = self._capture_link_info()
-        phase = self._link_phase_to_ppqn()
-        beat = int(float(i["beats"])) * (self.ppqn)
+    def _link_time_to_ticks(self, captured_info: dict):
+        """Convert Ableton Link time to ticks, used by _increment_clock"""
+        phase = int(self._link_phase_to_ppqn(captured_info))
+        beat = int(captured_info["beats"]) * (self.ppqn)
         return beat + phase
 
     def get_beat_ticks(self, n_beats: Union[int, float], *, sync: bool = True) -> int:
@@ -489,13 +483,24 @@ class Clock:
         result = (interval - self._delta) + nudge
         return result if result >= 0 else 0.0
 
-    def _increment_clock(self):
+    def _increment_clock(self, temporal_information: Optional[dict]):
+        """
+        This method is in charge of increment the clock (moving forward
+        in time). In normal MIDI Clock Mode, this is as simple as
+        ticking forward (+1) and updating handles so they notice that
+        change.
+
+        If Link is activated, temporal information must be received in
+        order to pinpoint the actual point of Link in time. This way,
+        Sardine can move time in accord with that reference point, while
+        trying to preserve its internal logic based on pulses per quarter
+        notes.
+        """
         if self._link:
-            temporal_info = self._format_link_capture()
-            self.bpm = temporal_info["tempo"]
-            self._current_tick = self._link_time_to_ticks()
+            self.bpm = float(temporal_information["tempo"])
+            self._current_tick = self._link_time_to_ticks(
+                temporal_information)
             self._update_handles()
-            return
         else:
             self._current_tick += 1
             self._update_handles()
@@ -661,15 +666,20 @@ class Clock:
         while self.running:
             begin = time.perf_counter()
             duration = self._get_tick_duration()
-            if not self._link:
+            if self._link:
+                await asyncio.sleep(duration)
+                info = self._capture_link_info()
+                self._increment_clock(temporal_information=info)
+            else:
                 await asyncio.sleep(duration)
                 self._midi.send_clock()
                 self._osc._send_clock_information(self)
-                self._increment_clock()
-            else:
-                # TODO: remove this, I don't even know why it's here
-                await asyncio.sleep(duration / self.ppqn * self.ppqn)
-                self._increment_clock()
+                # We can't tell if the user has switched to Link
+                # in the meantime. You should be ready to send
+                # link state whenever needed.
+                self._increment_clock(
+                    temporal_information=(self._capture_link_info(
+                        ) if self._link else None))
             elapsed = time.perf_counter() - begin
             self._delta = elapsed - duration
 

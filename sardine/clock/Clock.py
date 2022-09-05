@@ -4,10 +4,8 @@ import functools
 import heapq
 import inspect
 import time
-import random
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
-from math import ceil
 
 import mido
 from rich import print
@@ -362,18 +360,19 @@ class Clock:
             dict: a dictionnary containing temporal information about the Link
             session.
         """
-        s = self._link.captureSessionState()
-        link_time = self._link.clock().micros()
-        tempo_str = s.tempo()
-        beats_str = s.beatAtTime(link_time, self.beat_per_bar)
-        playing_str = str(s.isPlaying())
-        phase = s.phaseAtTime(link_time, self.beat_per_bar)
-        return {
-            "tempo": tempo_str,
-            "beats": beats_str,
-            "playing": playing_str,
-            "phase": phase,
-        }
+        if self._link:
+            s = self._link.captureSessionState()
+            link_time = self._link.clock().micros()
+            tempo_str = s.tempo()
+            beats_str = s.beatAtTime(link_time, self.beat_per_bar)
+            playing_str = str(s.isPlaying())
+            phase = s.phaseAtTime(link_time, self.beat_per_bar)
+            return {
+                "tempo": tempo_str,
+                "beats": beats_str,
+                "playing": playing_str,
+                "phase": phase,
+            }
 
     def link_log(self):
         """Print state of current Ableton Link session on stdout."""
@@ -667,8 +666,14 @@ class Clock:
             begin = time.perf_counter()
             duration = self._get_tick_duration()
             if self._link:
-                await asyncio.sleep(duration)
+                fetch_begin = time.perf_counter()
                 info = self._capture_link_info()
+                fetch_end = time.perf_counter()
+                sleep_duration = (fetch_end - fetch_begin) + duration
+                if sleep_duration >= 0:
+                    await asyncio.sleep(sleep_duration)
+                else:
+                    pass
                 self._increment_clock(temporal_information=info)
             else:
                 await asyncio.sleep(duration)

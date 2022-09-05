@@ -3,7 +3,6 @@ import asyncio
 import pprint
 import functools
 from typing import TYPE_CHECKING, Union
-from typing_extensions import Self
 from ..io import dirt
 from ..sequences import ListParser
 

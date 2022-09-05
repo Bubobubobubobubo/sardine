@@ -39,6 +39,7 @@ setup(
         "python-rtmidi>=1.4",
         "jupyterlab>=3.4",
         "LinkPython>=0.1",
+        "numba>=0.5",
     ],
     extras_require={"speed": ["uvloop"], "dev": ["black"]},
     entry_points={

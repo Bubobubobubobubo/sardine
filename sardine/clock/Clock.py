@@ -6,6 +6,7 @@ import inspect
 import time
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
+from numba import jit
 
 import mido
 from rich import print
@@ -351,6 +352,13 @@ class Clock:
         self._link = None
         print('[red bold]Broke away from Link Session[/red bold]')
 
+    def link_stop(self):
+        """
+        Ableton Link Method to stop the timeline
+        """
+        self._link.enabled = False
+
+    @jit
     def _capture_link_info(self):
         """Capture information about the current state of the Ableton Link
         session. This internal method will try to gather high-res temporal
@@ -364,7 +372,8 @@ class Clock:
             s = self._link.captureSessionState()
             link_time = self._link.clock().micros()
             tempo_str = s.tempo()
-            beats_str = s.beatAtTime(link_time, self.beat_per_bar)
+            # beats_str = s.beatAtTime(link_time, self.beat_per_bar)
+            beats_str = s.beatAtTime(link_time, self.beat_per_bar / 2)
             playing_str = str(s.isPlaying())
             phase = s.phaseAtTime(link_time, self.beat_per_bar)
             return {
@@ -381,6 +390,7 @@ class Clock:
             f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}'
         )
 
+    @jit(fastmath=True)
     def _scale(
         self,
         x: Union[int, float],
@@ -389,6 +399,7 @@ class Clock:
     ):
         return (x - old[0]) * (new[1] - new[0]) / (old[1] - old[0]) + new[0]
 
+    @jit
     def _link_phase_to_ppqn(self, captured_info: dict):
         """Convert Ableton Link phase (0 to quantum, aka number of beats)
         to Sardine phase (based on ticks and pulses per quarter notes).
@@ -412,10 +423,12 @@ class Clock:
         self._phase_snapshot = new_phase
         return int(abs(self._phase_snapshot))
 
+    @jit
     def _link_beat_to_sardine_beat(self, captured_info: dict):
         """Convert Ableton Link beats to valid Sardine beat"""
         return int(captured_info["beats"])
 
+    @jit
     def _link_time_to_ticks(self, captured_info: dict):
         """Convert Ableton Link time to ticks, used by _increment_clock"""
         phase = int(self._link_phase_to_ppqn(captured_info))
@@ -482,6 +495,7 @@ class Clock:
         result = (interval - self._delta) + nudge
         return result if result >= 0 else 0.0
 
+    @jit
     def _increment_clock(self, temporal_information: Optional[dict]):
         """
         This method is in charge of increment the clock (moving forward
@@ -496,7 +510,8 @@ class Clock:
         notes.
         """
         if self._link:
-            self.bpm = float(temporal_information["tempo"])
+            if self.phase == 0:
+                self.bpm = float(temporal_information["tempo"])
             self._current_tick = self._link_time_to_ticks(
                 temporal_information)
             self._update_handles()
@@ -659,8 +674,7 @@ class Clock:
 
     async def run_active(self):
         """Main runner for the active mode (master)"""
-        self._current_tick = 0
-        self._delta = 0.0
+        self._current_tick, self._delta = 0, 0.0
 
         while self.running:
             begin = time.perf_counter()

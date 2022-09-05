@@ -372,8 +372,7 @@ class Clock:
             s = self._link.captureSessionState()
             link_time = self._link.clock().micros()
             tempo_str = s.tempo()
-            # beats_str = s.beatAtTime(link_time, self.beat_per_bar)
-            beats_str = s.beatAtTime(link_time, self.beat_per_bar / 2)
+            beats_str = s.beatAtTime(link_time, self.beat_per_bar)
             playing_str = str(s.isPlaying())
             phase = s.phaseAtTime(link_time, self.beat_per_bar)
             return {

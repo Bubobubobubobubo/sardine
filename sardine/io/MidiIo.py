@@ -18,6 +18,7 @@ class MIDIIo(threading.Thread):
     through SuperDirt. I need to do something to address the redun-
     dancy.
     """
+
     def __init__(
         self,
         clock: "Clock",

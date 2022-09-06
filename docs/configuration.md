@@ -2,7 +2,7 @@
 
 ## How configuration works
 
-When you boot Sardine for the first time, **Sardine** will create its own configuration folder and configuration files. The path will be printed everytime time you boot **Sardine** thereafter. There are three files you can tweak and configure:
+After booting Sardine for the first time, a configuration folder will be created, containing a single configuration file. The path will be printed everytime time you boot **Sardine** thereafter so you can be reminded of it. There are three files you can tweak and configure:
 
 - `config.json`: main **Sardine** configuration file.
 - `default_superdirt.scd`: **SuperDirt** configuration file.
@@ -12,19 +12,23 @@ There is another optional file that we will also describe:
 
 - `user_configuration.py`: run Python code everytime you boot **Sardine**.
 
+!!! note "Reading configuration"
+
+	You can read the content of your configuration file directly from **Sardine** by running the `print_config()` function. This is a read-only function. You will need to exit to amend your configuration.
+
 ### Where are config files?
 
-The location of the configuration folder is assumed to be the best possible default location based on your OS:
+The location of the configuration folder is assumed to be the best possible location for application specific settings:
 
 * **MacOS**: `Users/xxx/Library/Application\ Support/Sardine/`
-* **Linux**: `.local/share/Sardine/` folder (???).
-* **Windows**: `%appdata%/Sardine` (???).
+* **Linux**: `.local/share/Sardine/`
+* **Windows**: `%appdata%/Bubobubobubo/Sardine/`
 
 ## The configuration files
 
 ### Sardine config file
 
-The `config.json` file will allow you to finetune **Sardine** by choosing a default MIDI port, a default PPQN and BPM, etc... You can edit it manually but you don't have too. There is a tool made for that, installed by default on your `$PATH`. Access it by typing `sardine-config`. **/!\\ Sardine must have booted at least once for it to work properly**.
+The `config.json` file will allow you to finetune **Sardine** by choosing a default MIDI port, a default PPQN and BPM, etc... You can edit it manually but you don't have too. There is a tool made for that, installed by default on your `$PATH`. Access it by typing `sardine-config`.
 
 ![Configuration tool](images/config_tool.png)
 
@@ -42,11 +46,15 @@ sardine-config --midi "MIDI Bus 1"
 
 ### SuperDirt config file
 
-The `default_superdirt.scd` is your default `SuperDirt` configuration. You must edit it manually if you are willing to load more audio samples, change your audio outputs or add anything that you need on the SuperCollider side. The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot-time. The [SuperDirt](https://github.com/musikinformatik/SuperDirt) repository is a good place to start, especially the `hacks/` folder that will teach you how to edit and configure *SuperDirt* to your liking.
+The `default_superdirt.scd` is your default `SuperDirt` configuration. You must edit it manually if you are willing to load more audio samples, change your audio outputs or add anything that you need on the SuperCollider side. The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot time. 
 
-If you know how to work with text files from the terminal using `vim` or `nano`, there is a command available to open the default *SuperDirt* configuration file: `sardine-config-superdirt`. It will open up the file using `$EDITOR`. Be sure to configure it beforehand!
+!!! important "How to tweak the SuperDirt file"
+	The [SuperDirt](https://github.com/musikinformatik/SuperDirt) repository is a good place to start, especially the `hacks/` folder that will teach you how to edit and configure *SuperDirt* to your liking.
 
-Here is an example of me adding more audio samples to play with:
+!!! note "Editing the SuperDirt file directly from the terminal"
+	If you know how to work with text files from the terminal using `vim` or `nano`, there is a command available to open the default *SuperDirt* configuration file: `sardine-config-superdirt`. It will open up the file using `$EDITOR`. Be sure to configure it beforehand!
+
+Here is an example showing of how to load more audio samples to play with:
 
 ```supercollider
 (
@@ -79,9 +87,10 @@ Note that *SuperDirt* is *SuperDirt*. Some people already use this audio backend
 
 ### User/Python config file
 
-There is another file, `user_configuration.py` that is not created by default. It must be added manually if you wish to use this feature. All the code placed in this file will be imported by default everytime you boot **Sardine**. It is an incredibely useful feature to automate some things:
+The last configuration file is named `user_configuration.py`. It is not created by default. It must be added manually if you wish to use this feature. All the code placed in this file will be imported by default everytime you boot **Sardine**. It is an incredibely useful feature to automate some things:
 
 * functions, aliases, classes, **OSC** and **MIDI** connexions.
 * Starting some musical code, aka 'art installation' mode for museums, openings, etc... You will be able to manually take over after init if you ever wished to change parameters.
 
-Make sure not to override any of the defaults. This file will run **after** init, and can override basic Sardine functionalities if you are not careful enough.
+!!! warning "Do not break Sardine"
+	Make sure not to override any of the defaults. This file will run **after** init, and can override basic Sardine functionalities if you are not careful enough.

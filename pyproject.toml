@@ -5,7 +5,6 @@ description = "Python's missing algorave module"
 authors = ["Raphael Forment <raphael.forment@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
-build="build.py"
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",

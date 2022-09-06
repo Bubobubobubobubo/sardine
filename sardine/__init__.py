@@ -46,7 +46,7 @@ else:
     process.nice(20)
 
 warnings.filterwarnings("ignore")
-pretty.install() # use rich to print data structures
+pretty.install()  # use rich to print data structures
 
 sardine = """
 

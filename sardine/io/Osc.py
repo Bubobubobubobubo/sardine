@@ -116,7 +116,9 @@ class Client:
         """Terminate OSC connexion"""
         osc_terminate()
 
+
 client = Client()
+
 
 @jit
 def dirt(message):

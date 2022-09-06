@@ -1,26 +1,54 @@
 # Installation
 
-Installing **Sardine** is a multi step process but shouldn't really take that long. The problem with Sardine and all programs in that same category is that they depend a lot on input/output for functioning properly. **Sardine** itself is really easy to install but you will need some additional tools to get the most out of it: *SuperCollider*, *SuperDirt*, *MIDI related packages*, etc...
+Installing **Sardine** is a multi step process but shouldn't really take that long. The problem with Sardine -- as is with live-coding tools in general -- is that they depend on many inputs and outputs and on additional interlinked softwares for functioning properly. **Sardine** itself is really easy to install but you will need some additional tools to get the most out of it: 
+- *SuperCollider* and/or *SuperDirt* for direct sound output
+- *MIDI related packages* and *MIDI capable softwares* (very OS specific)
 
-**/!\\ There is no way to install Sardine from Pypi for now /!\\. It will be possible to do so once the project will reach its first milestone, the 0.1**.
+Installation of **Sardine**  using Pypi is not yet available. Of course, **Sardine** will be added when it will be ready for general public usage ! The first planned milestone is the **0.1** version, that should be released later this year. Until then, you should install it manually!
+
+This page will help you to install Sardine and to configure it to your liking! You can skip some sections if you don't need a specific functionality! You can always come back later and install the missing bits.
 
 ## Python Package
 
-### Installation
+**Sardine** can be installed using [Poetry](https://python-poetry.org/), a new Python packaging tool that helps fetching the dependencies in the right order and that packages everything automatically in a virtual environment. That way, your basic Python system stays clean, Sardine staying confined where it should be, in a can!
 
-The installation process is fairly simple if you wish to install Sardine system-wide. You will need, that goes without saying, the most recent version of Python you can install on your OS. Some knowledge of the usage of a command prompt/shell is required but only for the installation / configuration process.
+1) Install [Python](https://www.python.org/) for your operating system (>=3.9).
+    - If you already have Python, update it! You might have an outdated version of Python. Sardine uses many features recently introduced to Python (asyncio REPL, typing, etc...).
+2) Install [Poetry](https://python-poetry.org/docs/) for your operating system.
 
-- install **Python** (3.9/3.10) and a suitable code editor ([VSCode](https://code.visualstudio.com/), [Vim](https://www.vim.org/)/[Neovim](https://neovim.io/), [Emacs](https://www.gnu.org/software/emacs/), etc..)
-- run `git clone https://github.com/Bubobubobubobubo/Sardine` to download Sardine or fork it directly from Github before cloning.
-- run `cd sardine && pip3 install -e .` (can also be `python` on some systems).
-    * **You need to have `python` and `pip` already installed on your computer**.
-- optionally (but recommended), run `pip3 install uvloop` (MacOS/Linux only). Install also everything related to `rtmidi` and `python-rtmidi`.
+You will now have to download and install **Sardine** itself:
+
+1) Install [Git](https://git-scm.com/) or [download the project](https://github.com/Bubobubobubobubo/sardine#:~:text=with%20GitHub%20Desktop-,Download%20ZIP,-Latest%20commit) from GitHub and place it wherever you like!
+    - Alternatively, clone Sardine with Git('`git clone https://github.com/Bubobubobubobubo/Sardine`').
+2) Using a `shell` or `cmd` (in admin-mode), run `poetry install` in the `sardine` folder.
+
+This command will take quite some time. `Poetry` will install all the needed parts and package them properly. Wait until the end of the process. To test if **Sardine** is installed correctly, execute the following commands:
+
+```python
+poetry shell
+python3 -m fishery
+```
+
+You should now see a big bright `SARDINE` written in red on your screen. Congratulations! 
+
+You should now think about installing a code editor for your future Sardine sessions:
+- [VSCode](https://code.visualstudio.com/)
+- [Vim](https://www.vim.org/)
+- [Neovim](https://neovim.io/)
+- [Emacs](https://www.gnu.org/software/emacs/)
+- [Jupyter Notebook](https://jupyter.org/)
+
+**NOTE** : *All these editors have been tested with Sardine!*
+
+If you just want to test **Sardine** without installing a code editor, you can always use the *inline editor* shipped with **Sardine** but note that rhythms might not always be exactly right on time!
 
 ### First swim
 
-You should now have Sardine installed and ready. Try to start the configuration tools: `sardine-config`, `sardine-config-superdirt`, `sardine-config-python`. If something is happening, it means that Sardine is installed. Now to test if **Sardine** is running properly!
+You should now have Sardine installed and ready. If you are still in your `poetry shell`, try the following command: `sardine-config`. This is the main configuration tool for **Sardine**. We will come back to it later. If the command is not found or if nothing happens, **Sardine** might not be installed correctly. Feel free to email me directly or to open an issue on GitHub documenting your problem.
 
-- open a new interactive session using `python3 -m asyncio`
+Open a new interactive Sardine session by running `python3 -m fishery`. You will not be allowed to played immediately. **Sardine** is built around the usage of a MIDI
+
+open a new interactive session using `python3 -m asyncio`
     * **/!\\ Make sure that you are running the asyncio REPL! /!\\**
     * **/!\\ The `IPython` REPL will not work. It is handling `asyncio` code differently. /!\\**
 

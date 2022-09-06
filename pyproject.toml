@@ -16,9 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
-
 ]
-
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -42,7 +40,6 @@ black = "^22.8.0"
 [build-system]
 requires = ["poetry-core", "wheel", "setuptools-cpp", "setuptools", "distutils"]
 build-backend = "poetry.core.masonry.api"
-
 
 [tool.poetry.scripts]
 sardine-config-python = 'cli.main:edit_python_configuration'

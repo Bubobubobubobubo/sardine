@@ -18,7 +18,7 @@ USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
 TEMPLATE_CONFIGURATION = {
     "config": {
-        "midi": None,
+        "midi": "Sardine",
         "bpm": 135,
         "beats": 4,
         "ppqn": 24,

@@ -131,7 +131,7 @@ def _edit_configuration(file_name: str):
                 config.write(edited)
     else:
         try:
-            open(configuration_file, 'x')
+            open(configuration_file, "x")
         except FileExistsError:
             pass
         # recurse to write in the file

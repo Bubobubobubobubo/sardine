@@ -12,6 +12,7 @@ import mido
 from rich import print
 
 import os
+
 print(os.getpid())
 
 from sardine.io.Osc import Client
@@ -330,6 +331,7 @@ class Clock:
         are ready for scheduling in your swimming functions!
         """
         import link
+
         self._link = link.Link(self.bpm)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
@@ -337,11 +339,20 @@ class Clock:
         # We need to capture a first snapshot of time outside of the main
         # mechanism in order to start calculations somewhere...
         i = self._capture_link_info()
-        self._phase_snapshot = int(abs(round(self._scale(
-            i["phase"], (0, self.beat_per_bar),
-            (0, self.ppqn * self.beat_per_bar))) % self.ppqn))
+        self._phase_snapshot = int(
+            abs(
+                round(
+                    self._scale(
+                        i["phase"],
+                        (0, self.beat_per_bar),
+                        (0, self.ppqn * self.beat_per_bar),
+                    )
+                )
+                % self.ppqn
+            )
+        )
 
-        print('[red bold]Joining Link Session: [/red bold]', end='')
+        print("[red bold]Joining Link Session: [/red bold]", end="")
 
     def unlink(self):
         """
@@ -353,7 +364,7 @@ class Clock:
         """
         del self._link
         self._link = None
-        print('[red bold]Broke away from Link Session[/red bold]')
+        print("[red bold]Broke away from Link Session[/red bold]")
 
     def link_stop(self):
         """
@@ -393,12 +404,7 @@ class Clock:
         )
 
     @jit(fastmath=True)
-    def _scale(
-        self,
-        x: Union[int, float],
-        old: tuple[int, int],
-        new: tuple[int, int]
-    ):
+    def _scale(self, x: Union[int, float], old: tuple[int, int], new: tuple[int, int]):
         return (x - old[0]) * (new[1] - new[0]) / (old[1] - old[0]) + new[0]
 
     @jit
@@ -410,10 +416,16 @@ class Clock:
         Returns:
             int: current phase (0 - self.ppqn)
         """
-        new_phase = round(self._scale(
-            captured_info["phase"],
-            (0, self.beat_per_bar),
-            (0, self.ppqn * self.beat_per_bar))) % self.ppqn
+        new_phase = (
+            round(
+                self._scale(
+                    captured_info["phase"],
+                    (0, self.beat_per_bar),
+                    (0, self.ppqn * self.beat_per_bar),
+                )
+            )
+            % self.ppqn
+        )
 
         # Whatever happens, we need to move forward
         if self._phase_snapshot == new_phase:
@@ -514,8 +526,7 @@ class Clock:
         if self._link:
             if self.phase == 0:
                 self.bpm = float(temporal_information["tempo"])
-            self._current_tick = self._link_time_to_ticks(
-                temporal_information)
+            self._current_tick = self._link_time_to_ticks(temporal_information)
             self._update_handles()
         else:
             self._current_tick += 1
@@ -699,8 +710,10 @@ class Clock:
                 # in the meantime. You should be ready to send
                 # link state whenever needed.
                 self._increment_clock(
-                    temporal_information=(self._capture_link_info(
-                        ) if self._link else None))
+                    temporal_information=(
+                        self._capture_link_info() if self._link else None
+                    )
+                )
             elapsed = time.perf_counter() - begin
             self._delta = elapsed - duration
 

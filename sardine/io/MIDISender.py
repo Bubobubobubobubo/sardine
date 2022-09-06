@@ -23,6 +23,7 @@ class MIDISender:
         channel: Union[int, float, str] = 0,
         trig: Union[int, float, str] = 1,
         at: Union[float, int] = 0,
+        nudge: Union[int, float] = 0.0,
     ):
 
         self._number_parser = ListParser(parser_type="number")
@@ -40,6 +41,7 @@ class MIDISender:
         self.channel = self.parse_initial_arguments(channel)
         self.note = self.parse_note(note)
         self.after: int = at
+        self._nudge: Union[int, float] = nudge
 
     def parse_initial_arguments(self, argument):
         """Parse arguments at __init__ time"""
@@ -51,7 +53,7 @@ class MIDISender:
     def parse_note(self, argument):
         """Parse arguments at __init__ time"""
         if isinstance(argument, str):
-            return self._note_parser_parse(argument)
+            return self._note_parser.parse(argument)
         else:
             return argument
 
@@ -74,6 +76,7 @@ class MIDISender:
 
     def schedule(self, message):
         async def _waiter():
+            await asyncio.sleep(self._nudge)
             await handle
             asyncio.create_task(
                 self.midi_client.note(
@@ -84,7 +87,7 @@ class MIDISender:
                 )
             )
 
-        ticks = self.clock.get_beat_ticks(self.after, sync=False)
+        ticks = self.clock.get_beat_ticks(self.after, sync=True)
         # Beat synchronization is disabled since `self.after`
         # is meant to offset us from the current time
         handle = self.clock.wait_after(n_ticks=ticks)

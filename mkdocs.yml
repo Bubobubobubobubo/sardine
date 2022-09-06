@@ -31,6 +31,7 @@ plugins:
 docs_dir: docs
 
 markdown_extensions:
+  - admonition
   - pymdownx.highlight:
      anchor_linenums: true
   - pymdownx.inlinehilite

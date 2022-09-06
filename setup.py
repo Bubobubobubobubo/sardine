@@ -18,6 +18,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
     ],
     packages=find_namespace_packages(
@@ -39,6 +40,7 @@ setup(
         "python-rtmidi>=1.4",
         "jupyterlab>=3.4",
         "LinkPython>=0.1",
+        "numba>=0.5",
     ],
     extras_require={"speed": ["uvloop"], "dev": ["black"]},
     entry_points={

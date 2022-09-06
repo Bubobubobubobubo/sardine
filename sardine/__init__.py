@@ -1,11 +1,12 @@
+# SARDINE: this is the main entry point for Sardine. __init__.py will attempt
+# to load everything needed for an interactive session directly from here.
+# Linters might complain about the fact some objects are not accessed. Sure,
+# they are not accessed right now but will later in time when the user will
+# start interacting with the system.
+
 import asyncio
 import warnings
 import sys
-
-from rich import print
-from pathlib import Path
-from rich.console import Console
-from rich.markdown import Markdown
 
 try:
     import uvloop
@@ -14,6 +15,11 @@ except ImportError:
 else:
     uvloop.install()
 
+from rich import print
+from pathlib import Path
+from rich.console import Console
+from rich.markdown import Markdown
+from rich import pretty
 from .io import read_user_configuration, pretty_print_configuration_file
 from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
@@ -24,7 +30,23 @@ from .sequences import ListParser, Pnote, Pnum, Pname
 from typing import Union
 from .sequences import *
 
+import os
+import psutil
+
+# Naïve: set a very high priority for running this script (cross-platform)
+# https://stackoverflow.com/questions/1023038/
+# change-process-priority-in-python-cross-platform
+os_used = sys.platform
+process = psutil.Process(os.getpid())
+if os_used == "win32":
+    process.nice(psutil.REALTIME_PRIORITY_CLASS)
+elif os_used == "linux":
+    process.nice(psutil.IOPRIO_HIGH)
+else:
+    process.nice(20)
+
 warnings.filterwarnings("ignore")
+pretty.install()  # use rich to print data structures
 
 sardine = """
 
@@ -39,16 +61,20 @@ Sardine is a MIDI/OSC sequencer made for live-coding.
 Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
+
+
+# Reading / Creating / Updating the configuration file
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
 
+# Booting SuperCollider / SuperDirt
 if config.boot_superdirt:
     SC = SuperColliderProcess(
         startup_file=config.superdirt_config_path, verbose=config.verbose_superdirt
     )
 
-
+# Starting the default Clock
 c = Clock(
     midi_port=config.midi,
     bpm=config.bpm,

@@ -130,8 +130,10 @@ def _edit_configuration(file_name: str):
             with open(configuration_file, "w+") as config:
                 config.write(edited)
     else:
-        with open(configuration_file, "w+") as config:
-            config.write("")
+        try:
+            open(configuration_file, "x")
+        except FileExistsError:
+            pass
         # recurse to write in the file
         _edit_configuration(file_name)
 
@@ -144,14 +146,6 @@ def edit_python_configuration():
 def edit_superdirt_configuration():
     """Call $EDITOR to edit Python based user configuration"""
     _edit_configuration("default_superdirt.scd")
-
-
-def is_sclang_cooperative():
-    """
-    Check if SCLang can be booted as a subprocess
-    TODO: cross-platform
-    """
-    pass
 
 
 if __name__ == "__main__":

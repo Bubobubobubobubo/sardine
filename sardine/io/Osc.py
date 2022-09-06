@@ -3,6 +3,7 @@ import asyncio
 from time import time
 from typing import Union, TYPE_CHECKING, List
 from osc4py3 import oscbuildparse
+from numba import jit
 from osc4py3.as_eventloop import (
     osc_startup,
     osc_udp_client,
@@ -119,6 +120,7 @@ class Client:
 client = Client()
 
 
+@jit
 def dirt(message):
     """Sending messages to SuperDirt/SuperCollider"""
     client.send_timed_message(message)

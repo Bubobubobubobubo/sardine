@@ -1,9 +1,10 @@
-import mido
+import sys
+import asyncio
 import threading
 from typing import Union, TYPE_CHECKING
+import mido
 from rich.console import Console
-from rich import print
-import asyncio
+from rich import print as rich_print
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -12,7 +13,6 @@ __all__ = ("MIDIIo",)
 
 
 class MIDIIo(threading.Thread):
-
     """
     Direct MIDI I/O Using Mido. MIDI is also available indirectly
     through SuperDirt. I need to do something to address the redun-
@@ -25,6 +25,15 @@ class MIDIIo(threading.Thread):
         port_name: Union[str, None] = None,
         at: Union[float, int] = 0,
     ):
+        """Open a MIDI Output Port. A name can be given, corresponding to
+        the name of a valid currently opened MIDI port on the given system.
+        If the name is invalid or if the port couldn't be found, the user
+        will be faced with a prompt allowing him to select one of the currently
+        detected ports.
+
+        Alternatively, if port_name is configured as "Sardine" in the config,
+        a new virtual port will spawn, named Sardine.
+        """
 
         threading.Thread.__init__(self)
 
@@ -33,38 +42,44 @@ class MIDIIo(threading.Thread):
         self.clock = clock
         self.after: int = at
 
-        if self.port_name:
-
-            try:
-                self._midi = mido.open_output(port_name)
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
-
+        if self.port_name in ["Sardine", "internal"]:
+            self._midi = mido.open_output("Sardine", virtual=True)
+        elif self.port_name:
+            self.try_opening_midi_port(name=port_name)
         else:
+            self._midi = mido.open_output("Sardine", virtual=True)
 
-            try:
-                self._midi = mido.open_output(self.choose_midi_port())
-            except Exception as error:
-                print(f"[bold red]Init error: {error}[/bold red]")
+    def try_opening_midi_port(self, name: str):
+        """
+        Try to open a MIDI Port. Fallback to _choose_midi_port
+        (MIDI Port picker) if provided port name is invalid.
+        """
+        try:
+            self._midi = mido.open_output(name)
+        except Exception as error:
+            rich_print(f"[bold red]Init error: {error}[/bold red]")
+        finally:
+            self._midi = mido.open_output(self._choose_midi_port())
 
-    def choose_midi_port(self) -> str:
+    @staticmethod
+    def _choose_midi_port() -> str:
         """ASCII MIDI Port chooser"""
         ports = mido.get_output_names()
         console = Console()
         for (i, item) in enumerate(ports, start=1):
-            print(f"[color({i})] [{i}] {item}")
-        print(
+            rich_print(f"[color({i})] [{i}] {item}")
+        rich_print(
             "[red]Note: you don't have to hand pick your MIDI Port manually every time."
         )
-        print("[red]Check sardine-config to enter a permanent default MIDI port.")
+        rich_print("[red]Check sardine-config to enter a permanent default MIDI port.")
         nb = console.input("[bold yellow] Choose a MIDI Port: [/bold yellow]")
         try:
             nb = int(nb) - 1
-            print(f"[yellow]You picked[/yellow] [green]{ports[nb]}[/green].")
+            rich_print(f"[yellow]You picked[/yellow] [green]{ports[nb]}[/green].")
             return ports[nb]
         except Exception:
-            print(f"Input can only take valid number in range, not {nb}.")
-            exit()
+            rich_print(f"Input can only take valid number in range, not {nb}.")
+            sys.exit()
 
     def send(self, message: mido.Message) -> None:
         self._midi.send(message)

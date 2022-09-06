@@ -11,7 +11,14 @@ if TYPE_CHECKING:
 
 
 class SuperDirtSender:
-    def __init__(self, clock: "Clock", sound: str, at: Union[float, int] = 0, **kwargs):
+    def __init__(
+        self,
+        clock: "Clock",
+        sound: str,
+        at: Union[float, int] = 0,
+        nudge: Union[float, int] = 0.0,
+        **kwargs,
+    ):
 
         self._number_parser = ListParser(parser_type="number")
         self._name_parser = ListParser(parser_type="name")
@@ -19,6 +26,7 @@ class SuperDirtSender:
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at
+        self._nudge: Union[float, int] = nudge
 
         # Iterating over kwargs. If parameter seems to refer to a
         # method (usually dynamic SuperDirt parameters), call it
@@ -67,6 +75,7 @@ class SuperDirtSender:
     def schedule(self, message):
         async def _waiter():
             await handle
+            await asyncio.sleep(self._nudge)
             dirt(message)
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
@@ -78,7 +87,6 @@ class SuperDirtSender:
     def out(self, i: Union[None, int] = 0, orbit: int = 0) -> None:
         """
         Prototype for the Sender output.
-        TODO: make the sample number patternable...
         """
 
         i = int(i)

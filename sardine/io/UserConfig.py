@@ -18,13 +18,13 @@ USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
 TEMPLATE_CONFIGURATION = {
     "config": {
-        "midi": None,
-        "bpm": 125,
+        "midi": "Sardine",
+        "bpm": 135,
         "beats": 4,
-        "ppqn": 48,
+        "ppqn": 24,
         "parameters": [],
         "inline_editor": False,
-        "boot_superdirt": True,
+        "boot_superdirt": False,
         "verbose_superdirt": False,
         "active_clock": True,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),

@@ -41,7 +41,9 @@ class MIDIIo(threading.Thread):
         self.port_name = port_name
         self.clock = clock
         self.after: int = at
+        self._midi = None
 
+        # For MacOS/Linux
         if sys.platform not in "win32":
             if self.port_name in ["Sardine", "internal"]:
                 self._midi = mido.open_output("Sardine", virtual=True)
@@ -49,9 +51,10 @@ class MIDIIo(threading.Thread):
                 self.try_opening_midi_port(name=port_name)
             else:
                 self._midi = mido.open_output("Sardine", virtual=True)
+        # For W10/W11
         else:
             try:
-                self._midi = self.try_opening_midi_port(name=port_name)
+                self.try_opening_midi_port(name=port_name)
             except Exception as err:
                 print(f"[red]Failed to open a MIDI Connexion: {err}")
 

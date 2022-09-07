@@ -20,7 +20,7 @@ classifiers = [
 build = "build.py"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 LinkPython = "^0.1"
 python-rtmidi = "^1.4.9"
 mido = "^1.2.10"

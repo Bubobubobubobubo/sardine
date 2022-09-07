@@ -32,6 +32,7 @@ ptpython = "^3.0.20"
 python-rtmidi = "^1.4.9"
 jupyterlab = "^3.4"
 LinkPython = "^0.1"
+rtmidi = "^=2.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"

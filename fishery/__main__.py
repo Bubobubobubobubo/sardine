@@ -74,7 +74,6 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             else:
                 self.showtraceback()
 
-
 class REPLThread(threading.Thread):
     def run(self):
         try:
@@ -83,8 +82,8 @@ class REPLThread(threading.Thread):
             if INLINE:
                 console.push("""from ptpython.repl import embed""")
                 console.push(
-                    """await embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=False)"""
-                )
+                    """task = embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=False)""")
+                console.push("done, pending = await asyncio.wait({task})")
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
 
         finally:
@@ -95,7 +94,6 @@ class REPLThread(threading.Thread):
             )
 
             loop.call_soon_threadsafe(loop.stop)
-
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()

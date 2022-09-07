@@ -42,7 +42,7 @@ class MIDIIo(threading.Thread):
         self.clock = clock
         self.after: int = at
 
-        if sys.platform not in 'win32':
+        if sys.platform not in "win32":
             if self.port_name in ["Sardine", "internal"]:
                 self._midi = mido.open_output("Sardine", virtual=True)
             elif self.port_name:

@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
 ]
+build = "build.py"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -31,7 +32,6 @@ psutil = "^5.9.2"
 rich = "^12.5.1"
 lark = "^1.1.2"
 ptpython = "^3.0.20"
-jupyterlab = "^3.4"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"

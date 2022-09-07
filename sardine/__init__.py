@@ -11,7 +11,8 @@ import sys
 try:
     import uvloop
 except ImportError:
-    warnings.warn("uvloop is not installed, rhythm accuracy may be impacted")
+    print("[yellow]UVLoop is not installed. Not supported on Windows![/yellow]")
+    print("[yellow]Rhythm accuracy may be impacted[/yellow]")
 else:
     uvloop.install()
 
@@ -46,7 +47,8 @@ else:
     process.nice(20)
 
 warnings.filterwarnings("ignore")
-pretty.install()  # use rich to print data structures
+# Use rich print by default
+pretty.install()  
 
 sardine = """
 
@@ -67,12 +69,16 @@ print(f"[red]{sardine}[/red]")
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
-
 # Booting SuperCollider / SuperDirt
-if config.boot_superdirt:
-    SC = SuperColliderProcess(
-        startup_file=config.superdirt_config_path, verbose=config.verbose_superdirt
-    )
+if config.boot_superdirt is True:
+    try:
+        SC = SuperColliderProcess(
+            startup_file=config.superdirt_config_path, 
+            verbose=config.verbose_superdirt)
+    except OSError as error:
+        print("[red]SuperCollider could not be found![/red]")
+else:
+    print("[green]Booting without SuperCollider![/green]")
 
 # Starting the default Clock
 c = Clock(

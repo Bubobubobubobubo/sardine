@@ -35,7 +35,7 @@ This last command will take quite some time. `Poetry` will install all the neede
 
 ```python
 poetry shell
-python3 -m fishery
+python -m fishery # python3 on some Linux/MacOS Python distributions
 ```
 
 You should now see a big bright `SARDINE` written in red on your screen. Congratulations! This is the indication that **Sardine** was able to boot correctly!

@@ -20,15 +20,15 @@ classifiers = [
 build = "build.py"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 LinkPython = "^0.1"
 python-rtmidi = "^1.4.9"
 mido = "^1.2.10"
 osc4py3 = "^1.0.8"
 uvloop = {version = "^0.16.0", markers = "sys_platform == 'linux' or sys_platform == 'darwin'"}
 click = "^8.1.3"
-appdirs = "^1.4.4"
-psutil = "^5.9.2"
+appdirs = "^1.4"
+psutil = "^5.9"
 rich = "^12.5.1"
 lark = "^1.1.2"
 ptpython = "^3.0.20"
@@ -38,7 +38,7 @@ pylint = "^2.15.0"
 black = "^22.8.0"
 
 [build-system]
-requires = ["poetry-core", "wheel", "setuptools-cpp", "setuptools", "distutils"]
+requires = ["poetry-core", "wheel", "setuptools-cpp", "setuptools"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]

@@ -12,6 +12,20 @@ This page will help you to install Sardine and to configure it to your liking! Y
 ## Install
 ### Python Package
 
+!!! warning "For Windows Users only"
+    **Sardine** is particularly tricky to install for users running Windows. This is due to the fact that **Sardine** depends on `rtmidi` and `link`. These packages are bindings for existing C++ code used extensively for important chunks of the application. Without the proper development related tools, you might not be able to install **Sardine**. Please make sure that you install the following before proceeding with the installation:
+
+    - [MSVC Build Tools](https://visualstudio.microsoft.com/fr/downloads/?q=build+tools) (*Microsoft Visual Studio Code Build Tools*)
+
+    - [CMake](https://cmake.org/): a tool used to build, test and configure softwares.
+
+    Adding to this, make sure that **you add Poetry to your PATH**. Follow [this official guide](https://docs.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14)) teaching you how to do so. Here are some other tips I gathered while helping people install **Sardine**:
+
+    - For the entirety of the installation process, please make sure that you run your command prompt **as an administrator**.
+
+    - `python` might be named `py` on your system. Replace `python` by `py` in the submentioned commands.
+
+
 **Sardine** is packaged using [Poetry](https://python-poetry.org/), a new Python packaging tool that helps fetching the dependencies in the right order and that bundles everything nicely in a virtual environment. That way, your basic Python system stays clean, Sardine staying confined where it should be, in a can!
 
 !!! note "First steps"

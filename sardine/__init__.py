@@ -7,6 +7,7 @@
 import asyncio
 import warnings
 import sys
+from rich import print
 
 try:
     import uvloop
@@ -16,7 +17,6 @@ except ImportError:
 else:
     uvloop.install()
 
-from rich import print
 from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown

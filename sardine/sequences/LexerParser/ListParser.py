@@ -1,7 +1,6 @@
 from lark import Lark, Tree
 from pathlib import Path
 from .TreeCalc import CalculateTree
-from numba import jit
 
 __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 
@@ -124,7 +123,6 @@ class ListParser:
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
 
-    @jit
     def _flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will
         flatten deeply nested lists and return a one dimensional array.

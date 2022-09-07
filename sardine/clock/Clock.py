@@ -6,7 +6,6 @@ import inspect
 import time
 from typing import Awaitable, Callable, Optional, TypeVar, Union
 from collections import deque
-from numba import jit
 
 import mido
 from rich import print
@@ -372,7 +371,6 @@ class Clock:
         """
         self._link.enabled = False
 
-    @jit
     def _capture_link_info(self):
         """Capture information about the current state of the Ableton Link
         session. This internal method will try to gather high-res temporal
@@ -403,11 +401,9 @@ class Clock:
             f'tempo {i["tempo"]} | playing {i["playing"]} | beats {i["beats"]} | phase {i["phase"]}'
         )
 
-    @jit(fastmath=True)
     def _scale(self, x: Union[int, float], old: tuple[int, int], new: tuple[int, int]):
         return (x - old[0]) * (new[1] - new[0]) / (old[1] - old[0]) + new[0]
 
-    @jit
     def _link_phase_to_ppqn(self, captured_info: dict):
         """Convert Ableton Link phase (0 to quantum, aka number of beats)
         to Sardine phase (based on ticks and pulses per quarter notes).
@@ -437,12 +433,10 @@ class Clock:
         self._phase_snapshot = new_phase
         return int(abs(self._phase_snapshot))
 
-    @jit
     def _link_beat_to_sardine_beat(self, captured_info: dict):
         """Convert Ableton Link beats to valid Sardine beat"""
         return int(captured_info["beats"])
 
-    @jit
     def _link_time_to_ticks(self, captured_info: dict):
         """Convert Ableton Link time to ticks, used by _increment_clock"""
         phase = int(self._link_phase_to_ppqn(captured_info))
@@ -509,7 +503,6 @@ class Clock:
         result = (interval - self._delta) + nudge
         return result if result >= 0 else 0.0
 
-    @jit
     def _increment_clock(self, temporal_information: Optional[dict]):
         """
         This method is in charge of increment the clock (moving forward

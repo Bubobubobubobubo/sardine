@@ -20,9 +20,12 @@ classifiers = [
 build = "build.py"
 
 [tool.poetry.dependencies]
-python = ">=3.9"
+python = ">=3.9,<4.0.0"
+
 LinkPython = "^0.1"
-python-rtmidi = {version="1.4.9", python="3.9", format="wheel"}
+python-rtmidi = [
+    {version = "^1.4.9"}
+]
 mido = "^1.2.10"
 osc4py3 = "^1.0.8"
 uvloop = {version = "^0.16.0", markers = "sys_platform == 'linux' or sys_platform == 'darwin'"}

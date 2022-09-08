@@ -13,7 +13,7 @@ This page will help you to install Sardine and to configure it to your liking! Y
 ### Python Package
 
 !!! warning "For Windows Users only"
-    **Sardine** is particularly tricky to install for users running Windows. This is due to the fact that **Sardine** depends on `rtmidi` and `link`. These packages are bindings for existing C++ code used extensively for important chunks of the application. Without the proper development related tools, you might not be able to install **Sardine**. Please make sure that you install the following before proceeding with the installation:
+    **Sardine** is particularly tricky to install for users running Windows. This is due to the fact that **Sardine** depends on `rtmidi` (no wheels for Python 3.10) and `link` (relies on `pybind11`). These packages are bindings for existing C++ code used extensively for important chunks of the application. Without the proper development related tools, you might not be able to install **Sardine**. Please make sure that you install the following before proceeding with the installation:
 
     - [MSVC Build Tools](https://visualstudio.microsoft.com/fr/downloads/?q=build+tools) (*Microsoft Visual Studio Code Build Tools*)
 

@@ -51,3 +51,6 @@ sardine-config = 'cli.main:main'
 
 [tool.cibuildwheel.linux]
 repair-wheel-command = ""
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = ""

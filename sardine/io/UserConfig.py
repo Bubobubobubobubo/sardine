@@ -23,7 +23,6 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "ppqn": 24,
         "parameters": [],
-        "inline_editor": False,
         "boot_superdirt": False,
         "verbose_superdirt": False,
         "active_clock": True,
@@ -51,7 +50,6 @@ class Config:
     parameters: list
     ppqn: int
     bpm: int
-    inline_editor: bool
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
@@ -68,7 +66,6 @@ class Config:
             parameters=config["parameters"],
             ppqn=config["ppqn"],
             bpm=config["bpm"],
-            inline_editor=config["inline_editor"],
             boot_superdirt=config["boot_superdirt"],
             verbose_superdirt=config["verbose_superdirt"],
             active_clock=config["active_clock"],
@@ -85,7 +82,6 @@ class Config:
                 "parameters": self.parameters,
                 "ppqn": self.ppqn,
                 "bpm": self.bpm,
-                "inline_editor": self.inline_editor,
                 "boot_superdirt": self.boot_superdirt,
                 "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,
@@ -138,11 +134,11 @@ def read_user_configuration() -> Config:
     # Check if the configuration folder exists
     if USER_DIR.is_dir():
         print(f"[green][1/3] Configuration folder[/green]")
-        print(f"[green]      - {USER_DIR}[/green]")
+        # print(f"[green]      - {USER_DIR}[/green]")
 
         if config_file.exists():
             print(f"[green][2/3] Reading configuration file[/green]")
-            print(f"[green]      - {config_file}[/green]")
+            # print(f"[green]      - {config_file}[/green]")
             config = read_configuration_file(config_file)
         else:
             print(f"[green][2/3] Creating configuration file[/green]")
@@ -157,6 +153,7 @@ def read_user_configuration() -> Config:
         config = create_template_configuration_file(config_file)
 
     print("[green][3/3] Sardine is swimming![/green]")
+    print(f"[green]Config path: {config_file}[/green]")
     return config
 
 

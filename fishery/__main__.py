@@ -9,17 +9,9 @@ import types
 import warnings
 from asyncio import futures
 from pathlib import Path
-from .UserConfig import read_user_configuration
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
-
-try:
-    config = read_user_configuration()
-    INLINE = config.inline_editor
-except Exception as e:
-    print("You must boot Sardine once before attempting booting Fishery.")
-    print("Your config file is not yet created!")
 
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):
@@ -79,13 +71,7 @@ class REPLThread(threading.Thread):
         try:
             banner = ()
             console.push("""from sardine import *""")
-            if INLINE:
-                console.push("""from ptpython.repl import embed""")
-                console.push(
-                    """task = embed(locals=locals(), globals=globals(), return_asyncio_coroutine=True,patch_stdout=False)""")
-                console.push("done, pending = await asyncio.wait({task})")
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
-
         finally:
             warnings.filterwarnings(
                 "ignore",

@@ -86,9 +86,6 @@ def main():
     parser.add_argument("--parameters", type=str, help="add a custom param")
     parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
     parser.add_argument(
-        "--inline_editor", type=str2bool, help="Toggle experimental editor"
-    )
-    parser.add_argument(
         "--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output"
     )
     parser.add_argument(

@@ -34,18 +34,6 @@ from .sequences import *
 import os
 import psutil
 
-# Naïve: set a very high priority for running this script (cross-platform)
-# https://stackoverflow.com/questions/1023038/
-# change-process-priority-in-python-cross-platform
-os_used = sys.platform
-process = psutil.Process(os.getpid())
-if os_used == "win32":
-    process.nice(psutil.REALTIME_PRIORITY_CLASS)
-elif os_used == "linux":
-    process.nice(psutil.IOPRIO_HIGH)
-else:
-    process.nice(20)
-
 warnings.filterwarnings("ignore")
 # Use rich print by default
 pretty.install()  

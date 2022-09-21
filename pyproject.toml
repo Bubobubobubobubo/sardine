@@ -17,7 +17,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3 :: Only",
 ]
-build = "build.py"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0.0"
@@ -34,7 +33,6 @@ appdirs = "^1.4"
 psutil = "^5.9"
 rich = "^12.5.1"
 lark = "^1.1.2"
-ptpython = "^3.0.20"
 pylint = "^2.15.0"
 
 [tool.poetry.group.dev.dependencies]

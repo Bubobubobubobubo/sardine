@@ -66,6 +66,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             else:
                 self.showtraceback()
 
+
 class REPLThread(threading.Thread):
     def run(self):
         try:
@@ -80,6 +81,7 @@ class REPLThread(threading.Thread):
             )
 
             loop.call_soon_threadsafe(loop.stop)
+
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()

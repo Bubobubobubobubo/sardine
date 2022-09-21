@@ -43,7 +43,7 @@ class MIDIIo(threading.Thread):
         self.after: int = at
         self._midi = None
 
-        # For MacOS/Linux
+        # For MacOS/Linux
         if sys.platform not in "win32":
             if self.port_name in ["Sardine", "internal"]:
                 self._midi = mido.open_output("Sardine", virtual=True)

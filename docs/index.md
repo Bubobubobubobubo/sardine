@@ -12,7 +12,23 @@
 **Sardine** is a Python library tailored for musical live coding. It can turn Python into a fun music instrument and/or stage control tool for electronic musicians. Sardine is working on Windows/MacOS/Linux using Python 3.8+. It can send and receive MIDI, OSC and SuperDirt messages. **Sardine** is based on the principle of [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). It allows the execution of recursive functions synchronised with musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict and guaranteed timing! 
 
 <video width="800"  controls>
+  <source src="/images/sardinade7.mp4" type="video/mp4">
+</video>
+
+<video width="800"  controls>
+  <source src="/images/sardinade6.mp4" type="video/mp4">
+</video>
+
+<video width="800"  controls>
   <source src="/images/sardinade5.mp4" type="video/mp4">
+</video>
+
+<video width="800"  controls>
+  <source src="/images/sardinade4.mp4" type="video/mp4">
+</video>
+
+<video width="800"  controls>
+  <source src="/images/sardinade3.mp4" type="video/mp4">
 </video>
 
 ```python

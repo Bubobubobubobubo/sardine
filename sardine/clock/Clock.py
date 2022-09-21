@@ -157,8 +157,7 @@ class Clock:
 
     @linktime.setter
     def linktime(self, new_time: dict) -> None:
-        self._linktime = self._get_new_linktime(
-            new_time)
+        self._linktime = self._get_new_linktime(new_time)
 
     @property
     def nudge(self) -> int:
@@ -338,11 +337,13 @@ class Clock:
     def _get_new_linktime(self, new_time: dict):
         """Calculate a new mean Linktime from Link"""
         info = self._capture_link_info()
-        self._linktime.update({
-            "tempo": (self._linktime["tempo"] + info["tempo"]) / 2.0,
-            "beats": (self._linktime["beats"] + info["beats"]) / 2.0,
-            "phase": (self._linktime["phase"] + info["phase"]) / 2.0,
-        })
+        self._linktime.update(
+            {
+                "tempo": (self._linktime["tempo"] + info["tempo"]) / 2.0,
+                "beats": (self._linktime["beats"] + info["beats"]) / 2.0,
+                "phase": (self._linktime["phase"] + info["phase"]) / 2.0,
+            }
+        )
 
     def link(self):
         """
@@ -713,8 +714,8 @@ class Clock:
             begin = time.perf_counter()
             duration = self._get_tick_duration()
             if self._link:
-                # This whole section if very blurry in my head. Trying to find 
-                # how to prevent Link from having hiccups.
+                # This whole section if very blurry in my head. Trying to find
+                # how to prevent Link from having hiccups.
 
                 def time_query(func):
                     """Time the query for Ableton Link information"""
@@ -724,21 +725,21 @@ class Clock:
                     time_result = end - begin
                     return (func_result, time_result)
 
-                # Querying Ableton Link for the current time and getting 
-                # information about how long the function took to execute
+                # Querying Ableton Link for the current time and getting
+                # information about how long the function took to execute
                 info, query_dur = time_query(self._capture_link_info)
                 min_query_time = min(min_query_time, query_dur)
                 max_query_time = max(max_query_time, query_dur)
-                # print(f"Max: {max_query_time}, Min: {min_query_time}", end="\r")
+                # print(f"Max: {max_query_time}, Min: {min_query_time}", end="\r")
 
                 self._get_new_linktime(new_time=info)
 
                 await asyncio.sleep(0.0)
-                # sleep_duration = duration - (query_dur * 4)
-                # if sleep_duration >= 0:
-                #     await asyncio.sleep(sleep_duration)
-                # else:
-                #     pass
+                # sleep_duration = duration - (query_dur * 4)
+                # if sleep_duration >= 0:
+                #     await asyncio.sleep(sleep_duration)
+                # else:
+                #     pass
 
                 if self.tick % self.ppqn == self.ppqn // 2:
                     self._increment_clock(temporal_information=self.linktime)

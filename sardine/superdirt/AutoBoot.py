@@ -99,7 +99,7 @@ class SuperColliderProcess:
 
     def hard_kill(self) -> None:
         """Look for all instances of SuperCollider, kill them."""
-        # print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
+        # print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
         try:
             for proc in psutil.process_iter():
                 if any(
@@ -108,7 +108,7 @@ class SuperColliderProcess:
                     print(f"Killing {proc.name()}")
                     proc.kill()
         except Exception:
-            # print(f"[yellow]There was no SC process to kill...")
+            # print(f"[yellow]There was no SC process to kill...")
             pass
 
     def write_stdin(self, message: str):

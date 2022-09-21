@@ -35,8 +35,8 @@ import os
 import psutil
 
 warnings.filterwarnings("ignore")
-# Use rich print by default
-pretty.install()  
+# Use rich print by default
+pretty.install()
 
 sardine = """
 
@@ -61,8 +61,8 @@ print_config = pretty_print_configuration_file
 if config.boot_superdirt is True:
     try:
         SC = SuperColliderProcess(
-            startup_file=config.superdirt_config_path, 
-            verbose=config.verbose_superdirt)
+            startup_file=config.superdirt_config_path, verbose=config.verbose_superdirt
+        )
     except OSError as error:
         print("[red]SuperCollider could not be found![/red]")
 else:

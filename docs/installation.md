@@ -67,7 +67,7 @@ You should now think about installing a code editor for your future Sardine sess
 !!! important
     **NOTE** : *All these editors have been tested!*
 
-Check out the configuration page to learn more about configuring a specific editor for **Sardine**. If you just want to test **Sardine** without installing a code editor, you can always use the *inline editor* that is automatically shipped with **Sardine**. I do not recommend it. Some issues have been reported with rhythms becoming incorrect or playback running late.
+Check out the configuration page to learn more about configuring a specific editor for **Sardine**. 
 
 ### SuperCollider and SuperDirt
 
@@ -167,12 +167,6 @@ Note that you can boot **Sardine** manually in a two-step process:
 
 2) `from sardine import **`: import **Sardine** library
 
-
-If you would like to edit **Sardine** code directly from the command prompt, be sure to try out the *unstable* inline editor ([ptpython](https://github.com/prompt-toolkit/ptpython)). It is an extension of the fast boot method. I have noticed some timing issues while using it but it is still a fun way to run some examples and to learn **Sardine**. In order to activate it, run the following command from the command line:
-
-```bash
-sardine-config --inline_editor True
-```
 
 ### Code-editing
 

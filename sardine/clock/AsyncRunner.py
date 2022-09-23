@@ -255,7 +255,7 @@ class AsyncRunner:
         if self.deferred:
             with self.clock._scoped_tick_shift(1):
                 ticks = self.clock.get_beat_ticks(delay)
-            self.clock.shift_ctx(ticks)
+            self.clock.tick_shift += ticks
 
         return await _maybe_coro(func, *args, **kwargs)
 

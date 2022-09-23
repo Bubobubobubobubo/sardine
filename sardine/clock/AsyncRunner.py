@@ -242,11 +242,6 @@ class AsyncRunner:
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
-                finally:
-                    # `self._wait_beats()` may leave us exactly 1 tick away
-                    # from the next interval. If we don't wait 1 tick, we
-                    # might get stuck in an infinite synchronous loop.
-                    await self.clock.wait_after(n_ticks=1)
         finally:
             # Remove from clock if necessary
             print(f"[yellow][Stopped {name}]")
@@ -258,7 +253,8 @@ class AsyncRunner:
         set to True.
         """
         if self.deferred:
-            ticks = self.clock.get_beat_ticks(delay) - 1
+            with self.clock._scoped_tick_shift(1):
+                ticks = self.clock.get_beat_ticks(delay)
             self.clock.shift_ctx(ticks)
 
         return await _maybe_coro(func, *args, **kwargs)
@@ -268,7 +264,8 @@ class AsyncRunner:
         given number of beats is reached.
         """
         clock = self.clock
-        ticks = clock.get_beat_ticks(n_beats) - 1
+        with clock._scoped_tick_shift(1):
+            ticks = clock.get_beat_ticks(n_beats)
         return clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):

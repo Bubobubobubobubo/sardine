@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import contextvars
 import functools
 import heapq
@@ -507,7 +508,7 @@ class Clock:
         return interval - self.tick % interval
 
     def shift_ctx(self, n_ticks: int):
-        """Shifts the clock by `n_ticks` in the current context.
+        """Adds `n_ticks` ticks to the clock in the current context.
 
         This is useful for simulating sleeps without blocking.
 
@@ -516,6 +517,22 @@ class Clock:
 
         """
         tick_shift.set(tick_shift.get() + n_ticks)
+
+    @contextlib.contextmanager
+    def _scoped_tick_shift(self, n_ticks: int):
+        """Returns a context manager that adds `n_ticks` ticks to the clock
+        in the current context.
+
+        This is similar to `add_tick_shift()` except that after the context
+        manager is exited, the tick shift is restored to its original
+        value.
+
+        """
+        token = tick_shift.set(tick_shift.get() + n_ticks)
+        try:
+            yield
+        finally:
+            tick_shift.reset(token)
 
     def _get_tick_duration(self) -> float:
         """Determines the numbers of seconds the next tick will take.

@@ -148,6 +148,7 @@ class AsyncRunner:
     _can_correct_delay: bool = field(default=False, repr=False)
     _last_delay: Union[float, int] = field(default=0.0, repr=False)
     # _last_ppqn: int = field(default=0, repr=False)  # TODO ppqn
+    _expected_interval: int = field(default=0, repr=False)
 
     # State management
 
@@ -233,7 +234,13 @@ class AsyncRunner:
         if self._can_correct_delay and delay != self._last_delay:
             # One-off request to update the interval shift
             # so the runner can synchronize to the new interval
-            self.interval_shift = self.clock.get_beat_ticks(delay)
+            #
+            # Similar to what the clock does, we also need to compensate
+            # for drift here in case the runner's iteration was too slow
+            # or even sub-tick fast
+            delta = self.clock.tick - self._expected_interval
+            with self.clock._scoped_tick_shift(-delta):
+                self.interval_shift = self.clock.get_beat_ticks(delay)
 
             self._last_delay = delay
             # self._last_delay, self._last_ppqn = delay, self.clock.ppqn
@@ -291,12 +298,20 @@ class AsyncRunner:
                     continue
 
                 self._correct_interval(delay)
+                self._expected_interval = self.clock.tick + self._get_corrected_interval(delay)
+                # start = self.clock.tick
 
                 handle = asyncio.ensure_future(self._wait_beats(delay))
                 reload = asyncio.ensure_future(self._reload_event.wait())
                 done, pending = await asyncio.wait(
                     (handle, reload), return_when=asyncio.FIRST_COMPLETED
                 )
+
+                # print(
+                #     f'{self.clock} AR [green]passed: {self.clock.tick-start}, '
+                #     f'started: {start}, shift: {self.interval_shift}, '
+                #     f'next: {self._expected_interval}'
+                # )
 
                 for fut in pending:
                     fut.cancel()
@@ -320,14 +335,30 @@ class AsyncRunner:
             print(f"[yellow][Stopped {name}]")
             self.clock.runners.pop(name, None)
 
+    def _get_corrected_interval(self, delay: Union[float, int], *, offset: int = 0):
+        """Returns the number of ticks until the next `delay` interval,
+        offsetted by the `offset` argument.
+
+        This method also adjusts the interval according to the
+        `interval_shift` attribute.
+
+        :param delay: The number of beats within each interval.
+        :param offset: The number of ticks to offset from the interval.
+            A positive offset means the result will be later than
+            the actual interval, while a negative offset will be sooner.
+        :returns: The number of ticks until the next interval is reached.
+
+        """
+        with self.clock._scoped_tick_shift(self.interval_shift - offset):
+            return self.clock.get_beat_ticks(delay)
+
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies an initial
         tick shift of 1 beat when the `deferred` attribute is
         set to True.
         """
         if self.deferred:
-            with self.clock._scoped_tick_shift(self.interval_shift + 1):
-                ticks = self.clock.get_beat_ticks(1)
+            ticks = self._get_corrected_interval(1, offset=-1)
             self.clock.tick_shift += ticks
 
         return await _maybe_coro(func, *args, **kwargs)
@@ -337,8 +368,7 @@ class AsyncRunner:
         given number of beats is reached.
         """
         clock = self.clock
-        with clock._scoped_tick_shift(self.interval_shift + 1):
-            ticks = clock.get_beat_ticks(n_beats)
+        ticks = self._get_corrected_interval(n_beats, offset=-1)
         return clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):

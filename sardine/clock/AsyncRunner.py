@@ -187,11 +187,10 @@ class AsyncRunner:
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    print(
-                        f"[yellow][Reloaded {name}]"
-                        if pushed
-                        else f"[yellow][Restored {name}]"
-                    )
+                    if pushed:
+                        print(f"[yellow][Reloaded {name}]")
+                    else:
+                        print(f"[yellow][Restored {name}]")
                     last_state = state
 
                 signature = inspect.signature(state.func)

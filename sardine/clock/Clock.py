@@ -492,8 +492,12 @@ class Clock:
 
         :param n_beats: The number of beats to wait for.
         :param sync:
-            If True, the ticks calculated for the first beat
-            is reduced to synchronize with the clock.
+            If True, the beat interval will be synchronized
+            to the start of the clock, returning an adjusted number
+            of ticks to match that interval.
+            If False, no synchronization is done and the returned
+            number of ticks will always be the number of beats multiplied
+            by the clock `ppqn`.
         :returns: The number of ticks needed to wait.
 
         """

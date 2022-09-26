@@ -304,17 +304,25 @@ class AsyncRunner:
                     + self._get_corrected_interval(delay, delta_correction=True)
                 )
 
-                # print(
-                #     f'{self.clock} AR [green]'
-                #     f'expected: {self._expected_interval}, previous: {self.clock.tick}, '
-                #     f'delta: {self._delta}, shift: {self.interval_shift}'
-                # )
+                start = self.clock.tick
 
-                handle = asyncio.ensure_future(self._wait_beats(delay))
-                reload = asyncio.ensure_future(self._reload_event.wait())
+                handle = self._wait_beats(delay)
+                reload = self._reload_event.wait()
                 done, pending = await asyncio.wait(
-                    (handle, reload), return_when=asyncio.FIRST_COMPLETED
+                    (asyncio.ensure_future(handle), asyncio.ensure_future(reload)),
+                    return_when=asyncio.FIRST_COMPLETED,
                 )
+
+                # For deferred scheduling we'll record any drift after asyncio.wait,
+                # which tends to add about 1 tick of latency with ppqn = 24
+                sleep_drift = self.clock.tick - handle.when
+
+                # print(
+                #     f"{self.clock} AR [green]"
+                #     f"expected: {self._expected_interval}, previous: {start}, "
+                #     f"delta: {self._delta}, shift: {self.interval_shift}, "
+                #     f"post drift: {sleep_drift}"
+                # )
 
                 for fut in pending:
                     fut.cancel()
@@ -325,7 +333,7 @@ class AsyncRunner:
                 try:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
-                        self._call_func(state.func, args, kwargs),
+                        self._call_func(sleep_drift, state.func, args, kwargs),
                         name=f"asyncrunner-func-{name}",
                     )
                 except Exception as e:
@@ -364,13 +372,13 @@ class AsyncRunner:
         with self.clock._scoped_tick_shift(self.interval_shift - delta - offset):
             return self.clock.get_beat_ticks(delay) - delta
 
-    async def _call_func(self, func, args, kwargs):
+    async def _call_func(self, delta: int, func, args, kwargs):
         """Calls the given function and optionally applies an initial
         tick shift of 1 beat when the `deferred` attribute is
         set to True.
         """
         if self.deferred:
-            ticks = self._get_corrected_interval(1, offset=-1)
+            ticks = 1 * self.clock.ppqn - delta
             self.clock.tick_shift += ticks
 
         return await _maybe_coro(func, *args, **kwargs)

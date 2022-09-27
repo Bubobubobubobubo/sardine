@@ -250,6 +250,37 @@ class AsyncRunner:
 
         self._can_correct_delay = False
 
+    def _get_corrected_interval(
+        self,
+        delay: Union[float, int],
+        *,
+        delta_correction: bool = False,
+        offset: int = 0,
+    ) -> int:
+        """Returns the number of ticks until the next `delay` interval,
+        offsetted by the `offset` argument.
+
+        This method also adjusts the interval according to the
+        `interval_shift` attribute.
+
+        :param delay: The number of beats within each interval.
+        :param delta_correction:
+            If enabled, the interval is adjusted to correct for
+            any drift from the previous iteration, i.e. whether the
+            runner was slower or faster than the expected interval.
+        :param offset:
+            The number of ticks to offset from the interval.
+            A positive offset means the result will be later than
+            the actual interval, while a negative offset will be sooner.
+        :returns: The number of ticks until the next interval is reached.
+
+        """
+        delta = self._delta if delta_correction else 0
+        with self.clock._scoped_tick_shift(self.interval_shift - delta - offset):
+            return self.clock.get_beat_ticks(delay) - delta
+
+    # Runner loop
+
     async def _runner(self):
         """The entry point for AsyncRunner. This can only be started
         once per AsyncRunner instance through the `start()` method.
@@ -369,35 +400,6 @@ class AsyncRunner:
             # Remove from clock if necessary
             print(f"[yellow][Stopped {name}]")
             self.clock.runners.pop(name, None)
-
-    def _get_corrected_interval(
-        self,
-        delay: Union[float, int],
-        *,
-        delta_correction: bool = False,
-        offset: int = 0,
-    ) -> int:
-        """Returns the number of ticks until the next `delay` interval,
-        offsetted by the `offset` argument.
-
-        This method also adjusts the interval according to the
-        `interval_shift` attribute.
-
-        :param delay: The number of beats within each interval.
-        :param delta_correction:
-            If enabled, the interval is adjusted to correct for
-            any drift from the previous iteration, i.e. whether the
-            runner was slower or faster than the expected interval.
-        :param offset:
-            The number of ticks to offset from the interval.
-            A positive offset means the result will be later than
-            the actual interval, while a negative offset will be sooner.
-        :returns: The number of ticks until the next interval is reached.
-
-        """
-        delta = self._delta if delta_correction else 0
-        with self.clock._scoped_tick_shift(self.interval_shift - delta - offset):
-            return self.clock.get_beat_ticks(delay) - delta
 
     async def _call_func(self, delta: int, func, args, kwargs):
         """Calls the given function and optionally applies an initial

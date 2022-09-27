@@ -52,10 +52,19 @@ Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
 
+def ticked(condition: bool):
+    """Print an ASCII Art [X] if True or [ ] if false"""
+    return "[X]" if condition else "[ ]"
 
 # Reading / Creating / Updating the configuration file
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
+print(f"[yellow]SC: [red]{ticked(config.boot_superdirt)}[/red], \
+[yellow]ACTIVE CLOCK: [red]{ticked(config.active_clock)}[/red],",
+f"[yellow]MIDI OUT: [red]{config.midi}[/red], \
+[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red]",
+f"[yellow]BPM: [red]{config.bpm}[/red]",
+f"[yellow]BEATS: [red]{config.beats}[/red]")
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:

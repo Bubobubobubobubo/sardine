@@ -231,13 +231,17 @@ class AsyncRunner:
         self._can_correct_delay = True
 
     def _correct_interval(self, delay: Union[float, int]):
+        """Checks if the interval should be corrected.
+
+        Interval correction occurs when `_allow_delay_correction()`
+        is called, and the given delay is different from the last delay
+        *only* for the current iteration. If the delay did not change,
+        delay correction must be requested again.
+
+        :param delay: The delay being used in the current iteration.
+
+        """
         if self._can_correct_delay and delay != self._last_delay:
-            # One-off request to update the interval shift
-            # so the runner can synchronize to the new interval
-            #
-            # Similar to what the clock does, we also need to compensate
-            # for drift here in case the runner's iteration was too slow
-            # or even sub-tick fast
             self._delta = self.clock.tick - self._expected_interval
             with self.clock._scoped_tick_shift(-self._delta):
                 self.interval_shift = self.clock.get_beat_ticks(delay)
@@ -249,6 +253,37 @@ class AsyncRunner:
     async def _runner(self):
         """The entry point for AsyncRunner. This can only be started
         once per AsyncRunner instance through the `start()` method.
+
+        Drift correction
+        ----------------
+        In this loop, there is a potential for drift to occur anywhere with
+        an async/await keyword. The relevant steps here are:
+
+            1. Correct interval
+            2. (await) Sleep until interval
+            3. (await) Call function
+            4. Repeat
+
+        Step 2 tends to add a tick of latency (a result of `asyncio.wait()`),
+        otherwise known as a +1 drift. When using deferred scheduling, step 3
+        subtracts that drift to make sure sounds are still scheduled for
+        the correct tick. If more asynchronous steps are added before the
+        call function, deferred scheduling *must* account for their drift
+        as well.
+
+        Step 3 usually adds a 0 or +1 drift, although slow functions may
+        increase this drift further. Assuming the clock isn't being blocked,
+        we can fully measure this using the expected interval.
+
+        For functions using static delays/intervals, this is not required
+        as `Clock.get_beat_ticks()` can re-synchronize with the interval.
+        However, when we need to do interval correction, a.k.a. tick shifting,
+        we need to compensate for this drift to ensure the new interval
+        precisely has the correct separation from the previous interval.
+        This is measured in the `_delta` attribute as similarly named in
+        the `Clock` class, but is only computed when interval correction
+        is needed.
+
         """
         self.swim()
         last_state = self.states[-1]
@@ -304,8 +339,6 @@ class AsyncRunner:
                     return_when=asyncio.FIRST_COMPLETED,
                 )
 
-                # For deferred scheduling we'll record any drift after asyncio.wait,
-                # which tends to add about 1 tick of latency with ppqn = 24
                 sleep_drift = self.clock.tick - handle.when
 
                 # print(

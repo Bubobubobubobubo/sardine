@@ -101,8 +101,8 @@ class AsyncRunner:
 
     The `deferred` parameter is used to control whether AsyncRunner
     runs with an implicit tick shift when calling its function or not.
-    This helps improve sound synchronization by giving the function its
-    entire delay period to execute rather than a single tick.
+    This helps improve sound synchronization by giving the function
+    a full beat to execute rather than a single tick.
     For example, assuming bpm = 120 and ppqn = 48, `deferred=False`
     would require its function to complete within 10ms (1 tick),
     whereas `deferred=True` would allow a function with `d=1`
@@ -149,7 +149,6 @@ class AsyncRunner:
     _delta: int = field(default=0, repr=False)
     _expected_interval: int = field(default=0, repr=False)
     _last_delay: Union[float, int] = field(default=0.0, repr=False)
-    # _last_ppqn: int = field(default=0, repr=False)  # TODO ppqn
 
     # State management
 
@@ -244,22 +243,14 @@ class AsyncRunner:
                 self.interval_shift = self.clock.get_beat_ticks(delay)
 
             self._last_delay = delay
-            # self._last_delay, self._last_ppqn = delay, self.clock.ppqn
-
-        # TODO handle PPQN changes (or maybe don't?)
-        # elif self.clock.ppqn != self._last_ppqn:
-        #     # Scale our tick shift to accommodate the increase/decrease
-        #     # in number of ticks per interval
-        #     n_beats = self.interval_shift / self._last_ppqn
-        #     self.interval_shift = n_beats * self.clock.ppqn
-
-        #     self._last_ppqn = self.clock.ppqn
 
         self._can_correct_delay = False
 
     async def _runner(self):
+        """The entry point for AsyncRunner. This can only be started
+        once per AsyncRunner instance through the `start()` method.
+        """
         self.swim()
-        # self._last_ppqn = self.clock.ppqn  # TODO ppqn
         last_state = self.states[-1]
         name = last_state.func.__name__
         print(f"[yellow][Init {name}][/yellow]")
@@ -304,7 +295,7 @@ class AsyncRunner:
                     + self._get_corrected_interval(delay, delta_correction=True)
                 )
 
-                start = self.clock.tick
+                # start = self.clock.tick
 
                 handle = self._wait_beats(delay)
                 reload = self._reload_event.wait()

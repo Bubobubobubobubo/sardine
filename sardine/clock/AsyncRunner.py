@@ -364,9 +364,9 @@ class AsyncRunner:
                 # start = self.clock.tick
 
                 handle = self._wait_beats(delay)
-                reload = self._reload_event.wait()
+                reload_task = asyncio.ensure_future(self._reload_event.wait())
                 done, pending = await asyncio.wait(
-                    (asyncio.ensure_future(handle), asyncio.ensure_future(reload)),
+                    (asyncio.ensure_future(handle), reload_task),
                     return_when=asyncio.FIRST_COMPLETED,
                 )
 
@@ -381,7 +381,7 @@ class AsyncRunner:
 
                 for fut in pending:
                     fut.cancel()
-                if reload in done:
+                if reload_task in done:
                     self.swim()
                     continue
 

@@ -62,8 +62,8 @@ print_config = pretty_print_configuration_file
 print(f"[yellow]SC: [red]{ticked(config.boot_superdirt)}[/red], \
 [yellow]ACTIVE CLOCK: [red]{ticked(config.active_clock)}[/red],",
 f"[yellow]MIDI OUT: [red]{config.midi}[/red], \
-[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red]",
-f"[yellow]BPM: [red]{config.bpm}[/red]",
+[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red],",
+f"[yellow]BPM: [red]{config.bpm}[/red],",
 f"[yellow]BEATS: [red]{config.beats}[/red]")
 
 # Booting SuperCollider / SuperDirt

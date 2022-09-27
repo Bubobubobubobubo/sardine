@@ -347,9 +347,12 @@ class AsyncRunner:
             self.clock.runners.pop(name, None)
 
     def _get_corrected_interval(
-        self, delay: Union[float, int], *,
-        delta_correction: bool = False, offset: int = 0
-    ):
+        self,
+        delay: Union[float, int],
+        *,
+        delta_correction: bool = False,
+        offset: int = 0,
+    ) -> int:
         """Returns the number of ticks until the next `delay` interval,
         offsetted by the `offset` argument.
 

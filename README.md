@@ -1,4 +1,3 @@
-![sardine](pictures/sardine.png)
 # Sardine: Python based live coding library with MIDI and OSC support ✨
 
 Sardine is a Python library tailored for musical live coding. **Sardine** can turn Python into a fun and fruitful music instrument or stage control tool for electronic musicians. It is based on the principle of [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). Sardine allows the execution of recursive functions in musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict timing! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide. The library is still a bit rough on the edges. I decided to publish it in order to share it easily and to encourage collaboration! **Sardine is looking for contributors**.

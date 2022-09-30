@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import contextvars
 import functools
 import heapq
@@ -9,14 +10,10 @@ from collections import deque
 
 import mido
 from rich import print
-
-import os
-
-print(os.getpid())
-
 from sardine.io.Osc import Client
 
 from . import AsyncRunner
+from ..sequences import ListParser
 from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
@@ -34,6 +31,7 @@ tick_shift = contextvars.ContextVar("tick_shift", default=0)
 
 @functools.total_ordering
 class TickHandle:
+
     """A handle that allows waiting for a specific tick to pass in the clock."""
 
     __slots__ = ("when", "fut")
@@ -138,8 +136,11 @@ class Clock:
             "phase": 0,
         }
 
+        # Parser
+        self.parser = ListParser(clock=self)
+
     def __repr__(self):
-        shift = tick_shift.get()
+        shift = self.tick_shift
         if shift:
             tick = f"{self._current_tick}{shift:+}"
         else:
@@ -245,7 +246,7 @@ class Clock:
 
     @property
     def tick(self) -> int:
-        return self._current_tick + tick_shift.get()
+        return self._current_tick + self.tick_shift
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
@@ -327,6 +328,22 @@ class Clock:
     def phase(self) -> int:
         """The phase of the current beat in ticks."""
         return self.tick % self.ppqn
+
+    @property
+    def tick_shift(self) -> int:
+        """The tick shift in the current context.
+
+        This is useful for simulating sleeps without blocking.
+
+        If the real-time clock tick needs to be shifted,
+        assign to the `c.tick` property instead.
+
+        """
+        return tick_shift.get()
+
+    @tick_shift.setter
+    def tick_shift(self, n_ticks: int):
+        tick_shift.set(n_ticks)
 
     # ---------------------------------------------------------------------- #
     # Clock methods
@@ -475,8 +492,12 @@ class Clock:
 
         :param n_beats: The number of beats to wait for.
         :param sync:
-            If True, the ticks calculated for the first beat
-            is reduced to synchronize with the clock.
+            If True, the beat interval will be synchronized
+            to the start of the clock, returning an adjusted number
+            of ticks to match that interval.
+            If False, no synchronization is done and the returned
+            number of ticks will always be the number of beats multiplied
+            by the clock `ppqn`.
         :returns: The number of ticks needed to wait.
 
         """
@@ -506,16 +527,20 @@ class Clock:
 
         return interval - self.tick % interval
 
-    def shift_ctx(self, n_ticks: int):
-        """Shifts the clock by `n_ticks` in the current context.
+    @contextlib.contextmanager
+    def _scoped_tick_shift(self, n_ticks: int):
+        """Returns a context manager that adds `n_ticks` ticks to the clock
+        in the current context.
 
-        This is useful for simulating sleeps without blocking.
-
-        If the real-time clock tick needs to be shifted,
-        assign to the `c.tick` property instead.
+        After the context manager is exited, the tick shift is restored
+        to its original value.
 
         """
-        tick_shift.set(tick_shift.get() + n_ticks)
+        token = tick_shift.set(tick_shift.get() + n_ticks)
+        try:
+            yield
+        finally:
+            tick_shift.reset(token)
 
     def _get_tick_duration(self) -> float:
         """Determines the numbers of seconds the next tick will take.

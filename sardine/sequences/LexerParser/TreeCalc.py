@@ -1,24 +1,114 @@
 from lark import Transformer, v_args
-from itertools import cycle
 from .Qualifiers import qualifiers
+from lark.lexer import Token
+from typing import Any
+from itertools import cycle
+from time import time
 import random
 
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    number = float
+    def __init__(self, clock):
+        super().__init__()
+        self.clock = clock
+        self.memory = {}
+
+    def number(self, number):
+        return float(number)
+
+    def negative_number(self, number):
+        return -float(number)
+
+    def return_pattern(self, *args):
+        return list(args)
+
+    # ---------------------------------------------------------------------- #
+    # Lists: methods concerning lists
+    # ---------------------------------------------------------------------- #
+
+    def list_addition(self, left, right):
+        def solve_addition(left, right):
+            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
+                return left + right
+            elif all(map(lambda x: isinstance(x, list), [left, right])):
+                return [x + y for x, y in zip(cycle(right), left)]
+            elif all(map(lambda x: isinstance(x, str), [left, right])):
+                return "".join([right, left])
+
+        return [solve_addition(x, y) for x, y in zip(cycle(right), left)]
+
+    def list_substraction(self, left, right):
+        def solve_substraction(left, right):
+            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
+                return left - right
+            elif all(map(lambda x: isinstance(x, list), [left, right])):
+                return [x - y for x, y in zip(cycle(right), left)]
+            elif all(map(lambda x: isinstance(x, str), [left, right])):
+                new_string = []
+                for _ in right:
+                    if _ not in left:
+                        new_string.append(_)
+                return "".join(new_string)
+
+        return [solve_substraction(x, y) for x, y in zip(cycle(right), left)]
+
+    def list_modulo(self, left, right):
+        def solve_modulo(left, right):
+            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
+                return left % right
+            elif all(map(lambda x: isinstance(x, list), [left, right])):
+                return [x % y for x, y in zip(cycle(right), left)]
+            elif all(map(lambda x: isinstance(x, str), [left, right])):
+                return None
+
+        return [solve_modulo(y, x) for x, y in zip(cycle(right), left)]
+
+    def list_multiplication(self, left, right):
+        def solve_multiplication(left, right):
+            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
+                return left * right
+            elif all(map(lambda x: isinstance(x, list), [left, right])):
+                return [x * y for x, y in zip(cycle(right), left)]
+            elif all(map(lambda x: isinstance(x, str), [left, right])):
+                return left
+
+        return [solve_multiplication(y, x) for x, y in zip(cycle(right), left)]
+
+    def list_floor_division(self, left, right):
+        def solve_floor_division(left, right):
+            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
+                return left // right
+            elif all(map(lambda x: isinstance(x, list), [left, right])):
+                return [x // y for x, y in zip(cycle(right), left)]
+            elif all(map(lambda x: isinstance(x, str), [left, right])):
+                return None
+
+        return [solve_floor_division(y, x) for x, y in zip(cycle(right), left)]
+
+    def list_choice(self, left, right):
+        """Choose between two lists"""
+        return self.choice_note(left, right)
+
+    def list_extend(self, left, right):
+        """Copy of the extend rule"""
+        return self.extend(left, right)
+
+    def list_extend_repeat(self, left, right):
+        """Probably not the right behavior"""
+        return self.extend_repeat(left, right)
+
+    def list_negation(self, collection):
+        """Will apply a negative sign when possible to list"""
+        return list(map(lambda x: -x if isinstance(x, (int, float)) else x, collection))
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
     # ---------------------------------------------------------------------- #
 
-    def random_note(self):
-        """Generates a random MIDI Note in the range 1 - 127.
-
-        Returns:
-            int: a random MIDI Note
-        """
-        return random.randint(1, 127)
+    def specify_address(self, name0, name1):
+        """Convert underscore into slash for name based addresses"""
+        return "".join([name0, "/", name1])
 
     def random_note_in_range(self, number0, number1):
         """Generates a random MIDI Note in the range number0 - number1.
@@ -32,7 +122,7 @@ class CalculateTree(Transformer):
         """
         return random.randint(int(number0), int(number1))
 
-    def make_note_anglo_saxon(self, symbol):
+    def make_note(self, symbol):
         """Return a valid MIDI Note (fifth octave)
         from a valid anglo-saxon note name.
 
@@ -42,8 +132,8 @@ class CalculateTree(Transformer):
         Returns:
             int: A MIDI Note (fifth octave)
         """
-        table = {"C": 60, "D": 62, "E": 64, "F": 65, "G": 67, "A": 69, "B": 71}
-        return table[symbol.upper()]
+        table = {"A": 57, "B": 59, "C": 60, "D": 62, "E": 64, "F": 65, "G": 67}
+        return table[str(symbol).upper()]
 
     def make_note_french_system(self, symbol):
         """Return a valid MIDI Note (fifth octave)
@@ -77,8 +167,7 @@ class CalculateTree(Transformer):
         Returns:
             int: A valid MIDI Note at given octave
         """
-        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
-        return match_table[note] + 12 * int(number)
+        return (int(note) - 12 * 5) + 12 * int(number)
 
     def sharp_simple(self, note):
         """Sharpen a note
@@ -216,7 +305,10 @@ class CalculateTree(Transformer):
         """
         quali = list(quali)
         quali = "".join([str(x) for x in quali])
-        return [note + x for x in qualifiers[str(quali)]]
+        try:
+            return [note + x for x in qualifiers[str(quali)]]
+        except KeyError:
+            return note
 
     def transpose_up(self, notes, number):
         """Transpose a note 'number' notes up.
@@ -453,7 +545,38 @@ class CalculateTree(Transformer):
         Returns:
             list: Gathered arguments in a list
         """
-        return list(args)
+        new_list = []
+        for element in args:
+            if isinstance(element, list):
+                for i in element:
+                    new_list.append(i)
+            else:
+                new_list.append(element)
+        return new_list
+
+    def make_list_gen(self, gen):
+        """Make a list from a generator (un-nest it)
+
+        Returns:
+            list: Generator turned into a list
+        """
+        return gen
+
+    def get_time(self):
+        """Return current clock time (tick) as integer"""
+        return int(self.clock.tick)
+
+    def get_measure(self):
+        """Return current measure (bar) as integer"""
+        return int(self.clock.bar)
+
+    def get_phase(self):
+        """Return current phase (phase) as integer"""
+        return int(self.clock.phase)
+
+    def get_unix_time(self):
+        """Return current unix time as integer"""
+        return int(time())
 
     def get_random_number(self):
         """Return a random number (alias used by parser)
@@ -481,6 +604,24 @@ class CalculateTree(Transformer):
             return new_list
         else:
             return list(range(int(left), int(right) + 1))
+
+    def generate_ramp_with_range(self, left, right, step=1):
+        """Generates a ramp of integers between x included and y
+        included (used by parser). Variant using a step param.
+
+        Args:
+            left (int): First boundary
+            right (int): Second boundary
+            step (int): Range every x steps
+
+        Returns:
+            list: a ramp of ascending or descending integers with step
+        """
+        if int(left) > int(right):
+            new_list = list(reversed(range(int(right), int(left) + 1, int(step))))
+            return new_list
+        else:
+            return list(range(int(left), int(right) + 1, int(step)))
 
     def extend(self, left, right):
         """Extend a token: repeat the token x times. Note that this function
@@ -512,7 +653,8 @@ class CalculateTree(Transformer):
             new_list = []
             for _ in range(int(left)):
                 [new_list.append(x) for x in right]
-            return new_list
+        if isinstance(left, (float, int)) and isinstance(right, (float, int)):
+            return [left] * int(right)
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
@@ -550,12 +692,12 @@ class CalculateTree(Transformer):
             return [random.uniform(x, y) for x, y in zip(cycle(right), left)]
 
     def negation(self, value):
-        if isinstance(value, float):
+        if isinstance(value, (float, int)):
             return -value
         elif isinstance(value, list):
             return [-x for x in value]
 
-    def concat(self, left, right):
+    def concat(self, left, operator, right):
         """List Concatenation: takes a list and extends it with
         another list. Used by proto parser.
 
@@ -590,6 +732,16 @@ class CalculateTree(Transformer):
             return [x + left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x + right for x in left]
+
+    def modulo(self, left, right):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return left % right
+        elif all(map(lambda x: isinstance(x, list), [left, right])):
+            return [x % y for x, y in zip(cycle(right), left)]
+        elif isinstance(left, (int, float)) and isinstance(right, list):
+            return [x % left for x in right]
+        elif isinstance(left, list) and isinstance(right, (float, int)):
+            return [x % right for x in left]
 
     def power(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -631,7 +783,21 @@ class CalculateTree(Transformer):
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x / right for x in left]
 
-    def name(self, name):
+    def floor_division(self, left, right):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return left // right
+        elif all(map(lambda x: isinstance(x, list), [left, right])):
+            return [x // y for x, y in zip(cycle(right), left)]
+        if isinstance(left, (int, float)) and isinstance(right, list):
+            return [x // left for x in right]
+        elif isinstance(left, list) and isinstance(right, (float, int)):
+            return [x // right for x in left]
+
+    def name_disamb(self, name):
+        """Generating a name"""
+        # Fix two letters words with b being interpreted as words
+        if name in ["Ab", "Bb", "Cb", "Db", "Eb", "Fb", "Gb"]:
+            return self.flat_simple(self.make_note(symbol=name[0]))
         return str(name)
 
     def make_integer(self, value):
@@ -643,7 +809,18 @@ class CalculateTree(Transformer):
     def name_from_name_number(self, name, number):
         return str("".join([str(name), str(number)]))
 
-    def associate_sample_number(self, name, value):
+    def association(self, name, value):
+        """Associate a name to a value in memory"""
+        self.memory[name] = value
+
+    def recover_variable(self, name):
+        """Recover a variable that has been stored in memory"""
+        if name in self.memory.keys():
+            return self.memory[name]
+        else:
+            return None
+
+    def assoc_sp_number(self, name, value):
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
@@ -662,6 +839,9 @@ class CalculateTree(Transformer):
 
     def add_name(self, a, b):
         return a + b
+
+    def times_name(self, a, b):
+        return a * int(b)
 
     def sub_name(self, a, b):
         """Substraction of a name by a name. Every letter present

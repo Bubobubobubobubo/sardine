@@ -1,34 +1,164 @@
-// Basic number parsing syntax (calculator for lists)
-// List of found currently non-parsable expressions:
-// - [12,2]![24,2]
-?start: sum
-?sum: product
-    | sum _PLUS product                   -> addition
-    | sum _PLUS ~ 2 product               -> concat 
-    | sum _MINUS product                  -> substraction
-?product: atom
-    | product "*" atom                    -> multiplication
-    | product "/" atom                    -> division
-    | product "|" atom                    -> choice
-    | product ":" atom                    -> random_in_range
-    | product "!" atom                    -> extend
-    | product "!!" atom                   -> extend_repeat
-?list: "[" sum ("," sum)* ","? "]"        -> make_list
-    | atom "_" atom                       -> generate_ramp
-    | atom "_" atom ":" atom              -> generate_ramp_with_range 
-?value: NUMBER -> number
-    | list
-?atom: value
-    | "-" atom                            -> negation
-    | "(" sum ")"
-    | "r"                                 -> get_random_number
+// A pattern is a succession of things ////////////////////////////////////////
 
+?start: pattern
+pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Rules concerning lists and interaction with other tokens ///////////////////
+
+?superlist: uplist
+          | uplist _PLUS superlist                 -> list_addition
+          | uplist _MINUS superlist                -> list_substraction
+          | uplist _MODULO superlist               -> list_modulo
+
+?uplist: list
+       | list _TIMES uplist                        -> list_multiplication
+       | list _TIMES sum                           -> multiplication
+       | list "/" uplist                           -> list_division
+       | list "/" sum                              -> division
+       | list "//" uplist                          -> list_floor_division
+       | list "//" sum                             -> floor_division
+       | list _PIPE uplist                         -> list_choice
+       | list _PIPE sum                            -> choice_note
+       | list _REPEAT uplist                       -> list_extend
+       | list _REPEAT sum                          -> list_extend
+       | list _REPEAT2 sum                         -> list_extend_repeat
+       | list _REPEAT2 uplist                      -> list_extend_repeat
+       | list _PLUS sum                            -> addition
+       | list _PLUS uplist                         -> list_addition
+       | list _MINUS sum                           -> substraction 
+       | list _MINUS uplist                        -> list_substraction
+       | list _MODULO sum                          -> modulo
+       | list _MODULO uplist                       -> list_modulo
+       | _NEG uplist                               -> list_negation
+
+list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
+    | _LBRA list (_COMMA list)* _COMMA? _RBRA      -> make_list
+
+item: (sum|col|patname)                            -> id
+    | _LPAR item _RPAR                             -> id
+    | gen                                          -> make_list_gen
+
+gen: sum _US sum                                   -> generate_ramp
+   | sum _US sum _LPAR sum _RPAR                   -> generate_ramp_with_range
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Rules concerning numbers ///////////////////////////////////////////////////
+
+?sum: product
+    | product _PLUS (sum|superlist)                -> addition
+    | product _MINUS (sum|superlist)               -> substraction
+    | product _MODULO (sum|superlist)              -> modulo
+
+?product: atom
+     | product _TIMES (product|superlist)          -> multiplication
+     | product "/" (product|superlist)             -> division
+     | product "//" (product|superlist)            -> floor_division
+     | product _PIPE (product|superlist)           -> choice
+     | product _COLON  product                     -> random_in_range
+     | product _REPEAT (product|superlist)         -> extend
+     | product _REPEAT2 (product|superlist)        -> extend_repeat
+
+?atom: NUMBER                                      -> number
+     | _NEG atom                                   -> negation
+     | _RANDOM                                     -> get_random_number
+     | _TIME                                       -> get_time
+     | _MEASURE                                    -> get_measure
+     | _PHASE                                      -> get_phase
+     | _UNIXTIME                                   -> get_unix_time
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Rules concerning names /////////////////////////////////////////////////////
+
+?patname: pre_final_name
+    | pre_final_name _COLON (sum|gen)              -> assoc_sp_number
+    | (compose_name|patname) _REPEAT sum           -> repeat_name
+    | pre_final_name _PIPE compose_name            -> choice_name
+
+?pre_final_name: compose_name
+    | compose_name _PIPE compose_name              -> choice_name
+
+?compose_name: name
+    | compose_name _TIMES sum                      -> times_name
+    | compose_name _PLUS name                      -> add_name 
+    | compose_name _MINUS name                     -> sub_name
+    | compose_name "/" name                        -> specify_address
+
+?name: NAME                                        -> name_disamb
+    | NAME sum                                     -> name_from_name_number
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Rules about notes /////////////////////////////////////////////////////////
+
+?col: note                                         -> id
+    | col _REPEAT sum                              -> repeat_collection
+    | col _LBRA sum _RBRA                          -> repeat_collection_x
+    | col ":reverse"                               -> reverse_collection
+    | col ":palindrome"                            -> collection_palindrome
+    | col ":braid"                                 -> braid_collection
+    | col ":shuffle"                               -> shuffle_collection
+    | col ":expand"                                -> expand_collection
+    | col ":disco"                                 -> disco_collection
+    | col ":drop2"                                 -> collection_drop2
+    | col ":drop3"                                 -> collection_drop3
+    | col ":drop2&4"                               -> collection_drop2and4
+    | col _PLUS (col|list)                         -> add_collection
+    | col _MINUS (col|list)                        -> sub_collection
+
+?note: NOTE                                        -> make_note
+     | note _PLUS sum                              -> transpose_up
+     | note _MINUS sum                             -> transpose_down 
+     | note _PLUS                                  -> raise_octave
+     | note _PIPE note                             -> choice_note
+     | note _REPEAT sum                            -> repeat_note
+     | note sum                                    -> add_octave
+     | note "b"                                    -> flat_simple
+     | note "#"                                    -> sharp_simple
+     | note _COLON (sum? name)                     -> add_qualifier
+     
+// Tokens /////////////////////////////////////////////////////////////////////
+
+A.0: "A"
+B.0: "B"
+C.0: "C"
+D.0: "D"
+E.0: "E"
+F.0: "F"
+G.0: "G"
+NOTE.0: (A|B|C|D|E|F|G)
+NAME.10: (LETTER)~2 (LETTER|DIGIT+)*
 _PLUS: "+"
 _MINUS: "-"
-NAME: (LETTER) (LETTER|DIGIT)*                             
-%import common.LETTER                                       -> LETTER
-%import common.DIGIT                                        -> DIGIT
-%import common.INT                                          -> INT
-%import common.NUMBER                                       -> NUMBER
+_NEG: "-"
+_TIMES: "*"
+_EQUAL: "="
+_MODULO: "%"
+_REPEAT: "!"
+_REPEAT2: "!!"
+_LPAR: "("
+_RPAR: ")"
+_LBRA: "["
+_RBRA: "]"
+_PIPE: "|"
+_US: "_"
+_COLON: ":"
+_COMMA: ","
+_DOT: "."
+_RANDOM: "r"
+_TIME: "t"
+_MEASURE: "m"
+_PHASE: "p"
+_UNIXTIME: "u"
+_RECOVER: "&"
+_FLAT: "f"
+_SHARP: "#"
+
+%import common.LETTER                     -> LETTER
+%import common.DIGIT                      -> DIGIT
+%import common.NUMBER
 %import common.WS_INLINE
 %ignore WS_INLINE

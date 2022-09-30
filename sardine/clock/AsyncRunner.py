@@ -39,6 +39,22 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
     return pass_through
 
 
+def _extract_new_delay(
+    sig: inspect.Signature, kwargs: dict[str, Any]
+) -> Union[float, int]:
+    delay = kwargs.get("d")
+    if delay is None:
+        param = sig.parameters.get("d")
+        delay = getattr(param, "default", 1)
+
+    if not isinstance(delay, (float, int)):
+        raise TypeError(f"Delay must be a float or integer, not {delay!r}")
+    elif delay <= 0:
+        raise ValueError(f"Delay must be >0, not {delay}")
+
+    return delay
+
+
 def _missing_kwargs(
     sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]
 ) -> dict[str, Any]:
@@ -85,8 +101,8 @@ class AsyncRunner:
 
     The `deferred` parameter is used to control whether AsyncRunner
     runs with an implicit tick shift when calling its function or not.
-    This helps improve sound synchronization by giving the function its
-    entire delay period to execute rather than a single tick.
+    This helps improve sound synchronization by giving the function
+    a full beat to execute rather than a single tick.
     For example, assuming bpm = 120 and ppqn = 48, `deferred=False`
     would require its function to complete within 10ms (1 tick),
     whereas `deferred=True` would allow a function with `d=1`
@@ -104,24 +120,59 @@ class AsyncRunner:
         default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES)
     )
 
+    interval_shift: int = field(default=0, repr=False)
+    """
+    The number of ticks to offset the runner's interval.
+
+    An interval defines the number of ticks between each execution
+    of the current function. For example, a clock with a ppqn of 24
+    and a delay of 2 beats means each interval is 48 ticks.
+
+    Through interval shifting, a function can switch between different
+    delays and then compensate for the clock's current tick to avoid
+    the next immediate beat being shorter than the expected interval.
+
+    Initially, functions have an interval shift of 0. The runner
+    will automatically change its interval shift when the function
+    schedules itself with a new delay. This can lead to functions
+    with the same delay running at different ticks. To synchronize
+    these functions together, their interval shifts should be set
+    back to 0 or at least the same value.
+    """
+
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)
     _task: Union[asyncio.Task, None] = field(default=None, repr=False)
     _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
 
+    _can_correct_delay: bool = field(default=False, repr=False)
+    _delta: int = field(default=0, repr=False)
+    _expected_interval: int = field(default=0, repr=False)
+    _last_delay: Union[float, int] = field(default=0.0, repr=False)
+
+    # State management
+
     def push(self, func: "MaybeCoroFunc", *args, **kwargs):
         """Pushes a function state to the runner to be called in the next iteration."""
         if not self.states:
-            return self.states.append(FunctionState(func, args, kwargs))
+            state = FunctionState(func, args, kwargs)
+
+            # Once the runner starts it needs the `_last_delay` for interval correction,
+            # and since we are in a convenient spot we will populate it here
+            signature = inspect.signature(func)
+            self._last_delay = _extract_new_delay(signature, kwargs)
+
+            return self.states.append(state)
 
         last_state = self.states[-1]
 
         if func is last_state.func:
-            # patch the top-most state
+            # Function reschedule, patch the top-most state
             last_state.args = args
             last_state.kwargs = kwargs
+            self._allow_delay_correction()
         else:
-            # transfer arguments from last state if possible
+            # New function, transfer arguments from last state if possible
             # (any excess arguments here should be discarded by `_runner()`)
             args = args + last_state.args[len(args) :]
             kwargs = last_state.kwargs | kwargs
@@ -135,6 +186,8 @@ class AsyncRunner:
 
         """
         self._reload_event.set()
+
+    # Lifecycle control
 
     def start(self):
         """Initializes the background runner task.
@@ -171,7 +224,98 @@ class AsyncRunner:
         self._stop = True
         self.reload()
 
+    # Interval shifting
+
+    def _allow_delay_correction(self):
+        """Allows the interval to be corrected in the next iteration."""
+        self._can_correct_delay = True
+
+    def _correct_interval(self, delay: Union[float, int]):
+        """Checks if the interval should be corrected.
+
+        Interval correction occurs when `_allow_delay_correction()`
+        is called, and the given delay is different from the last delay
+        *only* for the current iteration. If the delay did not change,
+        delay correction must be requested again.
+
+        :param delay: The delay being used in the current iteration.
+
+        """
+        if self._can_correct_delay and delay != self._last_delay:
+            self._delta = self.clock.tick - self._expected_interval
+            with self.clock._scoped_tick_shift(-self._delta):
+                self.interval_shift = self.clock.get_beat_ticks(delay)
+
+            self._last_delay = delay
+
+        self._can_correct_delay = False
+
+    def _get_corrected_interval(
+        self,
+        delay: Union[float, int],
+        *,
+        delta_correction: bool = False,
+        offset: int = 0,
+    ) -> int:
+        """Returns the number of ticks until the next `delay` interval,
+        offsetted by the `offset` argument.
+
+        This method also adjusts the interval according to the
+        `interval_shift` attribute.
+
+        :param delay: The number of beats within each interval.
+        :param delta_correction:
+            If enabled, the interval is adjusted to correct for
+            any drift from the previous iteration, i.e. whether the
+            runner was slower or faster than the expected interval.
+        :param offset:
+            The number of ticks to offset from the interval.
+            A positive offset means the result will be later than
+            the actual interval, while a negative offset will be sooner.
+        :returns: The number of ticks until the next interval is reached.
+
+        """
+        delta = self._delta if delta_correction else 0
+        with self.clock._scoped_tick_shift(self.interval_shift - delta - offset):
+            return self.clock.get_beat_ticks(delay) - delta
+
+    # Runner loop
+
     async def _runner(self):
+        """The entry point for AsyncRunner. This can only be started
+        once per AsyncRunner instance through the `start()` method.
+
+        Drift correction
+        ----------------
+        In this loop, there is a potential for drift to occur anywhere with
+        an async/await keyword. The relevant steps here are:
+
+            1. Correct interval
+            2. (await) Sleep until interval
+            3. (await) Call function
+            4. Repeat
+
+        Step 2 tends to add a tick of latency (a result of `asyncio.wait()`),
+        otherwise known as a +1 drift. When using deferred scheduling, step 3
+        subtracts that drift to make sure sounds are still scheduled for
+        the correct tick. If more asynchronous steps are added before the
+        call function, deferred scheduling *must* account for their drift
+        as well.
+
+        Step 3 usually adds a 0 or +1 drift, although slow functions may
+        increase this drift further. Assuming the clock isn't being blocked,
+        we can fully measure this using the expected interval.
+
+        For functions using static delays/intervals, this is not required
+        as `Clock.get_beat_ticks()` can re-synchronize with the interval.
+        However, when we need to do interval correction, a.k.a. tick shifting,
+        we need to compensate for this drift to ensure the new interval
+        precisely has the correct separation from the previous interval.
+        This is measured in the `_delta` attribute as similarly named in
+        the `Clock` class, but is only computed when interval correction
+        is needed.
+
+        """
         self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
@@ -187,11 +331,10 @@ class AsyncRunner:
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    print(
-                        f"[yellow][Reloaded {name}]"
-                        if pushed
-                        else f"[yellow][Restored {name}]"
-                    )
+                    if pushed:
+                        print(f"[yellow][Reloaded {name}]")
+                    else:
+                        print(f"[yellow][Restored {name}]")
                     last_state = state
 
                 signature = inspect.signature(state.func)
@@ -204,14 +347,7 @@ class AsyncRunner:
                     args = state.args
                     kwargs = _discard_kwargs(signature, state.kwargs)
 
-                    # Introspect arguments to synchronize
-                    delay = kwargs.get("d")
-                    if delay is None:
-                        param = signature.parameters.get("d")
-                        delay = getattr(param, "default", 1)
-
-                    if delay <= 0:
-                        raise ValueError(f"Delay must be >0, not {delay}")
+                    delay = _extract_new_delay(signature, state.kwargs)
                 except (TypeError, ValueError) as e:
                     print(f"[red][Bad function definition ({name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
@@ -219,22 +355,40 @@ class AsyncRunner:
                     self.swim()
                     continue
 
-                handle = asyncio.ensure_future(self._wait_beats(delay))
-                reload = asyncio.ensure_future(self._reload_event.wait())
-                done, pending = await asyncio.wait(
-                    (handle, reload), return_when=asyncio.FIRST_COMPLETED
+                self._correct_interval(delay)
+                self._expected_interval = (
+                    self.clock.tick
+                    + self._get_corrected_interval(delay, delta_correction=True)
                 )
+
+                # start = self.clock.tick
+
+                handle = self._wait_beats(delay)
+                reload_task = asyncio.ensure_future(self._reload_event.wait())
+                done, pending = await asyncio.wait(
+                    (asyncio.ensure_future(handle), reload_task),
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+
+                sleep_drift = self.clock.tick - handle.when
+
+                # print(
+                #     f"{self.clock} AR [green]"
+                #     f"expected: {self._expected_interval}, previous: {start}, "
+                #     f"delta: {self._delta}, shift: {self.interval_shift}, "
+                #     f"post drift: {sleep_drift}"
+                # )
 
                 for fut in pending:
                     fut.cancel()
-                if reload in done:
+                if reload_task in done:
                     self.swim()
                     continue
 
                 try:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
-                        self._call_func(delay, state.func, args, kwargs),
+                        self._call_func(sleep_drift, state.func, args, kwargs),
                         name=f"asyncrunner-func-{name}",
                     )
                 except Exception as e:
@@ -242,24 +396,19 @@ class AsyncRunner:
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
-                finally:
-                    # `self._wait_beats()` may leave us exactly 1 tick away
-                    # from the next interval. If we don't wait 1 tick, we
-                    # might get stuck in an infinite synchronous loop.
-                    await self.clock.wait_after(n_ticks=1)
         finally:
             # Remove from clock if necessary
             print(f"[yellow][Stopped {name}]")
             self.clock.runners.pop(name, None)
 
-    async def _call_func(self, delay, func, args, kwargs):
+    async def _call_func(self, delta: int, func, args, kwargs):
         """Calls the given function and optionally applies an initial
-        tick shift of `delay` beats when the `deferred` attribute is
+        tick shift of 1 beat when the `deferred` attribute is
         set to True.
         """
         if self.deferred:
-            ticks = self.clock.get_beat_ticks(delay) - 1
-            self.clock.shift_ctx(ticks)
+            ticks = 1 * self.clock.ppqn - delta
+            self.clock.tick_shift += ticks
 
         return await _maybe_coro(func, *args, **kwargs)
 
@@ -268,7 +417,7 @@ class AsyncRunner:
         given number of beats is reached.
         """
         clock = self.clock
-        ticks = clock.get_beat_ticks(n_beats) - 1
+        ticks = self._get_corrected_interval(n_beats, offset=-1)
         return clock.wait_after(n_ticks=ticks)
 
     def _revert_state(self):

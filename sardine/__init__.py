@@ -27,7 +27,8 @@ from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from .io import OSCSender, MIDISender
-from .sequences import ListParser, Pnote, Pnum, Pname
+# from .sequences import ListParser, Pnote, Pnum, Pname
+from .sequences import ListParser
 from typing import Union
 from .sequences import *
 
@@ -47,7 +48,7 @@ sardine = """
 ██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
 ╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-Sardine is a MIDI/OSC sequencer made for live-coding.
+Sardine is a MIDI/OSC sequencer made for live-coding
 Play music, read the docs, contribute, and have fun!
 """
 print(f"[red]{sardine}[/red]")
@@ -59,12 +60,14 @@ def ticked(condition: bool):
 # Reading / Creating / Updating the configuration file
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
-print(f"[yellow]SC: [red]{ticked(config.boot_superdirt)}[/red], \
-[yellow]ACTIVE CLOCK: [red]{ticked(config.active_clock)}[/red],",
-f"[yellow]MIDI OUT: [red]{config.midi}[/red], \
-[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red],",
-f"[yellow]BPM: [red]{config.bpm}[/red],",
-f"[yellow]BEATS: [red]{config.beats}[/red]")
+
+
+print(
+    f"[yellow]BPM: [red]{config.bpm}[/red],",
+    f"[yellow]BEATS: [red]{config.beats}[/red]",
+    f"[yellow]SC: [red]{ticked(config.boot_superdirt)}[/red],",
+    f"[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red]",
+    f"[yellow]MIDI: [red]{config.midi}[/red]")
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:
@@ -129,12 +132,13 @@ def pgch(channel: int = 1, program: int = 0):
 def pwheel(channel: int = 1, pitch: int = 0):
     asyncio.create_task(c._midi.pitchwheel(channel=channel, pitch=pitch))
 
+def sysex(data: list[int]):
+    asyncio.create_task(c._midi.sysex(data))
 
 def swim(fn):
     """Push a function to the clock"""
     cs(fn)
     return fn
-
 
 def die(fn):
     """Remove a function from the clock"""
@@ -225,45 +229,30 @@ def parser(pattern: str):
 
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(parser_type=parser_type)
+    parser = ListParser(clock=c, parser_type=parser_type)
     try:
         while True:
             p = parser._parse_debug(pattern=input("> "))
     except KeyboardInterrupt:
         pass
 
+def lang_debug():
+    """Debug mode for language dev"""
+    return parser_repl(parser_type='proto')
 
-from dataclasses import dataclass
+def Pat(pattern: str, i: int = 0):
+    """Generates a pattern
 
+    Args:
+        pattern (str): A pattern to be parsed
+        i (int, optional): Index for iterators. Defaults to 0.
 
-@dataclass
-class CrudeIterator:
-    direction: str
-    value: Union[int, float]
+    Returns:
+        int: The ith element from the resulting pattern
+    """
+    parser = ListParser(
+            clock=c, parser_type="proto")
+    result = parser.parse(pattern)
+    return result[i % len(result)]
 
-
-class I:
-    """Stateful iterator class"""
-
-    values = {}
-
-    def __new__(cls, name: str, reset: bool = False, direction: str = "up"):
-        if reset:
-            cls.values[name] = CrudeIterator(
-                direction=direction, value=0 if direction == "up" else 1
-            )
-        if name not in cls.values.keys():
-            cls.values[name] = CrudeIterator(
-                direction=direction, value=0 if direction == "up" else 1
-            )
-        else:
-            cls._new_value(iter=cls.values[name])
-            return cls.values[name].value
-
-    def _new_value(iter: CrudeIterator) -> CrudeIterator:
-        """Get a new value for a given CrudeIterator"""
-        if iter.direction == "up":
-            iter.value += 1
-        elif iter.direction == "down":
-            iter.value -= 1
-        return iter
+P = Pat

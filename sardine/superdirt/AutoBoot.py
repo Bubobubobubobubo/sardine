@@ -186,7 +186,7 @@ class SuperColliderProcess:
 
     def boot(self) -> None:
         """Booting a background instance of SCLang!"""
-        print("\n[red]Starting SCLang && SuperDirt[/red]")
+        print("[yellow][red]Sardine[/red] is booting SCLang && SuperDirt...[/yellow]")
         self._sclang = subprocess.Popen(
             [self._sclang_path],
             stdin=subprocess.PIPE,

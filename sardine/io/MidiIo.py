@@ -153,4 +153,8 @@ class MIDIIo(threading.Thread):
 
     async def pitchwheel(self, channel, pitch) -> None:
         """Program change message"""
-        self.schedule(mido.Message("program_change", pitch=pitch, channel=channel))
+        self.schedule(mido.Message("pitchweel", pitch=pitch, channel=channel))
+
+    async def sysex(self, data: list[int]) -> None:
+        """Custom User Sysex message"""
+        self.schedule(mido.Message("sysex", data=bytearray(data), time=0))

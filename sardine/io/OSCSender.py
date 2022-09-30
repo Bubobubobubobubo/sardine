@@ -20,8 +20,10 @@ class OSCSender:
         **kwargs,
     ):
 
-        self._number_parser = ListParser(parser_type="number")
-        self._name_parser = ListParser(parser_type="name")
+        self._number_parser = ListParser(
+                clock=self.clock, parser_type="proto")
+        self._name_parser = ListParser(
+                clock=self.clock, parser_type="proto")
         self.clock = clock
         self.osc_client = osc_client
         self.address = self._name_parser.parse(address)

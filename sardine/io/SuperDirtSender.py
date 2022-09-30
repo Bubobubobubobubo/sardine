@@ -20,9 +20,8 @@ class SuperDirtSender:
         **kwargs,
     ):
 
-        self._number_parser = ListParser(parser_type="number")
-        self._name_parser = ListParser(parser_type="name")
-        self._note_parser = ListParser(parser_type="note")
+        self._general_parser = ListParser(
+                clock=self.clock, parser_type="proto")
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at
@@ -39,21 +38,13 @@ class SuperDirtSender:
 
     def _parse_sound(self, sound_pattern: str):
         """Pre-parse sound param during __init__"""
-        pat = self._name_parser.parse(sound_pattern)
+        pat = self._general_parser.parse(sound_pattern)
         return pat
 
     def __str__(self):
         """String representation of a sender content"""
         param_dict = pprint.pformat(self.content)
         return f"{self.sound}: {param_dict}"
-
-    def determine_right_pitch(self, values: str, name: str):
-        """Treat "midinote" and "note" differently"""
-        if name == "midinote":
-            notes = self._note_parser.parse(values)
-        elif name == "note":
-            notes = [x - 60 for x in self._note_parser.parse(values)]
-        return notes
 
     def __getattr__(self, name: str):
         method = functools.partial(self.addOrChange, name=name)
@@ -63,11 +54,7 @@ class SuperDirtSender:
     def addOrChange(self, values, name: str):
         """Will set a parameter or change it if already in message"""
         if isinstance(values, str):
-            self.content |= {
-                name: self._number_parser.parse(values)
-                if not name in ["midinote", "note"]
-                else self.determine_right_pitch(values=values, name=name)
-            }
+            self.content |= {name: self._general_parser.parse(values)}
         else:
             self.content |= {name: values}
         return self

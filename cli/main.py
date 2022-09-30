@@ -89,7 +89,7 @@ def main():
         "--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output"
     )
     parser.add_argument(
-        "--deferred", type=str2bool, help="Turn on/off deferred scheduling"
+        "--deferred_scheduling", type=str2bool, help="Turn on/off deferred scheduling"
     )
     parser.add_argument("--clock", type=str2bool, help="Active or passive Clock")
     parser.add_argument(

@@ -10,11 +10,6 @@ from collections import deque
 
 import mido
 from rich import print
-
-import os
-
-print(os.getpid())
-
 from sardine.io.Osc import Client
 
 from . import AsyncRunner

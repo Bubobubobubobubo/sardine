@@ -2,7 +2,8 @@ from lark import Lark, Tree
 from pathlib import Path
 from .TreeCalc import CalculateTree
 
-__all__ = ("ListParser", "Pnote", "Pname", "Pnum")
+# __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
+__all__ = ("ListParser", "Pat")
 
 
 class ParserError(Exception):
@@ -14,98 +15,13 @@ class ParserError(Exception):
 # contains the formal specification of the grammar, and is used by Lark to
 # build an abstract syntax tree and get the combination rules for each token.
 
-
 grammar_path = Path(__file__).parent
 grammars = {
-    "number": grammar_path / "grammars/number.lark",
-    "name": grammar_path / "grammars/name.lark",
-    "note": grammar_path / "grammars/note.lark",
     "proto": grammar_path / "grammars/proto.lark",
 }
 
-
-parsers = {
-    "number": {
-        "raw": Lark.open(
-            grammars["number"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-        ),
-        "full": Lark.open(
-            grammars["number"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-            transformer=CalculateTree(),
-        ),
-    },
-    "name": {
-        "raw": Lark.open(
-            grammars["name"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-        ),
-        "full": Lark.open(
-            grammars["name"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-            transformer=CalculateTree(),
-        ),
-    },
-    "note": {
-        "raw": Lark.open(
-            grammars["note"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-        ),
-        "full": Lark.open(
-            grammars["note"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-            transformer=CalculateTree(),
-        ),
-    },
-    "proto": {
-        "raw": Lark.open(
-            grammars["proto"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-        ),
-        "full": Lark.open(
-            grammars["proto"],
-            rel_to=__file__,
-            parser="lalr",
-            start="start",
-            cache=True,
-            lexer="contextual",
-            transformer=CalculateTree(),
-        ),
-    },
-}
-
-
 class ListParser:
-    def __init__(self, parser_type: str = "number"):
+    def __init__(self, clock, parser_type: str = "number"):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
         up to the user to choose the parser that fits best to a task. Each
@@ -117,13 +33,54 @@ class ListParser:
         Args:
             parser_type (str, optional): Type of parser. Defaults to "number".
         """
+        # Reference to clock for the "t" grammar token
+        self.clock = clock
+
+        parsers = {
+            "proto": {
+                "raw": Lark.open(
+                    grammars["proto"],
+                    rel_to=__file__,
+                    parser="lalr",
+                    start="start",
+                    cache=True,
+                    lexer="contextual",
+                ),
+                "full": Lark.open(
+                    grammars["proto"],
+                    rel_to=__file__,
+                    parser="lalr",
+                    start="start",
+                    cache=True,
+                    lexer="contextual",
+                    transformer=CalculateTree(self.clock),
+                ),
+            },
+        }
+
         try:
             self._result_parser = parsers[parser_type]["full"]
             self._printing_parser = parsers[parser_type]["raw"]
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
 
-    def _flatten_result(self, pat):
+    # def _flatten_result(self, pat):
+    #     """Flatten a nested list, for usage after parsing a pattern. Will
+    #     flatten deeply nested lists and return a one dimensional array.
+
+    #     Args:
+    #         pat (list): A potentially nested list
+
+    #     Returns:
+    #         list: A flat list (one-dimensional)
+    #     """
+    #     if len(pat) == 0:
+    #         return pat
+    #     if isinstance(pat[0], list):
+    #         return self._flatten_result(pat[0]) + self._flatten_result(pat[1:])
+    #     return pat[:1] + self._flatten_result(pat[1:])
+
+    def __flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will
         flatten deeply nested lists and return a one dimensional array.
 
@@ -133,11 +90,16 @@ class ListParser:
         Returns:
             list: A flat list (one-dimensional)
         """
-        if len(pat) == 0:
-            return pat
-        if isinstance(pat[0], list):
-            return self._flatten_result(pat[0]) + self._flatten_result(pat[1:])
-        return pat[:1] + self._flatten_result(pat[1:])
+        from collections.abc import Iterable
+        for x in pat:
+            if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+                yield from self._flatten_result(x)
+            else:
+                yield x
+
+    def _flatten_result(self, pat):
+        result = list(self.__flatten_result(pat))
+        return result
 
     def pretty_print(self, expression: str):
         """Pretty print an expression coming from the parser. Works for any
@@ -151,7 +113,9 @@ class ListParser:
         """
         print(f"EXPR: {expression}")
         print(Tree.pretty(self._printing_parser.parse(expression)))
-        print(f"RESULT: {self._result_parser.parse(expression)}")
+        result = self._result_parser.parse(expression)
+        print(f"RESULT: {result}")
+        print(f"USER RESULT: {self._flatten_result(result)}")
 
     def print_tree_only(self, expression: str):
         """Print the syntax tree using Lark.Tree
@@ -160,17 +124,6 @@ class ListParser:
             expression (str): An expression to print
         """
         print(Tree.pretty(self._printing_parser.parse(expression)))
-
-    def _parse_token(self, string: str):
-        """Parse a single token and return its result
-
-        Args:
-            string (str): A token to parse
-
-        Returns:
-            any: The result of parsing
-        """
-        return self._result_parser.parse(string)
 
     def parse(self, pattern: str):
         """Main method to parse a pattern. Parses 'pattern' and returns
@@ -188,11 +141,11 @@ class ListParser:
             list: The parsed pattern as a list of values
         """
         final_pattern = []
-        for token in pattern.split():
-            try:
-                final_pattern.append(self._parse_token(token))
-            except Exception as e:
-                raise ParserError(f"Non valid token: {token}") from e
+        try:
+            final_pattern = self._result_parser.parse(pattern)
+        except Exception as e:
+            raise ParserError(f"Non valid token: {pattern}") from e
+
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):
@@ -204,59 +157,23 @@ class ListParser:
         Args:
             pattern (str): A pattern to be parse.
         """
-        for token in pattern.split():
-            try:
-                self.pretty_print(expression=token)
-            except Exception as e:
-                import traceback
-
-                print(f"Error: {e}: {traceback.format_exc()}")
-                continue
+        try:
+            self.pretty_print(expression=pattern)
+        except Exception as e:
+            import traceback
+            print(f"Error: {e}: {traceback.format_exc()}")
 
 
-# Useful utilities
-
-
-def Pname(pattern: str, i: int = 0):
-    """Generates a pattern of names
-
-    Args:
-        pattern (str): A string to be parsed
-        i (int, optional): Index for iterators. Defaults to 0.
-
-    Returns:
-        _type_: _description_
-    """
-    parser = ListParser(parser_type="name")
-    pattern = parser.parse(pattern)
-    return pattern[i % len(pattern)]
-
-
-def Pnote(pattern: str, i: int = 0):
-    """Generates a pattern of notes
-
-    Args:
-        pattern (str): A string to be parsed
-        i (int, optional): Index for iterators. Defaults to 0.
-
-    Returns:
-        _type_: _description_
-    """
-    parser = ListParser(parser_type="note")
-    pattern = parser.parse(pattern)
-    return pattern[i % len(pattern)]
-
-
-def Pnum(pattern: str, i: int = 0):
-    """Generates a pattern of numbers
+def Pat(pattern: str, i: int = 0):
+    """Generates a pattern
 
     Args:
         pattern (str): A pattern to be parsed
         i (int, optional): Index for iterators. Defaults to 0.
 
     Returns:
-        int: A number taken from the pattern
+        int: The ith element from the resulting pattern
     """
-    parser = ListParser(parser_type="number")
-    pattern = parser.parse(pattern)
-    return pattern[i % len(pattern)]
+    parser = ListParser(clock=c, parser_type="proto")
+    result = parser.parse(pattern)
+    return result[i % len(result)]

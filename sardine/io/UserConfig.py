@@ -133,27 +133,14 @@ def read_user_configuration() -> Config:
 
     # Check if the configuration folder exists
     if USER_DIR.is_dir():
-        print(f"[green][1/3] Configuration folder[/green]")
-        # print(f"[green]      - {USER_DIR}[/green]")
-
         if config_file.exists():
-            print(f"[green][2/3] Reading configuration file[/green]")
-            # print(f"[green]      - {config_file}[/green]")
             config = read_configuration_file(config_file)
         else:
-            print(f"[green][2/3] Creating configuration file[/green]")
             config = create_template_configuration_file(config_file)
-
     # If the configuration folder doesn't exist, create it and create config
     else:
-        print(f"[green][1/3] Creating configuration folder[/green]")
         USER_DIR.mkdir(parents=True)
-
-        print(f"[green][2/3] Creating configuration file[/green]")
         config = create_template_configuration_file(config_file)
-
-    print("[green][3/3] Sardine is swimming![/green]")
-    print(f"[green]Config path: {config_file}[/green]")
     return config
 
 

@@ -20,8 +20,10 @@ class SuperDirtSender:
         **kwargs,
     ):
 
-        self._general_parser = ListParser(clock=self.clock, parser_type="proto")
         self.clock = clock
+        self._general_parser = ListParser(
+                clock=self.clock, 
+                parser_type="proto")
         self.sound = self._parse_sound(sound)
         self.after: int = at
         self._nudge: Union[float, int] = nudge

@@ -74,7 +74,7 @@ gen: sum _US sum                                   -> generate_ramp
 // Rules concerning names /////////////////////////////////////////////////////
 
 ?patname: pre_final_name
-    | pre_final_name _COLON sum                    -> assoc_sp_number
+    | pre_final_name _COLON (sum|gen)              -> assoc_sp_number
     | (compose_name|patname) _REPEAT sum           -> repeat_name
 
 ?pre_final_name: compose_name

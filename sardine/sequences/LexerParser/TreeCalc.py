@@ -87,11 +87,12 @@ class CalculateTree(Transformer):
         return self.choice_note(left, right)
     
     def list_extend(self, left, right):
-        print(left, right)
+        """Copy of the extend rule"""
         return self.extend(left, right)
 
     def list_extend_repeat(self, left, right):
-        pass
+        """Probably not the right behavior"""
+        return self.extend_repeat(left, right)
 
     def list_negation(self, collection):
         """Will apply a negative sign when possible to list"""
@@ -545,7 +546,14 @@ class CalculateTree(Transformer):
         Returns:
             list: Gathered arguments in a list
         """
-        return list(args)
+        new_list = []
+        for element in args:
+            if isinstance(element, list):
+                for i in element:
+                    new_list.append(i)
+            else:
+                new_list.append(element)
+        return new_list
     
     def make_list_gen(self, gen):
         """Make a list from a generator (un-nest it)

@@ -21,9 +21,7 @@ class SuperDirtSender:
     ):
 
         self.clock = clock
-        self._general_parser = ListParser(
-                clock=self.clock, 
-                parser_type="proto")
+        self._general_parser = self.clock.parser
         self.sound = self._parse_sound(sound)
         self.after: int = at
         self._nudge: Union[float, int] = nudge

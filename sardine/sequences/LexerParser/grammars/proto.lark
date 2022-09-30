@@ -76,6 +76,7 @@ gen: sum _US sum                                   -> generate_ramp
 ?patname: pre_final_name
     | pre_final_name _COLON (sum|gen)              -> assoc_sp_number
     | (compose_name|patname) _REPEAT sum           -> repeat_name
+    | pre_final_name _PIPE compose_name            -> choice_name
 
 ?pre_final_name: compose_name
     | compose_name _PIPE compose_name              -> choice_name

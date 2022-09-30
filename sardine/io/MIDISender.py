@@ -26,10 +26,11 @@ class MIDISender:
         nudge: Union[int, float] = 0.0,
     ):
 
-        self._number_parser = ListParser(clock=self.clock, parser_type="proto")
-        self._note_parser = ListParser(clock=self.clock, parser_type="proto")
-
         self.clock = clock
+        self._number_parser, self._note_parser = (
+                self.clock.parser,
+                self.clock.parser)
+
         if midi_client is None:
             self.midi_client = self.clock._midi
         else:

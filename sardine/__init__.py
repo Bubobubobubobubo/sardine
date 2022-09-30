@@ -28,12 +28,14 @@ from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from .io import OSCSender, MIDISender
 
-# from .sequences import ListParser, Pnote, Pnum, Pname
 from .sequences import ListParser
 from typing import Union
 from .sequences import *
 
 import os
+
+print(os.getpid())
+
 import psutil
 
 warnings.filterwarnings("ignore")
@@ -259,7 +261,7 @@ def Pat(pattern: str, i: int = 0):
     Returns:
         int: The ith element from the resulting pattern
     """
-    parser = ListParser(clock=c, parser_type="proto")
+    parser = c.parser
     result = parser.parse(pattern)
     return result[i % len(result)]
 

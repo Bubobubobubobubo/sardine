@@ -16,13 +16,11 @@ class ParserError(Exception):
 # build an abstract syntax tree and get the combination rules for each token.
 
 grammar_path = Path(__file__).parent
-grammars = {
-    "proto": grammar_path / "grammars/proto.lark",
-}
+grammar = grammar_path / "grammars/proto.lark"
 
 
 class ListParser:
-    def __init__(self, clock, parser_type: str = "number"):
+    def __init__(self, clock, parser_type: str = "proto"):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
         up to the user to choose the parser that fits best to a task. Each
@@ -40,7 +38,7 @@ class ListParser:
         parsers = {
             "proto": {
                 "raw": Lark.open(
-                    grammars["proto"],
+                    grammar,
                     rel_to=__file__,
                     parser="lalr",
                     start="start",
@@ -48,7 +46,7 @@ class ListParser:
                     lexer="contextual",
                 ),
                 "full": Lark.open(
-                    grammars["proto"],
+                    grammar,
                     rel_to=__file__,
                     parser="lalr",
                     start="start",

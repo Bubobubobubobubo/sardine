@@ -13,6 +13,7 @@ from rich import print
 from sardine.io.Osc import Client
 
 from . import AsyncRunner
+from ..sequences import ListParser
 from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
@@ -30,6 +31,7 @@ tick_shift = contextvars.ContextVar("tick_shift", default=0)
 
 @functools.total_ordering
 class TickHandle:
+
     """A handle that allows waiting for a specific tick to pass in the clock."""
 
     __slots__ = ("when", "fut")
@@ -133,6 +135,9 @@ class Clock:
             "beats": 0,
             "phase": 0,
         }
+
+        # Parser
+        self.parser = ListParser(clock=self)
 
     def __repr__(self):
         shift = self.tick_shift

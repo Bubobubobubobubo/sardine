@@ -2,7 +2,7 @@ from lark import Lark, Tree
 from pathlib import Path
 from .TreeCalc import CalculateTree
 
-# __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
+# __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")
 
 
@@ -19,6 +19,7 @@ grammar_path = Path(__file__).parent
 grammars = {
     "proto": grammar_path / "grammars/proto.lark",
 }
+
 
 class ListParser:
     def __init__(self, clock, parser_type: str = "number"):
@@ -91,6 +92,7 @@ class ListParser:
             list: A flat list (one-dimensional)
         """
         from collections.abc import Iterable
+
         for x in pat:
             if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
                 yield from self._flatten_result(x)
@@ -161,6 +163,7 @@ class ListParser:
             self.pretty_print(expression=pattern)
         except Exception as e:
             import traceback
+
             print(f"Error: {e}: {traceback.format_exc()}")
 
 

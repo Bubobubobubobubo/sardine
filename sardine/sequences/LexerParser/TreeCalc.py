@@ -9,7 +9,6 @@ import random
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-
     def __init__(self, clock):
         super().__init__()
         self.clock = clock
@@ -35,7 +34,8 @@ class CalculateTree(Transformer):
             elif all(map(lambda x: isinstance(x, list), [left, right])):
                 return [x + y for x, y in zip(cycle(right), left)]
             elif all(map(lambda x: isinstance(x, str), [left, right])):
-                return "".join([right,left])
+                return "".join([right, left])
+
         return [solve_addition(x, y) for x, y in zip(cycle(right), left)]
 
     def list_substraction(self, left, right):
@@ -50,6 +50,7 @@ class CalculateTree(Transformer):
                     if _ not in left:
                         new_string.append(_)
                 return "".join(new_string)
+
         return [solve_substraction(x, y) for x, y in zip(cycle(right), left)]
 
     def list_modulo(self, left, right):
@@ -60,6 +61,7 @@ class CalculateTree(Transformer):
                 return [x % y for x, y in zip(cycle(right), left)]
             elif all(map(lambda x: isinstance(x, str), [left, right])):
                 return None
+
         return [solve_modulo(y, x) for x, y in zip(cycle(right), left)]
 
     def list_multiplication(self, left, right):
@@ -70,6 +72,7 @@ class CalculateTree(Transformer):
                 return [x * y for x, y in zip(cycle(right), left)]
             elif all(map(lambda x: isinstance(x, str), [left, right])):
                 return left
+
         return [solve_multiplication(y, x) for x, y in zip(cycle(right), left)]
 
     def list_floor_division(self, left, right):
@@ -80,12 +83,13 @@ class CalculateTree(Transformer):
                 return [x // y for x, y in zip(cycle(right), left)]
             elif all(map(lambda x: isinstance(x, str), [left, right])):
                 return None
+
         return [solve_floor_division(y, x) for x, y in zip(cycle(right), left)]
 
     def list_choice(self, left, right):
         """Choose between two lists"""
         return self.choice_note(left, right)
-    
+
     def list_extend(self, left, right):
         """Copy of the extend rule"""
         return self.extend(left, right)
@@ -96,12 +100,7 @@ class CalculateTree(Transformer):
 
     def list_negation(self, collection):
         """Will apply a negative sign when possible to list"""
-        return list(map(lambda x: -x if isinstance(x, (int, float)) else x,
-            collection))
-
-
-
-
+        return list(map(lambda x: -x if isinstance(x, (int, float)) else x, collection))
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -554,7 +553,7 @@ class CalculateTree(Transformer):
             else:
                 new_list.append(element)
         return new_list
-    
+
     def make_list_gen(self, gen):
         """Make a list from a generator (un-nest it)
 
@@ -619,8 +618,7 @@ class CalculateTree(Transformer):
             list: a ramp of ascending or descending integers with step
         """
         if int(left) > int(right):
-            new_list = list(reversed(
-                range(int(right), int(left) + 1, int(step))))
+            new_list = list(reversed(range(int(right), int(left) + 1, int(step))))
             return new_list
         else:
             return list(range(int(left), int(right) + 1, int(step)))
@@ -795,10 +793,9 @@ class CalculateTree(Transformer):
         elif isinstance(left, list) and isinstance(right, (float, int)):
             return [x // right for x in left]
 
-
     def name_disamb(self, name):
         """Generating a name"""
-        # Fix two letters words with b being interpreted as words
+        # Fix two letters words with b being interpreted as words
         if name in ["Ab", "Bb", "Cb", "Db", "Eb", "Fb", "Gb"]:
             return self.flat_simple(self.make_note(symbol=name[0]))
         return str(name)

@@ -20,8 +20,7 @@ class SuperDirtSender:
         **kwargs,
     ):
 
-        self._general_parser = ListParser(
-                clock=self.clock, parser_type="proto")
+        self._general_parser = ListParser(clock=self.clock, parser_type="proto")
         self.clock = clock
         self.sound = self._parse_sound(sound)
         self.after: int = at

@@ -367,8 +367,11 @@ class CalculateTree(Transformer):
         Returns:
             list: reversed list of integers from qualifier's based collection
         """
-        collection.reverse()
-        return collection
+        if not isinstance(collection, list):
+            return collection
+        else:
+            collection.reverse()
+            return collection
 
     def collection_palindrome(self, collection):
         """Make a palindrome out of a newly generated collection
@@ -380,8 +383,11 @@ class CalculateTree(Transformer):
             list: palindromed list of integers from qualifier's based
             collection
         """
-        collection.reverse()
-        return collection + list(reversed(collection))
+        if not isinstance(collection, list):
+            return collection
+        else:
+            collection.reverse()
+            return collection + list(reversed(collection))
 
     def shuffle_collection(self, collection):
         """Shuffle a newly generated collection
@@ -404,9 +410,12 @@ class CalculateTree(Transformer):
         Returns:
             list: An interleaved list of integers
         """
-        col_len = len(collection) // 2
-        first, second = collection[:col_len], collection[col_len:]
-        return [val for pair in zip(first, second) for val in pair]
+        if not isinstance(collection, list):
+            return collection
+        else:
+            col_len = len(collection) // 2
+            first, second = collection[:col_len], collection[col_len:]
+            return [val for pair in zip(first, second) for val in pair]
 
     def expand_collection(self, collection):
         """Chance-based operation. Apply a random octave transposition process

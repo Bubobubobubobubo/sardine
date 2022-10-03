@@ -470,6 +470,8 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of additioned integers
         """
+        if isinstance(collec1, (int, float)):
+            return [x + collec1 for x in collec0]
         longest, list = max(len(collec0), len(collec1)), []
         collec0, collec1 = cycle(collec0), cycle(collec1)
         for _ in range(longest):
@@ -490,6 +492,8 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of additioned integers
         """
+        if isinstance(collec1, (int, float)):
+            return [x - collec1 for x in collec0]
 
         longest, list = max(len(collec0), len(collec1)), []
         collec0, collec1 = cycle(collec0), cycle(collec1)

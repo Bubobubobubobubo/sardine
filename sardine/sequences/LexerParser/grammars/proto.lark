@@ -106,8 +106,8 @@ gen: sum _US sum                                   -> generate_ramp
     | col ":drop2"                                 -> collection_drop2
     | col ":drop3"                                 -> collection_drop3
     | col ":drop2&4"                               -> collection_drop2and4
-    | col _PLUS (col|list)                         -> add_collection
-    | col _MINUS (col|list)                        -> sub_collection
+    | col _PLUS (col|list|sum)                     -> add_collection
+    | col _MINUS (col|list|sum)                    -> sub_collection
 
 ?note: NOTE                                        -> make_note
      | note _PLUS sum                              -> transpose_up

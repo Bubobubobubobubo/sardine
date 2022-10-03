@@ -113,6 +113,7 @@ gen: sum _US sum                                   -> generate_ramp
      | note _PLUS sum                              -> transpose_up
      | note _MINUS sum                             -> transpose_down 
      | note _PLUS                                  -> raise_octave
+     | note _MINUS                                 -> drop_octave
      | note _PIPE note                             -> choice_note
      | note _REPEAT sum                            -> repeat_note
      | note sum                                    -> add_octave

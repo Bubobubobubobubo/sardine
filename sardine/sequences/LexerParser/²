@@ -449,11 +449,8 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers
         """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            applier = cycle([lambda x: x - 12, lambda x: self.id(x)])
-            return [next(applier)(x) for x in collection]
+        applier = cycle([lambda x: x - 12, lambda x: self.id(x)])
+        return [next(applier)(x) for x in collection]
 
     def repeat_collection(self, collection, number):
         """Repeats a list 'number' times
@@ -528,11 +525,8 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers with the second note dropped an octave.
         """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[1] = collection[1] - 12
-            return collection
+        collection[1] = collection[1] - 12
+        return collection
 
     def collection_drop3(self, collection):
         """Simulate a drop3 chord.
@@ -543,11 +537,8 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers with the third note dropped an octave.
         """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[2] = collection[2] - 12
-            return collection
+        collection[2] = collection[2] - 12
+        return collection
 
     def collection_drop2and4(self, collection):
         """Simulate a drop2&4 chord.
@@ -559,12 +550,9 @@ class CalculateTree(Transformer):
             list: A list of integers with the second and fourth note dropped
             an octave.
         """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[1] = collection[1] - 12
-            collection[3] = collection[3] - 12
-            return collection
+        collection[1] = collection[1] - 12
+        collection[3] = collection[3] - 12
+        return collection
 
     def id(self, a):
         """Identity function. Returns first argument."""

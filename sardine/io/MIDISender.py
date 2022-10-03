@@ -132,7 +132,7 @@ class MIDISender:
                     return
                 if isinstance(value, (list, str)):
                     if key in ["velocity", "channel", "note"]:
-                        final_message[key] = int(value[i % len(value)])
+                        final_message[key] = int(value[i % len(value)]) % 127
                     else:
                         final_message[key] = float(value[i % len(value)])
 

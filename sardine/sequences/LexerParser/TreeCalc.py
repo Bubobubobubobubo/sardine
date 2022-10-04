@@ -648,11 +648,11 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers with step
         """
+        ramp = [x * step for x in range(int(left), int(right)+1)]
         if int(left) > int(right):
-            new_list = list(reversed(range(int(right), int(left) + 1, int(step))))
-            return new_list
+            return reversed(ramp)
         else:
-            return list(range(int(left), int(right) + 1, int(step)))
+            return ramp
 
     def extend(self, left, right):
         """Extend a token: repeat the token x times. Note that this function

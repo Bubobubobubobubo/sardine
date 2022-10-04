@@ -37,7 +37,6 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
     | _LBRA list (_COMMA list)* _COMMA? _RBRA      -> make_list
 
 item: (sum|col|patname)                            -> id
-    | _LPAR item _RPAR                             -> id
     | gen                                          -> make_list_gen
 
 gen: sum _US sum                                   -> generate_ramp
@@ -68,6 +67,7 @@ gen: sum _US sum                                   -> generate_ramp
      | _MEASURE                                    -> get_measure
      | _PHASE                                      -> get_phase
      | _UNIXTIME                                   -> get_unix_time
+     | _LPAR sum _RPAR
 
 ///////////////////////////////////////////////////////////////////////////////
 

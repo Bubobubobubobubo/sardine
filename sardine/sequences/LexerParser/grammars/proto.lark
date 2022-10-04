@@ -5,6 +5,7 @@ pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
 
 ///////////////////////////////////////////////////////////////////////////////
 
+
 // Rules concerning lists and interaction with other tokens ///////////////////
 
 ?superlist: uplist
@@ -31,43 +32,41 @@ pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
        | list _MINUS uplist                        -> list_substraction
        | list _MODULO sum                          -> modulo
        | list _MODULO uplist                       -> list_modulo
-       | _NEG uplist                               -> list_negation
 
 list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
     | _LBRA list (_COMMA list)* _COMMA? _RBRA      -> make_list
-    | _LPAR superlist _RPAR
+    | _LPAR superlist _RPAR                        -> id
+    | sum _US sum                                  -> generate_ramp
+    | sum _US sum _LPAR sum _RPAR                  -> generate_ramp_with_range
 
 item: (sum|col|patname)                            -> id
-    | gen                                          -> make_list_gen
-
-gen: sum _US sum                                   -> generate_ramp
-   | sum _US sum _LPAR sum _RPAR                   -> generate_ramp_with_range
 
 ///////////////////////////////////////////////////////////////////////////////
+
 
 // Rules concerning numbers ///////////////////////////////////////////////////
 
 ?sum: product
-    | product _PLUS (sum|superlist)                -> addition
-    | product _MINUS (sum|superlist)               -> substraction
-    | product _MODULO (sum|superlist)              -> modulo
+    | product _PLUS sum                -> addition
+    | product _MINUS sum               -> substraction
+    | product _MODULO sum              -> modulo
 
 ?product: atom
-     | product _TIMES (product|superlist)          -> multiplication
-     | product "/" (product|superlist)             -> division
-     | product "//" (product|superlist)            -> floor_division
-     | product _PIPE (product|superlist)           -> choice
-     | product _COLON  product                     -> random_in_range
-     | product _REPEAT (product|superlist)         -> extend
-     | product _REPEAT2 (product|superlist)        -> extend_repeat
+     | product _TIMES product          -> multiplication
+     | product "/" product             -> division
+     | product "//" product            -> floor_division
+     | product _PIPE product           -> choice
+     | product _COLON  product         -> random_in_range
+     | product _REPEAT product         -> extend
+     | product _REPEAT2 product        -> extend_repeat
 
-?atom: NUMBER                                      -> number
-     | _NEG atom                                   -> negation
-     | _TIME                                       -> get_time
-     | _MEASURE                                    -> get_measure
-     | _PHASE                                      -> get_phase
-     | _UNIXTIME                                   -> get_unix_time
-     | _RANDOM                                     -> get_random_number
+?atom: NUMBER                          -> number
+     | _NEG atom                       -> negation
+     | _TIME                           -> get_time
+     | _MEASURE                        -> get_measure
+     | _PHASE                          -> get_phase
+     | _UNIXTIME                       -> get_unix_time
+     | _RANDOM                         -> get_random_number
      | _LPAR sum _RPAR
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,15 +74,15 @@ gen: sum _US sum                                   -> generate_ramp
 // Rules concerning names /////////////////////////////////////////////////////
 
 ?patname: compose_name
-    | compose_name _COLON (sum|gen|list)           -> assoc_sp_number
-    | (compose_name|patname) _REPEAT sum           -> repeat_name
-    | compose_name  _PIPE patname                  -> choice_name
+    | compose_name _COLON (sum|list)           -> assoc_sp_number
+    | (compose_name|patname) _REPEAT sum       -> repeat_name
+    | compose_name  _PIPE patname              -> choice_name
 
 ?compose_name: name
-    | compose_name "/" name                        -> specify_address
+    | compose_name "/" name                    -> specify_address
 
-?name: NAME                                        -> name_disamb
-    | NAME sum                                     -> name_from_name_number
+?name: NAME                                    -> name_disamb
+    | NAME sum                                 -> name_from_name_number
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -94,14 +93,16 @@ gen: sum _US sum                                   -> generate_ramp
      | col _DOT name                                        -> add_modifier
 
 ?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note _PLUS (col|list|sum)                            -> waddition
-     | note _MINUS (col|list|sum)                           -> wsubstraction 
-     | note _TIMES (col|list|sum)                           -> wmultiplication
+     | note _PLUS   (col|list|sum)                          -> waddition
+     | note _MINUS  (col|list|sum)                          -> wsubstraction 
+     | note _TIMES  (col|list|sum)                          -> wmultiplication
      | note _MODULO (col|list|sum)                          -> wmodulo
-     | note "/" (col|list|sum)                              -> wdivision
-     | note "//" (col|list|sum)                             -> wfloor_division
+     | note "/"     (col|list|sum)                          -> wdivision
+     | note "//"    (col|list|sum)                          -> wfloor_division
      | note _REPEAT sum                                     -> repeat_collection
      | _LPAR col _RPAR
+
+///////////////////////////////////////////////////////////////////////////////
      
 // Tokens /////////////////////////////////////////////////////////////////////
 
@@ -146,8 +147,8 @@ _RECOVER: "&"
 _FLAT: "f"
 _SHARP: "#"
 
-%import common.LETTER                     -> LETTER
-%import common.DIGIT                      -> DIGIT
+%import common.LETTER -> LETTER
+%import common.DIGIT  -> DIGIT
 %import common.NUMBER
 %import common.WS_INLINE
 %ignore WS_INLINE

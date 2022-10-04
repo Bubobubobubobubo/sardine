@@ -4,6 +4,7 @@ from lark.lexer import Token
 from typing import Any
 from itertools import cycle
 from time import time
+import psutil
 import random
 
 
@@ -837,6 +838,7 @@ class CalculateTree(Transformer):
             return [x + right for x in left]
 
     def waddition(self, left, right):
+        """Wrapped variant of the addition method"""
         return self.addition(left, right) % 127
 
     def modulo(self, left, right):
@@ -850,6 +852,7 @@ class CalculateTree(Transformer):
             return [x % right for x in left]
 
     def wmodulo(self, left, right):
+        """Wrapped variant of the modulo method"""
         return self.modulo(left, right) % 127
 
     def power(self, left, right):
@@ -863,6 +866,7 @@ class CalculateTree(Transformer):
             return [pow(right, x) for x in left]
 
     def wpower(self, left, right):
+        """Wrapped variant of the power method"""
         return self.power(left, right) % 127
 
     def substraction(self, left, right):
@@ -876,6 +880,7 @@ class CalculateTree(Transformer):
             return [x - right for x in left]
 
     def wsubstraction(self, left, right):
+        """Wrapped variant of the substraction method"""
         return self.substraction(left, right) % 127
 
     def multiplication(self, left, right):
@@ -889,6 +894,7 @@ class CalculateTree(Transformer):
             return [x * right for x in left]
 
     def wmultiplication(self, left, right):
+        """Wrapped variant of the multiplication method"""
         return self.multiplication(left, right) % 127
 
     def division(self, left, right):
@@ -902,6 +908,7 @@ class CalculateTree(Transformer):
             return [x / right for x in left]
 
     def wdivision(self, left, right):
+        """Wrapped variant of the division method"""
         return self.division(left, right) % 127
 
     def floor_division(self, left, right):
@@ -915,8 +922,8 @@ class CalculateTree(Transformer):
             return [x // right for x in left]
 
     def wfloor_division(self, left, right):
+        """Wrapped variant of the floor division method"""
         return self.floor_division(left, right) % 127
-
 
     def name_disamb(self, name):
         """Generating a name"""
@@ -927,25 +934,8 @@ class CalculateTree(Transformer):
             return self.make_note(name[0], name[1])
         return str(name)
 
-    def make_integer(self, value):
-        return int(value)
-
-    def name_from_number_name(self, number, name):
-        return str("".join([str(number), str(name)]))
-
     def name_from_name_number(self, name, number):
         return str("".join([str(name), str(number)]))
-
-    def association(self, name, value):
-        """Associate a name to a value in memory"""
-        self.memory[name] = value
-
-    def recover_variable(self, name):
-        """Recover a variable that has been stored in memory"""
-        if name in self.memory.keys():
-            return self.memory[name]
-        else:
-            return None
 
     def assoc_sp_number(self, name, value):
         def _simple_association(name, value):
@@ -963,25 +953,6 @@ class CalculateTree(Transformer):
                 return [_simple_association(n, value) for n in name]
             if isinstance(value, list):
                 return [str(x) + ":" + str(int(y)) for x, y in zip(cycle(name), value)]
-
-    def add_name(self, a, b):
-        return a + b
-
-    def times_name(self, a, b):
-        return a * int(b)
-
-    def sub_name(self, a, b):
-        """Substraction of a name by a name. Every letter present
-        in name 'b' will be substracted from name 'a'.
-
-        Args:
-            a (str): A name
-            b (str): A name
-
-        Returns:
-            str: A Substracted name.
-        """
-        return a.replace(b, "")
 
     def choice_name(self, a, b):
         """Choose 50%/50% between name 'a' and name 'b'.
@@ -1006,3 +977,6 @@ class CalculateTree(Transformer):
             list[str]: A list composed of 'value' times the 'name'.
         """
         return [name] * int(value)
+
+
+

@@ -73,18 +73,12 @@ gen: sum _US sum                                   -> generate_ramp
 
 // Rules concerning names /////////////////////////////////////////////////////
 
-?patname: pre_final_name
-    | pre_final_name _COLON (sum|gen)              -> assoc_sp_number
+?patname: compose_name
+    | compose_name _COLON (sum|gen|list)           -> assoc_sp_number
     | (compose_name|patname) _REPEAT sum           -> repeat_name
-    | pre_final_name _PIPE compose_name            -> choice_name
-
-?pre_final_name: compose_name
-    | compose_name _PIPE compose_name              -> choice_name
+    | compose_name  _PIPE patname                  -> choice_name
 
 ?compose_name: name
-    | compose_name _TIMES sum                      -> times_name
-    | compose_name _PLUS name                      -> add_name 
-    | compose_name _MINUS name                     -> sub_name
     | compose_name "/" name                        -> specify_address
 
 ?name: NAME                                        -> name_disamb

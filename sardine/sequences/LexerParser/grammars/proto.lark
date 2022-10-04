@@ -94,33 +94,19 @@ gen: sum _US sum                                   -> generate_ramp
 
 // Rules about notes /////////////////////////////////////////////////////////
 
-?col: note                                         -> id
-    | col _REPEAT sum                              -> repeat_collection
-    | col _LBRA sum _RBRA                          -> repeat_collection_x
-    | col ":reverse"                               -> reverse_collection
-    | col ":palindrome"                            -> collection_palindrome
-    | col ":braid"                                 -> braid_collection
-    | col ":shuffle"                               -> shuffle_collection
-    | col ":expand"                                -> expand_collection
-    | col ":disco"                                 -> disco_collection
-    | col ":drop2"                                 -> collection_drop2
-    | col ":drop3"                                 -> collection_drop3
-    | col ":drop2&4"                               -> collection_drop2and4
-    | col _PLUS (col|list|sum)                     -> add_collection
-    | col _MINUS (col|list|sum)                    -> sub_collection
+?col : note                                                 -> id
+     | col _RIGHT_ARROW name                                -> add_qualifier
+     | col _DOT name                                        -> add_modifier
 
-?note: NOTE                                        -> make_note
-     | note _PLUS sum                              -> transpose_up
-     | note _MINUS sum                             -> transpose_down 
-     | note _PLUS                                  -> raise_octave
-     | note _MINUS                                 -> drop_octave
-     | note _PIPE note                             -> choice_note
-     | note _REPEAT sum                            -> repeat_note
-     // IL FAUT QUE CA SOIT UN GROUPE
-     | (note sum)                                  -> add_octave
-     | note "b"                                    -> flat_simple
-     | note "#"                                    -> sharp_simple
-     | note _DOT (sum|name)                        -> add_qualifier
+?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
+     | note _PLUS (col|list|sum)                            -> waddition
+     | note _MINUS (col|list|sum)                           -> wsubstraction 
+     | note _TIMES (col|list|sum)                           -> wmultiplication
+     | note _MODULO (col|list|sum)                          -> wmodulo
+     | note "/" (col|list|sum)                              -> wdivision
+     | note "//" (col|list|sum)                             -> wfloor_division
+     | note _REPEAT sum                                     -> repeat_collection
+     | _LPAR col _RPAR
      
 // Tokens /////////////////////////////////////////////////////////////////////
 
@@ -133,6 +119,12 @@ F.0: "F"
 G.0: "G"
 NOTE.0: (A|B|C|D|E|F|G)
 NAME.10: (LETTER)~2 (LETTER|DIGIT+)*
+OCTSHIFTUP: "'"
+OCTSHIFTDOWN: "."
+FLAT: "b"
+SHARP: "#"
+_RIGHT_ARROW: "->"
+_LEFT_ARROW: "<-"
 _PLUS: "+"
 _MINUS: "-"
 _NEG: "-"

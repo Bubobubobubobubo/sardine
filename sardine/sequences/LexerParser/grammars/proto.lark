@@ -116,10 +116,11 @@ gen: sum _US sum                                   -> generate_ramp
      | note _MINUS                                 -> drop_octave
      | note _PIPE note                             -> choice_note
      | note _REPEAT sum                            -> repeat_note
-     | note sum                                    -> add_octave
+     // IL FAUT QUE CA SOIT UN GROUPE
+     | (note sum)                                  -> add_octave
      | note "b"                                    -> flat_simple
      | note "#"                                    -> sharp_simple
-     | note _COLON (sum? name)                     -> add_qualifier
+     | note _DOT (sum|name)                        -> add_qualifier
      
 // Tokens /////////////////////////////////////////////////////////////////////
 

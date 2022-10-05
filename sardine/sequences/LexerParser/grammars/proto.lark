@@ -1,10 +1,14 @@
+// Notes  //
+
+// There are two types of multiplication and thus two tokens should exist
+// One is for repetition x times, the other for the real multiplication
+
 // A pattern is a succession of things ////////////////////////////////////////
 
 ?start: pattern
 pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
 
 ///////////////////////////////////////////////////////////////////////////////
-
 
 // Rules concerning lists and interaction with other tokens ///////////////////
 
@@ -14,7 +18,7 @@ pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
           | uplist _MODULO superlist               -> list_modulo
 
 ?uplist: list
-       | list _TIMES uplist                        -> list_multiplication
+       | list _TIMES uplist -> list_multiplication
        | list _TIMES sum                           -> multiplication
        | list "/" uplist                           -> list_division
        | list "/" sum                              -> division
@@ -39,6 +43,8 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
     | sum _US sum                                  -> generate_ramp
     | sum _US sum _LPAR sum _RPAR                  -> generate_ramp_with_range
 
+
+// An item is either a sum, a collection of notes or a name
 item: (sum|col|patname)                            -> id
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,18 +53,18 @@ item: (sum|col|patname)                            -> id
 // Rules concerning numbers ///////////////////////////////////////////////////
 
 ?sum: product
-    | product _PLUS sum                -> addition
-    | product _MINUS sum               -> substraction
-    | product _MODULO sum              -> modulo
+    | product _PLUS (sum|superlist)    -> addition
+    | product _MINUS (sum|superlist)   -> substraction
+    | product _MODULO (sum|superlist)  -> modulo
 
 ?product: atom
-     | product _TIMES product          -> multiplication
-     | product "/" product             -> division
-     | product "//" product            -> floor_division
-     | product _PIPE product           -> choice
-     | product _COLON  product         -> random_in_range
-     | product _REPEAT product         -> extend
-     | product _REPEAT2 product        -> extend_repeat
+     | product _TIMES atom             -> multiplication
+     | product "/" atom                -> division
+     | product "//" atom               -> floor_division
+     | product _PIPE atom              -> choice
+     | product _COLON  atom            -> random_in_range
+     | product _REPEAT atom            -> extend
+     | product _REPEAT2 atom           -> extend_repeat
 
 ?atom: NUMBER                          -> number
      | _NEG atom                       -> negation
@@ -93,12 +99,12 @@ item: (sum|col|patname)                            -> id
      | col _DOT name                                        -> add_modifier
 
 ?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note _PLUS   (col|list|sum)                          -> waddition
-     | note _MINUS  (col|list|sum)                          -> wsubstraction 
-     | note _TIMES  (col|list|sum)                          -> wmultiplication
-     | note _MODULO (col|list|sum)                          -> wmodulo
-     | note "/"     (col|list|sum)                          -> wdivision
-     | note "//"    (col|list|sum)                          -> wfloor_division
+     | note _PLUS   (col|superlist|sum)                        -> waddition
+     | note _MINUS  (col|superlist|sum)                        -> wsubstraction 
+     | note _TIMES  (col|superlist|sum)                        -> wmultiplication
+     | note _MODULO (col|superlist|sum)                        -> wmodulo
+     | note "/"     (col|superlist|sum)                        -> wdivision
+     | note "//"    (col|superlist|sum)                        -> wfloor_division
      | note _REPEAT sum                                     -> repeat_collection
      | _LPAR col _RPAR
 

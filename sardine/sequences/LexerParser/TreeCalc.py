@@ -133,17 +133,22 @@ class CalculateTree(Transformer):
         Returns:
             int: A MIDI Note (fifth octave)
         """
+        print(f"Arrrrrgs: {args}")
         total = 0
         table = {"A": -3, "B": -1, "C": 0, "D": 2, 
                 "E": 4, "F": 5, "G": 7}
         args = list(args)
 
-        if not any([isinstance(x, (float, int)) for x in args]):
+        if not any([str(x).isdigit() for x in args]):
             total += 60
 
         for token in args:
-            if isinstance(token, (float, int)):
-                total += int(token) * 12
+            if str(token).isdigit():
+                number = int(token)
+                if number >= 10:
+                    total += int(token[0]) * 12
+                else:
+                    total += int(token) * 12
                 continue
             if str(token) == "#":
                 total += 1
@@ -158,7 +163,7 @@ class CalculateTree(Transformer):
                 total -= 12
                 continue
             try:
-                if token.type == "NoteToken":
+                if token.type == "NOTE":
                     total += table[str(token).upper()]
                     continue
             except AttributeError:
@@ -953,6 +958,7 @@ class CalculateTree(Transformer):
                 return [_simple_association(n, value) for n in name]
             if isinstance(value, list):
                 return [str(x) + ":" + str(int(y)) for x, y in zip(cycle(name), value)]
+
 
     def choice_name(self, a, b):
         """Choose 50%/50% between name 'a' and name 'b'.

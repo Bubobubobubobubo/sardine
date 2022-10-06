@@ -66,6 +66,7 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
 
 ?name: NAME                               -> name_disamb
     | NAME sum                            -> name_from_name_number
+    | _LPAR patname _RPAR
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +84,7 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | note "/"     (col|sum)                     -> wdivision
      | note "//"    (col|sum)                     -> wfloor_division
      | note _REPEAT sum                           -> repeat_collection
+     | note _PIPE  note                           -> choice
      | _LPAR col _RPAR
 
 ///////////////////////////////////////////////////////////////////////////////

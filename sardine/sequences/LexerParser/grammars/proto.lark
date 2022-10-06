@@ -38,17 +38,20 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | _PHASE                          -> get_phase
      | _UNIXTIME                       -> get_unix_time
      | _RANDOM                         -> get_random_number
-     | _YEAR                           -> get_year
-     | _MONTH                          -> get_month
-     | _DAY                            -> get_day
-     | _HOUR                           -> get_hour
-     | _MINUTE                         -> get_minute
-     | _SECOND                         -> get_second
-     | _MICRO                          -> get_microsecond
+     | _TIME _DOT "Y"                  -> get_year
+     | _TIME _DOT "M"                  -> get_month
+     | _TIME _DOT "D"                  -> get_day
+     | _TIME _DOT "H"                  -> get_hour
+     | _TIME _DOT "m"                  -> get_minute
+     | _TIME _DOT "S"                  -> get_second
+     | _TIME _DOT "µ"                  -> get_microsecond
      | _LPAR sum _RPAR
      | _CLBRA sum _US sum _CRBRA                  -> generate_ramp
      | _CLBRA sum _US sum _LPAR sum _RPAR _CRBRA  -> generate_ramp_with_range
      | _LBRA sum (_COMMA sum)* _COMMA? _RBRA      -> make_list
+     | _COS _LPAR sum _RPAR                       -> cosinus
+     | _SIN _LPAR sum _RPAR                       -> sinus
+     | _TAN _LPAR sum _RPAR                       -> tangente
 
 
 
@@ -128,20 +131,15 @@ _SEMICOLON : ";"
 _COMMA: ","
 _DOT: "."
 _RANDOM: "r"
-_TIME: "t"
+_TIME: "$"
 _MEASURE: "m"
 _PHASE: "p"
 _UNIXTIME: "u"
-_YEAR : "y"
-_MONTH: "M"
-_DAY: "d" 
-_HOUR: "h"  
-_MINUTE: "N"
-_SECOND: "s"
-_MICRO: "μ" 
-_RECOVER: "&"
 _FLAT: "f"
 _SHARP: "#"
+_COS: "c"
+_SIN: "s"
+_TAN: "t"
 
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT

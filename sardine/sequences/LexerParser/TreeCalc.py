@@ -1,8 +1,10 @@
 from lark import Transformer, v_args
+from typing import Union
 from .Qualifiers import qualifiers
 from lark.lexer import Token
 from typing import Any
 from itertools import cycle
+from math import cos, sin, tan
 from time import time
 import datetime
 import random
@@ -1037,5 +1039,11 @@ class CalculateTree(Transformer):
         """
         return [name] * int(value)
 
+    def cosinus(self, x: Union[int, float]) -> Union[int, float]:
+        return cos(x)
 
+    def sinus(self, x: Union[int, float]) -> Union[int, float]:
+        return sin(x)
 
+    def tangente(self, x: Union[int, float]) -> Union[int, float]:
+        return tan(x)

@@ -325,5 +325,3 @@ def print_param():
 
 def print_scales():
     print(qualifiers.keys())
-
-lang_debug()

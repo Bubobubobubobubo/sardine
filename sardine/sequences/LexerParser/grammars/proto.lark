@@ -1,51 +1,16 @@
-// Notes  //
-
-// There are two types of multiplication and thus two tokens should exist
-// One is for repetition x times, the other for the real multiplication
-
 // A pattern is a succession of things ////////////////////////////////////////
+// Il faut tout simplement blinder tes fonctions qui vont traiter l'arithmétique
+// pour que ça puisse gérer tout les types et c'est bon, ça repart comme en 40
 
 ?start: pattern
-pattern: (item|superlist) (_COMMA (item|superlist)?)* -> return_pattern
+pattern: (item|list) (_COMMA (item|list)?)* -> return_pattern
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules concerning lists and interaction with other tokens ///////////////////
 
-?superlist: uplist
-          | uplist _PLUS superlist                 -> list_addition
-          | uplist _MINUS superlist                -> list_substraction
-          | uplist _MODULO superlist               -> list_modulo
-
-?uplist: list
-       | list _TIMES uplist -> list_multiplication
-       | list _TIMES sum                           -> multiplication
-       | list "/" uplist                           -> list_division
-       | list "/" sum                              -> division
-       | list "//" uplist                          -> list_floor_division
-       | list "//" sum                             -> floor_division
-       | list _PIPE uplist                         -> list_choice
-       | list _PIPE sum                            -> choice_note
-       | list _REPEAT uplist                       -> list_extend
-       | list _REPEAT sum                          -> list_extend
-       | list _REPEAT2 sum                         -> list_extend_repeat
-       | list _REPEAT2 uplist                      -> list_extend_repeat
-       | list _PLUS sum                            -> addition
-       | list _PLUS uplist                         -> list_addition
-       | list _MINUS sum                           -> substraction 
-       | list _MINUS uplist                        -> list_substraction
-       | list _MODULO sum                          -> modulo
-       | list _MODULO uplist                       -> list_modulo
-
-list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
-    | _LBRA list (_COMMA list)* _COMMA? _RBRA      -> make_list
-    | _LPAR superlist _RPAR                        -> id
-    | sum _US sum                                  -> generate_ramp
-    | sum _US sum _LPAR sum _RPAR                  -> generate_ramp_with_range
-
-
-// An item is either a sum, a collection of notes or a name
 item: (sum|col|patname)                            -> id
+list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -53,16 +18,16 @@ item: (sum|col|patname)                            -> id
 // Rules concerning numbers ///////////////////////////////////////////////////
 
 ?sum: product
-    | product _PLUS (sum|superlist)    -> addition
-    | product _MINUS (sum|superlist)   -> substraction
-    | product _MODULO (sum|superlist)  -> modulo
+    | product _PLUS sum                -> addition
+    | product _MINUS sum               -> substraction
+    | product _MODULO sum              -> modulo
 
 ?product: atom
      | product _TIMES atom             -> multiplication
      | product "/" atom                -> division
      | product "//" atom               -> floor_division
      | product _PIPE atom              -> choice
-     | product _COLON  atom            -> random_in_range
+     | product _COLON atom             -> random_in_range
      | product _REPEAT atom            -> extend
      | product _REPEAT2 atom           -> extend_repeat
 
@@ -73,22 +38,34 @@ item: (sum|col|patname)                            -> id
      | _PHASE                          -> get_phase
      | _UNIXTIME                       -> get_unix_time
      | _RANDOM                         -> get_random_number
+     | _YEAR                           -> get_year
+     | _MONTH                          -> get_month
+     | _DAY                            -> get_day
+     | _HOUR                           -> get_hour
+     | _MINUTE                         -> get_minute
+     | _SECOND                         -> get_second
+     | _MICRO                          -> get_microsecond
      | _LPAR sum _RPAR
+     | _CLBRA sum _US sum _CRBRA                  -> generate_ramp
+     | _CLBRA sum _US sum _LPAR sum _RPAR _CRBRA  -> generate_ramp_with_range
+     | _LBRA sum (_COMMA sum)* _COMMA? _RBRA      -> make_list
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules concerning names /////////////////////////////////////////////////////
 
 ?patname: compose_name
-    | compose_name _COLON (sum|list)           -> assoc_sp_number
-    | (compose_name|patname) _REPEAT sum       -> repeat_name
-    | compose_name  _PIPE patname              -> choice_name
+    | compose_name _COLON (sum|list)      -> assoc_sp_number
+    | (compose_name|patname) _REPEAT sum  -> repeat_name
+    | compose_name  _PIPE patname         -> choice_name
 
 ?compose_name: name
-    | compose_name "/" name                    -> specify_address
+    | compose_name "/" name               -> specify_address
 
-?name: NAME                                    -> name_disamb
-    | NAME sum                                 -> name_from_name_number
+?name: NAME                               -> name_disamb
+    | NAME sum                            -> name_from_name_number
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -99,13 +76,13 @@ item: (sum|col|patname)                            -> id
      | col _DOT name                                        -> add_modifier
 
 ?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note _PLUS   (col|superlist|sum)                        -> waddition
-     | note _MINUS  (col|superlist|sum)                        -> wsubstraction 
-     | note _TIMES  (col|superlist|sum)                        -> wmultiplication
-     | note _MODULO (col|superlist|sum)                        -> wmodulo
-     | note "/"     (col|superlist|sum)                        -> wdivision
-     | note "//"    (col|superlist|sum)                        -> wfloor_division
-     | note _REPEAT sum                                     -> repeat_collection
+     | note _PLUS   (col|sum)                     -> waddition
+     | note _MINUS  (col|sum)                     -> wsubstraction 
+     | note _TIMES  (col|sum)                     -> wmultiplication
+     | note _MODULO (col|sum)                     -> wmodulo
+     | note "/"     (col|sum)                     -> wdivision
+     | note "//"    (col|sum)                     -> wfloor_division
+     | note _REPEAT sum                           -> repeat_collection
      | _LPAR col _RPAR
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,6 +102,7 @@ OCTSHIFTUP: "'"
 OCTSHIFTDOWN: "."
 FLAT: "b"
 SHARP: "#"
+_AROB: "@"
 _RIGHT_ARROW: "->"
 _LEFT_ARROW: "<-"
 _PLUS: "+"
@@ -139,9 +117,12 @@ _LPAR: "("
 _RPAR: ")"
 _LBRA: "["
 _RBRA: "]"
+_CLBRA: "{"
+_CRBRA: "}"
 _PIPE: "|"
 _US: "_"
 _COLON: ":"
+_SEMICOLON : ";"
 _COMMA: ","
 _DOT: "."
 _RANDOM: "r"
@@ -149,6 +130,13 @@ _TIME: "t"
 _MEASURE: "m"
 _PHASE: "p"
 _UNIXTIME: "u"
+_YEAR : "y"
+_MONTH: "M"
+_DAY: "d" 
+_HOUR: "h"  
+_MINUTE: "N"
+_SECOND: "s"
+_MICRO: "μ" 
 _RECOVER: "&"
 _FLAT: "f"
 _SHARP: "#"

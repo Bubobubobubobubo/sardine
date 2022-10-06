@@ -4,9 +4,8 @@ from lark.lexer import Token
 from typing import Any
 from itertools import cycle
 from time import time
-import psutil
+import datetime
 import random
-
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
@@ -133,7 +132,6 @@ class CalculateTree(Transformer):
         Returns:
             int: A MIDI Note (fifth octave)
         """
-        print(f"Arrrrrgs: {args}")
         total = 0
         table = {"A": -3, "B": -1, "C": 0, "D": 2, 
                 "E": 4, "F": 5, "G": 7}
@@ -675,6 +673,34 @@ class CalculateTree(Transformer):
         """Return current clock time (tick) as integer"""
         return int(self.clock.tick)
 
+    def get_year(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().year)
+
+    def get_month(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().month)
+
+    def get_day(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().day)
+
+    def get_hour(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().hour)
+
+    def get_minute(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().minute)
+
+    def get_second(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().second)
+
+    def get_microsecond(self):
+        """Return current clock time (tick) as integer"""
+        return int(datetime.datetime.now().microsecond)
+
     def get_measure(self):
         """Return current measure (bar) as integer"""
         return int(self.clock.bar)
@@ -708,11 +734,17 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers
         """
-        if int(left) > int(right):
-            new_list = list(reversed(range(int(right), int(left) + 1)))
-            return new_list
-        else:
-            return list(range(int(left), int(right) + 1))
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            if int(left) > int(right):
+                new_list = list(reversed(range(int(right), int(left) + 1)))
+                return new_list
+            else:
+                return list(range(int(left), int(right) + 1))
+
+        if isinstance(left, list):
+            if isinstance(right, (float, int)):
+                last = left.pop()
+                return left.append(self.generate_ramp(last, right))
 
     def generate_ramp_with_range(self, left, right, step=1):
         """Generates a ramp of integers between x included and y
@@ -844,7 +876,10 @@ class CalculateTree(Transformer):
 
     def waddition(self, left, right):
         """Wrapped variant of the addition method"""
-        return self.addition(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.addition(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x + left), right))
 
     def modulo(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -858,7 +893,10 @@ class CalculateTree(Transformer):
 
     def wmodulo(self, left, right):
         """Wrapped variant of the modulo method"""
-        return self.modulo(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.modulo(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x % left), right)) % 127
 
     def power(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -872,7 +910,10 @@ class CalculateTree(Transformer):
 
     def wpower(self, left, right):
         """Wrapped variant of the power method"""
-        return self.power(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.power(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(pow(x, left)), right)) % 127
 
     def substraction(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -886,7 +927,10 @@ class CalculateTree(Transformer):
 
     def wsubstraction(self, left, right):
         """Wrapped variant of the substraction method"""
-        return self.substraction(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.substraction(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x - left), right)) % 127
 
     def multiplication(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -900,7 +944,10 @@ class CalculateTree(Transformer):
 
     def wmultiplication(self, left, right):
         """Wrapped variant of the multiplication method"""
-        return self.multiplication(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.multiplication(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x * left), right)) % 127
 
     def division(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -914,7 +961,10 @@ class CalculateTree(Transformer):
 
     def wdivision(self, left, right):
         """Wrapped variant of the division method"""
-        return self.division(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.division(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x / left), right)) % 127
 
     def floor_division(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
@@ -928,7 +978,10 @@ class CalculateTree(Transformer):
 
     def wfloor_division(self, left, right):
         """Wrapped variant of the floor division method"""
-        return self.floor_division(left, right) % 127
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+            return self.floor_division(left, right) % 127
+        elif isinstance(right, list):
+            return list(map(lambda x: int(x // left), right)) % 127
 
     def name_disamb(self, name):
         """Generating a name"""

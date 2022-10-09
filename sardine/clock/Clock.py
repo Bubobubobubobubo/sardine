@@ -704,7 +704,7 @@ class Clock:
         note: Union[int, str] = 60,
         velocity: Union[int, str] = 100,
         channel: Union[int, str] = 0,
-        delay: Union[int, float, str] = 0.1,
+        dur: Union[int, float, str] = 0.1,
         at: int = 0,
         **kwargs,
     ) -> MIDISender:
@@ -712,7 +712,7 @@ class Clock:
             self,
             self._midi,
             at=at,
-            delay=delay,
+            delay=dur,
             note=note,
             velocity=velocity,
             channel=channel,

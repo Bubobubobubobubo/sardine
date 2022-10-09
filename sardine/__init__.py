@@ -126,17 +126,17 @@ def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     )
 
 
-def cc(channel: int = 1, control: int = 20, value: int = 64):
+def cc(channel: int = 0, control: int = 20, value: int = 64):
     asyncio.create_task(
         c._midi.control_change(channel=channel, control=control, value=value)
     )
 
 
-def pgch(channel: int = 1, program: int = 0):
+def pgch(channel: int = 0, program: int = 0):
     asyncio.create_task(c._midi.program_change(channel=channel, program=program))
 
 
-def pwheel(channel: int = 1, pitch: int = 0):
+def pwheel(channel: int = 0, pitch: int = 0):
     asyncio.create_task(c._midi.pitchwheel(channel=channel, pitch=pitch))
 
 def sysex(data: list[int]):

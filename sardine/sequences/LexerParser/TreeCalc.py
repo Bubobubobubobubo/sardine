@@ -342,7 +342,7 @@ class CalculateTree(Transformer):
                 'shuffle': self.shuffle_collection,
                 'drop2': self.collection_drop2,
                 'drop3': self.collection_drop3,
-                'drop2&4': self.collection_drop2and4
+                'drop2and4': self.collection_drop2and4
         }
         try:
             return modifiers_list[quali](col)

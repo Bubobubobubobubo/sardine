@@ -82,9 +82,9 @@ class MIDISender:
             asyncio.create_task(
                 self.midi_client.note(
                     delay=message.get("delay"),
-                    note=message.get("note"),
-                    velocity=message.get("velocity"),
-                    channel=message.get("channel"),
+                    note=int(message.get("note")),
+                    velocity=int(message.get("velocity")),
+                    channel=int(message.get("channel")),
                 )
             )
 

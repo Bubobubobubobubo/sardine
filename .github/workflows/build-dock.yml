@@ -16,5 +16,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           CUSTOM_DOMAIN: sardine.raphaelforment.fr
-          CONFIG_FILE: mkdocs.yml
+          CONFIG_FILE: docs/mkdocs.yml
           EXTRA_PACKAGES: build-base

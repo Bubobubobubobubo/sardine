@@ -1,6 +1,4 @@
 // A pattern is a succession of things ////////////////////////////////////////
-// Il faut tout simplement blinder tes fonctions qui vont traiter l'arithmétique
-// pour que ça puisse gérer tout les types et c'est bon, ça repart comme en 40
 
 ?start: pattern
 pattern: (item|list) (_COMMA (item|list)?)* -> return_pattern

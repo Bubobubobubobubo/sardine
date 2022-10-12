@@ -330,13 +330,25 @@ from random import random, randint, choice
 from typing import Union
 def BBar(mod: int) -> bool:
     return True if c.bar % mod == 0 else False
+
 def BTick(mod: int) -> bool:
     return True if c.tick % mod == 0 else False
+
 def mod(mod: int, i: int) -> bool:
     return True if i % mod == 0 else False
+
 def imod(mod: int, i: int) -> bool:
     return True if i % mod == 0 else False
+
 def pick(*args) -> list:
     return choice(list(args))
+
 def bin(number: Union[float, int]) -> list:
     return list(format(number, 'b'))
+
+class Pile():
+    def __init__(self, pattern):
+        self._pat = pattern
+    def out(self, iterator, height):
+        for i in range(iterator, iterator+height):
+            self._pat.out(i)

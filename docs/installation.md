@@ -199,4 +199,4 @@ Please provide feedback on the installation process! I try to document it as muc
 
 * **[WINDOWS ONLY]**: `uvloop` does not work on Windows. Fortunately, you can still run **Sardine** but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
 
-* **[LINUX/MACOS]**: `poetry install` fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
+* **[LINUX/MACOS]**: `poetry install` fails on `python-rtmidi build`. Its probably because you missed libjack development files (`libjack-dev` or `libjack-jackd2-dev`). You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.

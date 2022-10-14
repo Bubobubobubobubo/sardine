@@ -165,7 +165,7 @@ Note that you can boot **Sardine** manually in a two-step process:
 
 1) `python3 -m asyncio`: start the asyncio REPL
 
-2) `from sardine import **`: import **Sardine** library
+2) `from sardine import *`: import **Sardine** library
 
 
 ### Code-editing

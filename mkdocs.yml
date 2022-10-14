@@ -9,6 +9,7 @@ nav:
   - Troubleshot: troubleshot.md
   - Tutorial: tutorial.md
   - Reference: reference.md
+  - Sardinopedia: sardinopedia.md
   - About: about.md
 theme:
   palette:

@@ -1,6 +1,11 @@
+---
+hide:
+    - navigation
+---
+
 # Using Sardine
 
-This tutorial will hopefully help you to understand the different layers that are composing the performance/composition/improvisation system that **Sardine** is. I will not dive deep into details or materials dedicated to contributors or developers but give you the bare minimum to become a proficient **Sardine** user.
+At least! You have now installed and configured Sardine. You are up and running, but you don't know how to use **Sardine**! This tutorial will hopefully help you to understand the different layers that are composing the performance/composition/improvisation system that **Sardine** is. I will not dive deep into details or materials dedicated to contributors or developers but give you the bare minimum to become a proficient **Sardine** user.
 
 ## Sardine Clock
 
@@ -16,15 +21,17 @@ When **Sardine** is imported using the command `from sardine import *`, an insta
 
 ### Ableton Link Clock
 
-Additionally, **Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` session. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo followed by everyone else, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state. 
+The **Link** protocol is a novel open source protocol released by **Ableton** which allows users to synchronise their musical tempo seamlessly on a local network. While still pretty new, this method of synchronisation is now supported by a fair amount of by music software and apps, including other live coding libraries.
+
+**Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` method. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo originating somewhere and followed by everyone, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state. 
 
 The **Ableton Link** Clock is a bit weird. It will disrupt the regular behavior of the Sardine Clock. It will stop emitting a MIDI clock signal because it cannot ensure that the clock will be steady. **MIDI** Clocks and **Ableton Link** Clock does not go hand in hand. It is preferable to kill every running pattern before attempting the switch from regular time to Link time.
 
 ### Some clock things to know
 
-- Sardine will not behave nicely if no external clock is running while in `passive` mode.
+- Sardine will not behave nicely if no external clock is running while in `passive` mode. Time is simply frozen and events will not trigger, suspended somewhere in time.
 
-- You can introspect the current state of the clock using clock attributes or using the very verbose `debug` mode. After running `c.debug = True`:
+- You can introspect the current state of the clock using clock attributes or using the very verbose `debug` mode. Be careful, your terminal will be flooded by messages. After running `c.debug = True`, you should see something that looks like:
 
 ```python
 ...
@@ -43,13 +50,13 @@ BPM: 130.0, PHASE: 20, DELTA: 0.001333 || TICK: 500 BAR:2 3/4
     * `c.bar`: current clock bar since start (`4/4` bars by default).
     * `c.phase`: current phase.
 
-These clock attributes are used everywhere in **Sardine** as they provide the most basic interface to the clock for every component in the system. You can use them if you wish to compose more complex pieces and sequences. They are still really useful tools to craft conditionals and random number generators even though there are better and more controled ways to access them.
+These clock attributes are used everywhere in **Sardine** as they provide the most basic interface to the clock for every component in the system. You can use them if you wish to compose more complex pieces and sequences. They are still really useful tools to craft conditionals and random number generators even though there are better and more controlled ways to access them (for instance, *via* the *patterning system*).
 
 #### The meaning of sleep
 
 If you are already familiar with *Python*, you might have heard about or used the `sleep()` function. This function will halt the execution of a program for a given amount of time and resume immediately after. **Sardine** does not rely on Python's `sleep` because it is *unreliable* for musical purposes! Your OS can decide to introduce micro-delays, to resume the execution too late or even not sleep for the precise duration you wanted. 
 
-**Sardine** proposes an alternative to regular Python `sleep`, backed by the clock system previously described, crafted by @thegamecracks. The `sleep()` function has been overriden to allow you to have a safe and sane alternative for musical contexts. You can use it to stop and resume a **swimming function** while keeping synchronization and timing accuracy.
+**Sardine** proposes an alternative to regular Python `sleep`, backed by the clock system previously described, crafted by @thegamecracks. The `sleep()` function has been overriden to allow you to have a safe and sane, similarly working alternative for musical contexts. You can use it to stop and resume a **swimming function** while keeping synchronization and timing accuracy.
 
 ```python
 @swim
@@ -81,10 +88,12 @@ def oversleep(d=4):
     again(oversleep, d=0.5) # Changed the value to oversleep
 ```
 
+If you are not yet familiar with the concept of recursion, or with the meaning of some of the facts presented here, keep patience. The meaning of all this will become clear after a few sections and some tests on your side :)
+
 
 #### Swimming functions
 
-We already used the term **swimming function** before, so better explain it now! In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from this dreadful recursive temporal loop.
+We already used the term **swimming function** before without taking the time to explain it! In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. The function will call itself when it ends. The newly called function will call itself, and again, and again... This is one way computer scientists like to think about loops and structures like lists. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from this dreadful recursive temporal loop.
 
 ```python
 @swim # replace me by 'die'
@@ -118,31 +127,24 @@ async def iter(d=1, nb=0):
 # 4
 ```
 
-This is an incredibly useful feature to keep track of state between each call of your function. **Swimming functions** and its handling of arguments is the most basic thing you have to learn in order to use **Sardine** proficiently. This is the base to improvise music with variations, nuance and some varying amount of repetition and variety. Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc...
+This is an incredibly useful feature to keep track of state between each call of your function. **Swimming functions** and its handling of arguments are the most basic thing you have to learn in order to use **Sardine** proficiently. This is the base to improvise music with variation, nuance and finesse. Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... It will gradually become like a second nature for you to write them.
 
-**Swimming functions** are great but they have one **BIG** difference compared to a classic temporal recursion: they are *temporal* recursive. They must be given a `delay` argument. The `delay` argument is actually `d` (shorter is better). If you don't provide it, Sardine will assume that your function uses `d=1`. If you forget it on one side while using it on the other side, **Sardine** will jump up to your neck and try to kill you.
+**Swimming functions** are great but they have one **BIG** difference compared to a classic recursion: they are *temporal* recursive. They must be given a `delay` argument. The `delay` argument is actually `d` (shorter is better). If you don't provide it, Sardine will assume that your function uses `d=1`. If you forget it on one side while using it on the other side, **Sardine** will jump up to your neck and try to kill you. If you ever try to give a delay of `0`, your function will immediately stop and an error message will be printed in your terminal. Not waiting is simply not an option, otherwise we would equally be able to travel back in time :)
 
 ### Making sound / sending information
 
 #### Sender objects
 
-Sender objects are one of the main tools you will be using while playing with **Sardine**. They are objects that compose a single message that can be sent out using the `.out(iter=0)` method. They are your main interface to the outside world (*SuperCollider*/*SuperDirt*, *MIDI* or *OSC*). These objects can receive various and/or arbitrary parameters depending on their purpose. These arguments can be *integers*, *floats* or *strings*:
+Sender objects are the most frequent objects you will be interacting with while playing with **Sardine**. Senders are objects that compose a single message that can be sent out using the `.out(iter=0)` method. They are your main interface to the outside world (*SuperCollider*/*SuperDirt*, *MIDI* or *OSC*). These objects can receive various and/or arbitrary parameters depending on their purpose and specialty. These arguments can be *integers* (`1`, `2`), *floats* (`1.23`, `0.123123`) or *strings* (`"baba"`, `"dada/43/baba/"`):
 
-- *int*/*float*: parameters used as is.
-- *string* : pre-parsed using a special DSL made for writing patterns and transformed into lists.
+- *int*/*float*: parameters are sent as is, they are numbers!
+- *string* : interpreted by **Sardine** and transformed into a pattern of values.
 
-When you import **Sardine**, `MIDISender`, `SuperDirtSender` and `OSCSender` will already be available under the name `M()` (for **MIDI**),  `S()` (for **sound** or *SuperDirt*) and `O()` (for **OSC**). These objects are preconfigured objects that must be prefered to custom senders you can declare yourself (more on this later).
-
-
+When you import **Sardine**, `MIDISender`, `SuperDirtSender` and `OSCSender` will already be available under the name `M()` (for **MIDI**),  `S()` (for **sound** or *SuperDirt*) and `O()` (for **OSC**). These objects are preconfigured objects that must be prefered to custom senders you can declare yourself (more on this later). `M`, `O` and `S` are three ways of interacting with the synthesis engine, your synths or other equipment/softwares.
 
 #### SuperDirt output
 
-The easiest way to trigger a sound with `Sardine` is to send an OSC message to `SuperDirt`. **SuperDirt** is designed as a tool converting control messages into the appropriate SuperCollider action without having to deal with SuperCollider itself. Most people will use the SuperDirt output instead of plugging multiple synthesizers listening to MIDI or crafting OSC listeners. The interface to SuperDirt is still very crude but fully functional. By default, **Sardine** will attempt to boot with its own `SuperCollider` and `SuperDirt` configuration. You can disable this by changing the configuration: `sardine-config --boot_superdirt False`.
-
-* **default:** `SuperDirt` will be booted everytime the library is imported.
-* **manual:** `SuperDirt` (and `SuperCollider`) needs to be booted independently on the default port (`57120`).
-
-People familiar with [TidalCycles](https://tidalcycles.org/) will feel at home using the `S()` (for `SuperDirt`) object. It is a simple object made for composing SuperDirt messages:
+The easiest way to trigger a sound with **Sardine** is to send an OSC message to **SuperDirt**. **SuperDirt** is designed as a tool that will convert control messages into the an appropriate action without having to deal with **SuperCollider** itself. Most people will use the **SuperDirt** output instead of plugging multiple synthesizers along with **Sardine**, or craft musical patches listening to OSC messages. The interface to **SuperDirt** is crude but fully functional. People already familiar with [**TidalCycles**](https://tidalcycles.org/) will feel at home using the `S()` (for `SuperDirt`) object. The syntax is extremely similar for the purpose is similar, and names often match between the two systems:  
 
 ```python
 # A bassdrum (sample 0 from folder 'bd')
@@ -150,8 +152,9 @@ S('bd').out()
 # Fourth sample, way louder!
 S('bd', n=3, amp=2).out() 
 # Patterning a parameter (read the appropriate section) 
-S('bd', n=3, amp=1, speed='1 0.5').out(i) 
+S('bd', n=3, amp=1, speed='1,0.5').out(i) 
 # Introducing some Python in our parameters
+from random import random, randint
 S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) 
 ```
 
@@ -178,9 +181,23 @@ Do not use the assign operator (`=`). Call the attribute directly (eg: `amp()`).
 
 Attributes are not checked for validity. You can really write anything so be careful: spell out the *SuperDirt* attribute names correctly.
 
+This technique is also really interesting if you like to pre-compose things before playing them. You can write some additional code to store libraries of prepared audio samples matching with some custom parameters.
+
+#### Orbits
+
+You will soon find out that you can assign effects to audio samples played using `S()` such as a reverb, a low-pass filter or a bitcrusher. Some of these effects are **local**. They only affect the sound you are currently playing. Some other effects are **global**. They will affect all the sounds running through the same audio bus. This is an important distinction to keep in mind! To specify which bus you would like to use for a given sound, use the `orbit` argument.
+
+`orbit` is a very important argument. Actually, it is the only argument that is specified by default. You can run a sound through a very heavy and long-tailed reverb while having, concurrently, another dry sound by switching orbits:
+```python3
+S('clap', room=0.9, dry=0.1, size=0.9, orbit=0).out()
+S('bd', orbit=3).out()
+```
+
+The number of orbits at your disposition is declared on the **SuperDirt** side in your configuration file. More on this later on! In the meantime, check out the **SuperDirt** GitHub repository if you would like to learn more about it.
+
 #### MIDI Output
 
-The `MIDISender` object is very similar to the `SuperDirtSender` object. It is specialized in writing/sending MIDI notes. Other MIDI events are handled differently by specific methods such as `cc()`. Note that MIDI works a bit better using the default MIDI output for now because some functions need to be hard-wired to work correctly. MIDI Notes messages need a duration, a velocity, a note number and a channel:
+The `MIDISender` object is structurally similar to the `SuperDirtSender` object. It is specialized in writing/sending MIDI notes and MIDI notes only. Other MIDI events are handled differently by specific methods such as `cc()` (for control changes) or `pgch()` (for program changes). MIDI Notes messages need a duration, a velocity, a note number and a channel:
 
 - **duration** (`seconds`): time between a *note-on* and *note-off* event (pressing a key on an imaginary keyboard).
 - **velocity** (`0-127`): think of it as the volume amplitude of a note.
@@ -191,33 +208,43 @@ The `MIDISender` object is very similar to the `SuperDirtSender` object. It is s
 M(delay=0.2, note=60, velocity=120, channel=0)
 ```
 
-The `.out()` method is still used to carry a note out and to inform the sender of the value you would like to select in a pattern (see patterning).
-
-See the `MIDI` section to learn more about sending out other message types such as *control changes* or *program changes*.
+The `.out()` method is still used to carry a note out and to inform the sender of the value you would like to select in a pattern (see patterning). All of these values have a given default. If you don't specify anything (`M()`), you will hear a very loud middle-C on channel 0. See the `MIDI` section to learn more about sending out other message types such as *control changes* or *program changes*.
 
 #### OSC output
 
-The `OSCSender` is the weirdest of all the senders. It behaves juts like the other ones but will require more work from your part. By default, the object cannot assume what OSC connexion you would like to use. For that reason, you will need to give him one as an aditional parameter. Likewise, the sender cannot assume what address you would like to send your message to. You will need to feed the object an address everytime you wish to carry a message out. There is no default OSC connexion (except for the one used by SuperDirt internally).
+The `OSCSender` is the weirdest of all the senders. It behaves and works just like the other ones but will require more work from your part. By default, the object cannot assume what OSC connexion you would like to use. For that reason, you will need to feed him one with an aditional parameter. Likewise, the sender cannot assume what address you would like to carry your message to. You will need to feed the object an address everytime you wish to send a message out. There is no default OSC connexion (except for the one used by **SuperDirt** and **Sardine** internally).
 
 To use the `OSCSender` object, you will have to open manually an OSC connexion before feeding it into the object:
 ```python
 my_osc = OSC(ip="127.0.0.1", port= 12000, name="super_connexion", ahead_amount=0.25)
-O(my_osc, 'loulou', value='1 2 3 4').out()
+O(my_osc, 'loulou', value='1,2,3,4').out()
 ```
 
-Everything else works just the same.
+Argument names do not matter when composing OSC messages. You can name arguments, but this will only make it easier for you to name and find values in your code. The message being caried out will not feature the name of the argument you specified. I'm still pondering if that is a nice thing or if I should find another system. If you have an opinion about it, please voice it!
 
 ### Composing patterns
 
+The most intriguing aspect of **Sardine** is that you can write small patterns of values that can be used to make your functions more lively on their own. These patterns can be used to generate rhythms, streams of notes/addresses/numbers, random values, etc... Instead of feeding static values such as `0.5` to an argument like `amp`, you can make it change dynamically on-the-fly by feeding sequence and/or patterns of values: `0.5, 0.3, 0.2` or `{0_1(0.1)}`. There is a whole syntax dedicated to crafting patterns and I plan to add more and more in subsequent versions of **Sardine**!
+
+Think of all this as a glorified time-dependant calculator that can also do some arithmetics on lists, with new operators such as `_`, `!` or `:`. The pattern system also works with musical notes and names (for samples and OSC addresses). It can be used to summon musical scales, musical chords and some funny musical transformations (such as `.disco` or `.explode`). All of this is *maïeutic*, aka meant to fuel your imagination and let you explore a world of dynamic algorithmic musical patterns. The grammar in itself is a bit complex, but can be found living in the deepest corner of the source code.
+
+There are three basic types of values that can be used to compose a **Sardine** pattern:
+
+- **notes** : musical notes.
+
+- **names** : names denoting an address or an audio sample file name.
+
+- **numbers**: floating-point numbers or integers.
+
+All these values, even if not of the same type, can interact with one another, which means that you can write a scale down and transpose it by a given factor just by writing an addition: `C->penta + 2`.
+
+If you are familiar with *live coding* already, this idea of playing with algorithmic patterns might ring a bell. If you are not, let me start now with more detailed explanations.
+
 #### Sardine grammar
 
-Some **Sardine** objects such as `S()`, `M()` or `O()` can be patterned using a special programming language crafted for that purpose. Think of it as a glorified calculator that can also perform arithmetics on lists and with new operators such as `_`, `!` or `:`. The grammar can be found in the `ListParser.py` file if you would like to extend it and propose a new version. This allows you to write musical sequences or parametric sequences very fast and in interesting/unpredictable ways.
+Think of the pattern language as a novel way to write lists. Fundamentally, **Sardine** patterns are just list of values, separated each by commas: `1,2,3,4`. Whitespace don't matter. Each element written between commas can be a more complex expression: `1+2, 2*4, r, {5_10}`. Some values are atomic, they only are one thing. `1` is nothing but `1`. Some values are more complex, and can represent lists of values: `C-min7` is a four-note structure made of the notes composing the C minor 7 chord.
 
-To test that feature, use the following functions:
-* `parser(pattern: str)`: write a pattern, get the result back.
-* `parser_repl()`: small REPL, similar to the Python interpeter.
-
-Think of the pattern language as a novel way to write lists. Lists are defined as a list of operations **separated by whitespaces**. I will present some patterns in gradual order of complexity before detailing the list of available operators.
+Lists are defined as a list of operations **separated by whitespaces**. I will present some patterns in gradual order of complexity before detailing the list of available operators.
 
 ```python
 # parser('1 2 3'): a list of numbers

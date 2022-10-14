@@ -1,3 +1,8 @@
+---
+title: Welcome
+template: home.html
+---
+
 # Sardine: Python based live coding library with MIDI and OSC support ✨
 
 ```
@@ -9,7 +14,12 @@
             ╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 ```
 
+<iframe width="1424" height="400" src="https://www.youtube.com/embed/_aj_GdIibdQ" title="Live Coding on Python (Sardine)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 **Sardine** is a Python library tailored for musical live coding. It can turn Python into a fun music instrument and/or stage control tool for electronic musicians. Sardine is working on Windows/MacOS/Linux using Python 3.8+. It can send and receive MIDI, OSC and SuperDirt messages. **Sardine** is based on the principle of [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). It allows the execution of recursive functions synchronised with musical time. It means that you can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict and guaranteed timing! 
+
+
+<iframe width="1424" height="400" src="https://www.youtube.com/embed/COliLppntCc" title="Sardine - Algorave at Hydrophone (Soundcheck)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <video width="800"  controls>
   <source src="/images/sardinade7.mp4" type="video/mp4">

@@ -1,20 +1,30 @@
 # Using Sardine
 
-This tutorial will only cover the very basics of using **Sardine**. To get more information about a specific aspect of **Sardine**, click on each module folder in the source tree on [GitHub](https://github.com/Bubobubobubobubo/sardine/tree/main/sardine) to read their own `README.md` files.  This tutorial is made collecting different `README` files I have composed for my own needs. It is hard to stay upfloat by documenting and coding breaking changes almost every week :)
+This tutorial will hopefully help you to understand the different layers that are composing the performance/composition/improvisation system that **Sardine** is. I will not dive deep into details or materials dedicated to contributors or developers but give you the bare minimum to become a proficient **Sardine** user.
 
-This tutorial will guide you throughout various aspects of **Sardine**, but will not dive into details. More detailed commentaries will come later to help possible contributors and interested developers!
+## Sardine Clock
 
-### Sardine Clock
+### MIDI Clock
 
-As soon as the library is imported (`from sardine import *`), an instance of `Clock` will start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, this clock is running in `active` mode: it will send a MIDI clock signal every tick on the default MIDI port. It can also be `passive` and listen to the default MIDI port if you prefer. Don't override the `c` variable. You won't have to worry a lot about the internals. Just remember that some methods can be used and changed on-the-fly to maximize the fun you get:
+When **Sardine** is imported using the command `from sardine import *`, an instance of `Clock` will automatically start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, if you haven't touched to the configuration, the clock will be running in `active` mode: it will send a **MIDI** clock signal for every tick on the default MIDI port. The default MIDI port will either be a virtual port named `Sardine` if your OS supports virtual MIDI ports or the first available MIDI Port declared by your OS. It can also be `passive` and made to listen to the default MIDI port if you prefer. Never override the `c` variable. You won't have to worry a lot about the internals. You will likely find the following commands interesting:
 
 * `c.bpm`: current tempo in beats per minute.
 * `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (Pulses per Quarter Note, used by MIDI gear).
   - be careful. The tempo might fluctuate based on the PPQN you choose. Assume that 24 is a default sane PPQN for most synthesizers/drum machines.
+* `c.accel`: an acceleration factor for the clock, from `0` to `100` (double tempo) %. 
+* `c.nudge`: nudge the clock forward in time by the given amount. Usually pinged randomly until you fall back on the external click track you wish to follow. 
 
-The Clock can either be `active` or `passive`. The `active` Clock will emit a Clock signal on the MIDI port you picked by default. The `passive` Clock will await for a MIDI Clock signal coming from elsewhere (DAWs, hardware, other softwares..). Sardine will not behave nicely if no external clock is running while in `passive` mode. Being able to send a MIDI Clock Out or to receive a MIDI Clock In is great for collaborating with other musicians. Live is also able to mirror an Ableton Link clock to a MIDI Clock.
+### Ableton Link Clock
 
-You can introspect the current state of the clock using clock attributes or using the very verbose `debug` mode. After running `c.debug = True`:
+Additionally, **Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` session. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo followed by everyone else, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state. 
+
+The **Ableton Link** Clock is a bit weird. It will disrupt the regular behavior of the Sardine Clock. It will stop emitting a MIDI clock signal because it cannot ensure that the clock will be steady. **MIDI** Clocks and **Ableton Link** Clock does not go hand in hand. It is preferable to kill every running pattern before attempting the switch from regular time to Link time.
+
+### Some clock things to know
+
+- Sardine will not behave nicely if no external clock is running while in `passive` mode.
+
+- You can introspect the current state of the clock using clock attributes or using the very verbose `debug` mode. After running `c.debug = True`:
 
 ```python
 ...
@@ -27,22 +37,19 @@ BPM: 130.0, PHASE: 20, DELTA: 0.001333 || TICK: 500 BAR:2 3/4
 ...
 ```
 
+- Some interesting clock attributes can be accessed:
+    * `c.beat`: current clock beat since start.
+    * `c.tick`: current clock tick since start.
+    * `c.bar`: current clock bar since start (`4/4` bars by default).
+    * `c.phase`: current phase.
 
-Some interesting clock attributes can be accessed:
-
-* `c.beat`: current clock beat since start.
-* `c.tick`: current clock tick since start.
-* `c.bar`: current clock bar since start (`4/4` bars by default).
-* `c.phase`: current phase.
-* `c.accel`: `accel` for `acceleration` acts as a tempo nudge parameter. Think of it as a way to speed up or down the clock a little bit if you ever need to manually synchronise with another musician or track.
-
-You can't do much using them for now but it is planned to use these attributes as tools to compose more complex pieces and sequences. They are still really useful as conditionals and random number generators.
+These clock attributes are used everywhere in **Sardine** as they provide the most basic interface to the clock for every component in the system. You can use them if you wish to compose more complex pieces and sequences. They are still really useful tools to craft conditionals and random number generators even though there are better and more controled ways to access them.
 
 #### The meaning of sleep
 
-If you are already familiar with Python, you might have heard about the `sleep()` function. This function will halt the execution of a program for a given amount of time and resume  immediately after. **Sardine** does not rely on Python's `sleep` because it is *unreliable* for musical purposes! Your OS can decide to introduce a micro-delay, to resume the execution very late or even not to sleep for the duration you first indicated. 
+If you are already familiar with *Python*, you might have heard about or used the `sleep()` function. This function will halt the execution of a program for a given amount of time and resume immediately after. **Sardine** does not rely on Python's `sleep` because it is *unreliable* for musical purposes! Your OS can decide to introduce micro-delays, to resume the execution too late or even not sleep for the precise duration you wanted. 
 
-**Sardine** proposes an alternative to regular Python sleeping backed by the clock system previously described, crafted by @thegamecracks. The `sleep()` function has been overriden to allow you to stop and resume a **swimming function** while keeping synchronization and timing accuracy.
+**Sardine** proposes an alternative to regular Python `sleep`, backed by the clock system previously described, crafted by @thegamecracks. The `sleep()` function has been overriden to allow you to have a safe and sane alternative for musical contexts. You can use it to stop and resume a **swimming function** while keeping synchronization and timing accuracy.
 
 ```python
 @swim
@@ -51,7 +58,7 @@ def sleeping_demo(d=1):
     sleep(1)
     print("Doing something else...")
     sleep(1)
-    anew(sleeping_demo, d=2)
+    again(sleeping_demo, d=2)
 
 @swim
 def limping(d=4):
@@ -61,9 +68,9 @@ def limping(d=4):
     again(limping, d=4)
 ```
 
-The **swimming function** `sleeping_demo()` will recurse after a delay of `2`. Think of the time you have in-between as spare time you can use and consume using `sleep()`. You can use that time sending instructions and composing the instructions that form your function. You can also do nothing for most of your time just like in `limping()`. You can write code in an imperative fashion, something that you might have already encountered in live coding systems such as [Sonic Pi](https://sonic-pi.net/) or **SuperCollider** `Tdefs`.
+The **swimming function** `sleeping_demo()` will recurse after a delay of `2`. Think of the time you have in-between a recursion as spare time you can use and consume using `sleep()`. You can use that time sending the instructions that compose your swimming function. You can also do nothing for most of your time just like in `limping()`. You can write code in an imperative fashion, something that you might have already encountered in live coding systems such as [Sonic Pi](https://sonic-pi.net/) or **SuperCollider** `Tdefs`.
 
-**Be careful**, you can oversleep and trigger a recursion while your function is still running, effectively overlapping versions of your **swimming functions**:   
+**Be careful**! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your **swimming functions**:   
 
 ```python
 @swim
@@ -77,17 +84,17 @@ def oversleep(d=4):
 
 #### Swimming functions
 
-In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from recursion.
+We already used the term **swimming function** before, so better explain it now! In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from this dreadful recursive temporal loop.
 
 ```python
 @swim # replace me by 'die'
 def bd(d=1):
-    """Loud bass drum"""
+    """Loud bassdrum"""
     S('bd', amp=2).out()
-    anew(bd, d=1) # anew == again == cs
+    again(bd, d=1) # again == anew == cs
 ```
 
-If you don't manually add the recursion to the designated **swimming function**, the function will run once and stop. Recursion must be explicit! That's another way to make a **swimming function** stop but not the recommended one!
+If you don't manually add the recursion to the designated **swimming function**, the function will run once and stop. Recursion must be explicit and you should not forget about it! Forgetting the recursion loop call is another way to make a **swimming function** stop but not the recommended one!
 
 ```python
 # Boring
@@ -103,7 +110,7 @@ The recursion can (and should) be used to update your arguments between each cal
 async def iter(d=1, nb=0):
     """A simple recursive iterator"""
     print(f"{nb}")
-    anew(iter, d=1, nb=nb+1)
+    again(iter, d=1, nb=nb+1)
 # 0
 # 1
 # 2
@@ -111,9 +118,9 @@ async def iter(d=1, nb=0):
 # 4
 ```
 
-This is an incredibly useful feature to keep track of state between each call of your function. **Swimming functions** are helpful tools that can be used to produce very musical results! Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... Some functions will soon be added to make some of these less verbose for the end-user. For now, you are (almost) on your own!
+This is an incredibly useful feature to keep track of state between each call of your function. **Swimming functions** and its handling of arguments is the most basic thing you have to learn in order to use **Sardine** proficiently. This is the base to improvise music with variations, nuance and some varying amount of repetition and variety. Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc...
 
-**Swimming functions** are great but they have one **BIG** difference compared to a classic temporal recursion: they are *temporal* recursive. They must be given a `delay` argument. The `delay` argument is actually `d` (short is better). If you don't provide it, Sardine will assume that your function uses `d=1`.
+**Swimming functions** are great but they have one **BIG** difference compared to a classic temporal recursion: they are *temporal* recursive. They must be given a `delay` argument. The `delay` argument is actually `d` (shorter is better). If you don't provide it, Sardine will assume that your function uses `d=1`. If you forget it on one side while using it on the other side, **Sardine** will jump up to your neck and try to kill you.
 
 ### Making sound / sending information
 

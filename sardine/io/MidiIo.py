@@ -143,10 +143,10 @@ class MIDIIo(threading.Thread):
         """Control Change message"""
         self.schedule(
             mido.Message(
-                "control_change", 
+                "control_change",
                 channel=int(channel),
                 control=int(control),
-                value=int(value)
+                value=int(value),
             )
         )
 

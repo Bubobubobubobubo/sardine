@@ -9,6 +9,7 @@ from time import time
 import datetime
 import random
 
+
 @v_args(inline=True)
 class CalculateTree(Transformer):
     def __init__(self, clock):
@@ -135,8 +136,7 @@ class CalculateTree(Transformer):
             int: A MIDI Note (fifth octave)
         """
         total = 0
-        table = {"A": -3, "B": -1, "C": 0, "D": 2, 
-                "E": 4, "F": 5, "G": 7}
+        table = {"A": -3, "B": -1, "C": 0, "D": 2, "E": 4, "F": 5, "G": 7}
         args = list(args)
 
         if not any([str(x).isdigit() for x in args]):
@@ -334,21 +334,20 @@ class CalculateTree(Transformer):
         quali = "".join([str(x) for x in quali])
 
         modifiers_list = {
-                'expand': self.expand_collection,
-                'disco': self.disco_collection,
-                'palindrome': self.collection_palindrome,
-                'reverse': self.reverse_collection,
-                'braid': self.braid_collection,
-                'shuffle': self.shuffle_collection,
-                'drop2': self.collection_drop2,
-                'drop3': self.collection_drop3,
-                'drop2and4': self.collection_drop2and4
+            "expand": self.expand_collection,
+            "disco": self.disco_collection,
+            "palindrome": self.collection_palindrome,
+            "reverse": self.reverse_collection,
+            "braid": self.braid_collection,
+            "shuffle": self.shuffle_collection,
+            "drop2": self.collection_drop2,
+            "drop3": self.collection_drop3,
+            "drop2and4": self.collection_drop2and4,
         }
         try:
             return modifiers_list[quali](col)
         except Exception as e:
             return col
-
 
     def add_qualifier(self, note, *quali):
         """Adding a qualifier to a note taken from a qualifier list.
@@ -462,7 +461,7 @@ class CalculateTree(Transformer):
             list: A shuffled list of integers
         """
         if not isinstance(collection, list):
-            return collection 
+            return collection
         else:
             random.shuffle(collection)
             return collection
@@ -760,7 +759,7 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers with step
         """
-        ramp = [x * step for x in range(int(left), int(right)+1)]
+        ramp = [x * step for x in range(int(left), int(right) + 1)]
         if int(left) > int(right):
             return reversed(ramp)
         else:
@@ -989,8 +988,8 @@ class CalculateTree(Transformer):
         """Generating a name"""
         # Fix two letters words with b being interpreted as words
         if name in ["Ab", "Bb", "Cb", "Db", "Eb", "Fb", "Gb"]:
-            # We need to return in two separate tokens
-            # See make_note
+            # We need to return in two separate tokens
+            # See make_note
             return self.make_note(name[0], name[1])
         return str(name)
 
@@ -1013,7 +1012,6 @@ class CalculateTree(Transformer):
                 return [_simple_association(n, value) for n in name]
             if isinstance(value, list):
                 return [str(x) + ":" + str(int(y)) for x, y in zip(cycle(name), value)]
-
 
     def choice_name(self, a, b):
         """Choose 50%/50% between name 'a' and name 'b'.

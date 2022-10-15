@@ -136,7 +136,7 @@ class Clock:
             "phase": 0,
         }
 
-        # Parser
+        # Parser
         self.parser = ListParser(clock=self)
 
     def __repr__(self):

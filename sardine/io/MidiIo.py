@@ -76,7 +76,7 @@ class MIDIIo(threading.Thread):
         ports = mido.get_output_names()
         console = Console()
         for (i, item) in enumerate(ports, start=1):
-            rich_print(f"[color({i})] [{i}] {item}")
+            rich_print(f"[color({i})] {item} [{i}]")
         rich_print(
             "[red]Note: you don't have to hand pick your MIDI Port manually every time."
         )
@@ -143,7 +143,10 @@ class MIDIIo(threading.Thread):
         """Control Change message"""
         self.schedule(
             mido.Message(
-                "control_change", channel=channel, control=control, value=value
+                "control_change",
+                channel=int(channel),
+                control=int(control),
+                value=int(value),
             )
         )
 

@@ -1,41 +1,42 @@
+---
+hide:
+    - navigation
+---
+
+
 # Installation
 
-Installing **Sardine** is a multi step but straightforward process.
+**Sardine** is still experimental software and it has not yet been fully packaged. You can be up and running in minutes if everything is going fine but depending on your proficiency level with programming tools, you might have to spend some extra time configuring everything up for the first time. Most of the setup process is straightforward, only some extra details need to be taken care of in some cases that will be detailed along the way.
 
-**Sardine** being a live-coding library, most of the install will be spent gathering coding-related tools. If you wish to play sound directly from **Sardine**, aim for a *full installation*. If you wish to use OSC/MIDI most of your time, skip the SuperCollider and SuperDirt section. Sardine is already quite capable by itself without needing **SuperCollider** but it's always better to have both!
+For those unfamiliar with *live-coding* tools, the installation is usually a two-step process:
+
+- **[MANDATORY]** install/configuration of the library + text editor.
+
+- **[RECOMMENDED]** install/configuration of the backend, the audio synthesis engine.
 
 !!! warning "Installing from Pypi or from a package manager"
-    Installation of **Sardine**  using Pypi is not yet available. Of course, **Sardine** will be added when it will be ready for everyone to use! The first planned milestone is the **0.1** version that should be released later this year (2022). Until then, you should install it manually!
+    Installation of **Sardine**  using Pypi is not yet available. Of course, **Sardine** will be added when it will be ready for everyone to use! The first planned milestone is the **0.1** version that should be released later this year (2022). Until then, you should install it manually! The first released version will greatly simplify the installation process.
 
-This page will help you to install Sardine and to configure it to your liking! You can skip some sections if you want to opt out of a specific feature! You can always come back later and install the missing bits.
-
-## Install
-### Python Package
+## Library
 
 !!! warning "For Windows Users only"
     **Sardine** is particularly tricky to install for users running Windows. This is due to the fact that **Sardine** depends on `rtmidi` (no wheels for Python 3.10) and `link` (relies on `pybind11`). These packages are bindings for existing C++ code used extensively for important chunks of the application. Without the proper development related tools, you might not be able to install **Sardine**. Please make sure that you install the following before proceeding with the installation:
 
-    - [MSVC Build Tools](https://visualstudio.microsoft.com/fr/downloads/?q=build+tools) (*Microsoft Visual Studio Code Build Tools*)
+    - [MSVC Build Tools](https://visualstudio.microsoft.com/fr/downloads/?q=build+tools) (*Microsoft Visual Studio Code Build Tools*).
 
     - [CMake](https://cmake.org/): a tool used to build, test and configure softwares.
 
-    Adding to this, make sure that **you add Poetry to your PATH**. Follow [this official guide](https://docs.microsoft.com/en-us/previous-versions/office/developer/sharepoint-2010/ee537574(v=office.14)) teaching you how to do so. Here are some other tips I gathered while helping people install **Sardine**:
-
-    - For the entirety of the installation process, please make sure that you run your command prompt **as an administrator**.
-
-    - `python` might be named `py` on your system. Replace `python` by `py` in the submentioned commands.
+**Sardine** can be installed like any other **Python** package using `pip`, the official package manager.
 
 
-**Sardine** is packaged using [Poetry](https://python-poetry.org/), a new Python packaging tool that helps fetching the dependencies in the right order and that bundles everything nicely in a virtual environment. That way, your basic Python system stays clean, Sardine staying confined where it should be, in a can!
+!!! note "Installing and updating a snake"
+    1) Install [Python](https://www.python.org/) for your operating system (>=3.10). **Update if needed**!
 
-!!! note "First steps"
-    1) Install [Python](https://www.python.org/) for your operating system (>=3.9).
+    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10.
 
-    1b) Update Python if needed! **Sardine** requires a very recent Python version.
+Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** installation (can be `python`, `python3`, `python3.10` depending on the system you are currently using)..
 
-    2) Install [Poetry](https://python-poetry.org/docs/) for your operating system.
-
-You will now have to download and install **Sardine** itself:
+You can now safely proceed to download and install **Sardine**:
 
 !!! note "Fishing a Sardine"
 
@@ -43,18 +44,60 @@ You will now have to download and install **Sardine** itself:
 
     - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`'). 
     
-    2) Using a `shell` or `cmd` (in admin-mode), run `poetry install` in the `sardine` folder.
+    2) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e` in the `sardine` folder.
 
-This last command will take quite some time. `Poetry` will install all the needed parts and package them properly. Wait until the end of the process. To test if **Sardine** is installed correctly, execute the following commands:
+    - If you are using Linux or MacOS, use `sudo` to install with the highest priviledges. This is usually not recommended but it can help with the installation of other **Sardine** components.
 
-```python
-poetry shell
-python -m fishery # python3 on some Linux/MacOS Python distributions
+This command can take quite some time depending on your internet connexion, your computer specifications, etc... It will install **Sardine** as well as all the packages and libraries needed to get it running. This is likely the step where you will start noticing crashes, errors and sometimes some truly cryptic messages. Please watch carefully, and do not let an error pass without notice. This might result in a broken / uncomplete installation of **Sardine**.
+
+Wait until the end of the process. To test if **Sardine** is installed properly, execute the following commands in your terminal:
+```python3
+python3 -m asyncio
+from sardine import *
 ```
 
-You should now see a big bright `SARDINE` written in red on your screen. Congratulations! This is the indication that **Sardine** was able to boot correctly!
+You should now see a big bright `SARDINE` written on your screen. Congratulations! This is the indication that **Sardine** was able to start!
 
-You should now think about installing a code editor for your future Sardine sessions. Pick the one you prefer from the following lists:
+## Audio engine
+
+### Installation
+
+!!! note "Installing SuperCollider and SuperDirt"
+    - Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt**. It is usually a three step process:
+        * install [SuperCollider](https://supercollider.github.io/).
+        * run `Quarks.install("SuperDirt")` in the SCIDE window.
+        * run `SuperDirt.start` to start the engine.
+
+
+**SuperDirt** is the *optional* but very much recommended synthesis engine for **Sardine**. As a matter of fact, **Sardine** was initially built as an alternative client for **SuperDirt**. It is a well-known freen and open source piece of software used by live coders. **SuperDirt** is mostly developed by Julian Rohrhuber, and intended to be used initially for [TidalCycles](https://tidalcycles.org/), a truly great live coding library. It is meant to be used via a simple message-based syntax converted into SuperDirt instructions that can trigger samples, synthesizers and do many other things, taking care of the finicky details. Note that it also means that your **Sardine** configuration will be valid and portable to **TidalCycles** alternatively.
+
+### Configuration
+
+**Sardine** is perfectly capable of booting both **SuperCollider** and **SuperDirt** by itself. However, this mechanism is disabled by default because I can't assume that you will have it installed and configured properly! You can turn on the *SuperDirt autoboot* feature by tweaking the configuration:
+
+```shell
+sardine-config --boot_superdirt True
+```
+
+For a first ride, please also turn on the `verbose` option that will help you monitor the output of **SuperCollider** directly from the same console:
+
+```shell
+sardine-config --verbose_superdirt True
+```
+
+It will help you to track if any mistake arise from the **SuperCollider** side (usually an audio mismatch between your input audio sampling frequency and your output audio sampling frequency). **Do remember to shut off this option later on!** It can be pretty invasive in your workspace. 
+
+### Word of Caution
+
+!!! warning "About the autoboot feature"
+    **Sardine** will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your `$PATH`. Everything should run just fine if you install it in the default folder for your platform. On some specific systems, you might need to locate the `sclang` executable and to add it to `$PATH`.
+
+The autoboot feature can cause trouble among newcomers and unexperienced live-coders. There is a bazillion ways **SuperCollider** and **SuperDirt** can refuse to boot, crash or cease to function all of the sudden. Consult the troubleshot page for more information about frequent issues. I recommend to boot **SuperCollider** and **Sardine** separately for new users so that they can keep an eye on both sides. To do so, turn off the autoboot feature and start **Sardine** and **SuperCollider** separately, each in their own window. Type `SuperDirt.start` to start the latter manually from the SuperCollider side. To start anew if any error arise, type `Server.killAll` to restart **SuperCollider** to a blank slate.
+ 
+
+## Code Editor
+
+Pick the editor you prefer from the following list. All of them have been tested with Sardine! It's only a matter of preference.
 
 !!! note "List of Sardine compatible text editors"
     - [VSCode](https://code.visualstudio.com/): great for everyone, from newcomers to exprienced users.
@@ -64,51 +107,31 @@ You should now think about installing a code editor for your future Sardine sess
     - [Jupyter Notebook](https://jupyter.org/): A data-science oriented tool that can support **Sardine**.
 
 
-!!! important
-    **NOTE** : *All these editors have been tested!*
+Working and making music with **Sardine** is usually done following the same method for all editors:
 
-Check out the configuration page to learn more about configuring a specific editor for **Sardine**. 
+- 1) Opening a new blank `.py` file (no need to save).
 
-### SuperCollider and SuperDirt
+- 2) Launching a terminal in the same coding environment
 
-**SuperDirt** is the *optional* sound engine recommended for **Sardine**. As a matter of fact, **Sardine** was initially built as an alternative client for **SuperDirt**. It is a well-known audio engine used by live coders, developed by Julian Rohrhuber for [TidalCycles](https://tidalcycles.org/). It is meant to be used via a simple message-based syntax converted into SuperDirt instructions that can trigger samples, synthesizers and do many other things, taking care of the finicky details. I'm not the author of **SuperDirt**, I will let the authors themselves speak for their tool:
+- 3) Sending lines of code from the code buffer to the terminal buffer.
 
-!!! note "Installing SuperCollider and SuperDirt"
-    - Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt**. It is usually a three step process:
-        * install [SuperCollider](https://supercollider.github.io/).
-        * run `Quarks.install("SuperDirt")` in the SCIDE window.
-        * run `SuperDirt.start` to start the engine.
+If you already know how to do that for you, great! If you don't, please head to the configuration section where additional help concerning your editor of choice will be written.
 
-**Sardine** is perfectly capable of booting SuperCollider and SuperDirt by itself. However, this mechanism is disabled by default because I can't assume that you will have it installed and configured properly! You can turn on the *SuperDirt autoboot* feature by tweaking the configuration:
+## First swim
 
-```shell
-sardine-config --boot_superdirt True
-```
-
-If you want SuperDirt to be particularly verbose (useful for debugging), turn on the `stdout` optional output:
-
-```shell
-sardine-config --verbose_superdirt True
-```
-
-!!! warning "About the autoboot feature"
-    **Sardine** will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your `$PATH`. Everything should run just fine if you install it in the default folder for your platform. On some specific systems, you might need to locate the `sclang` executable and to add it to `$PATH`.
-
-The autoboot feature can cause trouble among newcomers and unexperienced live-coders. There is a bazillion ways **SuperCollider** and **SuperDirt** can refuse to boot, crash or cease to function all of the sudden. Consult the troubleshot page for more information about frequent issues. I recommend to boot SuperCollider and Sardine separately for new users so that they can keep an eye on both sides.
-
-### First swim
-
-You should now have Sardine (and possibly **SuperDirt**) installed. If you are still in your `poetry shell`, try the following command:
+You should now have **Sardine** (and possibly **SuperDirt**) installed. You can fine-tune your **Sardine** installation by running the configuration client:
 
 ```
 sardine-config
 ```
 
-This is the main configuration tool for **Sardine**. We will come back to it later. If the command is not found or if nothing happens, **Sardine** might not be installed correctly. You might get a message saying that you have no configuration file. Take for a guarantee that **Sardine** is installed! This is perfectly normal. Feel free to email me directly or to open an issue on GitHub documenting your problem.
+This is the main configuration tool for **Sardine**. We will come back to it later. If the command is not found or if nothing happens, **Sardine** might not be installed correctly. Please, worry and review the preceding steps! You might get a message saying that you have no configuration file. Take for a guarantee that **Sardine** is installed! This is perfectly normal. By default, there is no configuration file until it is created the first time you start **Sardine**.
 
 Open a new interactive Sardine session by running `python3 -m fishery`. If everything is alright, some popup messages will be printed and you will be left on a prompt (`>>> `) waiting for your input:
 
 ```shell
+
+
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
 ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
 ╚█████╗░███████║██████╔╝██║░░██║██║██╔██╗██║█████╗░░
@@ -116,44 +139,37 @@ Open a new interactive Sardine session by running `python3 -m fishery`. If every
 ██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
 ╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-Sardine is a MIDI/OSC sequencer made for live-coding.
+Sardine is a MIDI/OSC sequencer made for live-coding
 Play music, read the docs, contribute, and have fun!
 
-[1/3] Configuration folder
-      - /Users/bubo/Library/Application Support/Sardine
-[2/3] Reading configuration file
-      - /Users/bubo/Library/Application Support/Sardine/config.json
-[3/3] Sardine is swimming!
+BPM: 125, BEATS: 4 SC: [X], DEFERRED: [X] MIDI: MIDI Bus 1
+Sardine is booting SCLang && SuperDirt...
 
-Preemptive: Killing all SC instances...
-There was no SC process to kill...
+...
+...
+...
 
-Starting SCLang && SuperDirt
-No user provided configuration file found...
 >>> 
 ```
 
-!!! note "First sound with Sardine"
-    If **SuperDirt** is on, run the following command:
+If you have opted to use the **SuperDirt** audio backend, you can start checking if everything is fine by playing a *clap* or a *kickdrum*: 
 
-    ```python
-    S('cp').out()
-    ```
+```python
+S('cp').out()
+```
 
-    You should hear a clap. You are done!
+If you want to play a note on your MIDI Synth, use this command instead:
 
-!!! note "First MIDI note with Sardine"
-    If **Sardine** is running without any sound engine, run the following command:
-    ```python
-    M().out()
-    ```
+```python
+M().out()
+```
 
-    This should send a middle C MIDI note (C5) to the newly created `Sardine` MIDI port.
+If you hear the clap or the note you were expecting, you are good to go! Have fun!
 
 
-## Things to know
+## Trivia
 
-### Boot methods
+### Alternative boot methods
 
 So far, we've used the fast boot method for **Sardine**:
 
@@ -167,36 +183,3 @@ Note that you can boot **Sardine** manually in a two-step process:
 
 2) `from sardine import **`: import **Sardine** library
 
-
-### Code-editing
-
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it, but you will be pretty limited in what you can do. It is sometimes enough to run quick tests. After a while, you will figure out that working this way is fairly cumbersome and you will likely be searching for a better text editor. **Sardine** code can become quite verbose when dealing with complex *swimming* functions.
-
-As you might have guessed already, there is no `Sardine` plugin for VSCode, Atom or any popular code editor. However, **Sardine** is Python and there are great plugins to deal with interactive code. Here are a few things you can try:
-
-- [Vim](https://github.com/vim/vim) or [Neovim](https://github.com/neovim/neovim) [slime](https://github.com/jpalardy/vim-slime) plugin. This plugin gives you the ability to `pipe` strings from a text buffer to another (from your code to another buffer containing the python interpreter).
-* VSCode with the [Jupyter Notebook](https://jupyter.org/) extension
-    - install VSCode and the Jupyter Notebook plugin. Create a new `.ipynb` notebook.
-    - make sure that you are using the right Python version as your kernel (3.9 / 3.10).
-    - run:
-    ```python
-      import sys;
-      !{sys.executable} -m pip install "/path/to/sardine"
-    ```
-    - restart the kernel and run:
-    ```python
-    import sys
-    sys.path.insert(0, '/path/to/sardine')
-    from sardine import *
-    ```
-* Emacs with the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin.
-
-Any program or editor allowing you to run Python code dynamically can/should work as long as it is modern enough to support the `asyncio` REPL. I don't really want to develop my own code editor because the more mainstream ones offer so many features that it's hard to compete!
-
-### Known bugs and issues
-
-Please provide feedback on the installation process! I try to document it as much as I can but I lack feedback on the installation process on different systems, etc.. You might also have different use cases that I might not have anticipated.
-
-* **[WINDOWS ONLY]**: `uvloop` does not work on Windows. Fortunately, you can still run **Sardine** but don't expect the tempo/BPM to be accurate. You will have to drastically slow down the clock for it to work (~20bpm is a safe value)! This might be linked to a different implementation of `asyncio` on Windows.
-
-* **[LINUX/MACOS]**: `poetry install` fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.

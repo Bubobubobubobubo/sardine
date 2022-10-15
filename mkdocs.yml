@@ -3,11 +3,13 @@ site_url: https://sardine.raphaelforment.fr
 site_author: Raphaël Forment
 nav:
   - Home: index.md
+  - Showcase: showcase.md
   - Install: installation.md
   - Configuration: configuration.md
   - Troubleshot: troubleshot.md
   - Tutorial: tutorial.md
   - Reference: reference.md
+  - Sardinopedia: sardinopedia.md
   - About: about.md
 theme:
   palette:
@@ -24,6 +26,7 @@ theme:
     - navigation.tabs.sticky
     - navigation.sections
   logo: images/sardine_logo_single.svg
+  custom_dir: docs/overrides
 extra:
   generator: false
 plugins:

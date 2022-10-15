@@ -27,9 +27,7 @@ class MIDISender:
     ):
 
         self.clock = clock
-        self._number_parser, self._note_parser = (
-                self.clock.parser,
-                self.clock.parser)
+        self._number_parser, self._note_parser = (self.clock.parser, self.clock.parser)
 
         if midi_client is None:
             self.midi_client = self.clock._midi
@@ -82,9 +80,9 @@ class MIDISender:
             asyncio.create_task(
                 self.midi_client.note(
                     delay=message.get("delay"),
-                    note=message.get("note"),
-                    velocity=message.get("velocity"),
-                    channel=message.get("channel"),
+                    note=int(message.get("note")),
+                    velocity=int(message.get("velocity")),
+                    channel=int(message.get("channel")),
                 )
             )
 
@@ -132,7 +130,7 @@ class MIDISender:
                     return
                 if isinstance(value, (list, str)):
                     if key in ["velocity", "channel", "note"]:
-                        final_message[key] = int(value[i % len(value)])
+                        final_message[key] = int(value[i % len(value)]) % 127
                     else:
                         final_message[key] = float(value[i % len(value)])
 

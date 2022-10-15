@@ -113,6 +113,15 @@ def bd(d=0.5):
 ```
 A simple bassdrum playing every 2 beats.
 
+### Bassdrum fun
+
+```python3
+def bd(d=0.5):
+    S('bd', speed='r*4', legato='r', cutoff='100+(r*4000)').out()
+    again(bd, d=0.25)
+```
+A simple bassdrum but some parameters have been tweaked to be random.
+
 ### Breakbeat
 
 ```python3
@@ -121,6 +130,16 @@ def bd(d=0.5, i=0):
     again(bd, d=0.25, i=i+1)
 ```
 Picking a random sample in a folder containing the amen break. You could have a successful career doing this in front of audiences.
+
+### Sample sequence
+
+```python3
+def bd(d=0.5, i=0):
+    S('bd,hh,sn,hh').out(i)
+    again(bd, d=0.5, i=i+1)
+```
+Your classic four on the floor written on one line.
+
 
 ## Rhythm
 
@@ -161,7 +180,7 @@ def bd(d=0.5, i=0):
 ```
 Building euclidian rhythms by using the `trig` argument. Note that this is not really an euclidian rhythm but it sure does look and feel like it. Trig allows you to skip an event.
 
-### Shifting Sardine Rhythm
+### Shifting rhythm
 
 ```python3
 def bd(d=0.5, i=0):
@@ -172,6 +191,24 @@ def bd(d=0.5, i=0):
 ```
 Pattern the recursion delay to get free rhythms! You can even skip playing with `trig` and just play with the recursion `delay` if you feel like it!
 
-### Pitch
+## Pitch
 
-### Texture
+### Playback speed
+
+```python3
+def hh(d=0.5, i=0):
+    S('hh', speed='{1_8}').out(i)
+    again(hh, d=P('0.5!8, 0.25!4', i), i=i+1)
+```
+Changing the speed of audio playback for a given audio sample. Cheap version of tuning.
+
+### Sample to pitch
+
+```python3
+def hh(d=0.5, i=0):
+    S('hh', midinote='C5!3, E5, G5').out(i)
+    again(hh, d=P('0.5!8, 0.25!4', i), i=i+1)
+```
+Pitching an audio sample relatively to a MIDI note.
+
+## Texture

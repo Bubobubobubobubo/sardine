@@ -114,6 +114,7 @@ Feeding one swimming function with the data of another.
 ### Bassdrum (S)
 
 ```python3
+@swim
 def bd(d=0.5):
     S('bd').out()
     again(bd, d=0.5)
@@ -123,6 +124,7 @@ A simple bassdrum playing every 2 beats.
 ### Bassdrum fun (S)
 
 ```python3
+@swim
 def bd(d=0.5):
     S('bd', speed='r*4', legato='r', cutoff='100+(r*4000)').out()
     again(bd, d=0.25)
@@ -132,6 +134,7 @@ A simple bassdrum but some parameters have been tweaked to be random.
 ### Breakbeat (S)
 
 ```python3
+@swim
 def bd(d=0.5, i=0):
     S('amencutup:r*20').out(i)
     again(bd, d=0.25, i=i+1)
@@ -141,6 +144,7 @@ Picking a random sample in a folder containing the amen break. You could have a 
 ### Sample sequence (S)
 
 ```python3
+@swim
 def bd(d=0.5, i=0):
     S('bd,hh,sn,hh').out(i)
     again(bd, d=0.5, i=i+1)
@@ -150,6 +154,7 @@ Your classic four-on-the-floor written on one line.
 ### Piling up samples (S)
 
 ```python3
+@swim
 def pluck(d=0.5, i=0):
     S('pluck').out(i)
     S('pluck:1').out(i)
@@ -162,6 +167,7 @@ You can stack events without waiting. They will be sent immediately.
 ### MIDI Note (M)
 
 ```python3
+@swim
 def midi(d=0.5, i=0):
     M().out()
     again(midi, d=0.5, i=i+1)
@@ -171,6 +177,7 @@ No argument is enough to send a MIDI Note (60) at full velocity (127) on the fir
 ### MIDI Tune (M)
 
 ```python3
+@swim
 def midi(d=0.5, i=0):
     M(note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
     again(midi, d=0.5, i=i+1)
@@ -180,6 +187,7 @@ Playing a little melody by tweaking the `note` argument.
 ### Full MIDI Tune (M)
 
 ```python3
+@swim
 def midi(d=0.5, i=0):
     M(channel='0,1,2,3',
       velocity='20 + (r*80)',
@@ -191,6 +199,7 @@ The same melody spreaded out on three MIDI channels (one per note) with random v
 ### Other messages (M)
 
 ```python3
+@swim
 def midi(d=0.5, i=0):
     M(channel='0,1,2,3',
       velocity='20 + (r*80)',
@@ -208,6 +217,7 @@ Switching between program `1`, `2`, `3` and `4` on your MIDI Synth. Sending a co
 ### Probability rhythm
 
 ```python3
+@swim
 def bd(d=0.5):
     if often():
         S('bd').out()
@@ -225,6 +235,7 @@ Building rhythms based on chance that an event will happen. Rolling a dice.
 ### Binary rhythm
 
 ```python3
+@swim
 def bd(d=0.5, i=0):
     S('bd', trig=bin(20103)).out(i)
     again(bd, d=0.5, i=i+1)
@@ -234,6 +245,7 @@ Using the binary representation of a number to build a rhythm. You don't need to
 ### Euclidian rhythm
 
 ```python3
+@swim
 def bd(d=0.5, i=0):
     S('bd:r*20', trig=euclid(1,4)).out(i)
     S('hh:r*20', trig=euclid(6,8)).out(i)
@@ -245,6 +257,7 @@ Building euclidian rhythms by using the `trig` argument. Note that this is not r
 ### Shifting rhythm
 
 ```python3
+@swim
 def bd(d=0.5, i=0):
     S('bd:r*20', trig=euclid(1,4)).out(i)
     S('hh:r*20', trig=euclid(6,8)).out(i)
@@ -256,6 +269,7 @@ Pattern the recursion delay to get free rhythms! You can even skip playing with 
 ### Imperative rhythm
 
 ```python3
+@swim
 def zoom(d=0.5, i=0):
     S('bd:r*20').out(i)
     sleep(0.25)
@@ -272,6 +286,7 @@ Create rhythm using the `sleep()` function. Fully compatible with everything els
 ### Playback speed
 
 ```python3
+@swim
 def hh(d=0.5, i=0):
     S('hh', speed='{1_8}').out(i)
     again(hh, d=0.5, i=i+1)
@@ -281,6 +296,7 @@ Changing the speed of audio playback for a given audio sample. Cheap version of 
 ### Sample to pitch
 
 ```python3
+@swim
 def hh(d=0.5, i=0):
     S('hh', midinote='C5!3, E5, G5').out(i)
     again(hh, d=0.5, i=i+1)
@@ -290,6 +306,7 @@ Pitching an audio sample relatively to a MIDI note.
 ### Sample to freq
 
 ```python3
+@swim
 def hh(d=0.5, i=0):
     S('hh', freq='100 + (r*2000)').out(i)
     again(hh, d=0.5, i=i+1)
@@ -299,11 +316,12 @@ Pitching an audio sample relatively to a given frequency (in `hertz`).
 ## Texture and effects
 
 
-## Patterning
+## Patterning basics
 
 ### Patterning freely (P)
 
 ```python3
+@swim
 def free(d=0.5, i=0):
     # Look at P
     print(P('1,2,3,4', i))
@@ -314,6 +332,7 @@ def free(d=0.5, i=0):
 ### Patterning in Senders (P)
 
 ```python3
+@swim
 def boom(d=0.5, i=0):
     S('bd', 
         cutoff='r*2000',
@@ -325,6 +344,7 @@ Sender objects are automatically turning string arguments into patterns. Feed th
 ### Patterning using both methods (P)
 
 ```python3
+@swim
 def boom(d=0.5, i=0):
     S('bd', 
         cutoff=P('r*2000', i),
@@ -336,6 +356,7 @@ The result of this *swimming function* is strictly similar to the one directly a
 ### See me change (P)
 
 ```python3
+@swim
 def boom(d=0.5, i=0):
     S('bd', 
         cutoff=P('r*2000', i),
@@ -347,6 +368,7 @@ Playing around with the basic `i` iterator structure.
 ### Index madness (P)
 
 ```python3
+@swim
 def boom(d=0.5, i=0):
     S('bd', 
         cutoff=P('r*2000, 500, 1000', i%2),
@@ -354,4 +376,115 @@ def boom(d=0.5, i=0):
     again(boom, d=0.5, i=i+1)
 ```
 You can be creative with pattern indexes and get random sequences, drunk walks, reversed sequences, etc... Be sure to always have a few different iterators close by to morph your sequences really fast.
+
+## Pattern syntax
+
+This section is very likely to change in upcoming versions.
+
+### Numbers
+
+```python3
+@swim
+def number(d=0.5, i=0):
+    print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))')).out(i)
+    again(number, d=0.5, i=i+1)
+```
+You can write numbers and use common operators such as addition, substraction, division, multiplication, modulo, etc... You can be specific about priority by using parenthesis.
+
+### Time tokens
+
+```python3
+@swim
+def number(d=0.5, i=0):
+    print(P('$, r, m, p')).out(i)
+    again(number, d=0.5, i=i+1)
+```
+Some number tokens are time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time. 
+
+- `$`: tick, the tick number since the clock started.
+- `r`: random, between `0` and `1`.
+- `p`: phase, a number between `0` and your `c.ppqn`.
+- `m`: measure, the measure since the clock started.
+
+```python3
+@swim
+def number(d=0.5, i=0):
+    print(P('r, m, p')).out(i)
+    again(number, d=0.5, i=i+1)
+```
+
+Some number tokens are time dependant, but will refer to absolute time. They are mostly used for long-running sequences and/or for introduction a random factor in your computation. You will notice that they are prefixed by `$`.
+```python3
+@swim
+def random(d=0.5, i=0):
+    print(P('$.Y, $.M, $.D, $.H, $.m, $.S, $.µ', i))
+    again(random, d=0.5, i=i+1)
+```
+
+- `$.Y`: year, the current year.
+- `$.M`: month, the current month.
+- `$.D`: day, the current day.
+- `$.H`: hour, the current hour.
+- `$.m`: minute, the current minute.
+- `$.S`: second, the current second.
+- `$.µ`: microsecond, the current microsecond.
+
+### Timed maths
+
+```python3
+@swim
+def random(d=0.5, i=0):
+    S('cp', speed='$%20').out(i)
+    again(random, d=0.5, i=i+1)
+```
+Timed tokens make good low frequency oscillators or random values for generating interesting patterns. Playing with time tokens is a great way to get generative results out of a predictible sequence.
+
+### Notes
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='C5,D5,E5,F5,G5').out(i)
+    again(notes, d=0.5, i=i+1)
+```
+You can write notes in patterns. Notes will be converted to some MIDI value used by **SuperDirt**. It means that notes are numbers too and that you can do math on them if you wish to. The syntax to write notes is the following. The steps 2 and 3 can be omitted:
+
+- 1) capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`
+- 2) flat or sharp: `#`, `b` 
+- 3) octave number: `0`..`9` 
+
+### Note qualifiers
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='C5->penta').out(i)
+    again(notes, d=0.5, i=i+1)
+```
+Use the `print_scales()` function to print out the list of possible scales, chords and structures you can play with. You can use the `->` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C->penta` will raise a major pentatonic scale based on middle C.
+
+### Note modifiers
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='C5->penta.disco.braid').out(i)
+    again(notes, d=0.5, i=i+1)
+```
+Some modifiers are available to fine-tune your note collections. There is currently no way to print out the list of `modifiers`. You will have to deep-dive in the source code to find them.
+
+### Note maths
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='C5+0|4|8->penta.disco.braid').out(i)
+    again(notes, d=0.5, i=i+1)
+```
+You can use arithmetic operators on notes.
+
+### Names
+### Choice 
+### Range
+### Ramps
 

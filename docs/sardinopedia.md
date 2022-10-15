@@ -484,7 +484,58 @@ def notes(d=0.5, i=0):
 You can use arithmetic operators on notes.
 
 ### Names
+
+```python3
+@swim
+def names(d=0.5, i=0):
+    S('bd, pluck, bd, pluck:2+4').out(i)
+    again(names, d=0.5, i=i+1)
+```
+You are using name patterns since you first started! You can also pattern names. The whole pattern syntax works just the same.
+
+### Addresses
+
 ### Choice 
-### Range
+
+```python3
+@swim
+def choosing_stuff(d=0.5, i=0):
+    S('bd|pluck', speed='1|2').out(i)
+    again(choosing_stuff, d=0.5, i=i+1)
+```
+The pipe operator `|` can be used to make a 50/50% choice between two tokens. You can also chain them: `1|2|3|4`.
+
+### Ranges
+
+```python3
+@swim
+def ranges(d=0.5, i=0):
+    S('pluck|jvbass', speed='1:5').out(i)
+    again(ranges, d=0.5, i=i+1)
+```
+If you want to generate a number in the range `x` to `y` included, you can use the `:` operator.
+
 ### Ramps
+
+```python3
+@swim
+def ramps(d=0.5, i=0):
+    S('amencutup:{0_10}', 
+        room='{0_1(0.1)}',
+        cutoff='{1_10}*100').out(i)
+    again(ramps, d=0.5, i=i+1)
+```
+
+You can generate ramps using the `{1_10}` syntax. This will generate the following list: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. You can also generate a ramp with a floating point range by specifying it in-between parentheses: `{1_10(10)}`.
+
+### Repeat
+
+```python3
+@swim
+def repeat_stuff(d=0.5, i=0):
+    S('pluck|jvbass', speed='1:2', midinote='C4!4, E4!3, E5, G4!4').out(i)
+    again(repeat_stuff, d=0.5, i=i+1)
+```
+The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed elsewhere.
+
 

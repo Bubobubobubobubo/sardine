@@ -86,6 +86,13 @@ sardine-config --verbose_superdirt True
 
 It will help you to track if any mistake arise from the **SuperCollider** side (usually an audio mismatch between your input audio sampling frequency and your output audio sampling frequency). **Do remember to shut off this option later on!** It can be pretty invasive in your workspace. 
 
+If the `sardine-config` utility tool is missing, try reinstalling **Sardine** in admnistrator mode (`sudo` on Unix systems). If Python returns a message such as:
+```shell
+"WARNING: The scripts sardine-config, sardine-config-python and sardine-config-superdirt are installed in '/opt/local/Library/Frameworks/Python.framework/Versions/3.10/bin' which is not on PATH."
+```
+
+Please add the given location on your `PATH`.
+
 ### Word of Caution
 
 !!! warning "About the autoboot feature"

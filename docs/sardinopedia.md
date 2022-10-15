@@ -18,6 +18,13 @@ The Sardinopedia is a growing collection of interesting **Sardine** patterns. Pa
 
 This section will help you to grow more confident with *swimming functions*. They must dance before your eyes like a group of sardines swimming in the ocean. They are not really elegant Python code. It's better to be acustomed to using them before attempting to play live.
 
+### Out-of-time
+
+```python3
+S('bd').out()
+```
+You can use the Sender objects outside of every function. It will work, but you will be un-timed or out-of-time. This technique can be used to trigger long samples, FXs, etc... It can also be used to change (non-periodcally) some values on your MIDI synthesizers or OSC receivers.
+
 ### Swimming
 
 ```python3
@@ -102,9 +109,9 @@ def second(d=0.5, rng=0):
 ```
 Feeding one swimming function with the data of another.
 
-## Sound (SuperDirt)
+## Senders
 
-### Bassdrum
+### Bassdrum (S)
 
 ```python3
 def bd(d=0.5):
@@ -113,7 +120,7 @@ def bd(d=0.5):
 ```
 A simple bassdrum playing every 2 beats.
 
-### Bassdrum fun
+### Bassdrum fun (S)
 
 ```python3
 def bd(d=0.5):
@@ -122,7 +129,7 @@ def bd(d=0.5):
 ```
 A simple bassdrum but some parameters have been tweaked to be random.
 
-### Breakbeat
+### Breakbeat (S)
 
 ```python3
 def bd(d=0.5, i=0):
@@ -131,19 +138,61 @@ def bd(d=0.5, i=0):
 ```
 Picking a random sample in a folder containing the amen break. You could have a successful career doing this in front of audiences.
 
-### Sample sequence
+### Sample sequence (S)
 
 ```python3
 def bd(d=0.5, i=0):
     S('bd,hh,sn,hh').out(i)
     again(bd, d=0.5, i=i+1)
 ```
-Your classic four on the floor written on one line.
+Your classic four-on-the-floor written on one line.
+
+### Piling up samples (S)
+
+```python3
+def pluck(d=0.5, i=0):
+    S('pluck').out(i)
+    S('pluck:1').out(i)
+    S('pluck:2').out(i)
+    S('pluck:3').out(i)
+    again(pluck, d=0.5, i=i+1)
+```
+You can stack events without waiting. They will be sent immediately.
+
+### MIDI Note (M)
+
+```python3
+def midi(d=0.5, i=0):
+    M().out()
+    again(midi, d=0.5, i=i+1)
+```
+No argument is enough to send a MIDI Note (60) at full velocity (127) on the first default MIDI channel. Arguments are only used to specify further or to override default values.
+
+### MIDI Tune (M)
+
+```python3
+def midi(d=0.5, i=0):
+    M(note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
+    again(midi, d=0.5, i=i+1)
+```
+Playing a little melody by tweaking the `note` argument.
+
+### Full MIDI Tune (M)
+
+```python3
+def midi(d=0.5, i=0):
+    M(channel='0,1,2,3',
+      velocity='20 + (r*80)',
+      note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
+    again(midi, d=0.5, i=i+1)
+```
+The same melody spreaded out on three MIDI channels (one per note) with random velocity.
+
 
 
 ## Rhythm
 
-### Probability rhythms
+### Probability rhythm
 
 ```python3
 def bd(d=0.5):
@@ -169,7 +218,7 @@ def bd(d=0.5, i=0):
 ```
 Using the binary representation of a number to build a rhythm. You don't need to know what the representation is to get an interesting rhythm out of it.
 
-### Euclidian rhythms
+### Euclidian rhythm
 
 ```python3
 def bd(d=0.5, i=0):
@@ -190,6 +239,20 @@ def bd(d=0.5, i=0):
     again(bd, d=P('0.5!8, 0.25!4', i), i=i+1)
 ```
 Pattern the recursion delay to get free rhythms! You can even skip playing with `trig` and just play with the recursion `delay` if you feel like it!
+
+### Imperative rhythm
+
+```python3
+def zoom(d=0.5, i=0):
+    S('bd:r*20').out(i)
+    sleep(0.25)
+    S('hh:r*20', trig=euclid(6,8)).out(i)
+    sleep(0.125)
+    S('sd:r*20', trig=euclid(2,4)).out(i)
+    again(zoom, d=0.5, i=i+1)
+```
+Create rhythm using the `sleep()` function. Fully compatible with everything else! It is usually a good idea to use `sleep()` after having composed something complex to slice time even more.
+
 
 ## Pitch
 

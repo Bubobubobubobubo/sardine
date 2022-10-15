@@ -22,7 +22,31 @@ You can use `Sardine` directly from the Python interpreter. There is nothing wro
 
 ### VSCode
 
-[VSCode](https://code.visualstudio.com/) is a powerful and all-devouring code editor developed by Microsoft. It is the most widely spread code editor out there, with millions of users. **VSCode** is more than capable of handling **Sardine** sessions, and there might be more than one way to do it. I will present you one way of doing it, using the [Jupyter](https://jupyter.org) extension.
+[VSCode](https://code.visualstudio.com/) is a powerful and all-devouring code editor developed by Microsoft. It is the most widely spread code editor out there, with millions of users. **VSCode** is more than capable of handling **Sardine** sessions and there are multiple ways to configure everything for **Sardine**.
+
+#### Native Python terminal (recommended)
+
+- 1) install the `Python` support for VSCode (usually proposed whenever you open a Python file).
+- 2) open the configuration menu and search for `Python launch args`. Click on `Modify in settings.json`
+- 3) write the following:
+```json
+    "python.terminal.launchArgs": [
+        "-m",
+        "asyncio"
+    ],
+```
+- 4) You are done!
+
+To start a new **Sardine** session, open any `.py` file and type:
+```python3
+from sardine import *
+```
+
+Press `Shift+Enter` and wait for the new Python terminal to show up. You can now start typing **Sardine** code, you are good to go! 
+
+#### Jupyter Notebook
+
+and there might be more than one way to do it. I will present you one way of doing it, using the [Jupyter](https://jupyter.org) extension.
 
 - install **VSCode** and the **Jupyter Notebook** plugin. To do so, open the Extensions pane on the left (it looks like crates) and search for the extension name. Click install and wait a moment.
 - Create a new `.ipynb` notebook either by yourself or by using the plugin-backed command.

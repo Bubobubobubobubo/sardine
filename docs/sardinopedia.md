@@ -35,7 +35,7 @@ def basic():
 
 hush(basic)
 ```
-The most basic function you can write.
+The most basic function you can write. This is the skeleton of a *swimming function*. You will encounter it everytime you play with **Sardine**.
 
 ### Swimming with style
 
@@ -47,7 +47,7 @@ def basic(d=0.5, i=0):
 
 hush(basic)
 ```
-The most common function. A function with a duration and an iterator passed as argument.
+The most common function. A function with a duration and an iterator passed as argument. This is the one you should save as a snippet somewhere in your text editor.
 
 
 ### Drowning in numbers
@@ -188,6 +188,19 @@ def midi(d=0.5, i=0):
 ```
 The same melody spreaded out on three MIDI channels (one per note) with random velocity.
 
+### Other messages (M)
+
+```python3
+def midi(d=0.5, i=0):
+    M(channel='0,1,2,3',
+      velocity='20 + (r*80)',
+      note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
+    pgch(P('1,2,3,4', i)) # switching
+    cc(channel=0, control=20, value=50) # control
+    again(midi, d=0.5, i=i+1)
+```
+Switching between program `1`, `2`, `3` and `4` on your MIDI Synth. Sending a control change on channel `0`, number `20` for a value of `50`.
+
 
 
 ## Rhythm
@@ -261,7 +274,7 @@ Create rhythm using the `sleep()` function. Fully compatible with everything els
 ```python3
 def hh(d=0.5, i=0):
     S('hh', speed='{1_8}').out(i)
-    again(hh, d=P('0.5!8, 0.25!4', i), i=i+1)
+    again(hh, d=0.5, i=i+1)
 ```
 Changing the speed of audio playback for a given audio sample. Cheap version of tuning.
 
@@ -270,8 +283,75 @@ Changing the speed of audio playback for a given audio sample. Cheap version of 
 ```python3
 def hh(d=0.5, i=0):
     S('hh', midinote='C5!3, E5, G5').out(i)
-    again(hh, d=P('0.5!8, 0.25!4', i), i=i+1)
+    again(hh, d=0.5, i=i+1)
 ```
 Pitching an audio sample relatively to a MIDI note.
 
-## Texture
+### Sample to freq
+
+```python3
+def hh(d=0.5, i=0):
+    S('hh', freq='100 + (r*2000)').out(i)
+    again(hh, d=0.5, i=i+1)
+```
+Pitching an audio sample relatively to a given frequency (in `hertz`).
+
+## Texture and effects
+
+
+## Patterning
+
+### Patterning freely (P)
+
+```python3
+def free(d=0.5, i=0):
+    # Look at P
+    print(P('1,2,3,4', i))
+    again(free, d=0.5, i=i+1)
+```
+`P()` is an interface to the patterning system. Write a pattern between quotation marks (`''` or `""`) and get something back. You will need to feed the pattern system a value to extract an index (`i`).
+
+### Patterning in Senders (P)
+
+```python3
+def boom(d=0.5, i=0):
+    S('bd', 
+        cutoff='r*2000',
+        speed='1,2,3,4').out(i)
+    again(boom, d=0.5, i=i+1)
+```
+Sender objects are automatically turning string arguments into patterns. Feed the index value to the `.out()` method.
+
+### Patterning using both methods (P)
+
+```python3
+def boom(d=0.5, i=0):
+    S('bd', 
+        cutoff=P('r*2000', i),
+        speed='1,2,3,4').out(i)
+    again(boom, d=0.5, i=i+1)
+```
+The result of this *swimming function* is strictly similar to the one directly above. Notice the difference in coding style, with the usage of `P()`.
+
+### See me change (P)
+
+```python3
+def boom(d=0.5, i=0):
+    S('bd', 
+        cutoff=P('r*2000', i),
+        speed='1,2,3,4').out(i)
+    again(boom, d=0.5, i=i+1 if random() > 0.5 else -1)
+```
+Playing around with the basic `i` iterator structure.
+
+### Index madness (P)
+
+```python3
+def boom(d=0.5, i=0):
+    S('bd', 
+        cutoff=P('r*2000, 500, 1000', i%2),
+        speed='1,2,3,4').out(randint(1,4))
+    again(boom, d=0.5, i=i+1)
+```
+You can be creative with pattern indexes and get random sequences, drunk walks, reversed sequences, etc... Be sure to always have a few different iterators close by to morph your sequences really fast.
+

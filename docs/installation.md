@@ -3,7 +3,6 @@ hide:
     - navigation
 ---
 
-
 # Installation
 
 **Sardine** is still experimental software and it has not yet been fully packaged. You can be up and running in minutes if everything is going fine but depending on your proficiency level with programming tools, you might have to spend some extra time configuring everything up for the first time. Most of the setup process is straightforward, only some extra details need to be taken care of in some cases that will be detailed along the way.
@@ -44,7 +43,7 @@ You can now safely proceed to download and install **Sardine**:
 
     - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`'). 
     
-    2) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e` in the `sardine` folder.
+    2) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e .` in the `sardine` folder. Be careful, there is a dot at the end of the command!
 
     - If you are using Linux or MacOS, use `sudo` to install with the highest priviledges. This is usually not recommended but it can help with the installation of other **Sardine** components.
 

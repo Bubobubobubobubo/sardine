@@ -32,6 +32,7 @@ from .io import Client as OSC
 from .io import OSCSender, MIDISender
 
 from .sequences import ListParser
+from .sequences.Iterators import Iterator
 from .sequences.LexerParser.Qualifiers import qualifiers
 from typing import Union
 from .sequences import *
@@ -242,7 +243,10 @@ def parser(pattern: str):
 
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(clock=c, parser_type=parser_type)
+    parser = ListParser(
+            clock=c, 
+            iterators=c.iterators,
+            parser_type=parser_type)
     try:
         while True:
             p = parser._parse_debug(pattern=input("> "))
@@ -309,3 +313,5 @@ class Pile:
     def out(self, iterator, height):
         for i in range(iterator, iterator + height):
             self._pat.out(i)
+
+i = c.iterators

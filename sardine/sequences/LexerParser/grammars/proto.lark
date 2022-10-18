@@ -29,20 +29,24 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | product _REPEAT atom            -> extend
      | product _REPEAT2 atom           -> extend_repeat
 
-?atom: NUMBER                          -> number
-     | _NEG atom                       -> negation
-     | _TIME                           -> get_time
-     | _MEASURE                        -> get_measure
-     | _PHASE                          -> get_phase
-     | _UNIXTIME                       -> get_unix_time
-     | _RANDOM                         -> get_random_number
-     | _TIME _DOT "Y"                  -> get_year
-     | _TIME _DOT "M"                  -> get_month
-     | _TIME _DOT "D"                  -> get_day
-     | _TIME _DOT "H"                  -> get_hour
-     | _TIME _DOT "m"                  -> get_minute
-     | _TIME _DOT "S"                  -> get_second
-     | _TIME _DOT "µ"                  -> get_microsecond
+?atom: NUMBER                                              -> number
+     | _NEG atom                                           -> negation
+     | _TIME                                               -> get_time
+     | _MEASURE                                            -> get_measure
+     | _PHASE                                              -> get_phase
+     | _UNIXTIME                                           -> get_unix_time
+     | _RANDOM                                             -> get_random_number
+     | _ITER _DOT LETTER                                   -> get_iterator
+     | _ITER _DOT LETTER _EQUAL sum                        -> set_iterator
+     | _ITER _DOT LETTER _EQUAL _LBRA sum _COMMA sum _RBRA -> set_iterator_step
+     | _ITER _DOT LETTER _DOT "reset"                      -> reset_iterator
+     | _TIME _DOT "Y"                                      -> get_year
+     | _TIME _DOT "M"                                      -> get_month
+     | _TIME _DOT "D"                                      -> get_day
+     | _TIME _DOT "H"                                      -> get_hour
+     | _TIME _DOT "m"                                      -> get_minute
+     | _TIME _DOT "S"                                      -> get_second
+     | _TIME _DOT "µ"                                      -> get_microsecond
      | _LPAR sum _RPAR
      | _CLBRA sum _US sum _CRBRA                  -> generate_ramp
      | _CLBRA sum _US sum _LPAR sum _RPAR _CRBRA  -> generate_ramp_with_range
@@ -138,6 +142,7 @@ _SHARP: "#"
 _COS: "c"
 _SIN: "s"
 _TAN: "t"
+_ITER: "i"
 
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT

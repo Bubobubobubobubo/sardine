@@ -13,6 +13,10 @@ The Sardinopedia is a growing collection of interesting **Sardine** patterns. Pa
 
 - **they are odd**: they show something odd, unexpected, funny, etc...
 
+## Demonstration patterns
+
+These patterns are small songs and/or long patterns that you can copy and paste to familiarise yourself with the syntax. Change some values, comment a few lines here and there. Try to learn how to move and alter **Sardine** code.
+
 
 ## Basic (Swimming lessons)
 

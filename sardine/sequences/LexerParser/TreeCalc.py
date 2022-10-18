@@ -12,9 +12,10 @@ import random
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock):
+    def __init__(self, clock, iterators):
         super().__init__()
         self.clock = clock
+        self.iterators = iterators
         self.memory = {}
 
     def number(self, number):
@@ -25,6 +26,29 @@ class CalculateTree(Transformer):
 
     def return_pattern(self, *args):
         return list(args)
+
+    # ---------------------------------------------------------------------- #
+    # Iterators: methods concerning iterators 
+    # ---------------------------------------------------------------------- #
+
+    def get_iterator(self, letter):
+        letter=str(letter)
+        return getattr(self.iterators, letter)
+
+    def reset_iterator(self, letter):
+        letter=str(letter)
+        self.iterators.reset(letter)
+        return getattr(self.iterators, letter)
+
+    def set_iterator(self, letter, number):
+        letter, number = str(letter), int(number)
+        setattr(self.iterators, letter, number)
+        return getattr(self.iterators, letter)
+
+    def set_iterator_step(self, letter, number, step):
+        letter, number, step = str(letter), int(number), int(step)
+        setattr(self.iterators, letter, [number, step])
+        return getattr(self.iterators, letter)
 
     # ---------------------------------------------------------------------- #
     # Lists: methods concerning lists
@@ -954,7 +978,7 @@ class CalculateTree(Transformer):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return left / right
         elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x / y for x, y in zip(cycle(right), left)]
+            return [y / x for x, y in zip(cycle(right), left)]
         if isinstance(left, (int, float)) and isinstance(right, list):
             return [x / left for x in right]
         elif isinstance(left, list) and isinstance(right, (float, int)):

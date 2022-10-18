@@ -29,6 +29,7 @@ from .io import Client as OSC
 from .io import OSCSender, MIDISender
 
 from .sequences import ListParser
+from .sequences.Iterators import Iterator
 from .sequences.LexerParser.Qualifiers import qualifiers
 from typing import Union
 from .sequences import *
@@ -239,7 +240,10 @@ def parser(pattern: str):
 
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(clock=c, parser_type=parser_type)
+    parser = ListParser(
+            clock=c, 
+            iterators=c.iterators,
+            parser_type=parser_type)
     try:
         while True:
             p = parser._parse_debug(pattern=input("> "))
@@ -266,69 +270,11 @@ def Pat(pattern: str, i: int = 0):
     result = parser.parse(pattern)
     return result[i % len(result)]
 
-
 P = Pat
-
-tx7_params = {
-    "Algorithme": lambda x: sysex([67, 16, 1, 6, x]),
-    "Feedback": lambda x: sysex([67, 16, 1, 7, x]),
-    # FreqCourse
-    "FreqCourseOp1": lambda x: sysex([67, 16, 0, 128, int(x) % 256]),
-    "FreqCourseOp2": lambda x: sysex([67, 16, 0, 102, int(x) % 256]),
-    "FreqCourseOp3": lambda x: sysex([67, 16, 0, 60, int(x) % 256]),
-    "FreqCourseOp4": lambda x: sysex([67, 16, 0, 60, int(x) % 256]),
-    "FreqCourseOp5": lambda x: sysex([67, 16, 0, 39, int(x) % 256]),
-    "FreqCourseOp6": lambda x: sysex([67, 16, 0, 18, int(x) % 256]),
-    # FreqFine
-    "FreqFineOp1": lambda x: sysex([67, 16, 0, 124, int(x) % 256]),
-    "FreqFineOp2": lambda x: sysex([67, 16, 0, 103, int(x) % 256]),
-    "FreqFineOp3": lambda x: sysex([67, 16, 0, 82, int(x) % 256]),
-    "FreqFineOp4": lambda x: sysex([67, 16, 0, 61, int(x) % 256]),
-    "FreqFineOp5": lambda x: sysex([67, 16, 0, 40, int(x) % 256]),
-    "FreqFineOp6": lambda x: sysex([67, 16, 0, 19, int(x) % 256]),
-    # Detune
-    "DetuneOp1": lambda x: sysex([67, 16, 0, 125, int(x) % 256]),
-    "DetuneOp2": lambda x: sysex([67, 16, 0, 104, int(x) % 256]),
-    "DetuneOp3": lambda x: sysex([67, 16, 0, 83, int(x) % 256]),
-    "DetuneOp4": lambda x: sysex([67, 16, 0, 62, int(x) % 256]),
-    "DetuneOp5": lambda x: sysex([67, 16, 0, 41, int(x) % 256]),
-    "DetuneOp6": lambda x: sysex([67, 16, 0, 20, int(x) % 256]),
-    # Level
-    "LevelOp1": lambda x: sysex([67, 16, 0, 121, int(x) % 256]),
-    "LevelOp2": lambda x: sysex([67, 16, 0, 100, int(x) % 256]),
-    "LevelOp3": lambda x: sysex([67, 16, 0, 79, int(x) % 256]),
-    "LevelOp4": lambda x: sysex([67, 16, 0, 58, int(x) % 256]),
-    "LevelOp5": lambda x: sysex([67, 16, 0, 37, int(x) % 256]),
-    "LevelOp6": lambda x: sysex([67, 16, 0, 16, int(x) % 256]),
-    # LFO
-    "LFOWave": lambda x: sysex([67, 16, 1, 14, int(x) % 256]),
-    "LFOSpeed": lambda x: sysex([67, 16, 1, 9, int(x) % 256]),
-    "LFODelay": lambda x: sysex([67, 16, 1, 10, int(x) % 256]),
-    "LFOPMD": lambda x: sysex([67, 16, 1, 11, int(x) % 256]),
-    "LFOAMD": lambda x: sysex([67, 16, 1, 12, int(x) % 256]),
-    "LFOSync": lambda x: sysex([67, 16, 1, 12, int(x) % 256]),
-    "LFOPMS": lambda x: sysex([67, 16, 1, 15, int(x) % 256]),
-    # Portamento
-    "PolyRetain/MonoFingered": lambda x: sysex([67, 16, 8, 67, 0]),
-    "PolyFollow/MonoFullTime": lambda x: sysex([67, 16, 8, 67, 1]),
-    "GlissandoOffOn": lambda x: sysex([67, 16, 8, 68, int(x) % 256]),
-    "Time": lambda x: sysex([67, 16, 8, 69, int(x) % 256]),
-    "Poly/Mono": lambda x: sysex([67, 16, 8, 64, int(x) % 256]),
-}
-
-
-def tx7(algo, value):
-    return tx7_params[algo](int(value))
-
 
 def E(step: int, maximum: int, index: int) -> bool:
     pattern = euclid(step, maximum)
     return True if pattern[index % len(pattern)] == 1 else False
-
-
-def print_param():
-    print(tx7_params.keys())
-
 
 def print_scales():
     print(qualifiers.keys())
@@ -369,3 +315,5 @@ class Pile:
     def out(self, iterator, height):
         for i in range(iterator, iterator + height):
             self._pat.out(i)
+
+i = c.iterators

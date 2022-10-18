@@ -14,6 +14,7 @@ from sardine.io.Osc import Client
 
 from . import AsyncRunner
 from ..sequences import ListParser
+from ..sequences.Iterators import Iterator
 from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
@@ -137,7 +138,10 @@ class Clock:
         }
 
         # Parser
-        self.parser = ListParser(clock=self)
+        self.iterators = Iterator()
+        self.parser = ListParser(
+                clock=self,
+                iterators=self.iterators)
 
     def __repr__(self):
         shift = self.tick_shift

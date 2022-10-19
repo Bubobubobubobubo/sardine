@@ -12,10 +12,11 @@ import random
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock, iterators):
+    def __init__(self, clock, iterators, variables):
         super().__init__()
         self.clock = clock
         self.iterators = iterators
+        self.variables = variables
         self.memory = {}
 
     def number(self, number):
@@ -26,6 +27,23 @@ class CalculateTree(Transformer):
 
     def return_pattern(self, *args):
         return list(args)
+    # ---------------------------------------------------------------------- #
+    # Variables: methods concerning bi-valent variables
+    # ---------------------------------------------------------------------- #
+
+    def get_variable(self, letter):
+        letter=str(letter)
+        return getattr(self.variables, letter)
+
+    def reset_variable(self, letter):
+        letter=str(letter)
+        self.variables.reset(letter)
+        return getattr(self.variables, letter)
+
+    def set_variable(self, letter, number):
+        letter, number = str(letter), int(number)
+        setattr(self.variables, letter, number)
+        return getattr(self.variables, letter)
 
     # ---------------------------------------------------------------------- #
     # Iterators: methods concerning iterators 

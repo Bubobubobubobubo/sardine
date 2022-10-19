@@ -15,6 +15,7 @@ from sardine.io.Osc import Client
 from . import AsyncRunner
 from ..sequences import ListParser
 from ..sequences.Iterators import Iterator
+from ..sequences.Variables import Variables
 from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
 
 __all__ = ("Clock", "TickHandle")
@@ -139,8 +140,10 @@ class Clock:
 
         # Parser
         self.iterators = Iterator()
+        self.variables = Variables()
         self.parser = ListParser(
                 clock=self,
+                variables=self.variables,
                 iterators=self.iterators)
 
     def __repr__(self):

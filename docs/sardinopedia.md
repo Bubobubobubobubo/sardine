@@ -542,4 +542,67 @@ def repeat_stuff(d=0.5, i=0):
 ```
 The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed elsewhere.
 
+## Amphibian variables
 
+### Amphibian variables
+
+```python
+v.s = 60 # this is an amphibian variable
+
+@swim 
+def fun():
+    # Calling it and setting it to v.s + 5
+    M(note='v.s = v.s + 5').out()
+    if random() > 0.8:
+        v.s = 60 # resetting so it doesn't go too high
+    again(fun)
+```
+There is a group of variables called *amphibian variables* that are both valid inside and outside the pattern notation. They are defined by `v` followed by a letter from the alphabet (uppercase or lowercase) : `v.a`, `v.A`, `v.Z`, `v.j`. These variables can be freely manipulated from the Python side or from the pattern side. They are totally transparent.
+
+```python
+@swim 
+def fun(d=0.25):
+    # Now having fun with it
+    M(note='v.s = v.s + 5|2').out() # more fun
+    if random() > 0.8:
+        v.s = 50
+    again(fun, d=0.25)
+```
+You can use them to leverage Python or the pattern syntax for what they do best: patterning or dealing with complex algorithmic transformations. Having them both available makes the pattern syntax even more expressive.
+
+There is a finite list of actions you can perform on *amphibian variables*:
+- using them (just by calling them)
+- setting them (`v.i = 5`)
+- resetting them to 0 (`v.i.reset`)
+
+### Amphibian iterators
+
+```python
+@swim
+def amphi_iter(d=0.25):
+    S('amencutup:{1_10}').out(i.i)
+    if random() > 0.8:
+        i.i = 0
+    a(amphi_iter, d=0.25)
+```
+Similarly to *amphibian variables*, there is a thing called *amphibian iterators* that are valid on both sides. They are defined by `i` followed by a letter from the alphabet (uppercase or lowercase) : `i.a`, `i.A`, `i.Z`, `i.j`. They can be use as substitutes for your regular manual recursive iterators. In the example above, I am using an *amphibian iterator* to summon a breakbeat.
+
+```python
+@swim
+def amphi_iter(d=0.25):
+    S('amencutup:{1_10}', speed='1|2|i.i=0').out(i.i)
+    a(amphi_iter, d=0.25)
+```
+These iterators can be reset or set on the pattern side!
+
+```python
+@swim
+def amphi_iter(d=0.25):
+    if random() > 0.8:
+        i.i = [1, 5]
+    else:
+        i.i = [1, 2]
+    S('amencutup:{1_10}', speed='i.v|i.v=[1,2]').out(i.i)
+    a(amphi_iter, d=0.25)
+```
+Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.

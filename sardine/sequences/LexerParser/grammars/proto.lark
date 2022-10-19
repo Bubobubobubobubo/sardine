@@ -40,6 +40,9 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | _ITER _DOT LETTER _EQUAL sum                        -> set_iterator
      | _ITER _DOT LETTER _EQUAL _LBRA sum _COMMA sum _RBRA -> set_iterator_step
      | _ITER _DOT LETTER _DOT "reset"                      -> reset_iterator
+     | _VAR _DOT LETTER                                    -> get_variable
+     | _VAR _DOT LETTER _EQUAL sum                         -> set_variable
+     | _VAR _DOT LETTER _DOT "reset"                       -> reset_variable
      | _TIME _DOT "Y"                                      -> get_year
      | _TIME _DOT "M"                                      -> get_month
      | _TIME _DOT "D"                                      -> get_day
@@ -143,6 +146,7 @@ _COS: "c"
 _SIN: "s"
 _TAN: "t"
 _ITER: "i"
+_VAR: "v"
 
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT

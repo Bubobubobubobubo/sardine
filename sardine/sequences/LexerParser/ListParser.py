@@ -23,6 +23,7 @@ class ListParser:
     def __init__(self, 
             clock, 
             iterators,
+            variables,
             parser_type: str = "proto"):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
@@ -38,6 +39,7 @@ class ListParser:
         # Reference to clock for the "t" grammar token
         self.clock = clock
         self.iterators = iterators
+        self.variables = variables
 
         parsers = {
             "proto": {
@@ -58,7 +60,8 @@ class ListParser:
                     lexer="contextual",
                     transformer=CalculateTree(
                         self.clock,
-                        self.iterators),
+                        self.iterators,
+                        self.variables),
                 ),
             },
         }

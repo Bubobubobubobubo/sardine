@@ -475,9 +475,7 @@ A **Sardine** note can receive a specific quality. Having a quality means being 
 
 ## MIDI
 
-**Sardine** supports all the basic messages one can send and receive through MIDI. It will support many more in the future, including SySex and custom messages. By default, **Sardine** is always associated to a default MIDI port. It can both send and receive information from that port. If the clock is `active`, you already know that clock messages will be forwarded to all your connected softwares/gear.
-
-You can also open arbitrary MIDI ports as long as you know their name on your system. I will not enter into the topic of finding / creating / managing virtual MIDI ports. This subject is outside the scope of what **Sardine** offers and you are on your own to deal with this. A tutorial might come in the future. 
+**Sardine** supports all the basic messages one can send and receive through MIDI. It will likely support every possible MIDI message in the future. By default, **Sardine** is always associated to a default MIDI port. It can both send and receive information from that port. If the clock is `active`, you already learned that clock messages will be forwarded to the default port and thus to all your connected softwares/gear. You can also open arbitrary MIDI ports as long as you know their precise name on your system. There is no function to facilitate this for now. I will not enter into the topic of finding / creating / managing virtual MIDI ports. This subject is outside the scope of what **Sardine** offers and you are on your own to deal with this.
 
 ### MIDI Out
 
@@ -488,18 +486,17 @@ Here is an example of a **swimming function** sending a constant MIDI Note:
 def hop(d=0.5, i=0):
     M(dur=0.3, note=60, 
             velocity=127, channel=0).out()
-    anew(hop, d=0.5, i=i+1)
+    a(hop, d=0.5, i=i+1)
 ```
 
-The default MIDI output is accessible through the `M()` syntax (contrary to `S`, it is not an object!). As you will see, MIDI still need some improvements to support all messages throughout the use of the same object. Note that the channel count starts at `0`, covering a range from `0` to `15`. The duration for each every note should be written in milliseconds (`ms`) because MIDI is handling MIDI Notes as two separate messages (`note_on` and `note_off`). Following the MIDI standard, note and velocity values are expressed in the range `0-127`.
+The default MIDI output is accessible through the `M()` syntax (contrary to `S`, it is not an object!). MIDI still need some work to support all messages coming out from the use of the same object. Note that the channel count starts at `0`, covering a range from `0` to `15`. This is unfortunate but that it how MIDI interfaces are built. The duration for each and every note should be written in milliseconds (`ms`) because MIDI is handling MIDI Notes as two separate messages (one for the `note_on` and one for the `note_off`). Following the MIDI standard, note and velocity values are expressed in the range from `0` to `127`.
 
 Let's go further and make an arpeggio using the pattern system:
 
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(dur=0.3, note='60 46 50 67', 
-            velocity=127, channel=0).out(i)
+    M(dur=0.3, note='C,E,G,B', velocity=127, channel=0).out(i)
     anew(hop, d=0.5, i=i+1)
 ```
 
@@ -510,8 +507,8 @@ A similar function exists for sending MIDI CC messages. Let's combine it with ou
 def hop(d=0.5, i=0):
     M(dur=0.3, note='60 46 50 67', 
             velocity=127, channel=0).out(i)
-    cc(channel=0, control=20, value=randint(1,127))
-    anew(hop, d=0.5, i=i+1)
+    cc(channel=0, control=20, value=P('r*127', i.v))
+    a(hop, d=0.5, i=i+1)
 ```
 
 ### MIDI In
@@ -521,7 +518,7 @@ MIDI Input is supported through the use of a special object, the `MidiListener` 
 * MIDI Notes through the `NoteTarget` object
 * MIDI CC through the `ControlTarget` object
 
-Additionally, you can listen to incoming Clock messages (`ClockListener`) but you must generally let Sardine handle this by itself. There are currently no good reasons to do this!
+Additionally, you can listen to incoming Clock messages (`ClockListener`) but you must generally let **Sardine** handle this alone. There are currently no good or valid reasons to do this!
 
 Every `MidiListener` is expecting a target. You must declare one and await on it using the following syntax:
 
@@ -530,10 +527,10 @@ a = MidiListener(target=ControlTarget(20, 0))
 @swim
 def pluck(d=0.25):
     S('pluck', midinote=a.get()).out()
-    anew(pluck, d=0.25)
+    a(pluck, d=0.25)
 ```
 
-In this example, we are listening on CC n°20 on the first midi channel (`0`), on the default MIDI port. Sardine cannot assert the value of a given MIDI Control before it receives a first message therefore the initial value will be assumed to be `0`.
+In this example, we are listening on CC n°`20` on the first midi channel (`0`), on the default MIDI port. Sardine cannot assert the value of a given MIDI Control before it receives a first message therefore the initial value will be assumed to be `0`.
 
 You can fine tune your listening object by tweaking the parameters:
 
@@ -544,15 +541,13 @@ a = MidiListener('other_midi_port', target=ControlTarget(40, 4))
 
 ## OSC
 
-You can send OSC (**Open Sound Control**) messages by declaring your own OSC connexion and sending custom messages. It is very easy to do so. Two methods are available depending on what you are trying to achieve.
+You can send **OSC** (**Open Sound Control**) messages by declaring your own **OSC** connexion and sending custom messages. It is rather easy to do and should work without causing you any trouble.
 
 ### Manual method
 
-
-The following example details the simplest way to send an OSC message using Sardine:
+The following example details the simplest way to send an OSC message using Sardine. It is very crude and **really not recommended at all** to follow this route for there is a better one:
 
 ```python
-from random import randint, random, chance
 
 # Open a new OSC connexion
 my_osc = OSC(ip="127.0.0.1",
@@ -579,9 +574,7 @@ def coucou(*args): my_osc.send(c, '/coucou', list(args))
 ```
 ### Using the OSCSender object
 
-It is not recommended to send messages using the preceding method. You will not be able to patern parameters and addresses. Prefer the `OscSender` object, aliased to `O()`. The syntax is similar but you gain the ability to name your OSC parameters and you can use patterns to describe them (more on this later on) Compared to `S()` and `M()`, `O()` requires more parameters:
-* `clock`: the clock, `c` by default.
-* `OSC` object: the `OSC` connexion previously defined.
+Prefer the `OscSender` object, aliased to `O()`. The syntax is similar but you gain the ability to name your OSC parameters and you can use patterns to play around with them. Compared to `S()` and `M()`, `O()` requires one additional parameter: the `OSC` connexion previously defined.
 
 ```python
 # Open a new OSC connexion
@@ -602,11 +595,11 @@ def lezgo(d=1, i=0):
 ```
 
 
-## Crash
+## What about crashes?
 
-If you already know how to program, you know that 90% of your time is spent debugging code that doesn't work. Crashes will happen when you will play with **Sardine** but they are handled and taken care of so that the musical flow is never truly interrupted. If you write something wrong inside a **swimming function**, the following will happen: 
+If you already know how to program, you know that 90% of your time is usually spent debugging code that doesn't run. You will not be a better programmer when using **Sardine**. Crashes will happen too, but they are handled and taken care of so that the musical flow is never truly interrupted. If you write something wrong inside a **swimming function**, the following will happen: 
 
 - if the function crashes and has never looped, it will not be recovered.
 - if the function is already running and has already looped, the last valid function will be rescheduled and the current error message will be printed so that you can debug.
 
-It means that once you start playing something, it will never stop until you want it to. You can train without the fear of crashes or weird interruptions.
+It means that once you start playing something, it will never stop until you want it to. You can make music without fearing interruption because of a crash. Some mistakes might be harder than other to recover from but most of the time, you shouldn't really hear or feel any interruption in the musical flow. If that is the case, please report the bug along with a way to reproduce it easily.

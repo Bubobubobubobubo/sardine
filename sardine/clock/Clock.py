@@ -2,15 +2,15 @@ import asyncio
 import contextlib
 import contextvars
 import functools
-import heapq
 import inspect
+import heapq
 import time
-from typing import Awaitable, Callable, Optional, TypeVar, Union
-from collections import deque
-
 import mido
-from rich import print
+
+from typing import Awaitable, Callable, Optional, TypeVar, Union
 from sardine.io.Osc import Client
+from collections import deque
+from rich import print
 
 from . import AsyncRunner
 from ..sequences import ListParser
@@ -23,11 +23,10 @@ __all__ = ("Clock", "TickHandle")
 T = TypeVar("T")
 MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
 
-# This specifies the number of ticks to offset the clock in the
-# current context.  # Usually this tick shift is updated within
-# the context of scheduled functions to simulate sleeping
-# without actually blocking the function. Behavior is undefined
-# if the tick shift is changed in the global context.
+# This specifies the number of ticks to offset the clock in the current context.
+# Usually this tick shift is updated within the context of scheduled functions
+# to simulate sleeping without actually blocking the function. Behavior is 
+# undefined if the tick shift is changed in the global context.
 tick_shift = contextvars.ContextVar("tick_shift", default=0)
 
 
@@ -100,6 +99,10 @@ class Clock:
         deferred_scheduling: bool = True,
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
+
+        # This OSC port will forward clock information to external listeners
+        # This is a nice way to intercept clock messages for applications 
+        # spying on Sardine.
         self._osc = Client(
             ip="127.0.0.1", port=12345, name="SardineOsc", ahead_amount=0
         )
@@ -142,9 +145,8 @@ class Clock:
         self.iterators = Iterator()
         self.variables = Variables()
         self.parser = ListParser(
-                clock=self,
-                variables=self.variables,
-                iterators=self.iterators)
+            clock=self, variables=self.variables, iterators=self.iterators
+        )
 
     def __repr__(self):
         shift = self.tick_shift
@@ -813,7 +815,11 @@ class Clock:
             begin = time.perf_counter()
             await asyncio.sleep(0.0)
             self._listener.wait_for_tick()
-            self._increment_clock()
+            self._increment_clock(
+                    temporal_information=(
+                        self._capture_link_info() if self._link else None
+                    )
+            )
             elapsed = time.perf_counter() - begin
             self._delta_duration_list.append(self._estimate_bpm_from_delta(elapsed))
             self._bpm = self._mean_from_delta()

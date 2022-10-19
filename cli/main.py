@@ -1,20 +1,23 @@
-import subprocess
 import argparse
 import click
 import json
 import sys
-import re
 
+# Wildcard used in docs..
 from appdirs import *
 from pathlib import Path
 from rich import print
 from itertools import chain
 from typing import Any
 
-# ============================================================================ #
-# First script: a dead simple argparse configuration tool to edit values stored
-# in config.json. Automatic type-checking / error raise for each value.
-# ============================================================================ #
+FUNNY_TEXT = """
+░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
+██╔══██╗██╔══██╗████╗░██║██╔════╝██║██╔════╝░
+██║░░╚═╝██║░░██║██╔██╗██║█████╗░░██║██║░░██╗░
+██║░░██╗██║░░██║██║╚████║██╔══╝░░██║██║░░╚██╗
+╚█████╔╝╚█████╔╝██║░╚███║██║░░░░░██║╚██████╔╝
+░╚════╝░░╚════╝░╚═╝░░╚══╝╚═╝░░░░░╚═╝░╚═════╝░
+"""
 
 
 def str2bool(v):
@@ -27,26 +30,21 @@ def str2bool(v):
         raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
-FUNNY_TEXT = """
-
-░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
-██╔══██╗██╔══██╗████╗░██║██╔════╝██║██╔════╝░
-██║░░╚═╝██║░░██║██╔██╗██║█████╗░░██║██║░░██╗░
-██║░░██╗██║░░██║██║╚████║██╔══╝░░██║██║░░╚██╗
-╚█████╔╝╚█████╔╝██║░╚███║██║░░░░░██║╚██████╔╝
-░╚════╝░░╚════╝░╚═╝░░╚══╝╚═╝░░░░░╚═╝░╚═════╝░
-"""
+def pairwise(iterable):
+    """s -> (s0, s1), (s2, s3), (s4, s5), ..."""
+    a = iter(iterable)
+    return zip(a, a)
 
 
+# ============================================================================ #
+# A dead simple argparse configuration tool to edit values stored in config.json
+# Automatic type-checking / error raising for each value.
+# ============================================================================ #
+
+# Appdirs boilerplate code
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 CONFIG_JSON = USER_DIR / "config.json"
-
-
-def pairwise(iterable):
-    "s -> (s0, s1), (s2, s3), (s4, s5), ..."
-    a = iter(iterable)
-    return zip(a, a)
 
 
 def read_json_file():
@@ -73,17 +71,11 @@ def main():
         exit()
     data = read_json_file()
 
-    def bool_check(thing: Any):
-        """Boolean validation method"""
-        if thing not in [True, False]:
-            raise ValueError("Boolean attributes must be True or False.")
-
     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
     parser.add_argument("--midi", type=str, help="Default MIDI port")
     parser.add_argument("--bpm", type=float, help="Beats per minute")
     parser.add_argument("--beats", type=int, help="Beats per bar")
     parser.add_argument("--ppqn", type=float, help="ppqn")
-    parser.add_argument("--parameters", type=str, help="add a custom param")
     parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
     parser.add_argument(
         "--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output"
@@ -91,7 +83,7 @@ def main():
     parser.add_argument(
         "--deferred_scheduling", type=str2bool, help="Turn on/off deferred scheduling"
     )
-    parser.add_argument("--clock", type=str2bool, help="Active or passive Clock")
+    parser.add_argument("--active_clock", type=str2bool, help="Active or passive Clock")
     parser.add_argument(
         "--SCconfig", type=str2bool, help="SuperDirt Configuration Path"
     )

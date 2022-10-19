@@ -70,85 +70,6 @@ class CalculateTree(Transformer):
         return getattr(self.iterators, letter)
 
     # ---------------------------------------------------------------------- #
-    # Lists: methods concerning lists
-    # ---------------------------------------------------------------------- #
-
-    def list_addition(self, left, right):
-        def solve_addition(left, right):
-            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
-                return left + right
-            elif all(map(lambda x: isinstance(x, list), [left, right])):
-                return [x + y for x, y in zip(cycle(right), left)]
-            elif all(map(lambda x: isinstance(x, str), [left, right])):
-                return "".join([right, left])
-
-        return [solve_addition(x, y) for x, y in zip(cycle(right), left)]
-
-    def list_substraction(self, left, right):
-        def solve_substraction(left, right):
-            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
-                return left - right
-            elif all(map(lambda x: isinstance(x, list), [left, right])):
-                return [x - y for x, y in zip(cycle(right), left)]
-            elif all(map(lambda x: isinstance(x, str), [left, right])):
-                new_string = []
-                for _ in right:
-                    if _ not in left:
-                        new_string.append(_)
-                return "".join(new_string)
-
-        return [solve_substraction(x, y) for x, y in zip(cycle(right), left)]
-
-    def list_modulo(self, left, right):
-        def solve_modulo(left, right):
-            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
-                return left % right
-            elif all(map(lambda x: isinstance(x, list), [left, right])):
-                return [x % y for x, y in zip(cycle(right), left)]
-            elif all(map(lambda x: isinstance(x, str), [left, right])):
-                return None
-
-        return [solve_modulo(y, x) for x, y in zip(cycle(right), left)]
-
-    def list_multiplication(self, left, right):
-        def solve_multiplication(left, right):
-            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
-                return left * right
-            elif all(map(lambda x: isinstance(x, list), [left, right])):
-                return [x * y for x, y in zip(cycle(right), left)]
-            elif all(map(lambda x: isinstance(x, str), [left, right])):
-                return left
-
-        return [solve_multiplication(y, x) for x, y in zip(cycle(right), left)]
-
-    def list_floor_division(self, left, right):
-        def solve_floor_division(left, right):
-            if all(map(lambda x: isinstance(x, (int, float)), [left, right])):
-                return left // right
-            elif all(map(lambda x: isinstance(x, list), [left, right])):
-                return [x // y for x, y in zip(cycle(right), left)]
-            elif all(map(lambda x: isinstance(x, str), [left, right])):
-                return None
-
-        return [solve_floor_division(y, x) for x, y in zip(cycle(right), left)]
-
-    def list_choice(self, left, right):
-        """Choose between two lists"""
-        return self.choice_note(left, right)
-
-    def list_extend(self, left, right):
-        """Copy of the extend rule"""
-        return self.extend(left, right)
-
-    def list_extend_repeat(self, left, right):
-        """Probably not the right behavior"""
-        return self.extend_repeat(left, right)
-
-    def list_negation(self, collection):
-        """Will apply a negative sign when possible to list"""
-        return list(map(lambda x: -x if isinstance(x, (int, float)) else x, collection))
-
-    # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
     # ---------------------------------------------------------------------- #
 
@@ -219,158 +140,6 @@ class CalculateTree(Transformer):
         else:
             return total
 
-    def make_note_french_system(self, symbol):
-        """Return a valid MIDI Note (fifth octave)
-        from a valid french note name.
-
-        Args:
-            symbol (str): a string representing a valid note (do to si)
-
-        Returns:
-            int: A MIDI Note (fifth octave)
-        """
-        table = {
-            "do": 60,
-            "re": 62,
-            "ré": 62,
-            "mi": 64,
-            "fa": 65,
-            "sol": 67,
-            "la": 69,
-            "si": 71,
-        }
-        return table[symbol]
-
-    def add_octave(self, note, number):
-        """Given a note, transpose it up to the given octave
-
-        Args:
-            note (int): a MIDI note (0-127)
-            number (int): octave number
-
-        Returns:
-            int: A valid MIDI Note at given octave
-        """
-        return (int(note) - 12 * 5) + 12 * int(number)
-
-    def sharp_simple(self, note):
-        """Sharpen a note
-
-        Args:
-            note (int): A MIDI Note
-
-        Returns:
-            int: A sharpened MIDI Note (note+1)
-        """
-        return note + 1
-
-    def flat_simple(self, note):
-        """Flatten a note
-
-        Args:
-            note (int): A MIDI Note
-
-        Returns:
-            int: A flattened MIDI Note (note-1)
-        """
-        return note - 1
-
-    def sharp_octave(self, note, number):
-        """Combination of preceding functions for sharp + octaviated note
-
-        Args:
-            note (int): A MIDI Note
-            number (int): An octave from 0 to 9
-
-        Returns:
-            int: A sharpened and octaviated MIDI Note
-        """
-        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
-        return match_table[note] + 12 * int(number) + 1
-
-    def flat_octave(self, note, number):
-        """Combination of preceding functions for flat + octaviated note
-
-        Args:
-            note (int): A MIDI Note
-            number (int): An octave from 0 to 9
-
-        Returns:
-            int: A flattened and octaviated MIDI Note
-        """
-        match_table = {60: 0, 62: 2, 64: 4, 65: 5, 67: 7, 69: 9, 71: 11}
-        return match_table[note] + 12 * int(number) - 1
-
-    def choice_note(self, note0, note1):
-        """Choose 50%/50% between two notes
-
-        Args:
-            note0 (int): A MIDI Note
-            note1 (int): An other MIDI Note
-
-        Returns:
-            int: The chosen MIDI Note
-        """
-        return random.choice([note0, note1])
-
-    def repeat_note(self, note, number):
-        """Turn a note into a list of 'number' times 'note.
-
-        Args:
-            note (int): A MIDI Note
-            number (int): Number of repetitions
-
-        Returns:
-            list: A list of the same note repeated 'number' times.
-        """
-        return [note] * int(number)
-
-    def drop_octave(self, note):
-        """Drop the note an octave down
-
-        Args:
-            note (int): A MIDI Note
-
-        Returns:
-            int: A MIDI Note
-        """
-        return note - 12
-
-    def raise_octave(self, note):
-        """Raise the note an octave up
-
-        Args:
-            note (int): A MIDI Note
-
-        Returns:
-            int: A MIDI Note
-        """
-        return note + 12
-
-    def drop_octave_x(self, note, number):
-        """Drop a note 'x' octaves down
-
-        Args:
-            note (int): A MIDI Note
-            number (int): Number of octaves to drop
-
-        Returns:
-            int: A MIDI Note
-        """
-        return note - 12 * int(number)
-
-    def raise_octave_x(self, note, number):
-        """Raise a note 'x' octaves up
-
-        Args:
-            note (int): A MIDI Note
-            number (int): Number of octaves to raise
-
-        Returns:
-            int: A MIDI Note
-        """
-        return note + 12 * int(number)
-
     def add_modifier(self, col, *modifier):
 
         quali = list(modifier)
@@ -415,30 +184,6 @@ class CalculateTree(Transformer):
         except KeyError:
             return note
 
-    def transpose_up(self, notes, number):
-        """Transpose a note 'number' notes up.
-
-        Args:
-            notes (int): A MIDI Note_
-            number (int): Transposition factor
-
-        Returns:
-            int: A MIDI Note
-        """
-        return notes + int(number)
-
-    def transpose_down(self, notes, number):
-        """Transpose a note 'number' notes down
-
-        Args:
-            notes (int): A MIDI Note
-            number (int): Transposition factor
-
-        Returns:
-            int: A MIDI Note
-        """
-        return notes - int(number)
-
     def make_number(self, *token):
         """Turn a number from string to integer. Used by the parser,
         transform a token matched as a string to a number before
@@ -448,20 +193,6 @@ class CalculateTree(Transformer):
             int: an integer
         """
         return int("".join(token))
-
-    def slash_chord(self, note0, note1):
-        """Build a list from two notes as if it was a slashed chord.
-        Used for cosmetic purposes (more easy to read for the user).
-
-        Args:
-            note0 (int): A MIDI Note
-            note1 (int): A MIDI Note
-
-        Returns:
-            int: A MIDI Note
-        """
-        note0, note1 = [note0], [note1]
-        return note0.extend(note1)
 
     def reverse_collection(self, collection):
         """Reverse a newly generated collection.
@@ -578,67 +309,6 @@ class CalculateTree(Transformer):
                 final_list.extend(list)
             return final_list
 
-    def repeat_collection_x(self, collection, number):
-        """See grammar file for better understanding"""
-        return self.repeat_collection(collection, number)
-
-    def add_collection(self, collec0, collec1):
-        """Addition between two lists (symetrical or asymetrical).
-        The longest list will take precedence and thus the result
-        will yield a list of the length of the longest list. Additions
-        are performed cyclically until the index of the longest list is
-        reached.
-
-        Args:
-            collec0 (list): A list of integeers
-            collec1 (list): A list of integers
-
-        Returns:
-            list: A list of additioned integers
-        """
-        if isinstance(collec1, (int, float)):
-            if isinstance(collec0, (int, float)):
-                return int(collec1 + collec0)
-            else:
-                return [int(x + collec1) for x in collec0]
-
-        if isinstance(collec0, (int, float)):
-            if isinstance(collec1, (int, float)):
-                return int(collec0 + collec1)
-            else:
-                return [int(x + collec0) for x in collec1]
-
-        if all(map(lambda x: isinstance(x, float), [collec0, collec1])):
-            longest, list = max(len(collec0), len(collec1)), []
-            collec0, collec1 = cycle(collec0), cycle(collec1)
-            for _ in range(longest):
-                list.append(int(next(collec0) + next(collec1)))
-            return list
-
-    def sub_collection(self, collec0, collec1):
-        """Substraction between two lists (symetrical or asymetrical).
-        The longest list will take precedence and thus the result
-        will yield a list of the length of the longest list. Substractions
-        are performed cyclically until the index of the longest list is
-        reached.
-
-        Args:
-            collec0 (list): A list of integeers
-            collec1 (list): A list of integers
-
-        Returns:
-            list: A list of additioned integers
-        """
-        if isinstance(collec0, (int, float)):
-            return int(collec1 - collec0)
-        else:
-            return [x - collec1 for x in collec0]
-        longest, list = max(len(collec0), len(collec1)), []
-        collec0, collec1 = cycle(collec0), cycle(collec1)
-        for _ in range(longest):
-            list.append(next(collec0) - next(collec1))
-        return list
-
     def collection_drop2(self, collection):
         """Simulate a drop2 chord.
 
@@ -704,14 +374,6 @@ class CalculateTree(Transformer):
             else:
                 new_list.append(element)
         return new_list
-
-    def make_list_gen(self, gen):
-        """Make a list from a generator (un-nest it)
-
-        Returns:
-            list: Generator turned into a list
-        """
-        return gen
 
     def get_time(self):
         """Return current clock time (tick) as integer"""
@@ -881,32 +543,6 @@ class CalculateTree(Transformer):
             return -value
         elif isinstance(value, list):
             return [-x for x in value]
-
-    def concat(self, left, operator, right):
-        """List Concatenation: takes a list and extends it with
-        another list. Used by proto parser.
-
-        Args:
-            left (list): The initial list
-            right (list): The list to concatenate
-
-        Results
-            list: One list of of two
-        """
-
-        if isinstance(left, list):
-            if isinstance(right, list):
-                left.extend(right)
-                return left
-            if isinstance(right, (float, int)):
-                left.extend([right])
-                return left
-        if isinstance(left, (int, float)):
-            if isinstance(right, list):
-                [left].extend(right)
-                return left
-            if isinstance(right, (float, int)):
-                return [left, right]
 
     def addition(self, left, right):
         if all(map(lambda x: isinstance(x, (float, int)), [left, right])):

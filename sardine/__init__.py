@@ -269,10 +269,20 @@ def parser(pattern: str):
 
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(clock=c, iterators=c.iterators, parser_type=parser_type)
+    parser = ListParser(clock=c, iterators=c.iterators, variables=c.variables, parser_type=parser_type)
+
+    def _exit_case(string):
+        if string.lower() == "exit":
+            return True
+
     try:
         while True:
-            p = parser._parse_debug(pattern=input("> "))
+            user_input = input("> ")
+            if _exit_case(user_input):
+                break
+            else:
+                p = parser._parse_debug(
+                        pattern=user_input)
     except KeyboardInterrupt:
         pass
 

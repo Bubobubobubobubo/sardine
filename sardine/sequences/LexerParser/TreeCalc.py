@@ -464,7 +464,27 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers with step
         """
-        ramp = [x * step for x in range(int(left), int(right) + 1)]
+
+        def _frange(start, stop, step):
+            # if set start=0.0 and step = 1.0 if not specified
+            # taken from https://pynative.com/python-range-for-float-numbers/#h-range-of-floats-using-generator-and-yield
+            start = float(start)
+            if stop == None:
+                stop = start + 0.0
+                start = 0.0
+            if step == None:
+                step = 1.0
+            count = 0
+            while True:
+                temp = float(start + count * step)
+                if step > 0 and temp >= stop:
+                    break
+                elif step < 0 and temp <= stop:
+                    break
+                yield temp
+                count += 1
+
+        ramp = list(_frange(start=left, stop=right, step=step))
         if int(left) > int(right):
             return reversed(ramp)
         else:

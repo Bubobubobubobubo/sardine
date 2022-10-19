@@ -50,14 +50,13 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | _TIME _DOT "m"                                      -> get_minute
      | _TIME _DOT "S"                                      -> get_second
      | _TIME _DOT "µ"                                      -> get_microsecond
+     | _CLBRA sum _COMMA sum _CRBRA                        -> generate_ramp
+     | _CLBRA sum _COMMA sum _COMMA sum  _CRBRA            -> generate_ramp_with_range
+     | _LBRA sum (_COMMA sum)* _COMMA? _RBRA               -> make_list
+     | _COS _LPAR sum _RPAR                                -> cosinus
+     | _SIN _LPAR sum _RPAR                                -> sinus
+     | _TAN _LPAR sum _RPAR                                -> tangente
      | _LPAR sum _RPAR
-     | _CLBRA sum _US sum _CRBRA                  -> generate_ramp
-     | _CLBRA sum _US sum _LPAR sum _RPAR _CRBRA  -> generate_ramp_with_range
-     | _LBRA sum (_COMMA sum)* _COMMA? _RBRA      -> make_list
-     | _COS _LPAR sum _RPAR                       -> cosinus
-     | _SIN _LPAR sum _RPAR                       -> sinus
-     | _TAN _LPAR sum _RPAR                       -> tangente
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

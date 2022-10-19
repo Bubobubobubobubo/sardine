@@ -3,21 +3,59 @@ hide:
     - navigation
 ---
 
-
-
 !!! danger "The tutorial is not up to date"
 
     Sardine was updated quite a lot recently. The tutorial has not been fully updated to reflect changes. Please rely on the *Sardinopedia* for now, until I fix this long-form article :)
 
-# Using Sardine
+At last! You have now installed and configured Sardine. You are up and running but you still don't know how to use **Sardine**! You might not really understand what it is either. This tutorial will hopefully help you to understand what **Sardine** is and what it does. I will not dive deep into technical details but this will serve as an in-depth exploration of the different components of **Sardine**.
 
-At least! You have now installed and configured Sardine. You are up and running, but you don't know how to use **Sardine**! This tutorial will hopefully help you to understand the different layers that are composing the performance/composition/improvisation system that **Sardine** is. I will not dive deep into details or materials dedicated to contributors or developers but give you the bare minimum to become a proficient **Sardine** user.
+## Practical Philosophy
+
+![epictete](images/practical_dither.png)
+*This is Epictetus, no links with Sardine but he was teaching practical philosophy too...*
+
+### What you can do
+
+ To be clear once and for all, **Sardine** is:
+
+- strictly speaking, a music *live coding* library (*eg.* TidalCycles, FoxDot, Gibber)
+
+but more trivially, it is:
+
+- a musical instrument that you gradually learn to master and to tune to your liking
+
+- a control tool for external audio/video devices, instruments and softwares
+
+- an environment for improvising algorithmic music live by coding with Python
+
+- a blank canevas for exploring musical ideas (rhythms, textures and pitch) on-the-fly
+
+
+On the contrary, **Sardine** is not (or not *really*):
+
+- a **Digital Audio Workstation**: no timeline, no click and play process, no ready-to-use patterns or presets, no way to save and recall sessions with pre-configured parameters, no way to record, process and master songs, tracks or beats. **Sardine** is meant to be used in **parallel** with such tools :)
+
+- a compositional environment to write scores or to deal programatically with traditional score notation (*à la* **Finale**, **Sibelius**, **Lilypond**, etc...). **Sardine** is not meant for *writing*, but for *playing*. This would be the same thing as to ask a piano to print a musical score while you play.
+
+This doesn't mean that you can't compose things with **Sardine** to play them later. It just means that it doesn't deal with the traditional scoring system. If your intent is to prepare for an art installation, a techno/house gig or an experimental music recital, you can do it just fine!
+
+### How you do it
+
+**Sardine** is an instrument/tool that you control by programming live. Your keyboard will be your main musical interface, which is pretty unusual compared to other musical practices. **Sardine** is a tool made to explore various *live coding* techniques, and a tool made to integrate with other live coding softwares and environments. For people unfamiliar with it, *live coding* could be said to be three distinct things:
+
+- a **programming technique**: the art of manipulating, redefining or altering software while it runs. A technique exploring processes of *hot swapping*, *reloading* or *re-compiling* parts of a software stack without interruption, as part of the way the software is meant to be used.
+
+- an **artistic practice**: promoting artistic expression throughout the use of computer code. Turning programming into a gestural and expressive act, usually meant to be shared with an audience.
+
+- a **subculture**: a niche in the larger world of computer and electronic music. *Live coding* has always been there. You can trace its origins way back to the 70s if you are really looking for it :) Nowadays, *live coding* is mostly promoted by *algoravers* or by the **TOPLAP** collective.
+
+Try to read about it. It's a fascinating world of people happily *hacking* and sharing software, usually free and open source. The goal is to find the right tool for the nail you want to hammer, and build from there, turning your computer into an environment for personal artistic expression. For our case, it means that **Sardine** is meant to be extended, modified, specialised for what you need to do :)
 
 ## Sardine Clock
 
 ### MIDI Clock
 
-When **Sardine** is imported using the command `from sardine import *`, an instance of `Clock` will automatically start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, if you haven't touched to the configuration, the clock will be running in `active` mode: it will send a **MIDI** clock signal for every tick on the default MIDI port. The default MIDI port will either be a virtual port named `Sardine` if your OS supports virtual MIDI ports or the first available MIDI Port declared by your OS. It can also be `passive` and made to listen to the default MIDI port if you prefer. Never override the `c` variable. You won't have to worry a lot about the internals. You will likely find the following commands interesting:
+The most crucial information to know about **Sardine** is that everything happens because of the **clock**. When **Sardine** is imported using the command `from sardine import *`, an instance of the `Clock` class will automatically start to run in the background and will be referenced by the variable `c`. `Clock` is the main MIDI Clock. By default, if you haven't touched to the configuration, the clock will be running in `active` mode: it will send a **MIDI** clock signal for every tick on the default MIDI port. The default MIDI port will either be a virtual port named `Sardine` if your OS supports virtual MIDI ports or the first available MIDI Port declared by your OS. It can also be `passive` and made to listen to the default MIDI port if you prefer. Never override the `c` variable. You won't have to worry a lot about the internals. Never override any variable that is one letter long! You will likely find the following commands interesting:
 
 * `c.bpm`: current tempo in beats per minute.
 * `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (Pulses per Quarter Note, used by MIDI gear).
@@ -31,9 +69,24 @@ The **Link** protocol is a novel open source protocol released by **Ableton** wh
 
 **Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` method. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo originating somewhere and followed by everyone, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state. 
 
-The **Ableton Link** Clock is a bit weird. It will disrupt the regular behavior of the Sardine Clock. It will stop emitting a MIDI clock signal because it cannot ensure that the clock will be steady. **MIDI** Clocks and **Ableton Link** Clock does not go hand in hand. It is preferable to kill every running pattern before attempting the switch from regular time to Link time.
 
-### Some clock things to know
+!!! info "Weirdness of Link Clock"
+
+    The **Link Clock** is a bit weird. It will disrupt the regular behavior of the **Sardine** Clock. It will stop emitting a MIDI clock signal because it cannot ensure that the clock signal will be steady. **MIDI** Clocks and **Link Clock** does not go hand in hand. It is preferable to kill every running pattern before attempting the switch from regular time to Link time.
+
+### Latency and sync
+
+There are many possible reasons that could explain why your computer is not perfectly in sync with another one. To tackle this issue, **Sardine** is proposing a set of variables you can play with to finetune the latency of various parts of the system. If you ever encounter a synchronisation issue, try to play an event on the first beat of the bar on each computer and to play around with the following values:
+
+- `c.midi_nudge`: in miliseconds. Nudge value for the MIDI Sender (MIDI).
+
+- `c.superdirt_nudge`: in milliseconds. Nudge value for the SuperDirt Sender (Sound).
+
+- `c.nudge`: in milliseconds. General nudge for the **Sardine** clock.
+
+There is also an additional nudge value you can configure directly in your **SuperDirt** configuration. Finding the right configuration is usually just a matter of exploring and finding the right values for you and the other computer you are trying to synchronise with. Be careful not to override hard limits. Your computer needs some time to process information.
+
+### More info about clocks
 
 - Sardine will not behave nicely if no external clock is running while in `passive` mode. Time is simply frozen and events will not trigger, suspended somewhere in time.
 
@@ -83,23 +136,34 @@ def limping(d=4):
 
 The **swimming function** `sleeping_demo()` will recurse after a delay of `2`. Think of the time you have in-between a recursion as spare time you can use and consume using `sleep()`. You can use that time sending the instructions that compose your swimming function. You can also do nothing for most of your time just like in `limping()`. You can write code in an imperative fashion, something that you might have already encountered in live coding systems such as [Sonic Pi](https://sonic-pi.net/) or **SuperCollider** `Tdefs`.
 
-**Be careful**! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your **swimming functions**:   
+!!! warning "Oversleeping is a thing"
 
-```python
-@swim
-def oversleep(d=4):
-    S('hh').out()
-    sleep(3)
-    S('bd').out()
-    again(oversleep, d=0.5) # Changed the value to oversleep
-```
+    **Be careful**! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your **swimming functions**:   
+
+    ```python
+    @swim
+    def oversleep(d=4):
+        S('hh').out()
+        sleep(3)
+        S('bd').out()
+        again(oversleep, d=0.5) # Changed the value to oversleep
+    ```
 
 If you are not yet familiar with the concept of recursion, or with the meaning of some of the facts presented here, keep patience. The meaning of all this will become clear after a few sections and some tests on your side :)
 
 
 #### Swimming functions
 
-We already used the term **swimming function** before without taking the time to explain it! In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. The function will call itself when it ends. The newly called function will call itself, and again, and again... This is one way computer scientists like to think about loops and structures like lists. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from this dreadful recursive temporal loop.
+&nbsp;
+&nbsp;
+&nbsp;
+
+![recursion](images/recursion.png){width=100%}
+*To understand recursion, you must understand recursion says the old and not so funny joke...*
+
+We have already used the term **swimming function** in the sections above without taking enough time to explain what it means precisely! In **Sardine** parlance, a **swimming function** is a function that is scheduled to be repeated by recursion. The function will call itself when it ends, and again and again. Usually, in computer science manuals, you learn that recursion always needs to end, that there must be a case where the function will exit. We have this in **Sardine** too but we usually want the function to continue indefinitely, as a way to generate rhythms and to build a musical groove.
+
+A **swimming function** will call itself, and again, and again... This is a way computer scientists and **sardinists** alike like to think about loops and structures like lists. To define a function as a **swimming function**, use the `@swim` decorator. The opposite of the `@swim` decorator is the `@die` decorator that will release a function from this dreadful recursive temporal loop.
 
 ```python
 @swim # replace me by 'die'
@@ -230,197 +294,184 @@ Argument names do not matter when composing OSC messages. You can name arguments
 
 ### Composing patterns
 
-The most intriguing aspect of **Sardine** is that you can write small patterns of values that can be used to make your functions more lively on their own. These patterns can be used to generate rhythms, streams of notes/addresses/numbers, random values, etc... Instead of feeding static values such as `0.5` to an argument like `amp`, you can make it change dynamically on-the-fly by feeding sequence and/or patterns of values: `0.5, 0.3, 0.2` or `{0_1(0.1)}`. There is a whole syntax dedicated to crafting patterns and I plan to add more and more in subsequent versions of **Sardine**!
+![blackandwhite](images/pattern_black_and_white.png){width=100%}
 
-Think of all this as a glorified time-dependant calculator that can also do some arithmetics on lists, with new operators such as `_`, `!` or `:`. The pattern system also works with musical notes and names (for samples and OSC addresses). It can be used to summon musical scales, musical chords and some funny musical transformations (such as `.disco` or `.explode`). All of this is *maïeutic*, aka meant to fuel your imagination and let you explore a world of dynamic algorithmic musical patterns. The grammar in itself is a bit complex, but can be found living in the deepest corner of the source code.
+**Sardine** features an **embedded programming language** dedicated to the generation of musical patterns. **Python code** and **pattern code** go hand in hand to compose a successful and musical *swimming function*. This is, by far, the most intriguing aspect of **Sardine**. These patterns can be used to generate rhythms, streams of notes, OSC addresses, numbers, random values, etc... They can be used just anywhere a regular Python value would be expected. They replace fixed values with dynamic values, regular variables by mutating variables, etc... 
 
-There are three basic types of values that can be used to compose a **Sardine** pattern:
+Think of this pattern-oriented programming language as a glorified *time-dependant* calculator that can also do some arithmetics on lists, with new operators such as `_`, `!` or `:`. The pattern syntax can be used for things like summoning musical scales, musical chords and applying some funny musical transformations (such as `.disco` or `.explosion`). All of this is *maïeutic*, aka meant to fuel your imagination and let you explore a world of dynamic algorithmic musical patterns.
 
-- **notes** : musical notes.
+!!! important
 
-- **names** : names denoting an address or an audio sample file name.
+    To be precise, the **pattern syntax** is a fully-fleged programming language. It is distinct from Python. This programming language is **embedded within Sardine**. It has its own rules, its own operations, its own syntax. However, you will soon see that the syntax is much simpler than the one used by Python.
+
+There is a certain amount of communication and inter-operability between the pattern syntax and the Python code. Some variables and some iterators are shared. Information about the clock can also be accessed both in Python code and in pattern code. You will soon learn that playing around with semi-random values can generate very fruitful musical results.
+
+#### Composing a pattern
+
+Patterns as written as strings of values separated by commas: `1,2,3,4`, `dada, baba, lala`, `synth/freq, synth/mod`, `{1,2,0.2}, 5*4, s(2)`, etc... It is recommended to use double quotes for your patterns, because the single quotation mark is an operator used by the pattern syntax.
+
+#### Patterns are lists
+
+Fundamentally, a pattern will always yield a list as a result. The most complicated pattern generation expression you can imagine will always result in a goold old Python list that you need to iterate through using an index. Senders can always receive an index, directly as the first argument of their `.out()` method: `S('hh:{1,10}, legato='r', pan='r, 1', speed='s($)*4').out(i)`.
+
+To pattern, you always need an iterator and a pattern. There are multiple ways to generate iterators, whether you want to use shorthand iterators (`i.i`) or more complex iterators generated by recursion:
+
+```python
+def iter(d=0.5, i=0):
+    S('bd').out(i)
+    a(iter, d=0.5, i=i+1)
+```
+
+You will see people leaning more towards a technique or another. It is of paramount importance to master the usage of iterators. You can for instance limit the range of an iterator by using a modulo operation to only iterate over a few chosen values in your pattern:
+
+
+```python
+def iter(d=0.5, i=0):
+    S('bd', speed={1_100}).out(i%8)
+    a(iter, d=0.5, i=i+1)
+```
+
+You can also suddenly decide to iterate by decrementing and not by incrementing to reverse your pattern:
+
+```python
+i.i = [0, -1]
+def iter(d=0.5):
+    S('bd', speed={1_100}).out(i.i % 8)
+    a(iter, d=0.5)
+```
+
+You can be really creative with how you handle your iterators, giving you another way to create more complex patterns.
+
+#### The Pattern Object
+
+There is a method called `P()`, that can be used to write a pattern outside of a sender. This method will need two arguments: the pattern itself followed by the iterator. You can use it to introduce **Sardine** patterns in regular Python code. It can be particularly useful to pattern the recursion delay of your *swimming functions*:
+
+```python
+def iter(d=0.5):
+    S('bd', speed={1_100}).out(i.i % 8)
+    a(iter, d=P('0.5!8, 0.25!4', i.p))
+```
+
+There is nothing more to know about it really. It can be particularly convenient to explore patterns by combining it with a `print()` statement.
+
+
+#### Value types
+
+The first important thing to learn is what the *atomic* values are. Atomic values are the absolute basics. They denote something that can be transformed or something upon which you can build a calculation. There are three fundamental basic *types* of values that can be used to compose a **Sardine** pattern:
+
+- **notes** : musical notes. Symbolic names referring to a particular pitch.
+
+- **names** : names denoting an OSC address or an audio sample file name.
 
 - **numbers**: floating-point numbers or integers.
+    * numbers can also be information coming from the clock, shared iterators and shared variables (*eg.* see the next section).
 
-All these values, even if not of the same type, can interact with one another, which means that you can write a scale down and transpose it by a given factor just by writing an addition: `C->penta + 2`.
+All these values, even if not of the same type, can interact with one another, which means that you can write a scale and transpose it by a given factor just by doing math on it: `C->penta + 2`. The main design principle **Sardine** is trying to follow is not to impose any limits to what you can do with values you interact with. Giving the possibility to assign things to other things freely is one way not to hinder  the user and to encourage creativity.
 
-If you are familiar with *live coding* already, this idea of playing with algorithmic patterns might ring a bell. If you are not, let me start now with more detailed explanations.
+##### Variable values
 
-#### Sardine grammar
+There are some values you can summon, which cannot yield a deterministic result. If you wish to add 2 to the current number of beats elapsed in the bar, the result will likely differ depending on the beat number during which the calculation takes place. Likely, you can ask **Sardine** what is the current value of a variable, or what the current year number is. These values are based on **Sardine** clock time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time.
 
-Think of the pattern language as a novel way to write lists. Fundamentally, **Sardine** patterns are just list of values, separated each by commas: `1,2,3,4`. Whitespace don't matter. Each element written between commas can be a more complex expression: `1+2, 2*4, r, {5_10}`. Some values are atomic, they only are one thing. `1` is nothing but `1`. Some values are more complex, and can represent lists of values: `C-min7` is a four-note structure made of the notes composing the C minor 7 chord.
+- `$`: *tick*, the tick number since the clock started.
 
-Lists are defined as a list of operations **separated by whitespaces**. I will present some patterns in gradual order of complexity before detailing the list of available operators.
+- `r`: *random*, between 0 and 1.
 
-```python
-# parser('1 2 3'): a list of numbers
-[1.0, 2.0, 3.0]
+- `p`: *phase*, a number between 0 and your c.ppqn.
 
-# parser('1 2 3*3'): multiplication on last number
-[1.0, 2.0, 9.0]
+- `m`: measure, the measure since the clock started.
 
-# parser('r+1 r/4 r*2'): random numbers and math
-[1.691424279818424, 0.12130662023101241, 0.39367309061991507]
+There are other temporal values to be accessed, but these will not be referring to **Sardine** time. They are just extrapolated from the current absolute time on your OS:
 
-# parser('1_5 2_7'): list operators, generating lists
-[1, 2, 3, 4, 5, 2, 3, 4, 5, 6, 7]
+- `$.Y`: year, the current year.
+- `$.M`: month, the current month.
+- `$.D`: day, the current day.
+- `$.H`: hour, the current hour.
+- `$.m`: minute, the current minute.
+- `$.S`: second, the current second.
+- `$.µ`: microsecond, the current microsecond.
 
-# parser('1_5/2'): you can do math on lists
-[0.5, 1.0, 1.5, 2.0, 2.5]
+Some other values are variables that can be freely altered both from the Python side and from the pattern side. They can be two things:
 
-# parser('1_5/2!!2'): and apply a transformer
-[0.5, 0.5, 1.0, 1.0, 1.5, 1.5, 2.0, 2.0, 2.5, 2.5]
+- **iterators**: `i.a` ... `i.z` and `i.A` ... `i.Z`, one for each letter of the latin alphabet both lowercase and uppercase.
+- **variables**: `v.a` ... `v.z` and `v.A` ... `v.Z`, one for each letter of the latin alphabet both lowercase and uppercase.
 
-#  parser('1_5/2!![2,3]'): but the transformer can be a list
-[0.5, 0.5, 1.0, 1.0, 1.0, 1.5, 1.5, 2.0, 2.0, 2.0, 2.5, 2.5]
+**Iterators** will yield a different result each time you call them. That is because they are *counters*. They increment or decrement each time they are activated by a given step. To change the current step of an **iterator**, you must provide them a new base value and step value as a list : `i.a = [0, 5]`. This example will make the iterator start from 0 and increment by 5 everytime. Iterators can also be resetted globally or invidually. The method to do so is specific to which side you are currently manipulating them (pattern or Python):
 
-#  parser('1_5/2!![2,3]|1'): because of |, it's either a long list or 1. 
-[1.0]
+- **Python**: `i.reset("a")`
+- **Pattern**: `i.a.reset`
 
-# parser('1|2|3|4|5') # random picking
-[2.0]
+You can also set your iterator to a given value:
 
-# parser('dada|baba|lala:2') # some operators work on names! 
-['lala:1', 'lala:2', 'lala:3']
-```
-You get it, the pattern system can become quite complicated even if it only follows simple mathemetical rules. Here is a list of possible operators:
+- **Python**: `i.a = 5`
+- **Pattern**: `i.a = 5` 
 
-- math unary operators: `+2`, `-2`
-- math binary operators: `+`, `-`, `*`, `/`
-- `r` for a random number between `0.0` and `1.0`.
-- parenthesis for complex precedence
-- brackets and comma for lists
-- **Sardine** binary operators:
-    - `x!y`: replication, `y` times `x`.
-    - `x!!y`: replication for lists, repeat `y` times each in `x`.
-    - `x:y`: range, pick one between `x` and `y`.
-    - `x|y`: choice. Choose one between `x` and `y`.
-* **Sardine** list operators:
-    - `x_y`: generate a ramp from `x` to `y`.
+**Variables** are based on the same principle. The main difference is that they don't increment everytime you call them. They are just good old values you can use and manipulate both on the Python and pattern side. The syntax for their usage is strictly similar to the one used by **iterators**.
 
-Try them and see if you find something interesting. Some operators might now always yield the same result depending on the result of chance based operators. Here are some patterns to get you started. I hope that they will help you to understand how all of this works:
-```python
-parser('1_3+(1_3|10)')
-parser('r*8!4')
-parser('[r,r,r]/[1,2,3]*2')
-parser('1_5/2_5!!2')
-```
-#### A grammar for notes
+##### Musical notes
 
-There is another special grammar that you will only encounter for some specific arguments such as `note` or `midinote`. This grammar is specialized in writing note sequences, and notes can be written using the anglo-saxon or french system:
+You can write notes in patterns. Notes will be converted to some MIDI value used by **SuperDirt**. It means that notes are numbers too and that you can do math on them if you wish to. The syntax to write notes is the following. The steps 2 and 3 can be omitted:
 
-- `c d e f g a b`: anglo saxon.
-- `do re mi fa sol la si`: french system.
+- 1) capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`
+- 2) flat or sharp: `#`, `b`
+- 3) octave number: `0`..`9`
 
-A note is in fact a MIDI note number. `c` will yield `60`, the note C played at the 5th octave on a piano. Notes can receive the modifiers you expect them to receive:
+##### Regular names
 
-- `#`: make a note sharp. You can stack sharps if you wish: `c####`.
-- `b`: make a note flat. You can stack flats if you wish: `cbbbb`.
-- `0-9`: octave modifier. You can write `c4`, `mi2` or any other note.
-- `+`: make a note an octave higher. You can stack it as well: `c5++`.
-- `-`: make a note an octave lower. You can stack it as well: `c5--`.
-- `:`: feed a **chord qualifier**. They will turn a single note into an array of notes.
+Names are just... good old names. There are some rules to know but it is really easy to remember:
 
-I dislike this latter feature quite a lot because it doesn't do anything to account for voice-leading, inversions or octave shifts! I keep it around because it can sometimes be useful. Here is a list of current chord qualifiers you can use:
+- a single letter is not a name.
+- a name cannot start with a number.
 
-```python
-'dim'    : [0, 3, 6, 12],      'dim9'   : [0, 3, 6, 9, 14],
-'hdim7'  : [0, 3, 6, 10],      'hdim9'  : [0, 3, 6, 10, 14],
-'hdimb9'  : [0, 3, 6, 10, 13], 'dim7'   : [0, 3, 6, 9],
-'7dim5'  : [0, 4, 6, 10],      'aug'    : [0, 4, 8, 12],
-'augMaj7': [0, 4, 8, 11],      'aug7'   : [0, 4, 8, 10],
-'aug9'   : [0, 4, 10, 14],     'maj'    : [0, 4, 7, 12],
-'maj7'   : [0, 4, 7, 11],      'maj9'   : [0, 4, 11, 14],
-'minmaj7': [0, 3, 7, 11],      '7'      : [0, 4, 7, 10],
-'9'      : [0, 4, 10, 14],     'b9'     : [0, 4, 10, 13],
-'mM9'    : [0, 3, 11, 14],     'min'    : [0, 3, 7, 12],
-'min7'   : [0, 3, 7, 10],      'min9'   : [0, 3, 10, 14],
-'sus4'   : [0, 5, 7, 12],      'sus2'   : [0, 2, 7, 12],
-'b5'     : [0, 4, 6, 12],      'mb5'    : [0, 3, 6, 12],
-```
+Here is a list of some valid names you could use: `dada`, `kqsdlkj321` or `hellyearhsardineiscool2`. Most of the time, these names will correspond to a given sample name in your library. Be sure to name your sample folders accordingly to respect these rules.
 
-#### Patterns in senders
+##### OSC Addresses
 
-Every parameter available with the `S()`, `M()` or `O()` object can be patterned. The **Sardine** grammar is automatically parsed and transformed to a list when used as a parameter of these objects. Take a look at the following example:
+Addresses and names are really similar, but they can also be composite names, aka. two or more names separated by a right-angled slash `/`. They are used to write OSC addresses, which usually adhere to this principle. Some valid addresses would look like: `synth/freq/mod` or `robot/arm/pinky`.
 
-```python
-@swim
-def parametrized(d=1, i=0):
-    S('cp:1_10', 
-        cutoff= '1_10*100',
-        speed='r*2 1 2',
-        legato='0.5!2 0.2 0.8', 
-        room='1_10/10', 
-        dry=0.2).out(i)
-    again(parametrized, d=0.5, i=i+1)
-```
+#### Math but funnier
 
-This is a very dynamic sequence thanks to the use of the **Sardine** grammar.  There are a few things you need to know before using the **Sardine** grammar in your own patterns. Patterns are parsed automatically as lists when they are declared as strings for each parameter. By default, **Sardine** will return the first element of the list because it doesn't know what value you would like to get out of the list!
+The pattern syntax started out by being a very simple calculator on integers. It then spreaded out to be able to pattern a lot of things. The pattern syntax is still pretty new and I don't expect it to be final before at least a year or even more. You can safely expect that some things will change in the following days or months. In the meantime, it works and you can do really interesting things with it. It is already pretty capable of being helpful to generate the objects you expect to find in an electronic instrument: LFOs, ramps, melodic generators, etc..
 
-The `.out()` method can receive an optional `iter` argument (the first for convenience). This argument will indicate what value you would like to get out of the list. You can't pick a value too far in your lists and you can use asymetrical lists of different lengths. **Sardine** will round your `iter` to pick the appropriate value just like the `itertools.cycle` would have done in regular Python. Try it by yourself to understand this mechanism better:
+##### Basic Arithmetics
 
-```python
-# speed=1 because first in list and no iter
-S('bd', speed='1 2 3 4').out()
-# speed=3 because iter=2
-S('bd', speed='1 2 3 4').out(2) # change me
-```
+The pattern syntax includes some basic arithmetic operations that you expect to find such as `+`, `-`, `*`, `/`, `//` (floor division) , `%` (modulo). They work on almost any type of values. Of course, names and addresses do not support arithmetics very well, so don't even try to do it, it will likely crash. However, you can do arithmetics on just the numeric part of a name: `dada:(2+2)`. The result of this operation will be `dada:4`. While being really useful for a lot of things, arithmetics become particularly fun when you start patterning random or moving values such as the tick number: `$/20`.
 
-In a **swimming function**, you might use an iterator to iterate on your list by recursion:
+##### Basic functions
 
-```python
-@swim
-def woohoo(d=0.5, i=0):
-    S('bd', speed='1_10').out(i)
-    again(woohoo, d=0.125, i=i+1) # change me
-```
+The typical functions you can access on a scientific calculator are present in **Sardine**:
 
-If you wish to iterate in the opposite direction, just count in the opposite direction:
+- `sin` and `cos`: **sinus** and **cosinus** functions used to compute periodc phenomenons (how convenient, just like sound).
+- `tan`: tangent function.
 
-```python
-@swim
-def woohoo(d=0.5, i=0):
-    S('bd', speed='1_10').out(i)
-    again(woohoo, d=0.125, i=i-1) # change me
-```
+They are extremely useful for generating signal-like patterns, even though the resolution is not the greatest due to how **Sardine** operates. 
 
-If you wish to pick a random value out of your list, but only 25% of the time, do this:
+##### Number ranges
 
-```python
-from random import randint
-@swim
-def woohoo(d=0.5, i=0):
-    S('bd', speed='1_10').out(i)
-    again(woohoo, d=0.125, 
-            i=randint(1,20) if random() > 0.75 else i-1)
-```
+As a shorthand, you can use the `1:10` syntax to generate a number between `1` and `10`. This is also working for floating point numbers! 
 
-Combine the iteration system with the **Sardine** grammar for maximal fun.
+##### Number ramps
 
-#### Patterns everywhere
+You can generate ramps by surrounding two numbers with curly braces: `{1,10}`. This syntax will yield the following result: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. You can also generate a ramp with a floating point range by specifying it as the third argument: `{1,10,0.1}`. This is really useful if you are looking to generate linear LFOs.
 
-There are three objects that can be used to play with the patterning system everywhere, and not only with senders objects:
+##### Repeat operator
 
-- `Pnum(pattern: str, i: int)`: for the number parser.
-- `Pname(pattern: str, i: int)`: for the name parser.
-- `Pnote(pattern: str, i: int)`: for the note parser.
+The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed later.
 
-These objects allow you to play with the patterning system everywhere in your **swimming functions**. It can be particularly interesting for generating rhythmic sequences:
+##### Overflow protection 
 
-```python
-@swim
-def bd(d=0.5, i=0):
-    S('notes:1',
-            room=0.5,
-            speed='1 0.5 1 2',
-            midinote='c5 e5 g5 a5').out(i)
-    S('notes:1',
-            speed='1 0.5 1 2',
-            midinote='e5 g5 bb5 e6').out(i)
-    a(bd, d=Pnum('1 0.5 0.5 2 0.5 0.5', i), i=i+1)
-```
+Some values such as notes need to be confined in the usual range of MIDI notes, defined on 8 bytes, from `0` to `127`. Math operations on notes that should result in overflowing that limit will be wrapped around. 128 will be changed into 0, etc...  Most arithmetic operations are wrapped around. If you think that it makes no sense, I feel the same too but I am waiting to find a better solution to this problem. I could probably just lock the value to its bounds. More on this in later versions.
 
-They are also great for investigating the different available grammars, and complement `parser()` and `parser_repl()` quite well!
+#### Dealing with notes
+
+The support for traditional notes is still very basic. You can write very basic melodies with **Sardine**, but there is no good syntax for algorithmic composition like the one you could find in a tool such as **SuperCollider**. This is likely to change in the future, but dealing with musical objects is always extra difficult just like in any other computer music software. There are many ways to approach this, and it can be hard to decide which one is the right one or even to impose a vision about the way to deal with traditional musical objects such as chords and notes.
+
+##### Notes are integers
+
+Notes in **Sardine** are values just any other. It means that the whole range of arithmetic operations is available to you. Internally, a note becomes a number as soon as it is parsed by the system (based on a MIDI Note to integer conversion).
+
+##### Note qualifiers
+
+A **Sardine** note can receive a specific quality. Having a quality means being chosen as the base note for building a collection (chord, scale, structure). You can print the list of available qualifiers by using the `print_scales()` function. To qualify a note, the right arrow operator must be used: `->`. The list of available qualities is subject to change and additions. I will not reproduce it here. Here are some examples of the qualification of a note: `D3b->penta`, `E5#->fifths`, `G4->messiaen1`.
 
 ## MIDI
 
@@ -435,7 +486,7 @@ Here is an example of a **swimming function** sending a constant MIDI Note:
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(delay=0.3, note=60, 
+    M(dur=0.3, note=60, 
             velocity=127, channel=0).out()
     anew(hop, d=0.5, i=i+1)
 ```
@@ -447,7 +498,7 @@ Let's go further and make an arpeggio using the pattern system:
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(delay=0.3, note='60 46 50 67', 
+    M(dur=0.3, note='60 46 50 67', 
             velocity=127, channel=0).out(i)
     anew(hop, d=0.5, i=i+1)
 ```
@@ -457,7 +508,7 @@ A similar function exists for sending MIDI CC messages. Let's combine it with ou
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(delay=0.3, note='60 46 50 67', 
+    M(dur=0.3, note='60 46 50 67', 
             velocity=127, channel=0).out(i)
     cc(channel=0, control=20, value=randint(1,127))
     anew(hop, d=0.5, i=i+1)

@@ -195,6 +195,7 @@ Playing a little melody by tweaking the `note` argument.
 def midi(d=0.5, i=0):
     M(channel='0,1,2,3',
       velocity='20 + (r*80)',
+      dur=0.4,
       note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
     again(midi, d=0.5, i=i+1)
 ```
@@ -207,13 +208,13 @@ The same melody spreaded out on three MIDI channels (one per note) with random v
 def midi(d=0.5, i=0):
     M(channel='0,1,2,3',
       velocity='20 + (r*80)',
+      dur=0.4,
       note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
     pgch(P('1,2,3,4', i)) # switching
     cc(channel=0, control=20, value=50) # control
     again(midi, d=0.5, i=i+1)
 ```
 Switching between program `1`, `2`, `3` and `4` on your MIDI Synth. Sending a control change on channel `0`, number `20` for a value of `50`.
-
 
 
 ## Rhythm
@@ -292,7 +293,7 @@ Create rhythm using the `sleep()` function. Fully compatible with everything els
 ```python3
 @swim
 def hh(d=0.5, i=0):
-    S('hh', speed='{1_8}').out(i)
+    S('hh', speed='{1,8}').out(i)
     again(hh, d=0.5, i=i+1)
 ```
 Changing the speed of audio playback for a given audio sample. Cheap version of tuning.
@@ -524,13 +525,13 @@ If you want to generate a number in the range `x` to `y` included, you can use t
 ```python3
 @swim
 def ramps(d=0.5, i=0):
-    S('amencutup:{0_10}', 
-        room='{0_1(0.1)}',
-        cutoff='{1_10}*100').out(i)
+    S('amencutup:{0,10}', 
+        room='{0,1,0.1}',
+        cutoff='{1,10}*100').out(i)
     again(ramps, d=0.5, i=i+1)
 ```
 
-You can generate ramps using the `{1_10}` syntax. This will generate the following list: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. You can also generate a ramp with a floating point range by specifying it in-between parentheses: `{1_10(10)}`.
+You can generate ramps using the `{1,10}` syntax. This will generate the following list: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. This is an extended version of Python base `range` function. You can also generate a ramp with a floating point range by specifying it as the third argument: `{1,10,0.1}`.
 
 ### Repeat
 
@@ -583,7 +584,7 @@ There is a finite list of actions you can perform on *amphibian variables*:
 ```python
 @swim
 def amphi_iter(d=0.25):
-    S('amencutup:{1_10}').out(i.i)
+    S('amencutup:{1,10}').out(i.i)
     if random() > 0.8:
         i.i = 0
     a(amphi_iter, d=0.25)
@@ -593,7 +594,7 @@ Similarly to *amphibian variables*, there is a thing called *amphibian iterators
 ```python
 @swim
 def amphi_iter(d=0.25):
-    S('amencutup:{1_10}', speed='1|2|i.i=0').out(i.i)
+    S('amencutup:{1,10}', speed='1|2|i.i=0').out(i.i)
     a(amphi_iter, d=0.25)
 ```
 These iterators can be reset or set on the pattern side!
@@ -605,7 +606,7 @@ def amphi_iter(d=0.25):
         i.i = [1, 5]
     else:
         i.i = [1, 2]
-    S('amencutup:{1_10}', speed='i.v|i.v=[1,2]').out(i.i)
+    S('amencutup:{1,10}', speed='i.v|i.v=[1,2]').out(i.i)
     a(amphi_iter, d=0.25)
 ```
 Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.

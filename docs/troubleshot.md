@@ -35,3 +35,14 @@ Some bugs and issues are related to **Sardine** itself. I try to document the er
     - 44100 or 48000hz on both sides (audio output / input). 
         
     You can check this using your operating system usual configuration tools. Note that pluging in and out a microphone can change the sampling rate automatically.
+
+!!! warning "I still can't hear anything!"
+    Sometimes, when you play around with *booting* and *quiting* Sardine repeatedly, your computer might start to get confused about who is using some of the network connections or not. You now have **zombie connexions** blocking the I/O process from happening (**Sardine** can't match with **SuperCollider**, etc...). This can also happen simply by opening multiple instances of **Sardine**.
+
+    If that is to happen, please make sure to:
+
+    - kill every instance of **Sardine** and **SuperCollider** and the code editors that hosted them.
+
+    - run `Server.killAll` in a brand-new **SuperCollider** window.
+
+    You can now start again.

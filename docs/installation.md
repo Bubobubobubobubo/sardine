@@ -5,16 +5,27 @@ hide:
 
 # Installation
 
-**Sardine** is still experimental software and it has not yet been fully packaged. You can be up and running in minutes if everything is going fine but depending on your proficiency level with programming tools, you might have to spend some extra time configuring everything up for the first time. Most of the setup process is straightforward, only some extra details need to be taken care of in some cases that will be detailed along the way.
+**Sardine** is still experimental software and it has not yet been fully packaged. You can be up and running in minutes if everything is going fine. Depending on your proficiency level with programming tools, you might find it to be a challenge to setup *Sardine* for the first time. For regular Unix users, programmers, and old-school users of the command line, the process will be a breeze. Most of the setup process is straightforward but some parts of it might need some caution and monitoring on your behalf. We are doing our best to make the installation process as **fast** and as **painless** as possible. This will take some time and efforts on our side!
 
-For those unfamiliar with *live-coding* tools, the installation is usually a two-step process:
+For those unfamiliar with *live-coding* tools and this is done, the installation is usually a two-step process:
+
 
 - **[MANDATORY]** install/configuration of the library + text editor.
 
 - **[RECOMMENDED]** install/configuration of the backend, the audio synthesis engine.
 
+## What exactly is Sardine?
+
+**Sardine** by itself is just a program that does I/O (*Input*/*Output*) of various musical information. It is up to you to configure the rest so that it can make sound! The better part is that you can **configure it however you like** for whatever musical purpose you have in mind :) By installing everything correctly, you will be able to integrate **Sardine** with almost any musical application.
+
+!!! info "Sardine is a multi-layered 'lasagna-style' software"
+    ![sardine_stack](images/sardine_stack.svg){ width="100%" }
+
+The hard part is not to install **Sardine** *per se*, which is just a regular Python program. The hard part is to setup the whole stack: sound engine, synchronization libraries, etc...
+
 !!! warning "Installing from Pypi or from a package manager"
     Installation of **Sardine**  using Pypi is not yet available. Of course, **Sardine** will be added when it will be ready for everyone to use! The first planned milestone is the **0.1** version that should be released later this year (2022). Until then, you should install it manually! The first released version will greatly simplify the installation process.
+
 
 ## Library
 
@@ -31,7 +42,7 @@ For those unfamiliar with *live-coding* tools, the installation is usually a two
 !!! note "Installing and updating a snake"
     1) Install [Python](https://www.python.org/) for your operating system (>=3.10). **Update if needed**!
 
-    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10.
+    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10. Python 3.11 is not officially supported!
 
 Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** installation (can be `python`, `python3`, `python3.10` depending on the system you are currently using)..
 

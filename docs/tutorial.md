@@ -3,6 +3,12 @@ hide:
     - navigation
 ---
 
+
+
+!!! danger "The tutorial is not up to date"
+
+    Sardine was updated quite a lot recently. The tutorial has not been fully updated to reflect changes. Please rely on the *Sardinopedia* for now, until I fix this long-form article :)
+
 # Using Sardine
 
 At least! You have now installed and configured Sardine. You are up and running, but you don't know how to use **Sardine**! This tutorial will hopefully help you to understand the different layers that are composing the performance/composition/improvisation system that **Sardine** is. I will not dive deep into details or materials dedicated to contributors or developers but give you the bare minimum to become a proficient **Sardine** user.

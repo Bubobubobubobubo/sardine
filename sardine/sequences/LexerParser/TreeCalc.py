@@ -27,16 +27,17 @@ class CalculateTree(Transformer):
 
     def return_pattern(self, *args):
         return list(args)
+
     # ---------------------------------------------------------------------- #
     # Variables: methods concerning bi-valent variables
     # ---------------------------------------------------------------------- #
 
     def get_variable(self, letter):
-        letter=str(letter)
+        letter = str(letter)
         return getattr(self.variables, letter)
 
     def reset_variable(self, letter):
-        letter=str(letter)
+        letter = str(letter)
         self.variables.reset(letter)
         return getattr(self.variables, letter)
 
@@ -46,15 +47,15 @@ class CalculateTree(Transformer):
         return getattr(self.variables, letter)
 
     # ---------------------------------------------------------------------- #
-    # Iterators: methods concerning iterators 
+    # Iterators: methods concerning iterators
     # ---------------------------------------------------------------------- #
 
     def get_iterator(self, letter):
-        letter=str(letter)
+        letter = str(letter)
         return getattr(self.iterators, letter)
 
     def reset_iterator(self, letter):
-        letter=str(letter)
+        letter = str(letter)
         self.iterators.reset(letter)
         return getattr(self.iterators, letter)
 

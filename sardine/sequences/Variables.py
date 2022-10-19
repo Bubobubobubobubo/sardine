@@ -6,7 +6,7 @@ from typing import Union
 class Variables(object):
     def __init__(self):
         """
-        Variables are named after the letters of the alphabet. They simply are 
+        Variables are named after the letters of the alphabet. They simply are
         variables object wrapped in a different way so that they can be used
         more easily live.
         """

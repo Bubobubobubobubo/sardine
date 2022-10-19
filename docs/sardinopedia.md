@@ -571,8 +571,11 @@ def fun(d=0.25):
 You can use them to leverage Python or the pattern syntax for what they do best: patterning or dealing with complex algorithmic transformations. Having them both available makes the pattern syntax even more expressive.
 
 There is a finite list of actions you can perform on *amphibian variables*:
+
 - using them (just by calling them)
+
 - setting them (`v.i = 5`)
+
 - resetting them to 0 (`v.i.reset`)
 
 ### Amphibian iterators

@@ -20,11 +20,7 @@ grammar = grammar_path / "grammars/proto.lark"
 
 
 class ListParser:
-    def __init__(self, 
-            clock, 
-            iterators,
-            variables,
-            parser_type: str = "proto"):
+    def __init__(self, clock, iterators, variables, parser_type: str = "proto"):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
         up to the user to choose the parser that fits best to a task. Each
@@ -59,9 +55,8 @@ class ListParser:
                     cache=True,
                     lexer="contextual",
                     transformer=CalculateTree(
-                        self.clock,
-                        self.iterators,
-                        self.variables),
+                        self.clock, self.iterators, self.variables
+                    ),
                 ),
             },
         }

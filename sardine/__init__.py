@@ -20,6 +20,8 @@ except ImportError:
 else:
     uvloop.install()
 
+from random import random, randint, choice
+from typing import Union
 from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
@@ -35,21 +37,16 @@ from .sequences import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .sequences.LexerParser.Qualifiers import qualifiers
+from .sequences.Sequence import (
+        E, euclid, mod, imod, pick, text_eater)
 from typing import Union
 from .sequences import *
-
-import os
-
-print(os.getpid())
-
-import psutil
 
 warnings.filterwarnings("ignore")
 # Use rich print by default
 pretty.install()
 
 sardine = """
-
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
 ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
 ╚█████╗░███████║██████╔╝██║░░██║██║██╔██╗██║█████╗░░
@@ -59,33 +56,37 @@ sardine = """
 
 Sardine is a MIDI/OSC sequencer made for live-coding
 Play music, read the docs, contribute, and have fun!
+WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
+GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
 """
 print(f"[red]{sardine}[/red]")
 
-
-def ticked(condition: bool):
+def _ticked(condition: bool):
     """Print an ASCII Art [X] if True or [ ] if false"""
     return "[X]" if condition else "[ ]"
-
 
 # Reading / Creating / Updating the configuration file
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
-
 print(
     f"[yellow]BPM: [red]{config.bpm}[/red],",
     f"[yellow]BEATS: [red]{config.beats}[/red]",
-    f"[yellow]SC: [red]{ticked(config.boot_superdirt)}[/red],",
-    f"[yellow]DEFERRED: [red]{ticked(config.deferred_scheduling)}[/red]",
+    f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
+    f"[yellow]DEFERRED: [red]{_ticked(config.deferred_scheduling)}[/red]",
     f"[yellow]MIDI: [red]{config.midi}[/red]",
 )
+
+# Here starts the complex and convoluted process of preparing a new blank 
+# Sardine session. Please read the annotations if you are willing to understand
+# how everything is setup.
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:
     try:
         SC = SuperColliderProcess(
-            startup_file=config.superdirt_config_path, verbose=config.verbose_superdirt
+            startup_file=config.superdirt_config_path, # config file
+            verbose=config.verbose_superdirt # verbosity for SC output
         )
     except OSError as error:
         print("[red]SuperCollider could not be found![/red]")
@@ -94,69 +95,91 @@ else:
 
 # Starting the default Clock
 c = Clock(
-    midi_port=config.midi,
-    bpm=config.bpm,
-    beats_per_bar=config.beats,
-    ppqn=config.ppqn,
-    deferred_scheduling=config.deferred_scheduling,
+    midi_port=config.midi, # default MIDI port 
+    bpm=config.bpm, # default BPM configuration
+    beats_per_bar=config.beats, # default beats per bar
+    ppqn=config.ppqn, # default pulses per quarter note (MIDI/Clock related)
+    deferred_scheduling=config.deferred_scheduling, # Clock related
 )
 
 # Synonyms for swimming function management
-cs = again = anew = a = c.schedule_func
-cr = c.remove
-stop = c.remove
+cs = again = anew = a = c.schedule_func # aliases for recursion
+cr = stop = c.remove
 children = c.print_children
-S = c.note  # default SuperDirt
-M = c.midinote  # default Midi Connexion
-O = c.oscmessage  # default OSC Sender
-MidiSend = MIDISender
-# O = OSCSender
-n = next
 
+# Senders: the most important I/O objects
+S = c.note  # default SuperDirt Sender
+M = c.midinote  # default Midi Sender
+O = c.oscmessage  # default OSC Sender
+
+MidiSend = MIDISender
 
 def hush(*args):
-    """Stop all runners"""
+    """
+    Name taken from Tidal. This is the most basic function to stop function(s)
+    from being called again. Will silence all functions by default. You can 
+    also specify one or more functions to be stopped, keeping the others alive.
+    """
     if len(args) >= 1:
         for runner in args:
-            cr(runner)
+            c.remove(runner)
     else:
         for runner in c.runners.values():
             runner.stop()
 
-
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
-    """Send a MIDI Note"""
+    """Helper function to send a MIDI Note"""
     asyncio.create_task(
         c._midi.note(delay=delay, note=note, velocity=velocity, channel=channel)
     )
 
-
 def cc(channel: int = 0, control: int = 20, value: int = 64):
+    """Control Changes (MIDI). Send a Control Change""" 
     asyncio.create_task(
-        c._midi.control_change(channel=channel, control=control, value=value)
+        c._midi.control_change(
+            channel=channel, 
+            control=control, 
+            value=value)
     )
 
 
 def pgch(channel: int = 0, program: int = 0):
-    asyncio.create_task(c._midi.program_change(channel=channel, program=program))
+    """Program Changes (MIDI). Send a Program Change"""
+    asyncio.create_task(
+            c._midi.program_change(
+                channel=channel, 
+                program=program))
 
 
 def pwheel(channel: int = 0, pitch: int = 0):
+    """Pitchwheel (MIDI). Send a pitchweel message. For people looking at 
+    the modwheel, this is usually done through control changes."""
     asyncio.create_task(c._midi.pitchwheel(channel=channel, pitch=pitch))
 
 
 def sysex(data: list[int]):
+    """
+    Sysex Messages (MIDI). Non-standard MIDI messages, usually used by 
+    some manufacturers to send custom messages and to provide more detailed
+    controls. Frequently used on older synths.
+    """
     asyncio.create_task(c._midi.sysex(data))
 
 
 def swim(fn):
-    """Push a function to the clock"""
+    """
+    Swimming decorator: push a function to the clock. The function will be 
+    declared and followed by the clock system to recurse in time if needed.
+    """
     cs(fn)
     return fn
 
 
 def die(fn):
-    """Remove a function from the clock"""
+    """
+    Swimming decorator: remove a function from the clock. The function will not
+    be called again and will likely stop recursing in time.
+    """
     cr(fn)
     return fn
 
@@ -218,12 +241,12 @@ def sleep(n_beats: Union[int, float]):
     c.tick_shift += ticks
 
 
+# IMPORTANT: this is where the clock starts being active (looping infinitely).
 c.start(active=config.active_clock)
 
 
 # Loading user_configuration.py from configuration folder
 import importlib
-
 if Path(f"{config.user_config_path}").is_file():
     spec = importlib.util.spec_from_file_location(
         "user_configuration", config.user_config_path
@@ -236,30 +259,28 @@ else:
     print(f"[red]No user provided configuration file found...")
 
 
+# Debugging parser: pure Sardine pattern syntax parser. Used for debugging when
+# developping Sardine. Will print the AST and result of a given operation.
+
 def parser(pattern: str):
     """Parse a single expression and get result"""
     parser = ListParser()
     print(parser.parse(pattern))
 
-
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(
-            clock=c, 
-            iterators=c.iterators,
-            parser_type=parser_type)
+    parser = ListParser(clock=c, iterators=c.iterators, parser_type=parser_type)
     try:
         while True:
             p = parser._parse_debug(pattern=input("> "))
     except KeyboardInterrupt:
         pass
 
-
 def lang_debug():
     """Debug mode for language dev"""
     return parser_repl(parser_type="proto")
 
-
+# Interface to the patterning system
 def Pat(pattern: str, i: int = 0):
     """Generates a pattern
 
@@ -276,34 +297,17 @@ def Pat(pattern: str, i: int = 0):
 
 P = Pat
 
-def E(step: int, maximum: int, index: int) -> bool:
-    """Euclidian rhythms at the pattern level"""
-    pattern = euclid(step, maximum)
-    return True if pattern[index % len(pattern)] == 1 else False
-
 def print_scales():
     """Print the list of built-in scales and chords"""
+    """Print all available scales in the patterning system"""
     print(qualifiers.keys())
 
-def mod(mod: int, i: int) -> bool:
-    """Fast modulo between a given integer and an iterator"""
-    return True if i % mod == 0 else False
 
 
-def imod(mod: int, i: int) -> bool:
-    """Inverse of the mod function"""
-    return True if i % mod == 0 else False
 
 
-def pick(*args) -> list:
-    """Shorted version of random.choice()"""
-    return choice(list(args))
 
 
-def bin(number: Union[float, int]) -> list:
-    """Get the binary representation of a number 
-    as a list of integer booleans"""
-    return list(format(number, "b"))
 
 
 class Pile:
@@ -315,4 +319,5 @@ class Pile:
         for i in range(iterator, iterator + height):
             self._pat.out(i)
 
+# Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables

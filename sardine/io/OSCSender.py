@@ -74,7 +74,7 @@ class OSCSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def out(self, i: Union[int, None] = None) -> None:
+    def out(self, i: Union[int, None] = 0) -> None:
         """Sender method"""
 
         final_message = {}

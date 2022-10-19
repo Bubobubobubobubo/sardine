@@ -30,6 +30,7 @@ from .io import OSCSender, MIDISender
 
 from .sequences import ListParser
 from .sequences.Iterators import Iterator
+from .sequences.Variables import Variables
 from .sequences.LexerParser.Qualifiers import qualifiers
 from typing import Union
 from .sequences import *
@@ -316,4 +317,4 @@ class Pile:
         for i in range(iterator, iterator + height):
             self._pat.out(i)
 
-i = c.iterators
+i, v = c.iterators, c.variables

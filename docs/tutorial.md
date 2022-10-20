@@ -327,7 +327,7 @@ You will see people leaning more towards a technique or another. It is of paramo
 
 ```python
 def iter(d=0.5, i=0):
-    S('bd', speed={1_100}).out(i%8)
+    S('bd', speed={1,100}).out(i%8)
     a(iter, d=0.5, i=i+1)
 ```
 
@@ -336,7 +336,7 @@ You can also suddenly decide to iterate by decrementing and not by incrementing 
 ```python
 i.i = [0, -1]
 def iter(d=0.5):
-    S('bd', speed={1_100}).out(i.i % 8)
+    S('bd', speed={1,100}).out(i.i % 8)
     a(iter, d=0.5)
 ```
 
@@ -348,7 +348,7 @@ There is a method called `P()`, that can be used to write a pattern outside of a
 
 ```python
 def iter(d=0.5):
-    S('bd', speed={1_100}).out(i.i % 8)
+    S('bd', speed={1,100}).out(i.i % 8)
     a(iter, d=P('0.5!8, 0.25!4', i.p))
 ```
 

@@ -331,7 +331,10 @@ def print_scales():
 
 def panic():
     """Panic function, will cut everything"""
+    # Superpanic is a synth capable of cutting every other synth
     S("superpanic").out()
+    # Followed by hush for stopping everything
+    hush()
 
 
 class Pile:

@@ -6,6 +6,11 @@ from rich import print
 import inspect
 import traceback
 from typing import Any, TYPE_CHECKING, Union
+from rich.panel import Panel
+
+def print_panel(text: str) -> None:
+    """Print text inside a Rich based Panel"""
+    print('\n', Panel.fit(text), end="")
 
 if TYPE_CHECKING:
     from . import Clock, TickHandle
@@ -319,7 +324,7 @@ class AsyncRunner:
         self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
-        print(f"[yellow][Init {name}][/yellow]")
+        print_panel(f"[yellow][[red]{name}[/red] is swimming][/yellow]")
 
         try:
             while self.states and self._swimming and not self._stop:
@@ -332,9 +337,9 @@ class AsyncRunner:
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
                     if pushed:
-                        print(f"[yellow][Reloaded {name}]")
+                        print_panel(f"[yellow][Updating [red]{name}[/red]]")
                     else:
-                        print(f"[yellow][Restored {name}]")
+                        print_panel(f"[yellow][Saving [red]{name}[/red] from crash]")
                     last_state = state
 
                 signature = inspect.signature(state.func)
@@ -398,7 +403,7 @@ class AsyncRunner:
                     self.swim()
         finally:
             # Remove from clock if necessary
-            print(f"[yellow][Stopped {name}]")
+            print_panel(f"[yellow][Stopped [red]{name}[/red]][/yellow]")
             self.clock.runners.pop(name, None)
 
     async def _call_func(self, delta: int, func, args, kwargs):

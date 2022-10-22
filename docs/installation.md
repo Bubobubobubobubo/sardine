@@ -78,6 +78,9 @@ You should now see a big bright `SARDINE` written on your screen. Congratulation
         * run `Quarks.install("SuperDirt")` in the SCIDE window.
         * run `SuperDirt.start` to start the engine.
 
+!!! tip "SC3-plugins"
+
+    You might want to check out [SC3-plugins](https://github.com/supercollider/sc3-plugins). These plugins will dramatically increase the possibilities if you have planned to use sampling or the internal synthesis engine quite a lot! 
 
 **SuperDirt** is the *optional* but very much recommended synthesis engine for **Sardine**. As a matter of fact, **Sardine** was initially built as an alternative client for **SuperDirt**. It is a well-known freen and open source piece of software used by live coders. **SuperDirt** is mostly developed by Julian Rohrhuber, and intended to be used initially for [TidalCycles](https://tidalcycles.org/), a truly great live coding library. It is meant to be used via a simple message-based syntax converted into SuperDirt instructions that can trigger samples, synthesizers and do many other things, taking care of the finicky details. Note that it also means that your **Sardine** configuration will be valid and portable to **TidalCycles** alternatively.
 

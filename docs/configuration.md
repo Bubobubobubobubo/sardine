@@ -139,6 +139,10 @@ s.reboot {
 )
 ```
 
+!!! tip "How to include a new sample folder"
+
+    SuperDirt treats a wildcard (`*`) at the end of the path to mean that there are named subdirectories. If you want to load just one sample directory, omit the wildcard.
+
 Many people already use the **SuperDirt** audio backend for live-coding, more specifically people working with [TidalCycles](https://tidalcycles.org). You will find a lot of configuration tips, tools and extensions by searching in the TOPLAP / Tidal communities forums and chats.
 
 ### Python

@@ -113,6 +113,90 @@ def second(d=0.5, rng=0):
 ```
 Feeding one swimming function with the data of another.
 
+## Advanced (Swimming fast)
+
+This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation / *Sardinopedia* before diving into the following section. You need to understand patterns, senders, and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
+
+### Swimming at clock speed
+
+```python
+@swim 
+def fast(d=t):
+    S('bd', speed='0.5,2', legato=0.1).out(
+            i.i, div=b, speed=2)
+    S('hh, jvbass:0|8|4,', 
+            pan='{0,1,0.1}',
+            legato=0.1).out(i.j, div=b/4 if rarely()
+                    else b/2, speed=2)
+    S('cp', legato=0.1).out(div=b*1.5)
+    a(fast, d=t)
+```
+**Sardine** swimming functions are usually slow (compared to clock speed). However, you can speed up your recursions to operate on the **clock tick** level. It means that you will get more rhythmic precision and that you can write more groovy expressions. It will also make your LFOs and signal-like patterns much more efficient as you will get a more granular control on time. There are two default variables already configured for you to use if you want to swim really fast:
+
+- `t` (for `tick`): the lowest logical rhythmical division.
+- `b` (for `beat`): a rhythmical division corresponding to `1` beat.
+
+They can be easily overriden so better know that they exist! By using them efficiently, you can start to create really precise and intricate rhythms or very fluid melodies and interleaving arpeggios/chords.
+
+### Fast swimming template
+
+```python
+@swim 
+def fast(d=t, i=0):
+    # print("Damn, that's fast!")
+    a(fast, d=t, i=i+1)
+```
+This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as *amphibian variables*, see below). This function is really fast, do not try to use `S()` or `M()` inside it before reading the following section. To acknowledge how fast it is, use `print()` and watch the console. You can see how it makes good use of the `t` variable as `delay` amount between recursions.
+
+### Divisors
+
+```python
+@swim 
+def fast(d=t, i=0):
+    S('bd').out(div=b)
+    a(fast, d=t, i=i+1)
+```
+The `.out` function as well as the `P()` object can take three arguments:
+
+- `i`: the iterator for patterning.
+
+- `div`: **a timing divisor**. 
+
+- `speed`: a speed factor for iterating over pattern values.
+
+In the above example, using `b` as divisor means that this `S()` event will hit every `b` clock ticks, `b` corresponding to 1 beat.
+
+```python
+@swim 
+def fast(d=t, i=0):
+    S('bd').out(div=b)
+    S('hh').out(div=b/4)
+    S('sd').out(div=b*2)
+    a(fast, d=t, i=i+1)
+```
+This new and improved function will play a hi-hat every 4th of a beat and a snare every 2 beats. You can freely multiply and divide `b` to form your typical rhythmical divisions. It can be used as a basis for retrieving all the traditional rhythmical durations.
+
+### Pattern speed
+
+```python
+# This is the classic Sardine slow function
+@swim 
+def slow(d=0.5):
+    S('bd, hh, sn, hh').out(i.i)
+    a(slow, d=0.5)
+    
+# This is a fast Sardine function
+@swim 
+def fast(d=t):
+    S('bd, hh, sn, hh').out(i.i, div=b/2, speed=1)
+    a(fast, d=t)
+```
+The two functions above yield a similar musical result. However, the fast version has been made explicit and is using the three arguments `.out()` can take. As you can see, there is a `speed` argument determining how fast we should iterate over the values of our pattern.
+
+By default, `speed=1` means that we will move forward to the next index of our patterns for every division (`b`). Changing speed to `2` (`speed=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`speed=0.5`), etc...
+
+It is not currently possible to have one speed for each and every value in the pattern. The speed is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
+
 ## Senders
 
 ### Bassdrum (S)
@@ -227,7 +311,7 @@ def bd(d=0.5):
     if often():
         S('bd').out()
     if sometimes():
-        S('hh).out()
+        S('hh').out()
     else:
         S('pluck').out()
     # condensed 
@@ -285,10 +369,111 @@ def zoom(d=0.5, i=0):
 ```
 Create rhythm using the `sleep()` function. Fully compatible with everything else! It is usually a good idea to use `sleep()` after having composed something complex to slice time even more.
 
+## Sampling
+
+Sampling is taken care of by **SuperDirt** but I don't think that an official documentation of the API exists outside of the documentation provided by libraries using it. So be it, here are some basics for you to get started :)
+
+### Sampler basics (S)
+
+```python3
+@swim
+def hh(d=0.5):
+    S('hh').out(i)
+    again(hh, d=0.5)
+```
+This will play the first file in the `hh` folder, loaded via **SuperDirt**.
+
+```python3
+@swim
+def hh(d=0.5):
+    S('hh:1').out(i)
+    again(hh, d=0.5)
+```
+This will play the second file, etc... Numbers wrap around, so you can't overflow and play a file that doesn't exist. It means that you can iterate freely on the sample number without fear.
+
+### Sample playback speed (S)
+
+```python
+@swim
+def hh(d=0.5):
+    S('jvbass:0', speed'1,2,3,4').out(i.i)
+    again(hh, d=0.5)
+```
+You can pitch samples up or down by changing the playback speed. `1` is the normal playback speed, `2` twice as fast and `0` will not play anything at all. You can play a file in reverse speed by inputting negative values such as `-1` for backwards normal speed, etc... Beware of very low numbers close to `0` as they will be sometimes harder to hear but will still take memory to be played, especially if there is nothing to stop them.
+
+### Sample playback volume (S)
+
+```python
+@swim
+def loud(d=0.5):
+    S('bd', speed'1', amp=1).out(i.i)
+    again(hh, d=0.5)
+```
+This bassdrum will be played very loud. The `amp` parameter will determine the volume of audio playback for a given sample. `0` equals to silence. `1` corresponds to full volume, with distortion of the audio signal being allowed for larger values.
+
+```python
+@swim
+def loud(d=0.5):
+    S('bd', speed'1', gain=1).out(i.i)
+    again(hh, d=0.5)
+```
+Gain is slightly similar to `amp`. The difference lies in the scaling. While `amp` is defined as a value on a linear scale, `gain` is defined on an exponential scale. The higher you go, the more subtle the change. Folks from the TidalCycles documentation recommend a value between `0` and `1.5` for better use.
+
+### Cutting/Stopping samples (S)
+
+```python
+@swim
+def cutting(d=0.5):
+    S('jvbass:0', legato=0.1).out(i.i)
+    again(cutting, d=0.5)
+```
+The `legato` parameter can be used to cut a sample hard after a given amount of time. It is a very useful parameter not to overlap sounds too much if you ever needed it. It can also be used a safety parameter for playing back long samples without loosing control over the stop time.
+
+
+```python
+@swim
+def cutting(d=0.5):
+    S('jvbass:0', cut=1).out(i.i)
+    again(cutting, d=0.5)
+```
+The `cut` parameter will cut the previously playing sample if trigerred on the same orbit. This is just like `legato` except that the duration of the `legato` will depend on the time spent between two sounds.
+
+
+```python
+@swim
+def cutting(d=0.5):
+    S('jvbass:0', sustain=0.01).out(i.i)
+    again(cutting, d=0.5)
+```
+The `sustain` value will determine the length of audio playback (in seconds).
+
+### Sample position (S)
+
+```python
+@swim
+def position(d=0.5):
+    S('long:0', begin='r/2', end=1).out(i.i)
+    again(position, d=0.5)
+```
+If playing long audio samples, you might want to *scroll* through the file, moving the playhead accross the file. You can use the `begin` and `end` parameters (from `0` to `1`) to set the begin playback point and the end playback point. You can pattern the `begin` parameter with great expressive effect.
+
+### Sample stretching (S)
+
+```python
+@swim 
+def streeeetch():
+    S('long', 
+            begin='r/2',
+            legato=2, 
+            timescale=1.2).out()
+    a(streeeetch)
+```
+
+You can get some interesting effects by using the `timescale` parameter (between `0` and `3` recommended) for stretching a sample over a given amount of time. This will result in a more *grainy* sound. This is some sort of timestretching for audio samples.
 
 ## Pitch
 
-### Playback speed
+### Playback speed (S)
 
 ```python3
 @swim
@@ -298,7 +483,7 @@ def hh(d=0.5, i=0):
 ```
 Changing the speed of audio playback for a given audio sample. Cheap version of tuning.
 
-### Sample to pitch
+### Sample to pitch (S)
 
 ```python3
 @swim
@@ -308,7 +493,7 @@ def hh(d=0.5, i=0):
 ```
 Pitching an audio sample relatively to a MIDI note.
 
-### Sample to freq
+### Sample to freq (S)
 
 ```python3
 @swim
@@ -319,7 +504,6 @@ def hh(d=0.5, i=0):
 Pitching an audio sample relatively to a given frequency (in `hertz`).
 
 ## Texture and effects
-
 
 ## Patterning basics
 

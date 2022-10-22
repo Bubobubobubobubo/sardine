@@ -1,6 +1,6 @@
 # https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
 # Taken from the CPython Github Repository. Custom version of the asyncio
-# REPL that will autoload Sardine whenever started. 
+# REPL that will autoload Sardine whenever started.
 
 import concurrent.futures
 import threading
@@ -15,7 +15,7 @@ from appdirs import user_data_dir
 from asyncio import futures
 from pathlib import Path
 
-# Appdirs boilerplate
+# Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 

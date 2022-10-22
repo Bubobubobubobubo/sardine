@@ -37,8 +37,7 @@ from .sequences import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .sequences.LexerParser.Qualifiers import qualifiers
-from .sequences.Sequence import (
-        E, euclid, mod, imod, pick, text_eater)
+from .sequences.Sequence import E, euclid, mod, imod, pick, text_eater
 from typing import Union
 from .sequences import *
 
@@ -61,9 +60,11 @@ GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
 """
 print(f"[red]{sardine}[/red]")
 
+
 def _ticked(condition: bool):
     """Print an ASCII Art [X] if True or [ ] if false"""
     return "[X]" if condition else "[ ]"
+
 
 # Reading / Creating / Updating the configuration file
 config = read_user_configuration()
@@ -77,16 +78,16 @@ print(
     f"[yellow]MIDI: [red]{config.midi}[/red]",
 )
 
-# Here starts the complex and convoluted process of preparing a new blank 
-# Sardine session. Please read the annotations if you are willing to understand
-# how everything is setup.
+# Here starts the complex and convoluted process of preparing a new blank
+# Sardine session. Please read the annotations if you are willing to understand
+# how everything is setup.
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:
     try:
         SC = SuperColliderProcess(
-            startup_file=config.superdirt_config_path, # config file
-            verbose=config.verbose_superdirt # verbosity for SC output
+            startup_file=config.superdirt_config_path,  # config file
+            verbose=config.verbose_superdirt,  # verbosity for SC output
         )
     except OSError as error:
         print("[red]SuperCollider could not be found![/red]")
@@ -95,29 +96,30 @@ else:
 
 # Starting the default Clock
 c = Clock(
-    midi_port=config.midi, # default MIDI port 
-    bpm=config.bpm, # default BPM configuration
-    beats_per_bar=config.beats, # default beats per bar
-    ppqn=config.ppqn, # default pulses per quarter note (MIDI/Clock related)
-    deferred_scheduling=config.deferred_scheduling, # Clock related
+    midi_port=config.midi,  # default MIDI port
+    bpm=config.bpm,  # default BPM configuration
+    beats_per_bar=config.beats,  # default beats per bar
+    ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
+    deferred_scheduling=config.deferred_scheduling,  # Clock related
 )
 
 # Synonyms for swimming function management
-cs = again = anew = a = c.schedule_func # aliases for recursion
+cs = again = anew = a = c.schedule_func  # aliases for recursion
 cr = stop = c.remove
 children = c.print_children
 
-# Senders: the most important I/O objects
+# Senders: the most important I/O objects
 S = c.note  # default SuperDirt Sender
 M = c.midinote  # default Midi Sender
 O = c.oscmessage  # default OSC Sender
 
 MidiSend = MIDISender
 
+
 def hush(*args):
     """
     Name taken from Tidal. This is the most basic function to stop function(s)
-    from being called again. Will silence all functions by default. You can 
+    from being called again. Will silence all functions by default. You can
     also specify one or more functions to be stopped, keeping the others alive.
     """
     if len(args) >= 1:
@@ -127,39 +129,35 @@ def hush(*args):
         for runner in c.runners.values():
             runner.stop()
 
+
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     """Helper function to send a MIDI Note"""
     asyncio.create_task(
         c._midi.note(delay=delay, note=note, velocity=velocity, channel=channel)
     )
 
+
 def cc(channel: int = 0, control: int = 20, value: int = 64):
-    """Control Changes (MIDI). Send a Control Change""" 
+    """Control Changes (MIDI). Send a Control Change"""
     asyncio.create_task(
-        c._midi.control_change(
-            channel=channel, 
-            control=control, 
-            value=value)
+        c._midi.control_change(channel=channel, control=control, value=value)
     )
 
 
 def pgch(channel: int = 0, program: int = 0):
     """Program Changes (MIDI). Send a Program Change"""
-    asyncio.create_task(
-            c._midi.program_change(
-                channel=channel, 
-                program=program))
+    asyncio.create_task(c._midi.program_change(channel=channel, program=program))
 
 
 def pwheel(channel: int = 0, pitch: int = 0):
-    """Pitchwheel (MIDI). Send a pitchweel message. For people looking at 
+    """Pitchwheel (MIDI). Send a pitchweel message. For people looking at
     the modwheel, this is usually done through control changes."""
     asyncio.create_task(c._midi.pitchwheel(channel=channel, pitch=pitch))
 
 
 def sysex(data: list[int]):
     """
-    Sysex Messages (MIDI). Non-standard MIDI messages, usually used by 
+    Sysex Messages (MIDI). Non-standard MIDI messages, usually used by
     some manufacturers to send custom messages and to provide more detailed
     controls. Frequently used on older synths.
     """
@@ -168,7 +166,7 @@ def sysex(data: list[int]):
 
 def swim(fn):
     """
-    Swimming decorator: push a function to the clock. The function will be 
+    Swimming decorator: push a function to the clock. The function will be
     declared and followed by the clock system to recurse in time if needed.
     """
     cs(fn)
@@ -247,6 +245,7 @@ c.start(active=config.active_clock)
 
 # Loading user_configuration.py from configuration folder
 import importlib
+
 if Path(f"{config.user_config_path}").is_file():
     spec = importlib.util.spec_from_file_location(
         "user_configuration", config.user_config_path
@@ -260,16 +259,20 @@ else:
 
 
 # Debugging parser: pure Sardine pattern syntax parser. Used for debugging when
-# developping Sardine. Will print the AST and result of a given operation.
+# developping Sardine. Will print the AST and result of a given operation.
+
 
 def parser(pattern: str):
     """Parse a single expression and get result"""
     parser = ListParser()
     print(parser.parse(pattern))
 
+
 def parser_repl(parser_type: str):
     """Parse a single expression and get result"""
-    parser = ListParser(clock=c, iterators=c.iterators, variables=c.variables, parser_type=parser_type)
+    parser = ListParser(
+        clock=c, iterators=c.iterators, variables=c.variables, parser_type=parser_type
+    )
 
     def _exit_case(string):
         if string.lower() == "exit":
@@ -281,17 +284,18 @@ def parser_repl(parser_type: str):
             if _exit_case(user_input):
                 break
             else:
-                p = parser._parse_debug(
-                        pattern=user_input)
+                p = parser._parse_debug(pattern=user_input)
     except KeyboardInterrupt:
         pass
+
 
 def lang_debug():
     """Debug mode for language dev"""
     return parser_repl(parser_type="proto")
 
-# Interface to the patterning system
-def Pat(pattern: str, i: int = 0):
+
+# Interface to the patterning system
+def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1):
     """Generates a pattern
 
     Args:
@@ -303,9 +307,21 @@ def Pat(pattern: str, i: int = 0):
     """
     parser = c.parser
     result = parser.parse(pattern)
-    return result[i % len(result)]
+
+    def _pattern_element(div: int, speed: int, iterator: int, pattern: list):
+        calc = (
+            round(
+                (((len(pattern) * div) + 1) * iterator / (div * speed)) % len(pattern)
+            )
+            - 1
+        )
+        return calc
+
+    return result[_pattern_element(div=div, speed=speed, iterator=i, pattern=result)]
+
 
 P = Pat
+
 
 def print_scales():
     """Print the list of built-in scales and chords"""
@@ -313,15 +329,14 @@ def print_scales():
     print(qualifiers.keys())
 
 
-
-
-
-
-
+def panic():
+    """Panic function, will cut everything"""
+    S("superpanic").out()
 
 
 class Pile:
     """Fast and dirty way to get polyphony working for sender objects"""
+
     def __init__(self, pattern):
         self._pat = pattern
 
@@ -329,5 +344,9 @@ class Pile:
         for i in range(iterator, iterator + height):
             self._pat.out(i)
 
-# Amphibian iterators and amphibian variables
+
+# Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
+
+# Facilitating fast swimming
+t, b = 1 / c.ppqn, c.ppqn

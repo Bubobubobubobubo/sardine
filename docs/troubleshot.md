@@ -15,7 +15,7 @@ Some bugs and issues are related to **Sardine** itself. I try to document the er
     **[ALL]**: This is likely the sign of an incomplete **Sardine** installation. Please make sure that you have `MSVC` (Windows), `gcc` (Linux) or `clang` (MacOS) installed and that you have also installed `CMake`. The installation failed because some libraries couldn't compile. By failing more or less silently, some other dependencies have not been installed. This is the mythical *broken sardine*.
 
 !!! warning "`python-rtmidi` fails on install"
-    **[LINUX/MACOS]**: Installation fails on `python-rtmidi build`. Its probably because the `libjack-dev` lib is missing. You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
+    **[LINUX/MACOS]**: Installation fails on `python-rtmidi build`. Its probably because you missed libjack development files (`libjack-dev` or `libjack-jack2-dev`). You can install it with `sudo apt-get install libjack-dev` on Debian based systems, with `brew` for MacOS, and with `pacman` for any other Arch-based system.
 
 !!! warning "`jack.h` missing on install"
     **[MACOS]**: Install fails on `python-rtmidi build`. You might have JackOSX installed. Remove it **entirely** from your system and rely on *CoreAudio*. Nothing personal against **Jack**, it just confuses the compilation process of `python-rtmidi`!

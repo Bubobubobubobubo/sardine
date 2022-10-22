@@ -74,12 +74,13 @@ class OSCSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def _pattern_element(self,
-            div: int, speed: int,
-            iterator: int, 
-            pattern: list):
-        calc = round((((len(pattern) * div) + 1) * iterator / 
-            (div * speed)) % len(pattern)) - 1
+    def _pattern_element(self, div: int, speed: int, iterator: int, pattern: list):
+        calc = (
+            round(
+                (((len(pattern) * div) + 1) * iterator / (div * speed)) % len(pattern)
+            )
+            - 1
+        )
         return calc
 
     def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
@@ -138,9 +139,13 @@ class OSCSender:
                 if value == []:
                     continue
                 if isinstance(value, list):
-                    value = float(value[
-                        self._pattern_element(div=div, speed=speed,
-                            iterator=i, pattern=value)])
+                    value = float(
+                        value[
+                            self._pattern_element(
+                                div=div, speed=speed, iterator=i, pattern=value
+                            )
+                        ]
+                    )
                     if _ != "trig":
                         final_message["message"].append(value)
                 else:
@@ -150,10 +155,17 @@ class OSCSender:
             if "trig" not in self.content.keys():
                 trig = 1
             else:
-                # self.content["trig"]
-                trig = int(self.content["trig"][
-                    self._pattern_element(div=div, speed=speed,
-                        iterator=i, pattern=self.content["trig"])])
+                # self.content["trig"]
+                trig = int(
+                    self.content["trig"][
+                        self._pattern_element(
+                            div=div,
+                            speed=speed,
+                            iterator=i,
+                            pattern=self.content["trig"],
+                        )
+                    ]
+                )
             if trig:
                 return self.schedule(final_message)
 

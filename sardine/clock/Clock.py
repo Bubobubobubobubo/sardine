@@ -24,9 +24,9 @@ T = TypeVar("T")
 MaybeCoroFunc = Callable[..., Union[T, Awaitable[T]]]
 
 # This specifies the number of ticks to offset the clock in the current context.
-# Usually this tick shift is updated within the context of scheduled functions
-# to simulate sleeping without actually blocking the function. Behavior is 
-# undefined if the tick shift is changed in the global context.
+# Usually this tick shift is updated within the context of scheduled functions
+# to simulate sleeping without actually blocking the function. Behavior is
+# undefined if the tick shift is changed in the global context.
 tick_shift = contextvars.ContextVar("tick_shift", default=0)
 
 
@@ -100,9 +100,9 @@ class Clock:
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
 
-        # This OSC port will forward clock information to external listeners
-        # This is a nice way to intercept clock messages for applications 
-        # spying on Sardine.
+        # This OSC port will forward clock information to external listeners
+        # This is a nice way to intercept clock messages for applications
+        # spying on Sardine.
         self._osc = Client(
             ip="127.0.0.1", port=12345, name="SardineOsc", ahead_amount=0
         )
@@ -816,9 +816,7 @@ class Clock:
             await asyncio.sleep(0.0)
             self._listener.wait_for_tick()
             self._increment_clock(
-                    temporal_information=(
-                        self._capture_link_info() if self._link else None
-                    )
+                temporal_information=(self._capture_link_info() if self._link else None)
             )
             elapsed = time.perf_counter() - begin
             self._delta_duration_list.append(self._estimate_bpm_from_delta(elapsed))

@@ -6,6 +6,7 @@
 <a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bubobubobubobubo/sardine" />
 </a>
+  @arnaldorusso
 </p>
 
 -----------

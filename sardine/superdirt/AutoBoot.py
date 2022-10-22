@@ -8,6 +8,7 @@ from appdirs import *
 import tempfile
 import psutil
 import asyncio
+from rich.console import Console
 from rich import print
 
 __all__ = ("SuperColliderProcess",)
@@ -186,21 +187,24 @@ class SuperColliderProcess:
 
     def boot(self) -> None:
         """Booting a background instance of SCLang!"""
-        print("[yellow][red]Sardine[/red] is booting SCLang && SuperDirt...[/yellow]")
-        self._sclang = subprocess.Popen(
-            [self._sclang_path],
-            stdin=subprocess.PIPE,
-            stdout=self.temp_file,
-            stderr=self.temp_file,
-            bufsize=1,
-            universal_newlines=True,
-            start_new_session=True,
-        )
+        console = Console()
+        from time import sleep
 
-        self.write_stdin(message="""load("{}")""".format(self._startup_file))
-
-        if self._synth_directory is not None:
-            self.load_custom_synthdefs()
+        with console.status("[yellow][red]Sardine[/red] is booting \
+SCLang && SuperDirt...[/yellow]") as status:
+            self._sclang = subprocess.Popen(
+                [self._sclang_path],
+                stdin=subprocess.PIPE,
+                stdout=self.temp_file,
+                stderr=self.temp_file,
+                bufsize=1,
+                universal_newlines=True,
+                start_new_session=True,
+            )
+            sleep(1)
+            self.write_stdin(message="""load("{}")""".format(self._startup_file))
+            if self._synth_directory is not None:
+                self.load_custom_synthdefs()
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""

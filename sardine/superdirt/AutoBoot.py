@@ -26,8 +26,8 @@ class SuperColliderProcess:
         self._startup_file = self._find_startup_file(user_file=startup_file)
         self.temp_file = tempfile.NamedTemporaryFile()
 
-        # If preemptive, all previously running instances of SuperCollider will be
-        # killed to prevent more issues...
+        # If preemptive, all previously running instances of SuperCollider
+        # will be killed to prevent more issues...
         if preemptive:
             self.hard_kill()
 
@@ -100,7 +100,6 @@ class SuperColliderProcess:
 
     def hard_kill(self) -> None:
         """Look for all instances of SuperCollider, kill them."""
-        # print("\n[bold red]Preemptive: Killing all SC instances...[/bold red]")
         try:
             for proc in psutil.process_iter():
                 if any(
@@ -109,7 +108,6 @@ class SuperColliderProcess:
                     print(f"Killing {proc.name()}")
                     proc.kill()
         except Exception:
-            # print(f"[yellow]There was no SC process to kill...")
             pass
 
     def write_stdin(self, message: str):
@@ -122,7 +120,7 @@ class SuperColliderProcess:
         if not message.endswith("\n"):
             message += "\n"
 
-        # Writing messages
+        # Writing messages (TODO: fix mechanism)
         self._sclang.stdin.write(message)
         self._sclang.stdin.flush()
 
@@ -138,7 +136,7 @@ class SuperColliderProcess:
         """Open SuperCollider frequency scope + VUmeter"""
         self.write_stdin("s.scope(); s.meter()")
 
-    def check_synth_file_extension(self, string: str) -> bool:
+    def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
     def startup_file_path(self) -> str:
@@ -149,10 +147,10 @@ class SuperColliderProcess:
         _, _, files = next(walk(self._synth_directory))
 
         # Filter by file extension (only .sc and .scd)
-        files = [f for f in files if self.check_synth_file_extension(f)]
+        files = [f for f in files if self._check_synth_file_extension(f)]
         if len(files) > 0:
             for fname in files:
-                with open(self._synth_directory + "/" + fname) as infile:
+                with open(self._synth_directory / fname) as infile:
                     for line in infile:
                         buffer += line
 

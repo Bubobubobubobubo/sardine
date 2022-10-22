@@ -44,9 +44,11 @@ warnings.filterwarnings("ignore")
 # Use rich print by default
 pretty.install()
 
+
 def _ticked(condition: bool):
     """Print an ASCII Art [X] if True or [ ] if false"""
     return "[X]" if condition else "[ ]"
+
 
 # Reading / Creating / Updating the configuration file
 config = read_user_configuration()
@@ -66,6 +68,7 @@ WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
 GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
 """
 from rich.panel import Panel
+
 print(Panel.fit(f"[red]{sardine}[/red]"))
 
 print(
@@ -76,9 +79,9 @@ print(
     f"[yellow]MIDI: [red]{config.midi}[/red]",
 )
 
-#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 # Here starts the complex and convoluted session setup process. #
-#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:

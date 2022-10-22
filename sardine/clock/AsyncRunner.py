@@ -1,16 +1,12 @@
-import asyncio
-from collections import deque
-from dataclasses import dataclass, field
-import functools
-from rich import print
-import inspect
-import traceback
 from typing import Any, TYPE_CHECKING, Union
+from dataclasses import dataclass, field
+from collections import deque
 from rich.panel import Panel
-
-def print_panel(text: str) -> None:
-    """Print text inside a Rich based Panel"""
-    print('\n', Panel.fit(text), end="")
+from rich import print
+import traceback
+import functools
+import asyncio
+import inspect
 
 if TYPE_CHECKING:
     from . import Clock, TickHandle
@@ -19,6 +15,14 @@ if TYPE_CHECKING:
 __all__ = ("AsyncRunner", "FunctionState")
 
 MAX_FUNCTION_STATES = 3
+
+
+def print_panel(text: str) -> None:
+    """
+    Print swimming function event inside a Rich based Panel.
+    The box is automatically resized to fit text length.
+    """
+    print("\n", Panel.fit(text), end="")
 
 
 def _assert_function_signature(sig: inspect.Signature, args, kwargs):

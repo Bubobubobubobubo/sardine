@@ -4,13 +4,12 @@
 # they are not accessed right now but will later in time when the user will
 # start interacting with the system.
 
+from random import random, randint, choice
+from typing import Union
 from rich import print
 import asyncio
 import warnings
 import sys
-from random import random, randint, choice
-from typing import Union
-
 
 try:
     import uvloop
@@ -45,6 +44,14 @@ warnings.filterwarnings("ignore")
 # Use rich print by default
 pretty.install()
 
+def _ticked(condition: bool):
+    """Print an ASCII Art [X] if True or [ ] if false"""
+    return "[X]" if condition else "[ ]"
+
+# Reading / Creating / Updating the configuration file
+config = read_user_configuration()
+print_config = pretty_print_configuration_file
+
 sardine = """
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
 ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
@@ -58,29 +65,20 @@ Play music, read the docs, contribute, and have fun!
 WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
 GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
 """
-print(f"[red]{sardine}[/red]")
-
-
-def _ticked(condition: bool):
-    """Print an ASCII Art [X] if True or [ ] if false"""
-    return "[X]" if condition else "[ ]"
-
-
-# Reading / Creating / Updating the configuration file
-config = read_user_configuration()
-print_config = pretty_print_configuration_file
+from rich.panel import Panel
+print(Panel.fit(f"[red]{sardine}[/red]"))
 
 print(
-    f"[yellow]BPM: [red]{config.bpm}[/red],",
+    f" [yellow]BPM: [red]{config.bpm}[/red],",
     f"[yellow]BEATS: [red]{config.beats}[/red]",
     f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
-    f"[yellow]DEFERRED: [red]{_ticked(config.deferred_scheduling)}[/red]",
+    f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
     f"[yellow]MIDI: [red]{config.midi}[/red]",
 )
 
-# Here starts the complex and convoluted process of preparing a new blank
-# Sardine session. Please read the annotations if you are willing to understand
-# how everything is setup.
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
+# Here starts the complex and convoluted session setup process. #
+#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 # Booting SuperCollider / SuperDirt
 if config.boot_superdirt is True:
@@ -331,9 +329,9 @@ def print_scales():
 
 def panic():
     """Panic function, will cut everything"""
-    # Superpanic is a synth capable of cutting every other synth
+    # Superpanic is a synth capable of cutting every other synth
     S("superpanic").out()
-    # Followed by hush for stopping everything
+    # Followed by hush for stopping everything
     hush()
 
 

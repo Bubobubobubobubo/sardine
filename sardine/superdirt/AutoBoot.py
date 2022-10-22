@@ -190,8 +190,10 @@ class SuperColliderProcess:
         console = Console()
         from time import sleep
 
-        with console.status("[yellow][red]Sardine[/red] is booting \
-SCLang && SuperDirt...[/yellow]") as status:
+        with console.status(
+            "[yellow][red]Sardine[/red] is booting \
+SCLang && SuperDirt...[/yellow]"
+        ) as status:
             self._sclang = subprocess.Popen(
                 [self._sclang_path],
                 stdin=subprocess.PIPE,

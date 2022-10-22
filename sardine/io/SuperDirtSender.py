@@ -70,12 +70,25 @@ class SuperDirtSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-    def out(self, i: Union[None, int] = 0) -> None:
+    def _pattern_element(self, div: int, speed: int, iterator: int, pattern: list):
+        calc = (
+            round(
+                (((len(pattern) * div) + 1) * iterator / (div * speed)) % len(pattern)
+            )
+            - 1
+        )
+        return calc
+
+    def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
         """
         Prototype for the Sender output.
         """
+        if self.clock.tick % div != 0:
+            return
 
+        # Value checking
         i = int(i)
+        div = int(div) if div != 0 else self.clock.ppqn
 
         final_message = []
 
@@ -111,7 +124,16 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(["sound", self.sound[i % len(self.sound)]])
+                final_message.extend(
+                    [
+                        "sound",
+                        self.sound[
+                            self._pattern_element(
+                                iterator=i, div=div, speed=speed, pattern=self.sound
+                            )
+                        ],
+                    ]
+                )
             else:
                 final_message.extend(["sound", self.sound])
 
@@ -120,7 +142,13 @@ class SuperDirtSender:
                 if value == []:
                     continue
                 if isinstance(value, list):
-                    value = float(value[i % len(value)])
+                    value = float(
+                        value[
+                            self._pattern_element(
+                                iterator=i, div=div, speed=speed, pattern=value
+                            )
+                        ]
+                    )
                     final_message.extend([key, value])
                 else:
                     final_message.extend([key, float(value)])

@@ -92,8 +92,19 @@ class MIDISender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
-    def out(self, i: Union[int, None] = 0) -> None:
+    def _pattern_element(self,
+            div: int, speed: int,
+            iterator: int, 
+            pattern: list):
+        calc = round((((len(pattern) * div) + 1) * iterator / 
+            (div * speed)) % len(pattern)) - 1
+        return calc
+
+    def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
         """Must be able to deal with polyphonic messages"""
+        if self.clock.tick % div != 0:
+            return
+
         final_message = {
             "delay": self.delay,
             "velocity": self.velocity,
@@ -130,12 +141,17 @@ class MIDISender:
                     return
                 if isinstance(value, (list, str)):
                     if key in ["velocity", "channel", "note"]:
-                        final_message[key] = int(value[i % len(value)]) % 127
+                        final_message[key] = int(value[
+                            self._pattern_element(iterator=i, div=div,
+                                speed=speed,pattern=value)]) % 127
                     else:
-                        final_message[key] = float(value[i % len(value)])
+                        final_message[key] = float(value[
+                            self._pattern_element(iterator=i, div=div,
+                                speed=speed, pattern=value)])
 
             if isinstance(self.trig, list):
-                self.trig = self.trig[i % len(self.trig)]
+                self.trig = self.trig[self._pattern_element(
+                    iterator=i, div=div, speed=speed, pattern=self.trig)]
             else:
                 self.trig = int(self.trig)
             if self.trig:

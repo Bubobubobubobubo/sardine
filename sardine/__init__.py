@@ -291,7 +291,7 @@ def lang_debug():
     return parser_repl(parser_type="proto")
 
 # Interface to the patterning system
-def Pat(pattern: str, i: int = 0):
+def Pat(pattern: str, i: int = 0, div: int=1, speed: int=1):
     """Generates a pattern
 
     Args:
@@ -303,7 +303,17 @@ def Pat(pattern: str, i: int = 0):
     """
     parser = c.parser
     result = parser.parse(pattern)
-    return result[i % len(result)]
+    def _pattern_element(
+            div: int, speed: int,
+            iterator: int, 
+            pattern: list):
+        calc = round((((len(pattern) * div) + 1) * iterator / 
+            (div * speed)) % len(pattern)) - 1
+        return calc
+
+    return result[_pattern_element(
+        div=div, speed=speed, 
+        iterator=i, pattern=result)]
 
 P = Pat
 
@@ -312,13 +322,9 @@ def print_scales():
     """Print all available scales in the patterning system"""
     print(qualifiers.keys())
 
-
-
-
-
-
-
-
+def panic():
+    """Panic function, will cut everything"""
+    S('superpanic').out()
 
 class Pile:
     """Fast and dirty way to get polyphony working for sender objects"""
@@ -331,3 +337,6 @@ class Pile:
 
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
+
+# Facilitating fast swimming
+t, b = 1/c.ppqn, c.ppqn

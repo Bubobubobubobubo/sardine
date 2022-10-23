@@ -5,6 +5,7 @@ import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
+from math import floor
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -74,14 +75,11 @@ class OSCSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def _pattern_element(self, div: int, speed: int, iterator: int, pattern: list):
-        calc = (
-            round(
-                (((len(pattern) * div) + 1) * iterator / (div * speed)) % len(pattern)
-            )
-            - 1
-        )
-        return calc
+    def _pattern_element(self, 
+            div: int, speed: int, 
+            iterator: int, pattern: list):
+        """Joseph Enguehard's algorithm for solving iteration speed"""
+        return floor(iterator * speed / div) % len(pattern)
 
     def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
         """Sender method"""

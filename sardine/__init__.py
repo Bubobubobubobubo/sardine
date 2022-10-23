@@ -5,6 +5,7 @@
 # start interacting with the system.
 
 from random import random, randint, choice
+from math import floor
 from typing import Union
 from rich import print
 import asyncio
@@ -309,17 +310,15 @@ def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1):
     parser = c.parser
     result = parser.parse(pattern)
 
-    def _pattern_element(div: int, speed: int, iterator: int, pattern: list):
-        calc = (
-            round(
-                (((len(pattern) * div) + 1) * iterator / (div * speed)) % len(pattern)
-            )
-            - 1
-        )
-        return calc
+    def _pattern_element( 
+            div: int, speed: int, 
+            iterator: int, pattern: list):
+        """Joseph Enguehard's algorithm for solving iteration speed"""
+        return floor(iterator * speed / div) % len(pattern)
 
-    return result[_pattern_element(div=div, speed=speed, iterator=i, pattern=result)]
-
+    return result[_pattern_element(
+        div=div, speed=speed, 
+        iterator=i, pattern=result)]
 
 P = Pat
 

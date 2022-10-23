@@ -314,5 +314,3 @@ Can't make it work on the **Sardine** side.
 ## Sardine Library
 
 **Sardine** is still in an early stage of development. The library is still in an unstable state. The reference will be included after the first stable release. Please refer to the **Sardinopedia** (code examples) or to the **Tutorial** section (long-form article) to learn more about **Sardine** and its usage.
-
-

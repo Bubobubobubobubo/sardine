@@ -9,10 +9,20 @@ th, td {
     border-bottom: none;
     border-left: none;
     border-top: none;
+    min-width: 100%;
 }
+.md-typeset__table {
+  width: 100%;
+}
+
+.md-typeset__table table:not([class]) {
+  display: table
+}
+
 
 .md-typeset__table {
     line-height: 2;
+    min-width: 100%;
 }
 
 .md-typeset__table table:not([class]) {
@@ -23,29 +33,26 @@ th, td {
 .md-typeset__table table:not([class]) td,
 .md-typeset__table table:not([class]) th {
     padding: 9px;
+    min-width: 100%;
 }
 
 /* light mode alternating table bg colors */
 .md-typeset__table tr:nth-child(2n) {
     background-color: #f8f8f8;
+    min-width: 100%;
 }
 
 /* dark mode alternating table bg colors */
 [data-md-color-scheme="slate"] .md-typeset__table tr:nth-child(2n) {
     background-color: hsla(var(--md-hue),25%,25%,1)
+    min-width: 100%;
 }
 </style>
-
-## Sardine Library
-
-**Sardine** is still in an early stage of development. The library is still in an unstable state. The reference will be included after the first stable release. Please refer to the **Sardinopedia** (code examples) or to the **Tutorial** section (long-form article) to learn more about **Sardine** and its usage.
 
 ## SuperDirt 
 
 
-**SuperDirt** documentation is rather scarce and most of it needs to be inferred by looking at the source code. However, the behavior of most parameters is well known -- usually from experience -- by live coders using it. Moreover, **SuperDirt** can be customised freely to add custom effects and synthesizers. I'm working hard on gathering information about each and every parameter I can find :) Some of them are rather arcane. They are probably not meant to be used directly.
-
-Keep in mind that not all of them are useful and that you will likely find better options by building your own environment.
+**SuperDirt** documentation is rather scarce and most of it needs to be inferred by looking at the source code. However, the behavior of most parameters is well known -- usually from experience -- by live coders. Moreover, **SuperDirt** can be customised freely to add custom effects and synthesizers. I'm working hard on gathering information about each and every parameter I can find :) Some of them are rather arcane. They are probably not meant to be used directly. Keep in mind that not all of them are useful and that you will likely find better options by building your own environment.
 
 ### Sampling
 
@@ -84,6 +91,16 @@ Keep in mind that not all of them are useful and that you will likely find bette
 |**`size`**         |Size of the reverb                                          |0 -> x        |
 |**`dry`**          |Dry/Wet balance                                             |0 -> x        |
 
+```python
+@swim 
+def test_fx(d=0.25):
+    S('hh', amp=1, 
+            room='s($.S)', 
+            dry=0.1, 
+            size='s($)').out()
+    a(test_fx, d=0.25)
+```
+
 ##### Delay
 
 The `delay` effect is initially built for Tidal, which is based on a cyclical time representation. However, it has been pre-configured here to work properly with **Sardine**.
@@ -94,6 +111,18 @@ The `delay` effect is initially built for Tidal, which is based on a cyclical ti
 |**`delaytime`**    |Delay time                                                  |0 -> x        |
 |**`delayfeedback`**|Amount of reinjection of dry signal                         |0 -> x        |
 
+
+```python
+@swim 
+def test_fx(d=0.25):
+    S('hh', 
+            speed='1|2|4',
+            delay=1/2, delaytime=1/(2/3),
+            delayfeedback='0.5+(r/4)',
+            amp=1).out() 
+    a(test_fx, d=0.25)
+```
+
 ##### Phaser
 
 Not functioning as it should?
@@ -103,6 +132,15 @@ Not functioning as it should?
 |**`phaserrate`**   |Speed of phaser (in hz)                                     |0 -> x        |
 |**`phaserdepth`**  |Modulation amount                                           |0 -> x        |
 
+```python
+@swim 
+def test_fx(d=0.25):
+    S('jvbass', 
+            midinote='C|Eb|G|Bb',
+            phaserrate='1:10', 
+            phaserdepth='s($*2)', amp=1).out() 
+    a(test_fx, d=0.5)
+```
 
 ##### Leslie
 
@@ -133,6 +171,15 @@ def test_fx(d=0.25):
 |**`resonance`**    |Filter resonance                                            |0 -> 1        |
 |**`bandqf`**       |Bandpass resonance                                          |0 -> x        |
 
+```python
+@swim 
+def test_fx(d=0.25):
+    S('jvbass', 
+            midinote='C.|C|Eb|G|Bb',
+            cutoff='r*7000', resonance='r/2', amp=1).out() 
+    a(test_fx, d=0.5)
+```
+
 #### Distortion
 
 ##### Squiz
@@ -143,6 +190,16 @@ Will distort your signal, combination of multiple effects put together. It works
 |-------------------|------------------------------------------------------------|--------------|
 |**`squiz`**        |Amount                                                      |0, 2 -> x     |
 
+
+```python
+@swim 
+def test_fx(d=0.25):
+    S('tabla:r*200', cut=1, 
+            squiz='0|2|4|8',
+            midinote='C|F|Bb|E5b', amp=1).out() 
+    a(test_fx, d=0.5)
+```
+
 ##### Triode
 
 Very gentle distortion. I actually have no idea about how the `triode` parameter works.
@@ -150,6 +207,15 @@ Very gentle distortion. I actually have no idea about how the `triode` parameter
 | Parameter         | Brief description                                          | Typical range|
 |-------------------|------------------------------------------------------------|--------------|
 |**`triode`**       |Distortion amount                                           |0 -> x        |
+
+```python
+@swim 
+def test_fx(d=0.25):
+    S('tabla:r*200', cut=1, 
+            triode='r', # comment me
+            midinote='C|F|Bb|E5b', amp=1).out() 
+    a(test_fx, d=0.5)
+```
 
 ##### Distort 
 
@@ -159,6 +225,16 @@ Heavy distortion that will/can wildly change the spectrum of your sound.
 |-------------------|------------------------------------------------------------|--------------|
 |**`distort`**      |Distortion amount                                           |0 -> x        |
 
+```python
+@swim 
+def test_fx(d=0.25):
+    S('sd:r*200', cut=1, 
+            distort='0|0.5',
+            midinote='C|G', amp=1).out() 
+    a(test_fx, d=0.5)
+```
+
+
 ##### Shaping 
 
 Shape is an amplifier that can enter distortion territory but with a gentle curve. It will naturally
@@ -167,6 +243,13 @@ make your sound louder the more you ramp up the value.
 | Parameter         | Brief description                                          | Typical range|
 |-------------------|------------------------------------------------------------|--------------|
 |**`shape`**        |Amplification amount                                        |0 -> x        |
+
+```python
+@swim 
+def test_fx(d=0.25, i=0):
+    S('amencutup:{1,20}', shape='{0,1,0.1}').out(i)
+    a(test_fx, d=0.5, i=i+1)
+```
 
 ##### Ring Modulation
 
@@ -178,6 +261,8 @@ Can't make it work on the **Sardine** side.
 |**`ringf`**        |Ring modulation frequency                                   |0 -> x        |
 |**`ringdf`**       |Modulation frequency slide                                  |0 -> x        |
 
-#### Phasing
-#### Shaping
+## Sardine Library
+
+**Sardine** is still in an early stage of development. The library is still in an unstable state. The reference will be included after the first stable release. Please refer to the **Sardinopedia** (code examples) or to the **Tutorial** section (long-form article) to learn more about **Sardine** and its usage.
+
 

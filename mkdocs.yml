@@ -34,6 +34,7 @@ plugins:
 docs_dir: docs
 
 markdown_extensions:
+  - tables
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true 

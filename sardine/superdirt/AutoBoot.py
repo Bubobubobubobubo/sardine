@@ -72,7 +72,7 @@ class SuperColliderProcess:
 
     def terminate(self) -> None:
         """Terminate the SCLang process"""
-        self.write_stdin("Server.killAll; 0.exit;")
+        self._write_stdin("Server.killAll; 0.exit;")
         self._sclang.terminate()
 
     async def monitor(self):
@@ -110,7 +110,7 @@ class SuperColliderProcess:
         except Exception:
             pass
 
-    def write_stdin(self, message: str):
+    def _write_stdin(self, message: str):
         """Write to sclang stdin using Python strings"""
 
         # Converting messages for multiline-input
@@ -124,17 +124,21 @@ class SuperColliderProcess:
         self._sclang.stdin.write(message)
         self._sclang.stdin.flush()
 
+    def send(self, message: str):
+        """User friendly alias for write_stdin"""
+        self._write_stdin(message)
+
     def meter(self) -> None:
         """Open SuperCollider VUmeter"""
-        self.write_stdin("s.meter()")
+        self._write_stdin("s.meter()")
 
     def scope(self) -> None:
         """Open SuperCollider frequency scope"""
-        self.write_stdin("s.scope()")
+        self._write_stdin("s.scope()")
 
     def meterscope(self) -> None:
         """Open SuperCollider frequency scope + VUmeter"""
-        self.write_stdin("s.scope(); s.meter()")
+        self._write_stdin("s.scope(); s.meter()")
 
     def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
@@ -155,7 +159,7 @@ class SuperColliderProcess:
                         buffer += line
 
             # sending the string to the interpreter
-            self.write_stdin(buffer)
+            self._write_stdin(buffer)
             print("Loaded SynthDefs:")
             for f in files:
                 print("- {}".format(f))
@@ -202,11 +206,11 @@ SCLang && SuperDirt...[/yellow]"
                 start_new_session=True,
             )
             sleep(1)
-            self.write_stdin(message="""load("{}")""".format(self._startup_file))
+            self._write_stdin(message="""load("{}")""".format(self._startup_file))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""
-        self.write_stdin("Server.killAll")
-        self.write_stdin("0.exit")
+        self._write_stdin("Server.killAll")
+        self._write_stdin("0.exit")

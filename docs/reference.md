@@ -161,6 +161,43 @@ def test_fx(d=0.25):
     a(test_fx, d=0.25)
 ```
 
+##### Tremolo
+
+A simple tremolo effect.
+
+| Parameter         | Brief description                                          | Typical range|
+|-------------------|------------------------------------------------------------|--------------|
+|**`tremolorate`**  |Tremolo speed                                               |0 -> x        |
+|**`tremolodepth`** |Depth of tremolo                                            |0 -> x        |
+
+
+```python
+@swim 
+def test_fx(d=0.25, i=0):
+    S('amencutup:{1,20}', 
+            tremolorate='16|32',
+            tremolodepth='{0,1,0.25}').out(i)
+    a(test_fx, d=0.5, i=i+1)
+```
+
+##### Granular weirdness
+
+This is a weird granular effect probably intended to serve as a building block for some other effect but you can use it as is nonetheless. It will slice your audio sample into tiny fragments of it while applying some amount of pitch-shifting on every sample.
+
+| Parameter         | Brief description                                          | Typical range|
+|-------------------|------------------------------------------------------------|--------------|
+|**`psrate`**       |Pitch-shift rate                                            |0 -> x        |
+|**`psdisp`**       |Pitch-shift dispersion                                      |0 -> x        |
+
+```python
+@swim 
+def test_fx(d=0.25, i=0):
+    S('amencutup:{1,20}', 
+            psrate='2',
+            psdisp='{0,1,0.5}').out(i)
+    a(test_fx, d=0.5, i=i+1)
+```
+
 #### Filters
 
 | Parameter         | Brief description                                          | Typical range|
@@ -234,7 +271,6 @@ def test_fx(d=0.25):
     a(test_fx, d=0.5)
 ```
 
-
 ##### Shaping 
 
 Shape is an amplifier that can enter distortion territory but with a gentle curve. It will naturally
@@ -248,6 +284,20 @@ make your sound louder the more you ramp up the value.
 @swim 
 def test_fx(d=0.25, i=0):
     S('amencutup:{1,20}', shape='{0,1,0.1}').out(i)
+    a(test_fx, d=0.5, i=i+1)
+```
+##### Crush
+
+A very agressive bit crushing effect. Works only when you input multiples of 2. `2` for extreme crushing, `32` for non-discernable.
+
+| Parameter         | Brief description                                          | Typical range|
+|-------------------|------------------------------------------------------------|--------------|
+|**`crush`**        |Crushing factor                                             |0 -> x        |
+
+```python
+@swim 
+def test_fx(d=0.25, i=0):
+    S('bd, sn, hh, sn', crush=4).out(i)
     a(test_fx, d=0.5, i=i+1)
 ```
 

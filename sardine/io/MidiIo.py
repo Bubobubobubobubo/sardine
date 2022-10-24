@@ -112,9 +112,11 @@ class MIDIIo(threading.Thread):
         """MIDI Start message"""
         self._midi.send(mido.Message("start"))
 
-    def schedule(self, message):
+    def schedule(self, message, delay: Union[int, float, None]=None):
         async def _waiter():
             await handle
+            if delay is not None:
+                await asyncio.sleep(delay)
             self.send(message)
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
@@ -136,8 +138,7 @@ class MIDIIo(threading.Thread):
             "note_off", note=int(note), velocity=int(velocity), channel=int(channel)
         )
         self.schedule(noteon)
-        await asyncio.sleep(delay)
-        self.schedule(noteoff)
+        self.schedule(noteoff, delay=delay)
 
     async def control_change(self, channel, control, value) -> None:
         """Control Change message"""

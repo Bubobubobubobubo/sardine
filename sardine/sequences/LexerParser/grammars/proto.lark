@@ -56,6 +56,7 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | _COS _LPAR sum _RPAR                                -> cosinus
      | _SIN _LPAR sum _RPAR                                -> sinus
      | _TAN _LPAR sum _RPAR                                -> tangente
+     | SILENCE+                                            -> silence
      | _LPAR sum _RPAR
 
 
@@ -146,6 +147,7 @@ _SIN: "s"
 _TAN: "t"
 _ITER: "i"
 _VAR: "v"
+SILENCE: "."
 
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT

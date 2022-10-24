@@ -29,6 +29,17 @@ class CalculateTree(Transformer):
         return list(args)
 
     # ---------------------------------------------------------------------- #
+    # Silence: handling silence 
+    # ---------------------------------------------------------------------- #
+
+    def silence(self, *args):
+        """
+        Pure silence. The absence of an event. Silence is represented using
+        a dot or multiple dots for multiple silences.
+        """
+        return [None]*len(args)
+
+    # ---------------------------------------------------------------------- #
     # Variables: methods concerning bi-valent variables
     # ---------------------------------------------------------------------- #
 

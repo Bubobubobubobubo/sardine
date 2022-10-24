@@ -5,7 +5,8 @@ import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
-from math import floor
+from .SenderLogic import (
+        pattern_element, compose_parametric_patterns)
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -71,10 +72,6 @@ class SuperDirtSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-    def _pattern_element(self, div: int, speed: int, iterator: int, pattern: list):
-        """Joseph Enguehard's algorithm"""
-        return floor(iterator * speed / div) % len(pattern)
-
     def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
         """
         Prototype for the Sender output.
@@ -84,7 +81,8 @@ class SuperDirtSender:
 
         # Value checking
         i = int(i)
-        div = int(div) if div != 0 else self.clock.ppqn
+        div = int(div) if div != 1 else self.clock.ppqn
+
 
         final_message = []
 
@@ -94,9 +92,17 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(["sound", self.sound[0]])
-            elif isinstance(self.sound, str):
-                final_message.extend(["sound", self.sound])
+                first_element = self.sound[0]
+                # This is a check for handling silence
+                if first_element is not None:
+                    final_message.extend(["sound", self.sound[0]])
+                else:
+                    return
+            elif isinstance(self.sound, (str, type(None))):
+                if self.sound is None:
+                    return
+                else:
+                    final_message.extend(["sound", self.sound])
 
             # Parametric values
             for key, value in self.content.items():
@@ -120,35 +126,26 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                final_message.extend(
-                    [
-                        "sound",
-                        self.sound[
-                            self._pattern_element(
-                                iterator=i, div=div, speed=speed, pattern=self.sound
-                            )
-                        ],
-                    ]
-                )
+                new_element = self.sound[pattern_element(
+                    iterator=i, div=div, speed=speed, pattern=self.sound)]
+                if new_element is None:
+                    return
+                else:
+                    final_message.extend( ["sound",new_element])
             else:
-                final_message.extend(["sound", self.sound])
+                if self.sound is None:
+                    return
+                else:
+                    final_message.extend(["sound", self.sound])
 
             # Parametric arguments
-            for key, value in self.content.items():
-                if value == []:
-                    continue
-                if isinstance(value, list):
-                    value = float(
-                        value[
-                            self._pattern_element(
-                                iterator=i, div=div, speed=speed, pattern=value
-                            )
-                        ]
-                    )
-                    final_message.extend([key, value])
-                else:
-                    final_message.extend([key, float(value)])
+            pattern_result = compose_parametric_patterns(
+                    div=div, speed=speed, 
+                    iterator=i,
+                    items=self.content.items())
+            final_message.extend(pattern_result)
 
+            # Trig must always be included
             if "trig" not in final_message:
                 final_message.extend(["trig", str(1)])
 
@@ -156,8 +153,8 @@ class SuperDirtSender:
             if trig_value:
                 return self.schedule(final_message)
 
-        # Composing and sending messages
-        if i is None:
+        # Ultimately composing and sending message
+        if i == 0:
             return _message_without_iterator()
         else:
             return _message_with_iterator()

@@ -5,3 +5,4 @@ from .UserConfig import *
 from .SuperDirtSender import *
 from .OSCSender import *
 from .MIDISender import *
+from .SenderLogic import *

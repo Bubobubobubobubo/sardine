@@ -67,22 +67,6 @@ class ListParser:
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
 
-    # def _flatten_result(self, pat):
-    #     """Flatten a nested list, for usage after parsing a pattern. Will
-    #     flatten deeply nested lists and return a one dimensional array.
-
-    #     Args:
-    #         pat (list): A potentially nested list
-
-    #     Returns:
-    #         list: A flat list (one-dimensional)
-    #     """
-    #     if len(pat) == 0:
-    #         return pat
-    #     if isinstance(pat[0], list):
-    #         return self._flatten_result(pat[0]) + self._flatten_result(pat[1:])
-    #     return pat[:1] + self._flatten_result(pat[1:])
-
     def __flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will
         flatten deeply nested lists and return a one dimensional array.

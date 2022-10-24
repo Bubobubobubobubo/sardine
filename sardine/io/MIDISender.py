@@ -112,8 +112,30 @@ class MIDISender:
             res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
             return res_dct
 
+        def wrap_midinote_in_range(note: int):
+            if note > 127:
+                note = 127
+            if note < 0:
+                note = 0
+            return note
+
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
+
+            if self.note == []:
+                return
+            if isinstance(self.note, list):
+                new_element = self.note[pattern_element(
+                    iterator=i, div=div, speed=speed, pattern=self.note)]
+                if new_element is None:
+                    return
+                else:
+                    final_message.extend( ["note", wrap_midinote_in_range(new_element)])
+            else:
+                if self.note is None:
+                    return
+                else:
+                    final_message.extend(["note", wrap_midinote_in_range(self.note)])
 
             # Parametric values
             for key, value in self.content.items():
@@ -138,12 +160,6 @@ class MIDISender:
 
             # Decompose between note argument and other arguments
             # Note is the most important because it can impose silence
-            def wrap_midinote_in_range(note: int):
-                if note > 127:
-                    note = 127
-                if note < 0:
-                    note = 0
-                return note
 
             if self.note == []:
                 return
@@ -153,12 +169,14 @@ class MIDISender:
                 if new_element is None:
                     return
                 else:
-                    final_message.extend( ["note", wrap_midinote_in_range(new_element)])
+                    final_message.extend( ["note", 
+                        wrap_midinote_in_range(new_element)])
             else:
-                if self.sound is None:
+                if self.note is None:
                     return
                 else:
-                    final_message.extend(["note", wrap_midinote_in_range(self.note)])
+                    final_message.extend(["note", 
+                        wrap_midinote_in_range(self.note)])
 
             # Parametric arguments
             pattern_result = compose_parametric_patterns(

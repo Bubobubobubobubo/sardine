@@ -364,11 +364,11 @@ class Clock:
         """Calculate a new mean Linktime from Link"""
         info = self._capture_link_info()
         self._linktime.update(
-            {
-                "tempo": (self._linktime["tempo"] + info["tempo"]) / 2.0,
-                "beats": (self._linktime["beats"] + info["beats"]) / 2.0,
-                "phase": (self._linktime["phase"] + info["phase"]) / 2.0,
-            }
+             {
+                 "tempo": info["tempo"],
+                 "beats": (self._linktime["beats"] + info["beats"]),
+                 "phase": (self._linktime["phase"] + info["phase"]),
+             }
         )
 
     def link(self):
@@ -577,14 +577,12 @@ class Clock:
         trying to preserve its internal logic based on pulses per quarter
         notes.
         """
-        if self._link:
-            if self.phase == 0:
-                self.bpm = float(temporal_information["tempo"])
-            self._current_tick = self._link_time_to_ticks(temporal_information)
-            self._update_handles()
+        if temporal_information:
+            self._current_tick = self._link_time_to_ticks(
+                    temporal_information)
         else:
             self._current_tick += 1
-            self._update_handles()
+        self._update_handles()
 
     def _reload_runners(self):
         for runner in self.runners.values():
@@ -742,57 +740,28 @@ class Clock:
     async def run_active(self):
         """Main runner for the active mode (master)"""
         self._current_tick, self._delta = 0, 0.0
-        max_query_time, min_query_time = 0.0, 999999
 
         while self.running:
             begin = time.perf_counter()
             duration = self._get_tick_duration()
             if self._link:
-                # This whole section if very blurry in my head. Trying to find
-                # how to prevent Link from having hiccups.
-
-                def time_query(func):
-                    """Time the query for Ableton Link information"""
-                    begin = time.perf_counter()
-                    func_result = func()
-                    end = time.perf_counter()
-                    time_result = end - begin
-                    return (func_result, time_result)
-
-                # Querying Ableton Link for the current time and getting
-                # information about how long the function took to execute
-                info, query_dur = time_query(self._capture_link_info)
-                min_query_time = min(min_query_time, query_dur)
-                max_query_time = max(max_query_time, query_dur)
-                # print(f"Max: {max_query_time}, Min: {min_query_time}", end="\r")
-
-                self._get_new_linktime(new_time=info)
-
                 await asyncio.sleep(0.0)
-                # sleep_duration = duration - (query_dur * 4)
-                # if sleep_duration >= 0:
-                #     await asyncio.sleep(sleep_duration)
-                # else:
-                #     pass
-
-                if self.tick % self.ppqn == self.ppqn // 2:
-                    self._increment_clock(temporal_information=self.linktime)
-                else:
-                    self._increment_clock(temporal_information=info)
             else:
                 await asyncio.sleep(duration)
                 self._midi.send_clock()
-                self._osc._send_clock_information(self)
-                # We can't tell if the user has switched to Link
-                # in the meantime. You should be ready to send
-                # link state whenever needed.
-                self._increment_clock(
-                    temporal_information=(
-                        self._capture_link_info() if self._link else None
-                    )
+            self._osc._send_clock_information(self)
+
+            self._increment_clock(
+                temporal_information=(
+                    self._capture_link_info() if self._link else None
                 )
+            )
+
             elapsed = time.perf_counter() - begin
-            self._delta = elapsed - duration
+            if self._link:
+                self._delta = elapsed
+            else:
+                self._delta = elapsed - duration
 
             if self.debug:
                 self.log()

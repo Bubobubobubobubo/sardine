@@ -76,13 +76,11 @@ class SuperDirtSender:
         """
         Prototype for the Sender output.
         """
-        if self.clock.tick % div != 0:
+        if i % div != 0:
             return
 
         # Value checking
         i = int(i)
-        div = int(div) if div != 1 else self.clock.ppqn
-
 
         final_message = []
 

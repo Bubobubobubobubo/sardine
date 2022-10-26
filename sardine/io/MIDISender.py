@@ -97,7 +97,7 @@ class MIDISender:
 
     def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
         """Must be able to deal with polyphonic messages"""
-        if self.clock.tick % div != 0:
+        if i % div != 0:
             return
 
         i = int(i)

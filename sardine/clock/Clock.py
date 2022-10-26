@@ -447,7 +447,7 @@ class Clock:
                 "phase": phase,
             }
 
-    def link_log(self):
+    def _link_log(self):
         """Print state of current Ableton Link session on stdout."""
         i = self._capture_link_info()
         print(
@@ -702,6 +702,8 @@ class Clock:
         )
         second = color + f" || TICK: {self.tick} BAR:{bar} {cbib}/{self.beat_per_bar}"
         print(first + second)
+        if self._link:
+            self._link_log()
 
     def note(self, sound: str, at: int = 0, **kwargs) -> SuperDirtSender:
         return SuperDirtSender(self, sound, at, nudge=self._superdirt_nudge, **kwargs)

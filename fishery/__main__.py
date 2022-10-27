@@ -1,19 +1,45 @@
 # https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
-# Taken from the CPython Github Repository. Custom version of the asyncio
-# REPL that will autoload Sardine whenever started.
+# Taken from the CPython Github Repository. Custom version of the 
+# asyncio REPL that will autoload Sardine whenever started.
 
 import concurrent.futures
 import threading
+import platform
 import warnings
 import inspect
 import asyncio
+import psutil
 import types
 import code
 import ast
+import os
 
 from appdirs import user_data_dir
 from asyncio import futures
 from pathlib import Path
+from rich import print as pretty_print
+from rich.panel import Panel
+
+system = platform.system()
+
+# Setting very high priority for this process (time-critical)
+warning_text="[red bold]Run Sardine using administrator priviledges to get \
+better_performances[/red bold]"
+if system == "Windows":
+    try:
+        p = psutil.Process(os.getpid())
+        p.nice(psutil.HIGH_PRIORITY_CLASS)
+    except psutil.AccessDenied:
+        pretty_print(Panel.fit(warning_text))
+        pass
+else:
+    try:
+        p = psutil.Process(os.getpid())
+        p.nice(-20)
+    except psutil.AccessDenied:
+        pretty_print(Panel.fit(warning_text))
+        pass
+
 
 # Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"

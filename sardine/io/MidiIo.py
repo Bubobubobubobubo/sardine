@@ -68,7 +68,6 @@ class MIDIIo(threading.Thread):
             self._midi = mido.open_output(name)
         except Exception as error:
             rich_print(f"[bold red]Init error: {error}[/bold red]")
-        finally:
             self._midi = mido.open_output(self._choose_midi_port())
 
     @staticmethod

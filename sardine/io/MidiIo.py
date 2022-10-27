@@ -42,6 +42,7 @@ class MIDIIo(threading.Thread):
         self.clock = clock
         self.after: int = at
         self._midi = None
+        self._voices = set()
 
         # For MacOS/Linux
         if sys.platform not in "win32":
@@ -114,31 +115,61 @@ class MIDIIo(threading.Thread):
 
     def schedule(self, message, delay: Union[int, float, None]=None):
         async def _waiter():
+            """Message send routine for MIDI events"""
             await handle
             if delay is not None:
                 await asyncio.sleep(delay)
+            if message.type == 'note_on':
+                self._add_voice(message.note, message.channel)
+                if self._is_active_voice(message.note, message.channel):
+                    # Kill the note to allow retrigerring
+                    self.send(mido.Message('note_off', note=message.note,
+                        channel=message.channel, velocity=0))
             self.send(message)
+            if message.type == 'note_off':
+                # The note could have been removed by someone else
+                try:
+                    self._delete_voice(message.note, message.channel)
+                except KeyError:
+                    pass
 
+        # Low-level scheduling of MIDI events
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
-    async def note(
-        self,
-        delay: Union[int, float],
-        note: int = 60,
-        velocity: int = 127,
-        channel: int = 1,
-    ) -> None:
-        """Send a MIDI Note through principal MIDI output"""
+    def _add_voice(self, note: int, channel: int) -> None:
+        """Add a voice to the set of active note voices"""
+        self._voices.add(f"{note}{channel}")
+
+    def _delete_voice(self, note: int, channel: int) -> None:
+        """Remove a voice from the set of active note voices"""
+        self._voices.remove(f"{note}{channel}")
+
+    def _is_active_voice(self, note: int, channel: int) -> bool:
+        """Check whether a given note is already registered"""
+        return f"{note}{channel}" in self._voices
+
+    async def note(self, delay: Union[int, float], note: int = 60,
+        velocity: int = 127, channel: int = 1,) -> None:
+        """
+        Send a MIDI Note through principal MIDI output. In the absence of 
+        a real voice allocator, this is not very optimal :(
+        """
+
         noteon = mido.Message(
-            "note_on", note=int(note), velocity=int(velocity), channel=int(channel)
+            "note_on", note=int(note), 
+            velocity=int(velocity), 
+            channel=int(channel)
         )
         noteoff = mido.Message(
-            "note_off", note=int(note), velocity=int(velocity), channel=int(channel)
+            "note_off", note=int(note), 
+            velocity=int(velocity), 
+            channel=int(channel)
         )
+
         self.schedule(noteon)
-        self.schedule(noteoff, delay=delay)
+        self.schedule(noteoff, delay=delay-0.1)
 
     async def control_change(self, channel, control, value) -> None:
         """Control Change message"""

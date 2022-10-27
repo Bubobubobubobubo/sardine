@@ -82,7 +82,7 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
 
 ?col : note                                                 -> id
      | col _RIGHT_ARROW name                                -> add_qualifier
-     | col _DOT name                                        -> add_modifier
+     | col _COLON name                                      -> add_modifier
 
 ?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
      | note _PLUS   (col|sum)                     -> waddition

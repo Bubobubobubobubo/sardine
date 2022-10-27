@@ -168,7 +168,7 @@ class MIDIIo(threading.Thread):
         )
 
         self.schedule(noteon)
-        self.schedule(noteoff, delay=delay-0.1)
+        self.schedule(noteoff, delay=delay)
 
     async def control_change(self, channel, control, value) -> None:
         """Control Change message"""

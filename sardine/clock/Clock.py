@@ -713,7 +713,7 @@ class Clock:
         note: Union[int, str] = 60,
         velocity: Union[int, str] = 100,
         channel: Union[int, str] = 0,
-        dur: Union[int, float, str] = 0.5,
+        dur: Union[int, float, str] = 48,
         at: int = 0,
         **kwargs,
     ) -> MIDISender:

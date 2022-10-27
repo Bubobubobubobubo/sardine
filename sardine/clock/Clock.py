@@ -748,9 +748,11 @@ class Clock:
             duration = self._get_tick_duration()
             if self._link:
                 await asyncio.sleep(0.0)
+                self._midi._process_events()
             else:
                 await asyncio.sleep(duration)
                 self._midi.send_clock()
+                self._midi._process_events()
             self._osc._send_clock_information(self)
 
             self._increment_clock(

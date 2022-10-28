@@ -59,11 +59,12 @@ class Receiver:
         """Generic storage function to attach to a given address"""
         def generic_value_tracker(*args, **kwargs):
             """Generic value tracker to be attached to an address"""
-            self._watched_values[address] = {'args': flatten(args), 'kwargs': kwargs}
+            self._watched_values[address] = {
+                    'args': flatten(args),
+                    'kwargs': kwargs}
             return (args, kwargs)
         osc_method(address, generic_value_tracker, 
                 argscheme=OSCARG_DATA) 
-                # argscheme=OSCARG_ADDRESS + OSCARG_DATA) 
 
     def watch(self, address: str):
         """
@@ -71,6 +72,7 @@ class Receiver:
         in the self._watched_values dictionary accessible through the get() 
         method
         """
+        print(f"[yellow]Watching address [red]{address}[/red].[/yellow]")
         self._generic_store(address)
 
     def attach(self, address: str, function: Callable, watch: bool = False):
@@ -83,9 +85,7 @@ class Receiver:
         print(f"[yellow]Attaching function [red]{function.__name__}[/red] to address [red]{address}[/red][/yellow]")
         osc_method(address, function)
         if watch:
-            osc_method(address, 
-                    self._generic_store, 
-                    argscheme=OSCARG_ADDRESS + OSCARG_DATA) 
+            self.watch(address)
 
     def get(self, address: str) -> Union[Any, None]:
         """Get a watched value. Return None if not found"""

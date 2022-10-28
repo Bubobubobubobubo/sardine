@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import asyncio
+from typing import Callable, Any
 from time import time
 from typing import Union, TYPE_CHECKING, List
 from osc4py3 import oscbuildparse
+from functools import partial
 from osc4py3.as_eventloop import (
     osc_startup,
     osc_udp_client,
+    osc_udp_server,
+    osc_method,
     osc_send,
     osc_process,
     osc_terminate,
@@ -14,8 +18,48 @@ from osc4py3.as_eventloop import (
 if TYPE_CHECKING:
     from ..clock import Clock
 
-__all__ = ("Client", "client", "dirt")
+__all__ = ("Receiver", "Client", "client", "dirt")
 
+
+class Receiver:
+
+    """
+    Incomplete and temporary implementation of an OSC message receiver.
+    Will be completed later on when I will have found the best method to 
+    log incoming values.
+    """
+
+    def __init__(self, 
+            port: int,
+            ip: str = "127.0.0.1", 
+            name: str = "receiver",
+            at: int = 0):
+        """
+        Keyword parameters
+        ip: str -- IP address
+        port: int -- network port
+        name: str -- Name attributed to the OSC receiver
+        """
+        self._ip, self._port, self._name = ip, port, name
+        self._server = osc_udp_server(ip, port, name)
+        self._watched_values = {}
+
+    def super_callback(self, address: str, callback: Callable):
+        """
+        Like a decorator but for OSC callbacks. Allow to register the last
+        received value from the callback handler.
+        """
+        self._watched_values[address] = value
+
+    def watch(self, address: str, callback: Callable):
+        osc_method(address, self.super_callback(address, lambda: callback))
+
+    def get(self, address: str) -> Union[Any, None]:
+        """Get a watched value. Return None if not found"""
+        try: 
+            return self._watched_values[address]
+        except KeyError:
+            return None
 
 class Client:
     def __init__(

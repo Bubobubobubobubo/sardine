@@ -31,6 +31,7 @@ from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
+from .io import Receiver as Receiver
 from .io import OSCSender, MIDISender
 
 from .sequences import ListParser
@@ -331,10 +332,10 @@ def print_scales():
 
 def panic():
     """Panic function, will cut everything"""
+    # Stop everything
+    hush()
     # Superpanic is a synth capable of cutting every other synth
     S("superpanic").out()
-    # Followed by hush for stopping everything
-    hush()
 
 
 class Pile:
@@ -350,6 +351,3 @@ class Pile:
 
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
-
-# Facilitating fast swimming
-t, b = 1 / c.ppqn, c.ppqn

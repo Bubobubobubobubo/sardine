@@ -162,7 +162,7 @@ class Clock:
 
     @property
     def linktime(self) -> dict:
-        """Get link time"""
+        """Return current Link clock time"""
         return self._linktime
 
     @linktime.setter
@@ -175,7 +175,8 @@ class Clock:
 
     @nudge.setter
     def nudge(self, value: int):
-        """Nudge the clock to align on another peer. Very similar to accel
+        """
+        Nudge the clock to align on another peer. Very similar to accel
         but temporary. Nudge will reset every time the clock loops around.
 
         Args:
@@ -190,7 +191,10 @@ class Clock:
 
     @midi_nudge.setter
     def midi_nudge(self, value: int):
-        """Nudge every MIDI Message by a given amount of time
+        """
+        Nudge every MIDI Message by a given amount of time. Useful for synchronization
+        purposes when everything else fails and if you are still lagging a few milliseconds
+        behind everything else.
 
         Args:
             value (int): nudge amount
@@ -220,11 +224,13 @@ class Clock:
 
     @accel.setter
     def accel(self, value: int):
-        """Accel stands for acceleration. In active MIDI mode, accel acts as
-        a way to nudge the clock to run faster or slower (from 0 to 100%). It
-        can be quite useful when dealing with a musician that can't really use
-        any synchronisation protocol.
-
+        """
+        Accel stands for acceleration. In active MIDI mode, accel acts as a way
+        to nudge the clock to run faster or slower (from 0 to 100%). It can be
+        quite useful when dealing with a musician that can't really use any
+        synchronisation protocol. Beware, you will have to manually reset the 
+        accel amount after setting it if you want to stop and not fasten the 
+        clock.
 
         Args:
             value (int): a nudge factor from 0 to 100%
@@ -259,10 +265,11 @@ class Clock:
 
     @tick.setter
     def tick(self, new_tick: int) -> int:
-        """Tick is the tiniest amount of time tracked by Sardine
-        Clock. A tick is the time taken by the clock to loop on
-        itself. Ticks are used by the system to deduce all other
-        temporal informations: beat, bar, etc...
+        """
+        Tick is the tiniest grain of time recognized by the Sardine Clock. 
+        A tick is the time taken by the clock to loop on itself. Ticks are
+        used to deduce all other temporal informations: beat, bar, etc... 
+        They are also sometimes used to compute duration of a given event.
 
         Args:
             new_tick (int): give a new tick (backwards or forward in time)

@@ -14,12 +14,23 @@ from osc4py3.as_eventloop import (
     osc_process,
     osc_terminate,
 )
+from osc4py3.oscmethod import *         # does OSCARG_XXX
+from rich import print
 
 if TYPE_CHECKING:
     from ..clock import Clock
 
 __all__ = ("Receiver", "Client", "client", "dirt")
 
+
+def flatten(l):
+    if isinstance(l, (list,tuple)):
+        if len(l) > 1:
+            return [l[0]] + flatten(l[1:])
+        else:
+            return l[0]
+    else:
+        return [l]
 
 class Receiver:
 
@@ -44,15 +55,37 @@ class Receiver:
         self._server = osc_udp_server(ip, port, name)
         self._watched_values = {}
 
-    def super_callback(self, address: str, callback: Callable):
-        """
-        Like a decorator but for OSC callbacks. Allow to register the last
-        received value from the callback handler.
-        """
-        self._watched_values[address] = value
+    def _generic_store(self, address) -> None:
+        """Generic storage function to attach to a given address"""
+        def generic_value_tracker(*args, **kwargs):
+            """Generic value tracker to be attached to an address"""
+            self._watched_values[address] = {'args': flatten(args), 'kwargs': kwargs}
+            return (args, kwargs)
+        osc_method(address, generic_value_tracker, 
+                argscheme=OSCARG_DATA) 
+                # argscheme=OSCARG_ADDRESS + OSCARG_DATA) 
 
-    def watch(self, address: str, callback: Callable):
-        osc_method(address, self.super_callback(address, lambda: callback))
+    def watch(self, address: str):
+        """
+        Watch the value of a given OSC address. Will be recorded in memory
+        in the self._watched_values dictionary accessible through the get() 
+        method
+        """
+        self._generic_store(address)
+
+    def attach(self, address: str, function: Callable, watch: bool = False):
+        """
+        Attach a callback to a given address. You can also toggle the watch
+        boolean value to tell if the value should be tracked by the receiver. 
+        It allows returning values from the callback to be retrieved later in
+        through the get(address) method.
+        """
+        print(f"[yellow]Attaching function [red]{function.__name__}[/red] to address [red]{address}[/red][/yellow]")
+        osc_method(address, function)
+        if watch:
+            osc_method(address, 
+                    self._generic_store, 
+                    argscheme=OSCARG_ADDRESS + OSCARG_DATA) 
 
     def get(self, address: str) -> Union[Any, None]:
         """Get a watched value. Return None if not found"""

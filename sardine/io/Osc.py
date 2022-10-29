@@ -101,7 +101,7 @@ class Client:
         ip: str = "127.0.0.1",
         port: int = 57120,
         name: str = "SuperDirt",
-        ahead_amount: Union[float, int] = 0.01,
+        ahead_amount: Union[float, int] = 0.03,
         at: int = 0,
     ):
 

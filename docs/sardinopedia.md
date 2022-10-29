@@ -27,7 +27,16 @@ This section will help you to grow more confident with *swimming functions*. The
 ```python3
 S('bd').out()
 ```
-You can use the Sender objects outside of every function. It will work, but you will be un-timed or out-of-time. This technique can be used to trigger long samples, FXs, etc... It can also be used to change (non-periodcally) some values on your MIDI synthesizers or OSC receivers.
+
+This command emits a single bass kick. How? Let's break it down.
+
+1. It uses the [Sender objects](#senders) class generator `S('...')`. 
+2. As the parameter is `'bd'`, a string refering to a bass drum, a sample with this file name is searched in the right directory.
+3. When the `.out()` method of the Sender object is called, **Sardine** sends a message to SuperCollider which emits the sound.
+
+In **Sardine**, you can use Sender objects outside of a recursive function. It will work, but you will be un-timed, or out-of-time. 
+
+This technique can be used to trigger long samples, FXs, etc... It can also be used to change (non-periodcally) some values on your MIDI synthesizers or OSC receivers.
 
 ### Swimming
 
@@ -37,9 +46,19 @@ def basic():
     print('I am swimming now!')
     again(basic)
 
-hush(basic)
+hush(basic) # or panic()
 ```
 The most basic function you can write. This is the skeleton of a *swimming function*. You will encounter it everytime you play with **Sardine**.
+
+Behind the stage, the `@swim` decorator will provide all the necessary plumbing required to play sounds.
+
+The `again(...)` function is how the recursion happens, by adding a future execution of the function to the clock.
+
+Redeclaring the function with the `@die` decorator will stop the recursivity, ending the production of sound.
+
+Using `hush(function_name)` will also halt the function execution. 
+
+Using `panic()` will halt all sound functions in Sardine. 
 
 ### Swimming with style
 
@@ -51,7 +70,12 @@ def basic(d=0.5, i=0):
 
 hush(basic)
 ```
+
 The most common function. A function with a duration and an iterator passed as argument. This is the one you should save as a snippet somewhere in your text editor.
+
+The `d` parameter is the function's **duration**,  the `0.5` value representing half of a beat.  
+
+The `i` parameter is the function **iterator**, here progressively incremented. 
 
 
 ### Drowning in numbers
@@ -59,18 +83,25 @@ The most common function. A function with a duration and an iterator passed as a
 ```python3
 @swim 
 def basic(d=0.5, i=0, j=0, k=0):
-    print('I am swimming now!')
-    again(basic, d=0.5, i=i+1, j=i+2, k=P('r*10', i))
+    print(f'I am swimming with {i}, {j}, and k{}!')
+    again(basic, d=0.5, i=i+1, j=j+2, k=P('r*10', i))
 
 hush(basic)
 ```
+
 A function with three different iterators. Why not?
 
+Notice how the iterator values are evolving independently. 
+
+`i` is a basic increment, while `j` walks through even numbers.
+
+And `k` is randomized using the notation `P('r*10', i)`. To learn more about this, please refer below to [Patterning basics](#patterning-basics) and [Time tokens](#time-tokens).
+ 
 ### Swimming with friends
 
 ```python3
 def calling_you():
-    print("I hear you")
+    print('I hear you')
 
 @swim 
 def basic():
@@ -79,7 +110,7 @@ def basic():
 
 hush(basic)
 ```
-Calling a regular function from a swimming function.
+A swimming function can call a regular function i.e. a function with no Sardine decorator.
 
 ### Synchronized Swimming
 
@@ -115,7 +146,7 @@ Feeding one swimming function with the data of another.
 
 ## Advanced (Swimming fast)
 
-This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation / *Sardinopedia* before diving into the following section. You need to understand patterns, senders, and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
+This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation / *Sardinopedia* before diving into the following section. You need to understand [patterns](#patterning-basics), [senders](#senders), and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
 
 ### Swimming at clock speed
 
@@ -207,7 +238,7 @@ def bd(d=0.5):
     S('bd').out()
     again(bd, d=0.5)
 ```
-A simple bassdrum playing every 2 beats.
+A simple bassdrum playing on every half-beat.
 
 ### Bassdrum fun (S)
 
@@ -219,6 +250,12 @@ def bd(d=0.5):
 ```
 A simple bassdrum but some parameters have been tweaked to be random.
 
+The additional parameters are :
+
+- `speed` will reverse (<0), slow (0-1), or accelerate the sample (>1). The `r` token provides the value randomization.
+- `legato` defines the maximum duration of the sample, here randomized in the [0,1] interval of a beat.
+- `cutoff` will attenuation the sample's frequencies, acting like a cutoff filter that shuts down higher frequencies at random values. 
+
 ### Breakbeat (S)
 
 ```python3
@@ -228,6 +265,8 @@ def bd(d=0.5, i=0):
     again(bd, d=0.25, i=i+1)
 ```
 Picking a random sample in a folder containing the amen break. You could have a successful career doing this in front of audiences.
+
+Once again, the "magic" happens with the `sample>:r*X` notation, which randomizes which sample is read on each execution.
 
 ### Sample sequence (S)
 
@@ -252,6 +291,8 @@ def pluck(d=0.5, i=0):
 ```
 You can stack events without waiting. They will be sent immediately.
 
+This will play the same sample at different octaves in chorus, using the `<sample>:1` notation to specify you want the default note at Octave 1, etc.
+
 ### MIDI Note (M)
 
 ```python3
@@ -260,7 +301,7 @@ def midi(d=0.5, i=0):
     M().out()
     again(midi, d=0.5, i=i+1)
 ```
-No argument is enough to send a MIDI Note (60) at full velocity (127) on the first default MIDI channel. Arguments are only used to specify further or to override default values.
+No argument required to send a MIDI Note (60) at full velocity (127) on the first default MIDI channel. Arguments are only used to specify further or to override default values.
 
 ### MIDI Tune (M)
 

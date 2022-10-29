@@ -13,6 +13,8 @@ The Sardinopedia is a growing collection of interesting **Sardine** patterns. Pa
 
 - **they are odd**: they show something odd, unexpected, funny, etc...
 
+This is a collaborative **Sardine** patterns repository. Feel free to contribute by altering the file in your `docs/` folder and to add whatever you see fit! There are some areas where the Sardinopedia is a bit lacking!
+
 ## Demonstration patterns
 
 These patterns are small songs and/or long patterns that you can copy and paste to familiarise yourself with the syntax. Change some values, comment a few lines here and there. Try to learn how to move and alter **Sardine** code.
@@ -34,9 +36,7 @@ This command emits a single bass kick. How? Let's break it down.
 2. As the parameter is `'bd'`, a string refering to a bass drum, a sample with this file name is searched in the right directory.
 3. When the `.out()` method of the Sender object is called, **Sardine** sends a message to SuperCollider which emits the sound.
 
-In **Sardine**, you can use Sender objects outside of a recursive function. It will work, but you will be un-timed, or out-of-time. 
-
-This technique can be used to trigger long samples, FXs, etc... It can also be used to change (non-periodcally) some values on your MIDI synthesizers or OSC receivers.
+In **Sardine**, you can use Sender objects outside of a recursive function. It will work, but you will be un-timed, or out-of-time. This technique can be used to trigger long samples, FXs, etc... It can also be used to change (non-periodcally) some values on your MIDI synthesizers or OSC receivers.
 
 ### Swimming
 
@@ -56,9 +56,8 @@ The `again(...)` function is how the recursion happens, by adding a future execu
 
 Redeclaring the function with the `@die` decorator will stop the recursivity, ending the production of sound.
 
-Using `hush(function_name)` will also halt the function execution. 
+Using `hush(function_name)` will halt the function execution. `panic()` is a more powerful function than `hush`. It will halt all *swimming functions* in **Sardine** and also kill every synthesizer / sampler currently running. This is useful if you feel that you are loosing control when playing with loud or very long samples.
 
-Using `panic()` will halt all sound functions in Sardine. 
 
 ### Swimming with style
 
@@ -73,10 +72,9 @@ hush(basic)
 
 The most common function. A function with a duration and an iterator passed as argument. This is the one you should save as a snippet somewhere in your text editor.
 
-The `d` parameter is the function's **duration**,  the `0.5` value representing half of a beat.  
+- The `d` parameter is the function's **duration**,  the `0.5` value representing half of a beat.  
 
-The `i` parameter is the function **iterator**, here progressively incremented. 
-
+- The `i` parameter is an hand-crafted **iterator**, here progressively incremented. It works by adding 1 every time the *swimming function* loops around.
 
 ### Drowning in numbers
 
@@ -89,13 +87,9 @@ def basic(d=0.5, i=0, j=0, k=0):
 hush(basic)
 ```
 
-A function with three different iterators. Why not?
+A function with three different iterators. Why not? Notice how the iterator values are evolving independently. 
 
-Notice how the iterator values are evolving independently. 
-
-`i` is a basic increment, while `j` walks through even numbers.
-
-And `k` is randomized using the notation `P('r*10', i)`. To learn more about this, please refer below to [Patterning basics](#patterning-basics) and [Time tokens](#time-tokens).
+`i` is a basic increment, while `j` walks through even numbers. And `k` is randomized using the notation `P('r*10', i)`. To learn more about this, please refer below to [Patterning basics](#patterning-basics) and [Time tokens](#time-tokens).
  
 ### Swimming with friends
 
@@ -110,7 +104,7 @@ def basic():
 
 hush(basic)
 ```
-A swimming function can call a regular function i.e. a function with no Sardine decorator.
+A swimming function can call a regular function (*i.e.* a function with no **Sardine** decorator).
 
 ### Synchronized Swimming
 
@@ -123,7 +117,7 @@ def second():
     print('second!')
     again(first)
 ```
-A swimming function calling another one, calling back the first.
+A swimming function calling another one, calling back the first. This is a bit hacky but it is possible.
 
 ### Waterpolo
 
@@ -151,61 +145,62 @@ This section requires a good understanding of general **Sardine** concepts. I re
 ### Swimming at clock speed
 
 ```python
+
 @swim 
-def fast(d=t):
-    S('bd', speed='0.5,2', legato=0.1).out(
-            i.i, div=b, speed=2)
+def fast(d=0.25, i=0):
+    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, speed=2)
     S('hh, jvbass:0|8|4,', 
             pan='{0,1,0.1}',
-            legato=0.1).out(i.j, div=b/4 if rarely()
-                    else b/2, speed=2)
-    S('cp', legato=0.1).out(div=b*1.5)
-    a(fast, d=t)
+            legato=0.1).out(i, div=8 if rarely()
+                    else 5, speed=2)
+    S('cp', legato=0.1).out(i, div=8)
+    a(fast, d=1/8, i=i+1)
 ```
-**Sardine** swimming functions are usually slow (compared to clock speed). However, you can speed up your recursions to operate on the **clock tick** level. It means that you will get more rhythmic precision and that you can write more groovy expressions. It will also make your LFOs and signal-like patterns much more efficient as you will get a more granular control on time. There are two default variables already configured for you to use if you want to swim really fast:
+**Sardine** swimming functions are usually slow (compared to clock speed). However, you can speed up your recursions by working closer to the **clock tick** level. It means that you will get better rythmic precision, a more fined grained control over time and events and that you can will be able to write more groovy or swinging code. It will also make your LFOs and signal-like patterns much more efficient. 
 
-- `t` (for `tick`): the lowest logical rhythmical division.
-- `b` (for `beat`): a rhythmical division corresponding to `1` beat.
+The recipe for *fast swimming* is the following:
 
-They can be easily overriden so better know that they exist! By using them efficiently, you can start to create really precise and intricate rhythms or very fluid melodies and interleaving arpeggios/chords.
+- Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
+
+- Play a lot with silences and with the arguments of `.out(iterator, div, speed)`. 
 
 ### Fast swimming template
 
 ```python
 @swim 
-def fast(d=t, i=0):
-    # print("Damn, that's fast!")
-    a(fast, d=t, i=i+1)
+def fast(d=0.5, i=0):
+    # print("Damn, that's fast!")
+    a(fast, d=1/32, i=i+1)
 ```
-This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as *amphibian variables*, see below). This function is really fast, do not try to use `S()` or `M()` inside it before reading the following section. To acknowledge how fast it is, use `print()` and watch the console. You can see how it makes good use of the `t` variable as `delay` amount between recursions.
+This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as [amphibian variables](#amphibian-variables)). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following sections about divisors and the speed factor.
 
 ### Divisors
 
 ```python
+
 @swim 
-def fast(d=t, i=0):
-    S('bd').out(div=b)
-    a(fast, d=t, i=i+1)
+def fast(d=0.5, i=0):
+    S('bd').out(i, div=8)
+    a(fast, d=1/16, i=i+1)
 ```
-The `.out` function as well as the `P()` object can take three arguments:
+The `.out()` method as well as the independant `P()` [object](#patterning-freely-p) can take up to three arguments:
 
-- `i`: the iterator for patterning.
+- `i` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. It gives an index on which other operations will be based.
 
-- `div`: **a timing divisor**. 
+- `div` (*int*): **a timing divisor**. It feels like using a modulo operation. If `div=4`, the event will hit once every 4 iterations. The default is `div=1`, where every event is a hit!
 
-- `speed`: a speed factor for iterating over pattern values.
+- `speed` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a speed of `0.5`, the result will be `1, 1, 2, 2, 3, 3`.
 
-In the above example, using `b` as divisor means that this `S()` event will hit every `b` clock ticks, `b` corresponding to 1 beat.
+In the above example, we are playing with various divisors to get an interesting rythmic pattern.
 
 ```python
 @swim 
-def fast(d=t, i=0):
-    S('bd').out(div=b)
-    S('hh').out(div=b/4)
-    S('sd').out(div=b*2)
-    a(fast, d=t, i=i+1)
+def fast(d=0.5, i=0):
+    S('bd').out(i, div=8)
+    S('hh').out(i, div=7)
+    S('sd').out(i, div=16)
+    a(fast, d=1/16, i=i+1)
 ```
-This new and improved function will play a hi-hat every 4th of a beat and a snare every 2 beats. You can freely multiply and divide `b` to form your typical rhythmical divisions. It can be used as a basis for retrieving all the traditional rhythmical durations.
 
 ### Pattern speed
 
@@ -214,17 +209,19 @@ This new and improved function will play a hi-hat every 4th of a beat and a snar
 @swim 
 def slow(d=0.5):
     S('bd, hh, sn, hh').out(i.i)
-    a(slow, d=0.5)
-    
+    a(slow, d=0.25)
+
+hush()    
+  
 # This is a fast Sardine function
 @swim 
-def fast(d=t):
-    S('bd, hh, sn, hh').out(i.i, div=b/2, speed=1)
-    a(fast, d=t)
+def fast(d=1/16):
+    S('bd, hh, sn, hh').out(i.i, div=4, speed=1)
+    a(fast, d=1/16)
 ```
-The two functions above yield a similar musical result. However, the fast version has been made explicit and is using the three arguments `.out()` can take. As you can see, there is a `speed` argument determining how fast we should iterate over the values of our pattern.
+The two functions above yield a similar musical result. However, the fast version goes further by making use of all the parameters `.out()` can take. As you can see, there is a `speed` argument determining how fast we should iterate over the values of our pattern. Try altering it to see what is going on!
 
-By default, `speed=1` means that we will move forward to the next index of our patterns for every division (`b`). Changing speed to `2` (`speed=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`speed=0.5`), etc...
+By default, `speed=1` means that we will move forward to the next index of our patterns for every division (`1`). Changing speed to `2` (`speed=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`speed=0.5`), etc...
 
 It is not currently possible to have one speed for each and every value in the pattern. The speed is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
 

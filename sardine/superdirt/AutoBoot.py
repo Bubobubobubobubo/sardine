@@ -190,7 +190,6 @@ class SuperColliderProcess:
     def boot(self) -> None:
         """Booting a background instance of SCLang!"""
         console = Console()
-        from time import sleep
 
         with console.status(
             "[yellow][red]Sardine[/red] is booting \
@@ -205,7 +204,6 @@ SCLang && SuperDirt...[/yellow]"
                 universal_newlines=True,
                 start_new_session=True,
             )
-            sleep(1)
             self._write_stdin(message="""load("{}")""".format(self._startup_file))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()

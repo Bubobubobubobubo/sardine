@@ -183,6 +183,7 @@ def die(fn):
     """
     cr(fn)
     return fn
+drown = die
 
 
 def sleep(n_beats: Union[int, float]):

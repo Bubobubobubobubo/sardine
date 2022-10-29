@@ -25,11 +25,20 @@ def map_unary_function(func, value):
         func: The function to apply
         value: The value or the list of values
     """
-    if isinstance(value, (float, int)):
-        return func(value)
     if isinstance(value, list):
         return [func(x) for x in value]
-    return None
+    else:
+        return func(value)
+
+
+def force_value_to_list(value):
+    """Convert a value to a singleton list, if it is not already a list"""
+    if isinstance(value, list):
+        # Already a list
+        return value
+    else:
+        # Make a singleton
+        return [value]
 
 
 def zip_cycle(left, right):
@@ -48,12 +57,7 @@ def map_binary_function(func, left, right):
         left: The left value or list of values
         right: The right value or list of values
     """
-    if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-        return func(left, right)
-    if all(map(lambda x: isinstance(x, list), [left, right])):
-        return [func(x, y) for x, y in zip_cycle(left, right)]
-    if isinstance(left, (int, float)) and isinstance(right, list):
-        return [func(left, x) for x in right]
-    if isinstance(left, list) and isinstance(right, (float, int)):
-        return [func(x, right) for x in left]
-    return None
+    return [
+        func(x, y)
+        for x, y in zip_cycle(force_value_to_list(left), force_value_to_list(right))
+    ]

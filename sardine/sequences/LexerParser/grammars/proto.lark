@@ -1,17 +1,10 @@
 // A pattern is a succession of things ////////////////////////////////////////
 
 ?start: pattern
-pattern: (item|list) ("," (item|list)?)* -> return_pattern
+pattern: sum ("," sum?)* -> return_pattern
+
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Rules concerning lists and interaction with other tokens ///////////////////
-
-item: (sum|col|patname)                            -> id
-list: "[" item ("," item)* ","? "]"                -> make_list
-
-///////////////////////////////////////////////////////////////////////////////
-
 
 // Rules concerning numbers ///////////////////////////////////////////////////
 
@@ -30,6 +23,8 @@ list: "[" item ("," item)* ","? "]"                -> make_list
      | product "!!" atom               -> extend_repeat
 
 ?atom: NUMBER                                              -> number
+     | col
+     | patname
      | "-" atom                                            -> negation
      | "$"                                                 -> get_time
      | "$" "." "m"                                         -> get_measure
@@ -65,55 +60,41 @@ list: "[" item ("," item)* ","? "]"                -> make_list
 // Rules concerning names /////////////////////////////////////////////////////
 
 ?patname: compose_name
-    | compose_name ":" (sum|list)      -> assoc_sp_number
-    | (compose_name|patname) "!" sum   -> repeat_name
-    | compose_name "|" patname         -> choice_name
+    | compose_name ":" sum                -> assoc_sp_number
 
 ?compose_name: name
     | compose_name "/" name               -> specify_address
 
-?name: NAME                               -> name_disamb
-    | NAME sum                            -> name_from_name_number
-    | "(" patname ")"
+?name: NAME                               -> name
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules about notes /////////////////////////////////////////////////////////
 
 ?col : note                                         -> id
-     | col "->" name                                -> add_qualifier
+     | note "->" name                               -> add_qualifier
      | col ":" name                                 -> add_modifier
 
-?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note "+"  (col|sum)                                     -> addition
-     | note "-"  (col|sum)                                     -> substraction 
-     | note "*"  (col|sum)                                     -> multiplication
-     | note "%"  (col|sum)                                     -> modulo
-     | note "/"  (col|sum)                                     -> division
-     | note "//" (col|sum)                                     -> floor_division
-     | note "!" (sum|list)                                     -> extend
-     | note "|"  note                                          -> choice
-     | "(" col ")"
+note: NOTE              -> make_note
+    | note "b"          -> note_flat
+    | note "#"          -> note_sharp
+    | note NUMBER       -> note_set_octave
+    | note "'"          -> note_octave_up
+    | note "."          -> note_octave_down
 
 ///////////////////////////////////////////////////////////////////////////////
      
 // Tokens /////////////////////////////////////////////////////////////////////
 
-A.0: "A"
-B.0: "B"
-C.0: "C"
-D.0: "D"
-E.0: "E"
-F.0: "F"
-G.0: "G"
-NOTE.0: (A|B|C|D|E|F|G)
-NAME.10: (LETTER)~2 (LETTER|DIGIT+)*
-OCTSHIFTUP: "'"
-OCTSHIFTDOWN: "."
-FLAT: "b"
-SHARP: "#"
+// Notes start with an uppercase letter, other names start with a lower case letter.
+// This helps disambiguating the syntax.
+NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
+NAME: LCASE_LETTER (LETTER|DIGIT+)*
+
 SILENCE: "."
 
+%import common.LCASE_LETTER
+%import common.UCASE_LETTER
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT
 %import common.NUMBER

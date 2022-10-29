@@ -101,56 +101,50 @@ class CalculateTree(Transformer):
         """
         return random.randint(int(number0), int(number1))
 
-    def make_note(self, *args):
+    def make_note(self, note):
         """Return a valid MIDI Note (fifth octave)
-        from a valid anglo-saxon note name.
+        from a valid anglo-saxon, french or canadian note name.
 
         Args:
-            symbol (str): a string representing a valid note (a to g).
+            note (str): a string representing a valid note ("A" to "G", or "Do" to "Si").
 
         Returns:
             int: A MIDI Note (fifth octave)
         """
-        total = 0
-        table = {"A": -3, "B": -1, "C": 0, "D": 2, "E": 4, "F": 5, "G": 7}
-        args = list(args)
+        if note in ["A", "La"]:
+            return 0 + 12 * 5
+        elif note in ["B", "Si", "Ti"]:
+            return 2 + 12 * 5
+        elif note in ["C", "Do"]:
+            return 3 + 12 * 5
+        elif note in ["D", "Re", "Ré"]:
+            return 5 + 12 * 5
+        elif note in ["E", "Mi"]:
+            return 7 + 12 * 5
+        elif note in ["F", "Fa"]:
+            return 8 + 12 * 5
+        elif note in ["G", "Sol"]:
+            return 10 + 12 * 5
 
-        if not any([str(x).isdigit() for x in args]):
-            total += 60
+    def note_flat(self, note):
+        """Flatten a note"""
+        return note - 1
 
-        for token in args:
-            if str(token).isdigit():
-                number = int(token)
-                if number >= 10:
-                    total += int(token[0]) * 12
-                else:
-                    total += int(token) * 12
-                continue
-            if str(token) == "#":
-                total += 1
-                continue
-            if str(token) == "b":
-                total -= 1
-                continue
-            if str(token) == "'":
-                total += 12
-                continue
-            if str(token) == ".":
-                total -= 12
-                continue
-            try:
-                if token.type == "NOTE":
-                    total += table[str(token).upper()]
-                    continue
-            except AttributeError:
-                pass
+    def note_sharp(self, note):
+        """Sharpen a note"""
+        return note + 1
 
-        if total >= 127:
-            return 127
-        elif total <= 0:
-            return 0
-        else:
-            return total
+    def note_set_octave(self, note, value):
+        """Move a note to a given octave"""
+        return (note % 12) + 12 * int(value)
+
+    def note_octave_up(self, note):
+        """Move a note one octave up"""
+        return note + 12
+
+    def note_octave_down(self, note):
+        """Move a note one octave down"""
+        return note - 12
 
     def add_modifier(self, col, *modifier):
 
@@ -485,13 +479,15 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers after applying the expansion rule.
         """
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+        left_is_list = isinstance(left, list)
+        right_is_list = isinstance(right, list)
+        if not left_is_list and not right_is_list:
             return [left] * int(right)
-        if isinstance(left, list) and isinstance(right, (float, int)):
+        if left_is_list and not right_is_list:
             return left * int(right)
-        if isinstance(left, (float, int)) and isinstance(right, list):
+        if not left_is_list and right_is_list:
             return [left] * sum(int(x) for x in right)
-        if isinstance(left, list) and isinstance(right, list):
+        if left_is_list and right_is_list:
             return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
 
     def extend_repeat(self, left, right):
@@ -547,58 +543,15 @@ class CalculateTree(Transformer):
     def floor_division(self, left, right):
         return map_binary_function(lambda x, y: x // y, left, right)
 
-    def name_disamb(self, name):
+    def name(self, name):
         """Generating a name"""
-        # Fix two letters words with b being interpreted as words
-        if name in ["Ab", "Bb", "Cb", "Db", "Eb", "Fb", "Gb"]:
-            # We need to return in two separate tokens
-            # See make_note
-            return self.make_note(name[0], name[1])
         return str(name)
-
-    def name_from_name_number(self, name, number):
-        return str("".join([str(name), str(number)]))
 
     def assoc_sp_number(self, name, value):
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
-        # Potential types for names
-        if isinstance(name, str):
-            if isinstance(value, (float, int)):
-                return _simple_association(name, value)
-            elif isinstance(value, list):
-                return [_simple_association(name, x) for x in value]
-
-        if isinstance(name, list):
-            if isinstance(value, (float, int)):
-                return [_simple_association(n, value) for n in name]
-            if isinstance(value, list):
-                return [str(x) + ":" + str(int(y)) for x, y in zip(cycle(name), value)]
-
-    def choice_name(self, a, b):
-        """Choose 50%/50% between name 'a' and name 'b'.
-
-        Args:
-            a (str): A name
-            b (str): A name
-
-        Returns:
-            str: The name chosen by a chance operation
-        """
-        return random.choice([a, b])
-
-    def repeat_name(self, name, value):
-        """Repeats a name 'value' times.
-
-        Args:
-            name (str): A name given as a string
-            value (_type_): Number of repetitions
-
-        Returns:
-            list[str]: A list composed of 'value' times the 'name'.
-        """
-        return [name] * int(value)
+        return map_binary_function(_simple_association, name, value)
 
     def cosinus(self, x):
         return map_unary_function(cos, x)

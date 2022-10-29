@@ -85,12 +85,12 @@ list: "[" item ("," item)* ","? "]"                -> make_list
      | col ":" name                                 -> add_modifier
 
 ?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note "+"  (col|sum)                                     -> waddition
-     | note "-"  (col|sum)                                     -> wsubstraction 
-     | note "*"  (col|sum)                                     -> wmultiplication
-     | note "%"  (col|sum)                                     -> wmodulo
-     | note "/"  (col|sum)                                     -> wdivision
-     | note "//" (col|sum)                                     -> wfloor_division
+     | note "+"  (col|sum)                                     -> addition
+     | note "-"  (col|sum)                                     -> substraction 
+     | note "*"  (col|sum)                                     -> multiplication
+     | note "%"  (col|sum)                                     -> modulo
+     | note "/"  (col|sum)                                     -> division
+     | note "//" (col|sum)                                     -> floor_division
      | note "!" (sum|list)                                     -> extend
      | note "|"  note                                          -> choice
      | "(" col ")"

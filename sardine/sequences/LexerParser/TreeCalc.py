@@ -529,50 +529,23 @@ class CalculateTree(Transformer):
     def addition(self, left, right):
         return map_binary_function(lambda x, y: x + y, left, right)
 
-    def waddition(self, left, right):
-        """Wrapped variant of the addition method"""
-        return map_binary_function(lambda x, y: (x + y) % 127, left, right)
-
     def modulo(self, left, right):
         return map_binary_function(lambda x, y: x % y, left, right)
-
-    def wmodulo(self, left, right):
-        return map_binary_function(lambda x, y: (x % y) % 127, left, right)
 
     def power(self, left, right):
         return map_binary_function(lambda x, y: pow(x, y), left, right)
 
-    def wpower(self, left, right):
-        """Wrapped variant of the power method"""
-        return map_binary_function(lambda x, y: pow(x, y) % 127, left, right)
-
     def substraction(self, left, right):
         return map_binary_function(lambda x, y: x - y, left, right)
-
-    def wsubstraction(self, left, right):
-        """Wrapped variant of the substraction method"""
-        return map_binary_function(lambda x, y: (x - y) % 127, left, right)
 
     def multiplication(self, left, right):
         return map_binary_function(lambda x, y: x * y, left, right)
 
-    def wmultiplication(self, left, right):
-        """Wrapped variant of the multiplication method"""
-        return map_binary_function(lambda x, y: (x * y) % 127, left, right)
-
     def division(self, left, right):
         return map_binary_function(lambda x, y: x / y, left, right)
 
-    def wdivision(self, left, right):
-        """Wrapped variant of the division method"""
-        return map_binary_function(lambda x, y: (x / y) % 127, left, right)
-
     def floor_division(self, left, right):
         return map_binary_function(lambda x, y: x // y, left, right)
-
-    def wfloor_division(self, left, right):
-        """Wrapped variant of the floor division method"""
-        return map_binary_function(lambda x, y: (x // y) % 127, left, right)
 
     def name_disamb(self, name):
         """Generating a name"""

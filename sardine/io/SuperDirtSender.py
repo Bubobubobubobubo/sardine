@@ -5,8 +5,7 @@ import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
-from .SenderLogic import (
-        pattern_element, compose_parametric_patterns)
+from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -91,7 +90,7 @@ class SuperDirtSender:
                 return
             if isinstance(self.sound, list):
                 first_element = self.sound[0]
-                # This is a check for handling silence
+                # This is a check for handling silence
                 if first_element is not None:
                     final_message.extend(["sound", self.sound[0]])
                 else:
@@ -124,12 +123,15 @@ class SuperDirtSender:
             if self.sound == []:
                 return
             if isinstance(self.sound, list):
-                new_element = self.sound[pattern_element(
-                    iterator=i, div=div, speed=speed, pattern=self.sound)]
+                new_element = self.sound[
+                    pattern_element(
+                        iterator=i, div=div, speed=speed, pattern=self.sound
+                    )
+                ]
                 if new_element is None:
                     return
                 else:
-                    final_message.extend( ["sound",new_element])
+                    final_message.extend(["sound", new_element])
             else:
                 if self.sound is None:
                     return
@@ -138,12 +140,11 @@ class SuperDirtSender:
 
             # Parametric arguments
             pattern_result = compose_parametric_patterns(
-                    div=div, speed=speed, 
-                    iterator=i,
-                    items=self.content.items())
+                div=div, speed=speed, iterator=i, items=self.content.items()
+            )
             final_message.extend(pattern_result)
 
-            # Trig must always be included
+            # Trig must always be included
             if "trig" not in final_message:
                 final_message.extend(["trig", str(1)])
 

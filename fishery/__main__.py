@@ -1,6 +1,6 @@
 # https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
-# Taken from the CPython Github Repository. Custom version of the 
-# asyncio REPL that will autoload Sardine whenever started.
+# Taken from the CPython Github Repository. Custom version of the
+# asyncio REPL that will autoload Sardine whenever started.
 
 import concurrent.futures
 import threading
@@ -22,8 +22,8 @@ from rich.panel import Panel
 
 system = platform.system()
 
-# Setting very high priority for this process (time-critical)
-warning_text="[red bold]Run Sardine using administrator priviledges to get \
+# Setting very high priority for this process (time-critical)
+warning_text = "[red bold]Run Sardine using administrator priviledges to get \
 better_performances[/red bold]"
 if system == "Windows":
     try:

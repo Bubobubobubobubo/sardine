@@ -228,8 +228,8 @@ class Clock:
         Accel stands for acceleration. In active MIDI mode, accel acts as a way
         to nudge the clock to run faster or slower (from 0 to 100%). It can be
         quite useful when dealing with a musician that can't really use any
-        synchronisation protocol. Beware, you will have to manually reset the 
-        accel amount after setting it if you want to stop and not fasten the 
+        synchronisation protocol. Beware, you will have to manually reset the
+        accel amount after setting it if you want to stop and not fasten the
         clock.
 
         Args:
@@ -266,9 +266,9 @@ class Clock:
     @tick.setter
     def tick(self, new_tick: int) -> int:
         """
-        Tick is the tiniest grain of time recognized by the Sardine Clock. 
+        Tick is the tiniest grain of time recognized by the Sardine Clock.
         A tick is the time taken by the clock to loop on itself. Ticks are
-        used to deduce all other temporal informations: beat, bar, etc... 
+        used to deduce all other temporal informations: beat, bar, etc...
         They are also sometimes used to compute duration of a given event.
 
         Args:
@@ -371,11 +371,11 @@ class Clock:
         """Calculate a new mean Linktime from Link"""
         info = self._capture_link_info()
         self._linktime.update(
-             {
-                 "tempo": info["tempo"],
-                 "beats": (self._linktime["beats"] + info["beats"]),
-                 "phase": (self._linktime["phase"] + info["phase"]),
-             }
+            {
+                "tempo": info["tempo"],
+                "beats": (self._linktime["beats"] + info["beats"]),
+                "phase": (self._linktime["phase"] + info["phase"]),
+            }
         )
 
     def link(self):
@@ -585,8 +585,7 @@ class Clock:
         notes.
         """
         if temporal_information:
-            self._current_tick = self._link_time_to_ticks(
-                    temporal_information)
+            self._current_tick = self._link_time_to_ticks(temporal_information)
         else:
             self._current_tick += 1
         self._update_handles()
@@ -763,9 +762,7 @@ class Clock:
             self._osc._send_clock_information(self)
 
             self._increment_clock(
-                temporal_information=(
-                    self._capture_link_info() if self._link else None
-                )
+                temporal_information=(self._capture_link_info() if self._link else None)
             )
 
             elapsed = time.perf_counter() - begin

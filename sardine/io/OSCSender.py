@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
 from math import floor
-from .SenderLogic import (pattern_element, compose_parametric_patterns)
+from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -92,7 +92,7 @@ class OSCSender:
 
         def _message_without_iterator():
             """Compose a message if no iterator is given. This will simply
-            return the first value from every pattern, except for silence. 
+            return the first value from every pattern, except for silence.
             Silence will return nothing."""
 
             # This is the case where nothing is returned
@@ -105,11 +105,11 @@ class OSCSender:
                 else:
                     final_message["address"] = "/" + given_address
 
-            # We now have the address and we move to the content of the message
-            # We will store the final message inside a list
+            # We now have the address and we move to the content of the message
+            # We will store the final message inside a list
             final_message["message"] = []
 
-            # Browsing items and figuring out what the first value is
+            # Browsing items and figuring out what the first value is
             for key, value in self.content.items():
                 if value == []:
                     continue
@@ -118,7 +118,7 @@ class OSCSender:
                     if given_value is None:
                         return
                     else:
-                        if key != 'trig':
+                        if key != "trig":
                             final_message["message"].append(value)
 
             if "trig" not in self.content.keys():
@@ -128,22 +128,22 @@ class OSCSender:
             if trig:
                 return self.schedule(final_message)
 
-
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
 
             if "trig" not in self.content.keys():
-                self.content['trig'] = 1
+                self.content["trig"] = 1
 
-            # We need to determine the address, given that 
+            # We need to determine the address, given that
             # the address can also be a silence.
             if self.address == []:
                 return
             if isinstance(self.address, list):
-                new_element = self.address[pattern_element(
-                    iterator=i, div=div, 
-                    speed=speed, 
-                    pattern=self.address)]
+                new_element = self.address[
+                    pattern_element(
+                        iterator=i, div=div, speed=speed, pattern=self.address
+                    )
+                ]
                 if new_element is None:
                     return
                 else:
@@ -151,30 +151,32 @@ class OSCSender:
             else:
                 final_message["address"] = "/" + self.address
 
-            # Now that we have it, we will iterate over pattern arguments to 
-            # form the message, just like in the non-iterated version
+            # Now that we have it, we will iterate over pattern arguments to
+            # form the message, just like in the non-iterated version
 
             final_message["message"] = []
             pattern_result = compose_parametric_patterns(
-                    div=div, speed=speed, iterator=i, 
-                    items=self.content.items())
-            print(type(pattern_result), pattern_result)
+                div=div, speed=speed, iterator=i, items=self.content.items()
+            )
             final_message["message"].extend(pattern_result)
 
-            # Now we have to an enormous operation just to check on trig...
-            if isinstance(self.content['trig'], list):
+            # Now we have to an enormous operation just to check on trig...
+            if isinstance(self.content["trig"], list):
                 trig = self.content["trig"][
                     pattern_element(
-                        iterator=i, div=div, 
-                        speed=speed, pattern=self.content["trig"]) ]
+                        iterator=i, div=div, speed=speed, pattern=self.content["trig"]
+                    )
+                ]
                 if trig is None:
                     for decreasing_index in range(i, -1, -1):
-                        trig = self.content['trig'][
+                        trig = self.content["trig"][
                             pattern_element(
                                 iterator=decreasing_index,
                                 div=div,
                                 speed=speed,
-                                pattern=self.content['trig'])]
+                                pattern=self.content["trig"],
+                            )
+                        ]
                         if trig is None:
                             continue
                         else:
@@ -184,8 +186,8 @@ class OSCSender:
                         raise ValueError("Pattern does not contain any value")
                 else:
                     trig = int(trig)
-            elif isinstance(self.content['trig'], (int, float, str)):
-                trig = int(self.content['trig'])
+            elif isinstance(self.content["trig"], (int, float, str)):
+                trig = int(self.content["trig"])
 
             if trig:
                 return self.schedule(final_message)

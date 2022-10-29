@@ -311,15 +311,12 @@ def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1):
     parser = c.parser
     result = parser.parse(pattern)
 
-    def _pattern_element( 
-            div: int, speed: int, 
-            iterator: int, pattern: list):
+    def _pattern_element(div: int, speed: int, iterator: int, pattern: list):
         """Joseph Enguehard's algorithm for solving iteration speed"""
         return floor(iterator * speed / div) % len(pattern)
 
-    return result[_pattern_element(
-        div=div, speed=speed, 
-        iterator=i, pattern=result)]
+    return result[_pattern_element(div=div, speed=speed, iterator=i, pattern=result)]
+
 
 P = Pat
 

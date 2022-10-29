@@ -138,6 +138,11 @@ def second(d=0.5, rng=0):
 ```
 Feeding one swimming function with the data of another.
 
+### Recursion aliases
+
+The function to perform recursion has multiple names because it is very important: `again`, `anew`, `a`. These aliases all refer to the same low-level function named `c.schedule` that talks directly to **Sardine**'s scheduler.
+
+
 ## Advanced (Swimming fast)
 
 This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation / *Sardinopedia* before diving into the following section. You need to understand [patterns](#patterning-basics), [senders](#senders), and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
@@ -235,7 +240,7 @@ def bd(d=0.5):
     S('bd').out()
     again(bd, d=0.5)
 ```
-A simple bassdrum playing on every half-beat.
+A simple bassdrum playing on every half-beat. This is the most basic sound-making function you can write. 
 
 ### Bassdrum fun (S)
 
@@ -249,9 +254,9 @@ A simple bassdrum but some parameters have been tweaked to be random.
 
 The additional parameters are :
 
-- `speed` will reverse (<0), slow (0-1), or accelerate the sample (>1). The `r` token provides the value randomization.
-- `legato` defines the maximum duration of the sample, here randomized in the [0,1] interval of a beat.
-- `cutoff` will attenuation the sample's frequencies, acting like a cutoff filter that shuts down higher frequencies at random values. 
+- `speed` will reverse (<0), slow (0-1), or accelerate the sample (>1) by altering the playback speed. The `r` token provides randomization between `0.0` and `1.0` (*float*).
+- `legato` defines the maximum duration of the sample before cutting it, here randomized in the `0` to `1` range that corresponds to a second.
+- `cutoff` will attenuate some frequencies. This is the cutoff frequency of a lowpass filter that shuts down frequencies higher to the frequency cutoff. The cutoff frequency is guaranteed to be at least `100` plus a certain amount between `0` and `4000`.
 
 ### Breakbeat (S)
 
@@ -261,9 +266,7 @@ def bd(d=0.5, i=0):
     S('amencutup:r*20').out(i)
     again(bd, d=0.25, i=i+1)
 ```
-Picking a random sample in a folder containing the amen break. You could have a successful career doing this in front of audiences.
-
-Once again, the "magic" happens with the `sample>:r*X` notation, which randomizes which sample is read on each execution.
+Picking a random sample in a folder containing slices of the classic [amen break](https://en.wikipedia.org/wiki/Amen_break). You could have a successful career doing this in front of audiences. Once again, the *magic* happens with the `sample:r*X` notation, which randomizes which sample is read on each execution, making it unpredictable.
 
 ### Sample sequence (S)
 
@@ -286,9 +289,7 @@ def pluck(d=0.5, i=0):
     S('pluck:3').out(i)
     again(pluck, d=0.5, i=i+1)
 ```
-You can stack events without waiting. They will be sent immediately.
-
-This will play the same sample at different octaves in chorus, using the `<sample>:1` notation to specify you want the default note at Octave 1, etc.
+You can stack events easily by just calling `S()` multiple times. In the above example, it happens that `pluck` samples are nicely order and are generating a chord if you struck them in parallel. How cool!
 
 ### MIDI Note (M)
 
@@ -357,7 +358,7 @@ def bd(d=0.5):
     again(bd, d=0.5)
 ```
 
-Building rhythms based on chance that an event will happen. Rolling a dice.
+Building rhythms based on chance that an event will happen. Rolling a dice. These small functions are borrowed from **TidalCycles** that is using them intensively in its very thorough patterning system.
 
 ### Binary rhythm
 
@@ -367,7 +368,7 @@ def bd(d=0.5, i=0):
     S('bd', trig=bin(20103)).out(i)
     again(bd, d=0.5, i=i+1)
 ```
-Using the binary representation of a number to build a rhythm. You don't need to know what the representation is to get an interesting rhythm out of it.
+Using the binary representation of a number to build a rhythm. You don't need to know what the representation is to get an interesting rhythm out of it. Feed anything to the `bin` function and get something out!
 
 ### Euclidian rhythm
 
@@ -406,6 +407,19 @@ def zoom(d=0.5, i=0):
     again(zoom, d=0.5, i=i+1)
 ```
 Create rhythm using the `sleep()` function. Fully compatible with everything else! It is usually a good idea to use `sleep()` after having composed something complex to slice time even more.
+
+### Silence rhythms
+
+```python3
+@swim 
+def silence_rhythm(d=0.5, i=0):
+    S('bd').out(i, div=4)
+    S('hh:2').out(i, div=2)
+    S('drum:2+r*5').out(i, div=3)
+    a(silence_rhythm, d=1/8, i=i+1)
+```
+
+Play with the `div` amount to generate interesting rhythms.
 
 ## Sampling
 

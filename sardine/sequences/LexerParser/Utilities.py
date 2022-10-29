@@ -17,6 +17,7 @@ def floating_point_range(start, end, step):
     sample_count = int(abs(end - start) / step)
     return islice(count(start, step), sample_count)
 
+
 def map_unary_function(func, value):
     """Apply an unary function to a value or a list of values
 
@@ -30,12 +31,14 @@ def map_unary_function(func, value):
         return [func(x) for x in value]
     return None
 
+
 def zip_cycle(left, right):
     """Zip two lists, cycling the shortest one"""
     if len(left) < len(right):
         return zip(cycle(left), right)
     else:
         return zip(left, cycle(right))
+
 
 def map_binary_function(func, left, right):
     """Apply an binary function to a value or a list of values

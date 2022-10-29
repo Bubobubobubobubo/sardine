@@ -456,7 +456,11 @@ class CalculateTree(Transformer):
         epsilon = 0.0000001
         start = min(left, right)
         stop = max(left, right)
-        ramp = list(takewhile(lambda x: x < stop + epsilon, (start + i*abs(step) for i in count())))
+        ramp = list(
+            takewhile(
+                lambda x: x < stop + epsilon, (start + i * abs(step) for i in count())
+            )
+        )
         if left > right:
             return list(reversed(ramp))
         else:
@@ -486,9 +490,9 @@ class CalculateTree(Transformer):
         if isinstance(left, list) and isinstance(right, (float, int)):
             return left * int(right)
         if isinstance(left, (float, int)) and isinstance(right, list):
-            return [left] * sum (int(x) for x in right)
+            return [left] * sum(int(x) for x in right)
         if isinstance(left, list) and isinstance(right, list):
-            return sum(([x]*int(y) for (x, y) in zip_cycle(left, right)), start=[])
+            return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
@@ -500,7 +504,9 @@ class CalculateTree(Transformer):
             if isinstance(right, (int, float)):
                 return [x for x in left for _ in range(0, int(right))]
             elif isinstance(right, list):
-                return sum(([x]*int(y) for (x, y) in zip_cycle(left, right)), start=[])
+                return sum(
+                    ([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[]
+                )
 
     def choice(self, left, right):
         """Choose 50%-50% between the 'left' or 'right' token
@@ -525,48 +531,48 @@ class CalculateTree(Transformer):
 
     def waddition(self, left, right):
         """Wrapped variant of the addition method"""
-        return map_binary_function(lambda x, y: (x + y)%127, left, right)
+        return map_binary_function(lambda x, y: (x + y) % 127, left, right)
 
     def modulo(self, left, right):
         return map_binary_function(lambda x, y: x % y, left, right)
 
     def wmodulo(self, left, right):
-        return map_binary_function(lambda x, y: (x % y)%127, left, right)
+        return map_binary_function(lambda x, y: (x % y) % 127, left, right)
 
     def power(self, left, right):
         return map_binary_function(lambda x, y: pow(x, y), left, right)
 
     def wpower(self, left, right):
         """Wrapped variant of the power method"""
-        return map_binary_function(lambda x, y: pow(x, y)%127, left, right)
+        return map_binary_function(lambda x, y: pow(x, y) % 127, left, right)
 
     def substraction(self, left, right):
         return map_binary_function(lambda x, y: x - y, left, right)
 
     def wsubstraction(self, left, right):
         """Wrapped variant of the substraction method"""
-        return map_binary_function(lambda x, y: (x - y)%127, left, right)
+        return map_binary_function(lambda x, y: (x - y) % 127, left, right)
 
     def multiplication(self, left, right):
         return map_binary_function(lambda x, y: x * y, left, right)
 
     def wmultiplication(self, left, right):
         """Wrapped variant of the multiplication method"""
-        return map_binary_function(lambda x, y: (x * y)%127, left, right)
+        return map_binary_function(lambda x, y: (x * y) % 127, left, right)
 
     def division(self, left, right):
         return map_binary_function(lambda x, y: x / y, left, right)
 
     def wdivision(self, left, right):
         """Wrapped variant of the division method"""
-        return map_binary_function(lambda x, y: (x / y)%127, left, right)
+        return map_binary_function(lambda x, y: (x / y) % 127, left, right)
 
     def floor_division(self, left, right):
         return map_binary_function(lambda x, y: x // y, left, right)
 
     def wfloor_division(self, left, right):
         """Wrapped variant of the floor division method"""
-        return map_binary_function(lambda x, y: (x // y)%127, left, right)
+        return map_binary_function(lambda x, y: (x // y) % 127, left, right)
 
     def name_disamb(self, name):
         """Generating a name"""

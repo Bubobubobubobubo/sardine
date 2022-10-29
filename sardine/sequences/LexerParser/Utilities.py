@@ -30,6 +30,13 @@ def map_unary_function(func, value):
         return [func(x) for x in value]
     return None
 
+def zip_cycle(left, right):
+    """Zip two lists, cycling the shortest one"""
+    if len(left) < len(right):
+        return zip(cycle(left), right)
+    else:
+        return zip(left, cycle(right))
+
 def map_binary_function(func, left, right):
     """Apply an binary function to a value or a list of values
 
@@ -41,8 +48,7 @@ def map_binary_function(func, left, right):
     if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
         return func(left, right)
     if all(map(lambda x: isinstance(x, list), [left, right])):
-        zipped = zip(left, cycle(right)) if len(left) > len(right) else zip(cycle(left), right)
-        return [func(x, y) for x, y in zipped]
+        return [func(x, y) for x, y in zip_cycle(left, right)]
     if isinstance(left, (int, float)) and isinstance(right, list):
         return [func(left, x) for x in right]
     if isinstance(left, list) and isinstance(right, (float, int)):

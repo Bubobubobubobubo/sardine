@@ -1,4 +1,4 @@
-from itertools import islice, count
+from itertools import islice, count, cycle
 
 
 def floating_point_range(start, end, step):
@@ -16,3 +16,35 @@ def floating_point_range(start, end, step):
     assert step != 0
     sample_count = int(abs(end - start) / step)
     return islice(count(start, step), sample_count)
+
+def map_unary_function(func, value):
+    """Apply an unary function to a value or a list of values
+
+    Args:
+        func: The function to apply
+        value: The value or the list of values
+    """
+    if isinstance(value, (float, int)):
+        return func(value)
+    if isinstance(value, list):
+        return [func(x) for x in value]
+    return None
+
+def map_binary_function(func, left, right):
+    """Apply an binary function to a value or a list of values
+
+    Args:
+        func: The function to apply
+        left: The left value or list of values
+        right: The right value or list of values
+    """
+    if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
+        return func(left, right)
+    if all(map(lambda x: isinstance(x, list), [left, right])):
+        zipped = zip(left, cycle(right)) if len(left) > len(right) else zip(cycle(left), right)
+        return [func(x, y) for x, y in zipped]
+    if isinstance(left, (int, float)) and isinstance(right, list):
+        return [func(left, x) for x in right]
+    if isinstance(left, list) and isinstance(right, (float, int)):
+        return [func(x, right) for x in left]
+    return None

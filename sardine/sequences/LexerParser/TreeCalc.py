@@ -1,6 +1,7 @@
 from lark import Transformer, v_args
 from typing import Union
 from .Qualifiers import qualifiers
+from .Utilities import map_unary_function, map_binary_function
 from lark.lexer import Token
 from typing import Any
 from itertools import cycle
@@ -570,129 +571,55 @@ class CalculateTree(Transformer):
             return [random.uniform(x, y) for x, y in zip(cycle(right), left)]
 
     def negation(self, value):
-        if isinstance(value, (float, int)):
-            return -value
-        elif isinstance(value, list):
-            return [-x for x in value]
+        return map_unary_function(lambda x: -x, value)
 
     def addition(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left + right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x + y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x + left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x + right for x in left]
+        return map_binary_function(lambda x, y: x + y, left, right)
 
     def waddition(self, left, right):
         """Wrapped variant of the addition method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.addition(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x + left), right))
+        return map_binary_function(lambda x, y: (x + y)%127, left, right)
 
     def modulo(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left % right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x % y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x % left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x % right for x in left]
+        return map_binary_function(lambda x, y: x % y, left, right)
 
     def wmodulo(self, left, right):
-        """Wrapped variant of the modulo method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.modulo(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x % left), right)) % 127
+        return map_binary_function(lambda x, y: (x % y)%127, left, right)
 
     def power(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return pow(left, right)
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [pow(x, y) for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [pow(left, x) for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [pow(right, x) for x in left]
+        return map_binary_function(lambda x, y: pow(x, y), left, right)
 
     def wpower(self, left, right):
         """Wrapped variant of the power method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.power(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(pow(x, left)), right)) % 127
+        return map_binary_function(lambda x, y: pow(x, y)%127, left, right)
 
     def substraction(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left - right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x - y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x - left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x - right for x in left]
+        return map_binary_function(lambda x, y: x - y, left, right)
 
     def wsubstraction(self, left, right):
         """Wrapped variant of the substraction method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.substraction(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x - left), right)) % 127
+        return map_binary_function(lambda x, y: (x - y)%127, left, right)
 
     def multiplication(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left * right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x * y for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x * left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x * right for x in left]
+        return map_binary_function(lambda x, y: x * y, left, right)
 
     def wmultiplication(self, left, right):
         """Wrapped variant of the multiplication method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.multiplication(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x * left), right)) % 127
+        return map_binary_function(lambda x, y: (x * y)%127, left, right)
 
     def division(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left / right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [y / x for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x / left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x / right for x in left]
+        return map_binary_function(lambda x, y: x / y, left, right)
 
     def wdivision(self, left, right):
         """Wrapped variant of the division method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.division(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x / left), right)) % 127
+        return map_binary_function(lambda x, y: (x / y)%127, left, right)
 
     def floor_division(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left // right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x // y for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x // left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x // right for x in left]
+        return map_binary_function(lambda x, y: x // y, left, right)
 
     def wfloor_division(self, left, right):
         """Wrapped variant of the floor division method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.floor_division(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x // left), right)) % 127
+        return map_binary_function(lambda x, y: (x // y)%127, left, right)
 
     def name_disamb(self, name):
         """Generating a name"""
@@ -747,11 +674,11 @@ class CalculateTree(Transformer):
         """
         return [name] * int(value)
 
-    def cosinus(self, x: Union[int, float]) -> Union[int, float]:
-        return cos(x)
+    def cosinus(self, x):
+        return map_unary_function(cos, x)
 
-    def sinus(self, x: Union[int, float]) -> Union[int, float]:
-        return sin(x)
+    def sinus(self, x):
+        return map_unary_function(sin, x)
 
-    def tangente(self, x: Union[int, float]) -> Union[int, float]:
-        return tan(x)
+    def tangente(self, x):
+        return map_unary_function(tan, x)

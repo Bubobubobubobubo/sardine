@@ -183,6 +183,8 @@ def die(fn):
     """
     cr(fn)
     return fn
+
+
 drown = die
 
 

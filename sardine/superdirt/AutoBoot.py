@@ -82,26 +82,36 @@ class SuperColliderProcess:
         shady is going on (like not being able to boot the server, late messages)
         """
         if "late 0." in decoded_line:
-            print('\n')
+            print("\n")
             print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))
         if "listening to Tidal on port 57120" in decoded_line:
-            print('\n')
+            print("\n")
             print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
-            print('\n')
-            print(Panel.fit((
-                f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already" + 
-                "\nrunning somewhere. It might be a mistake or a" + 
-                "\nzombie process. Run `Server.killAll` in an SC" + 
-                "\nwindow (can be the IDE of `sclang` in term..)")))
+            print("\n")
+            print(
+                Panel.fit(
+                    (
+                        f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
+                        + "\nrunning somewhere. It might be a mistake or a"
+                        + "\nzombie process. Run `Server.killAll` in an SC"
+                        + "\nwindow (can be the IDE of `sclang` in term..)"
+                    )
+                )
+            )
         if "Mismatched sample rates are not supported" in decoded_line:
-            print('\n')
-            print(Panel.fit((
-                f"[red]/!\\\\[/red] - Mismatched sample rates. Please make" + 
-                "\nsure that your audio input sample rate and" +
-                "\nyour audio output sample rate are the same." +
-                "\nThis is usually modified in your OS audio" +
-                "\nconfiguration menus. Reboot Sardine!")))
+            print("\n")
+            print(
+                Panel.fit(
+                    (
+                        f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
+                        + "\nsure that your audio input sample rate and"
+                        + "\nyour audio output sample rate are the same."
+                        + "\nThis is usually modified in your OS audio"
+                        + "\nconfiguration menus. Reboot Sardine!"
+                    )
+                )
+            )
 
     async def monitor(self):
         """
@@ -136,7 +146,6 @@ class SuperColliderProcess:
                 if any(
                     procstr in proc.name() for procstr in ["sclang", "scide", "scsynth"]
                 ):
-                    print(f"Killing {proc.name()}")
                     proc.kill()
         except Exception:
             pass

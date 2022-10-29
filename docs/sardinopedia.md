@@ -918,7 +918,7 @@ You are using name patterns since you first started to read the **Sardinopedia**
 #### Addresses
 
 ```python3
-O(osc_client, `"an/address, another/address"`, value=1, other_val=2).out()
+O(osc_client, "an/address, another/address", value=1, other_value=2).out()
 ```
 Addresses are just like names except that they can contain a `/` separator just like any other typical OSC address out there. They are not really distinct from a name. The difference is only conceptual and in how you use strings.
 
@@ -930,7 +930,7 @@ def choosing_stuff(d=0.5, i=0):
     S('bd|pluck', speed='1|2').out(i)
     again(choosing_stuff, d=0.5, i=i+1)
 ```
-The pipe operator `|` can be used to make a 50/50% choice between two tokens. You can also chain them: `1|2|3|4`.
+The pipe operator `|` can be used on anything to make a 50/50% choice between two tokens. You can also chain them: `1|2|3|4`.
 
 ### Ranges
 
@@ -940,7 +940,7 @@ def ranges(d=0.5, i=0):
     S('pluck|jvbass', speed='1:5').out(i)
     again(ranges, d=0.5, i=i+1)
 ```
-If you want to generate a number in the range `x` to `y` included, you can use the `:` operator.
+If you want to generate a number in the range `x` to `y` included, you can use the `:` operator. It spits out integers if you are using integers as boundaries but it will spit out a floating point number if you are using floating point numbers as boundaries.
 
 ### Ramps
 
@@ -952,8 +952,7 @@ def ramps(d=0.5, i=0):
         cutoff='{1,10}*100').out(i)
     again(ramps, d=0.5, i=i+1)
 ```
-
-You can generate ramps using the `{1,10}` syntax. This will generate the following list: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. This is an extended version of Python base `range` function. You can also generate a ramp with a floating point range by specifying it as the third argument: `{1,10,0.1}`.
+You can generate ramps of integers using the `{1,10}` syntax. This works just like **Python**'s range function. Well, almost... it's way better! You can generate descending ramps easily: `{10,1}`. You can also generate ascending ramps of floating point numbers by precising a step other than `1`: `{1,10,0.5}`. Of course, this also works the other way around :)
 
 ### Repeat
 
@@ -963,7 +962,18 @@ def repeat_stuff(d=0.5, i=0):
     S('pluck|jvbass', speed='1:2', midinote='C4!4, E4!3, E5, G4!4').out(i)
     again(repeat_stuff, d=0.5, i=i+1)
 ```
-The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed elsewhere.
+The `!` operator inspired by **TidalCycles** is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. Know that it's there for now. It will make more sense and be really more interesting when we will have learned about lists and collections.
+
+### Sinus, Cosinus, Tangent
+
+**Sardine** also includes some very cool and common mathematical functions sunch as the sinus, cosinus and tangent function. They are denoted using the `s()`, `c()` and `t()` functions that you can apply on pretty much anything.
+
+```python
+@swim
+def sine_test(d=0.125, i=0):
+    S('crow', speed='1+s($/40)').out(i, div=1, speed=1)
+    a(sine_test, d=0.125, i=i+1)
+```
 
 ### Silence
 

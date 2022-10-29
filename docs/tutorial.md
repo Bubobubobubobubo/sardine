@@ -581,19 +581,17 @@ Prefer the `OscSender` object, aliased to `O()`. The syntax is similar but you g
 my_osc = OSC(ip="127.0.0.1", port=23000, name="Bibu", ahead_amount=0.25)
 
 # Simple address
-O(my_osc, 'loulou', value='1 2 3 4').out()
+O(my_osc, 'loulou', value='1, 2, 3, 4').out()
 
-# Composed address (_ equals /)
-O(my_osc, 'loulou_yves', value='1 2 3 4').out()
-
+O(my_osc, 'loulou/yves', value='1, 2, 3, 4').out()
+ 
 @swim
 def lezgo(d=1, i=0):
-    O(my_osc, 'loulou_blabla', 
-        value='1 2 3 4', 
-        otherv='1 2|4 r*2').out(i)
+    O(my_osc, 'loulou/blabla', 
+        value='1, 2, 3, 4', 
+        otherv='1, 2|4, r*2').out(i)
     anew(lezgo, i=i+1)
 ```
-
 
 ## What about crashes?
 

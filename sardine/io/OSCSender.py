@@ -158,7 +158,6 @@ class OSCSender:
             pattern_result = compose_parametric_patterns(
                 div=div, speed=speed, iterator=i, items=self.content.items()
             )
-            print(type(pattern_result), pattern_result)
             final_message["message"].extend(pattern_result)
 
             # Now we have to an enormous operation just to check on trig...

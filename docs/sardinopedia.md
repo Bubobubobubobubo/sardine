@@ -339,6 +339,64 @@ def midi(d=0.5, i=0):
 ```
 Switching between program `1`, `2`, `3` and `4` on your MIDI Synth. Sending a control change on channel `0`, number `20` for a value of `50`.
 
+### Sending OSC (O)
+
+```python3
+my_osc = OSC(ip="127.0.0.1", port=23000, name="Bibu", ahead_amount=0.25)
+```
+This is the command you must use if you would like to create a new OSC client. The `ahead_amount` parameter is used to determine a certain amount of time nudge between calling the OSC Sender and sending the message. It can be useful for synchronisation purposes.
+
+Once this is done, you can use `O()` for sending OSC messages to that address:
+```python
+# Simple address
+O(my_osc, 'loulou', value='1,2,3,4').out()
+
+# Composed address (_ equals /)
+O(my_osc, 'loulou/yves', value='1,2,3,4').out()
+
+```
+Note how `O()` takes an additional argument compared to other senders. You must provide a valid OSC client for it to work because you can have multiple senders sending at different addresses. Everything else is patternable like usual.
+
+### Receiving OSC (O)
+
+You can also receive and track incoming OSC values. In fact, you can even attach callbacks to incoming OSC messages and turn **Sardine** into a soundbox so let's do it!
+
+```python
+info = Receiver(25000)
+def funny_sound():
+    S('bip', shape=0.9, room=0.9).out()
+info.attach('/bip/', funny_sound)
+```
+Yeah, that's everything you need! In the above example, we are declaring a new `Receiver` object that maps to a given port on the given IP address (with `localhost` being the default). All we have to do next is to map a function to every message being received at that address and poof. We now have a working soundbox. Let's break this down and take a look at all the features you can do when receiving OSC.
+
+Let's take a look at the `Receiver`:
+```python
+info = Receiver(port, ip, name)
+```
+You will find your usual suspects: `port`, `ip` and `name` (that is not used for anything useful really). There are three methods you can call on your `Receiver` object:
+
+- `.attach(address: str, function: Callable, watch: bool)` : attach a callback to a given address. It must be a function. Additionally, you can set `watch` to `True` (`False` by default) to also run the `.watch` method automatically afterhands.
+
+- `.watch(address: str)` : give an address. The object will track the last received value on that address. If nothing has been received yet, it will return `None` instead of crashing \o/.
+
+- `.get(address)` : retrieve the last received value to that address. You must have used `.watch()` before to register this address to be watched. Otherwise, you will get nothing.
+
+### Blending OSC in a pattern
+
+If you are receiving something, you can now use it in your patterns to map a captor, a sensor or a controller to a **Sardine** pattern. If you combo this with [amphibian-variables](#amphibian-variables), you can now contaminate your patterns with values coming from your incoming data:
+
+```python
+info = Receiver(25000)
+info.watch('/sitar/speed/')
+
+@swim 
+def contamination(d=0.5, i=0):
+    v.a = info.get('/sitar/speed/')['args'][0]
+    S('sitar', speed='v.a').out()
+    a(contamination, d=0.5, i=i+1)
+```
+
+This opens up the way for environmental reactive patterns that can be modified on-the-fly and that will blend code and human interaction.
 
 ## Rhythm
 

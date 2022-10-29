@@ -381,7 +381,7 @@ You will find your usual suspects: `port`, `ip` and `name` (that is not used for
 
 - `.get(address)` : retrieve the last received value to that address. You must have used `.watch()` before to register this address to be watched. Otherwise, you will get nothing.
 
-### Blending OSC in a pattern
+### Blending OSC in a pattern (0)
 
 If you are receiving something, you can now use it in your patterns to map a captor, a sensor or a controller to a **Sardine** pattern. If you combo this with [amphibian-variables](#amphibian-variables), you can now contaminate your patterns with values coming from your incoming data:
 
@@ -678,9 +678,11 @@ You can be creative with pattern indexes and get random sequences, drunk walks, 
 
 ## Pattern syntax
 
-This section is very likely to change in upcoming versions.
+There is a whole programming language inside of **Sardine**. This language is dedicated to creating patterns of notes, numbers, samples and addresses. It is an ongoing project and might be subject to change in upcoming versions but there is a subset of stable features that you can use without risking your code to break too fast :) The syntax, much like the syntax of a regular general-purpose programming languages is oganised in primitive types and things you can do on/with them. It is very reminescent of **Python** but with a twist!
 
-### Numbers
+## Primitive types
+
+### Integers and floating-point numbers
 
 ```python3
 @swim
@@ -688,9 +690,10 @@ def number(d=0.5, i=0):
     print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))')).out(i)
     again(number, d=0.5, i=i+1)
 ```
-You can write numbers and use common operators such as addition, substraction, division, multiplication, modulo, etc... You can be specific about priority by using parenthesis.
+You can write numbers (both *integers* and *floating point numbers*) and use common operators such as **addition**, **substraction**, **division**, **multiplication**, **modulo**, etc... For precision in your calculations, you can of course resort to using parentheses. By default, **Sardine** is made so that most arithmetic operators can be used on almost anything, expect if intuitively it doesn't make sense at all like multiplying a string against a string.
 
-### Time tokens
+
+#### Time-dependant numbers 
 
 ```python3
 @swim
@@ -698,37 +701,44 @@ def number(d=0.5, i=0):
     print(P('$, r, m, p')).out(i)
     again(number, d=0.5, i=i+1)
 ```
-Some number tokens are time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time. 
 
-- `$`: tick, the tick number since the clock started.
-- `r`: random, between `0` and `1`.
-- `p`: phase, a number between `0` and your `c.ppqn`.
-- `m`: measure, the measure since the clock started.
+Some number tokens are clock-time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a tiny and predictible moment in time. 
+
+- `$`: **tick**, the tick number since the clock started.
+- `$.p`: **phase**, a number between `0` and your `c.ppqn`.
+- `$.m`: **measure**, the measure since the clock started.
+
 
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('r, m, p')).out(i)
+    print(P('$, $.m, $.p')).out(i)
     again(number, d=0.5, i=i+1)
 ```
 
-Some number tokens are time dependant, but will refer to absolute time. They are mostly used for long-running sequences and/or for introduction a random factor in your computation. You will notice that they are prefixed by `$`.
+Some other number tokens are absolute-time dependant. They are mostly used for long-running sequences and/or for introducing a random factor in the result of the expression. You will notice that they are prefixed by `$`.
+
 ```python3
 @swim
 def random(d=0.5, i=0):
-    print(P('$.Y, $.M, $.D, $.H, $.m, $.S, $.µ', i))
+    print(P('T.U, T.Y, T.M, T.D, T.h, T.m, T.s, T.µ', i))
     again(random, d=0.5, i=i+1)
 ```
 
-- `$.Y`: year, the current year.
-- `$.M`: month, the current month.
-- `$.D`: day, the current day.
-- `$.H`: hour, the current hour.
-- `$.m`: minute, the current minute.
-- `$.S`: second, the current second.
-- `$.µ`: microsecond, the current microsecond.
+- `T.U`: Unix Time, the current Unix Time.
+- `T.Y`: year, the current year.
+- `T.M`: month, the current month.
+- `T.D`: day, the current day.
+- `T.h`: hour, the current hour.
+- `T.m`: minute, the current minute.
+- `T.s`: second, the current second.
+- `T.µ`: microsecond, the current microsecond.
 
-### Timed maths
+#### Random numbers
+
+You can write random numbers by using the letter `r`. By default, `r` will return a floating point number between `0.0` and `1.0` but it will be casted to integer if it makes more sense in that context (`e.g.` `sample:r*8`).
+
+#### Generating patterns out of time-dependant numbers
 
 ```python3
 @swim
@@ -736,7 +746,7 @@ def random(d=0.5, i=0):
     S('cp', speed='$%20').out(i)
     again(random, d=0.5, i=i+1)
 ```
-Timed tokens make good low frequency oscillators or random values for generating interesting patterns. Playing with time tokens is a great way to get generative results out of a predictible sequence.
+Timed tokens make good *low frequency oscillators*, *ramps* or oscillating patterns. Playing with time tokens using modulos, using the `s()`, `c()` or `t()` function is a great way to get generative results out of a predictible sequence. It is very important to practice doing this, especially if you are planning to do some [fast swimming](#advanced-swimming-fast).
 
 ### Notes
 
@@ -746,13 +756,13 @@ def notes(d=0.5, i=0):
     S('pluck', midinote='C5,D5,E5,F5,G5').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can write notes in patterns. Notes will be converted to some MIDI value used by **SuperDirt**. It means that notes are numbers too and that you can do math on them if you wish to. The syntax to write notes is the following. The steps 2 and 3 can be omitted:
+Notes are one of the primitives you can use in patterns. Notes will always be converted to some MIDI value (an integer value between `0` and `127`). Notes will be converted to some MIDI value used by **SuperDirt**. If you need more precision, speak in hertzs (`freq=402.230239`). Notes are numbers too (!!). You can do math on them if you wish to. The syntax to write notes is the following:
 
-- 1) capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`
-- 2) flat or sharp: `#`, `b` 
-- 3) octave number: `0`..`9` 
+- 1) **[MANDATORY]** capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`.
+- 3) **[FACULTATIVE]** octave number: `0`..`9`.
+- 2) **[FACULTATIVE]** flat or sharp: `#`, `b`.
 
-### Note qualifiers
+#### Note qualifiers
 
 ```python3
 @swim
@@ -760,9 +770,120 @@ def notes(d=0.5, i=0):
     S('pluck', midinote='C5->penta').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-Use the `print_scales()` function to print out the list of possible scales, chords and structures you can play with. You can use the `->` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C->penta` will raise a major pentatonic scale based on middle C.
+You can use the `->` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C->penta` will raise a major pentatonic scale based on middle C. There is a list of scales, modes, chords, structures, etc.. that are stored in memory. You can't do much with them and they will likely be removed sooner or later:
 
-### Note modifiers
+```python
+# ====== #
+# Chords #
+# ====== #
+
+"dim": [0, 3, 6, 12]
+"dim9": [0, 3, 6, 9, 14]
+"hdim7": [0, 3, 6, 10]
+"hdim9": [0, 3, 6, 10, 14]
+"hdimb9": [0, 3, 6, 10, 13]
+"dim7": [0, 3, 6, 9]
+"7dim5": [0, 4, 6, 10]
+"aug": [0, 4, 8, 12]
+"augMaj7": [0, 4, 8, 11]
+"aug7": [0, 4, 8, 10]
+"aug9": [0, 4, 10, 14]
+"maj": [0, 4, 7, 12]
+"maj7": [0, 4, 7, 11]
+"maj9": [0, 4, 11, 14]
+"minmaj7": [0, 3, 7, 11]
+"5": [0, 7, 12]
+"6": [0, 4, 7, 9]
+"7": [0, 4, 7, 10]
+"9": [0, 4, 10, 14]
+"b9": [0, 4, 10, 13]
+"mM9": [0, 3, 11, 14]
+"min": [0, 3, 7, 12]
+"min7": [0, 3, 7, 10]
+"min9": [0, 3, 10, 14]
+"sus4": [0, 5, 7, 12]
+"sus2": [0, 2, 7, 12]
+"b5": [0, 4, 6, 12]
+"mb5": [0, 3, 6, 12]
+
+# ================== #
+# Scales begin here  #
+# ================== #
+
+"major": [0, 2, 4, 5, 7, 9, 11]
+"minor": [0, 2, 3, 5, 7, 8, 10]
+"hminor": [0, 2, 3, 5, 7, 8, 11]
+"^minor": [0, 2, 3, 5, 7, 9, 11]  # doesn't work
+"vminor": [0, 2, 3, 5, 7, 8, 10]
+"penta": [0, 2, 4, 7, 9]
+"acoustic": [0, 2, 4, 6, 7, 9, 10]
+"aeolian": [0, 2, 3, 5, 7, 8, 10]
+"algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17]
+"superlocrian": [0, 1, 3, 4, 6, 8, 10]
+"augmented": [0, 3, 4, 7, 8, 11]
+"bebop": [0, 2, 4, 5, 7, 9, 10, 11]
+"blues": [0, 3, 5, 6, 7, 10]
+"chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+"dorian": [0, 2, 3, 5, 7, 9, 10]
+"doubleharmonic": [0, 1, 4, 5, 8, 11]
+"enigmatic": [0, 1, 4, 6, 8, 10, 11]
+"flamenco": [0, 1, 4, 5, 7, 8, 11]
+"gypsy": [0, 2, 3, 6, 7, 8, 10]
+"halfdim": [0, 2, 3, 5, 6, 8, 10]
+"harmmajor": [0, 2, 4, 5, 7, 8, 11]
+"harmminor": [0, 2, 3, 5, 7, 8, 11]
+"hirajoshi": [0, 4, 6, 7, 11]
+"hungarianminor": [0, 2, 3, 6, 7, 8, 11]
+"hungarianmajor": [0, 3, 4, 6, 7, 9, 10]
+"in": [0, 1, 5, 7, 8]
+"insen": [0, 1, 5, 7, 10]
+"ionian": [0, 2, 4, 5, 7, 9, 11]
+"istrian": [0, 1, 3, 4, 6, 7]
+"iwato": [0, 1, 5, 6, 10]
+"locrian": [0, 1, 3, 5, 6, 8, 10]
+"lydianaug": [0, 2, 4, 6, 8, 9, 11]
+"lydian": [0, 2, 4, 5, 7, 8, 9, 11]
+"majorlocrian": [0, 2, 4, 5, 6, 8, 10]
+"majorpenta": [0, 2, 4, 7, 9]
+"minorpenta": [0, 3, 5, 7, 10]
+"melominup": [0, 2, 3, 5, 7, 9, 11]
+"melomindown": [0, 2, 3, 5, 7, 8, 10]
+"mixolydian": [0, 2, 4, 5, 7, 9, 10]
+"neapolitan": [0, 1, 3, 5, 7, 8, 11]
+"octatonic": [0, 2, 3, 5, 6, 8, 9, 11]
+"octatonic2": [0, 1, 3, 4, 6, 7, 9, 10]
+"persian": [0, 1, 4, 5, 6, 8, 11]
+"phrygian": [0, 1, 4, 5, 7, 8, 10]
+"prometheus": [0, 2, 4, 6, 9, 10]
+"harmonics": [0, 3, 4, 5, 7, 9]
+"tritone": [0, 1, 4, 6, 7, 10]
+"ukrainian": [0, 2, 3, 6, 7, 9, 10]
+"whole": [0, 2, 4, 6, 8, 10]
+"yo": [0, 3, 5, 7, 10]
+"symetrical": [0, 1, 2, 6, 7, 10]
+"symetrical2": [0, 2, 3, 6, 8, 10]
+"messiaen1": [0, 2, 4, 6, 8, 10]
+"messiaen2": [0, 1, 3, 4, 6, 7, 9, 10]
+"messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11]
+"messiaen4": [0, 1, 2, 4, 6, 7, 8, 11]
+"messiaen5": [0, 1, 5, 6, 7, 11]
+"messiaen6": [0, 2, 4, 5, 6, 8]
+"messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11]
+
+# ================================== #
+# Structures (other musical objects) #
+# ================================== #
+
+"fourths": [0, 4, 10, 15, 20]
+"fifths": [0, 7, 14, 21, 28]
+"sixths": [0, 9, 17, 26, 35]
+"thirds": [0, 4, 8, 12]
+"octaves": [0, 12, 24, 36, 48]
+```
+
+This section is to take with a grain of salt. This will change pretty soon!
+
+#### Note modifiers
 
 ```python3
 @swim
@@ -772,7 +893,9 @@ def notes(d=0.5, i=0):
 ```
 Some modifiers are available to fine-tune your note collections. There is currently no way to print out the list of `modifiers`. You will have to deep-dive in the source code to find them.
 
-### Note maths
+This section is to take with a grain of salt. This will change pretty soon!
+
+#### Mathematics on notes
 
 ```python3
 @swim
@@ -780,7 +903,7 @@ def notes(d=0.5, i=0):
     S('pluck', midinote='C5+0|4|8->penta.disco.braid').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can use arithmetic operators on notes.
+You can use arithmetic operators on notes like if they were a regular number. That's because they are really just numbers! Random and time-dependant numbers are numbers too. Notes are numbers too so you can add a note to a note even if it doesn't really make sense.
 
 ### Names
 
@@ -790,9 +913,14 @@ def names(d=0.5, i=0):
     S('bd, pluck, bd, pluck:2+4').out(i)
     again(names, d=0.5, i=i+1)
 ```
-You are using name patterns since you first started! You can also pattern names. The whole pattern syntax works just the same.
+You are using name patterns since you first started to read the **Sardinopedia**! To be fully qualified as a name, a string **must be longer than one character**. It can also contain numbers but **not as the first character of the string**.
 
-### Addresses
+#### Addresses
+
+```python3
+O(osc_client, `"an/address, another/address"`, value=1, other_val=2).out()
+```
+Addresses are just like names except that they can contain a `/` separator just like any other typical OSC address out there. They are not really distinct from a name. The difference is only conceptual and in how you use strings.
 
 ### Choice 
 

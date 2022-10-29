@@ -91,7 +91,7 @@ list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
      | note _MODULO (col|sum)                     -> wmodulo
      | note "/"     (col|sum)                     -> wdivision
      | note "//"    (col|sum)                     -> wfloor_division
-     | note _REPEAT sum                           -> repeat_collection
+     | note _REPEAT (sum|list)                    -> extend
      | note _PIPE  note                           -> choice
      | _LPAR col _RPAR
 

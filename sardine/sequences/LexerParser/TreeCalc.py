@@ -1,9 +1,10 @@
 from lark import Transformer, v_args
 from typing import Union
 from .Qualifiers import qualifiers
+from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from lark.lexer import Token
 from typing import Any
-from itertools import cycle
+from itertools import cycle, takewhile, count
 from math import cos, sin, tan
 from time import time
 import datetime
@@ -217,8 +218,7 @@ class CalculateTree(Transformer):
         if not isinstance(collection, list):
             return collection
         else:
-            collection.reverse()
-            return collection
+            return reversed(collection)
 
     def collection_palindrome(self, collection):
         """Make a palindrome out of a newly generated collection
@@ -233,7 +233,6 @@ class CalculateTree(Transformer):
         if not isinstance(collection, list):
             return collection
         else:
-            collection.reverse()
             return collection + list(reversed(collection))
 
     def shuffle_collection(self, collection):
@@ -282,10 +281,7 @@ class CalculateTree(Transformer):
             expansions = [0, -12, 12]
             return number + random.choice(expansions)
 
-        if not isinstance(collection, list):
-            return collection
-        else:
-            return [expand_number(x) for x in collection]
+        return map_unary_function(expand_number, collection)
 
     def disco_collection(self, collection):
         """Takes every other note down an octave
@@ -299,26 +295,8 @@ class CalculateTree(Transformer):
         if not isinstance(collection, list):
             return collection
         else:
-            applier = cycle([lambda x: x - 12, lambda x: self.id(x)])
-            return [next(applier)(x) for x in collection]
-
-    def repeat_collection(self, note, number):
-        """Repeats a list 'number' times
-
-        Args:
-            collection (list): A list generated through a qualifier
-            number (int): Number of repetitions
-
-        Returns:
-            list: Repeated list of integers
-        """
-        if isinstance(note, int):
-            return [note] * int(number)
-        elif isinstance(note, list):
-            final_list = []
-            for list in [note] * int(number):
-                final_list.extend(list)
-            return final_list
+            offsets = cycle([-12, 0])
+            return [x + offset for (x, offset) in zip(collection, offsets)]
 
     def collection_drop2(self, collection):
         """Simulate a drop2 chord.
@@ -380,8 +358,7 @@ class CalculateTree(Transformer):
         new_list = []
         for element in args:
             if isinstance(element, list):
-                for i in element:
-                    new_list.append(i)
+                new_list += element
             else:
                 new_list.append(element)
         return new_list
@@ -461,7 +438,7 @@ class CalculateTree(Transformer):
         if isinstance(left, list):
             if isinstance(right, (float, int)):
                 last = left.pop()
-                return left.append(self.generate_ramp(last, right))
+                return left + self.generate_ramp(last, right)
 
     def generate_ramp_with_range(self, left, right, step=1):
         """Generates a ramp of integers between x included and y
@@ -476,28 +453,16 @@ class CalculateTree(Transformer):
             list: a ramp of ascending or descending integers with step
         """
 
-        def _frange(start, stop, step):
-            # if set start=0.0 and step = 1.0 if not specified
-            # taken from https://pynative.com/python-range-for-float-numbers/#h-range-of-floats-using-generator-and-yield
-            start = float(start)
-            if stop == None:
-                stop = start + 0.0
-                start = 0.0
-            if step == None:
-                step = 1.0
-            count = 0
-            while True:
-                temp = float(start + count * step)
-                if step > 0 and temp >= stop:
-                    break
-                elif step < 0 and temp <= stop:
-                    break
-                yield temp
-                count += 1
-
-        ramp = list(_frange(start=left, stop=right, step=step))
-        if int(left) > int(right):
-            return reversed(ramp)
+        epsilon = 0.0000001
+        start = min(left, right)
+        stop = max(left, right)
+        ramp = list(
+            takewhile(
+                lambda x: x < stop + epsilon, (start + i * abs(step) for i in count())
+            )
+        )
+        if left > right:
+            return list(reversed(ramp))
         else:
             return ramp
 
@@ -520,19 +485,14 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers after applying the expansion rule.
         """
-        if all(map(lambda x: isinstance(x, float), [left, right])):
+        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
             return [left] * int(right)
         if isinstance(left, list) and isinstance(right, (float, int)):
-            new_list = []
-            for _ in range(int(right)):
-                [new_list.append(x) for x in left]
-            return new_list
+            return left * int(right)
         if isinstance(left, (float, int)) and isinstance(right, list):
-            new_list = []
-            for _ in range(int(left)):
-                [new_list.append(x) for x in right]
-        if isinstance(left, (float, int)) and isinstance(right, (float, int)):
-            return [left] * int(right)
+            return [left] * sum(int(x) for x in right)
+        if isinstance(left, list) and isinstance(right, list):
+            return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
@@ -544,12 +504,9 @@ class CalculateTree(Transformer):
             if isinstance(right, (int, float)):
                 return [x for x in left for _ in range(0, int(right))]
             elif isinstance(right, list):
-                new_list = []
-                cycling_through = cycle(right)
-                for element in left:
-                    for _ in range(int(next(cycling_through))):
-                        new_list.append(element)
-                return new_list
+                return sum(
+                    ([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[]
+                )
 
     def choice(self, left, right):
         """Choose 50%-50% between the 'left' or 'right' token
@@ -564,135 +521,58 @@ class CalculateTree(Transformer):
         return random.choice([left, right])
 
     def random_in_range(self, left, right):
-        if all(map(lambda x: isinstance(x, float), [left, right])):
-            return random.uniform(left, right)
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [random.uniform(x, y) for x, y in zip(cycle(right), left)]
+        return map_binary_function(random.uniform, left, right)
 
     def negation(self, value):
-        if isinstance(value, (float, int)):
-            return -value
-        elif isinstance(value, list):
-            return [-x for x in value]
+        return map_unary_function(lambda x: -x, value)
 
     def addition(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left + right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x + y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x + left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x + right for x in left]
+        return map_binary_function(lambda x, y: x + y, left, right)
 
     def waddition(self, left, right):
         """Wrapped variant of the addition method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.addition(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x + left), right))
+        return map_binary_function(lambda x, y: (x + y) % 127, left, right)
 
     def modulo(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left % right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x % y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x % left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x % right for x in left]
+        return map_binary_function(lambda x, y: x % y, left, right)
 
     def wmodulo(self, left, right):
-        """Wrapped variant of the modulo method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.modulo(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x % left), right)) % 127
+        return map_binary_function(lambda x, y: (x % y) % 127, left, right)
 
     def power(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return pow(left, right)
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [pow(x, y) for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [pow(left, x) for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [pow(right, x) for x in left]
+        return map_binary_function(lambda x, y: pow(x, y), left, right)
 
     def wpower(self, left, right):
         """Wrapped variant of the power method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.power(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(pow(x, left)), right)) % 127
+        return map_binary_function(lambda x, y: pow(x, y) % 127, left, right)
 
     def substraction(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left - right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x - y for x, y in zip(cycle(right), left)]
-        elif isinstance(left, (int, float)) and isinstance(right, list):
-            return [x - left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x - right for x in left]
+        return map_binary_function(lambda x, y: x - y, left, right)
 
     def wsubstraction(self, left, right):
         """Wrapped variant of the substraction method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.substraction(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x - left), right)) % 127
+        return map_binary_function(lambda x, y: (x - y) % 127, left, right)
 
     def multiplication(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left * right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x * y for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x * left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x * right for x in left]
+        return map_binary_function(lambda x, y: x * y, left, right)
 
     def wmultiplication(self, left, right):
         """Wrapped variant of the multiplication method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.multiplication(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x * left), right)) % 127
+        return map_binary_function(lambda x, y: (x * y) % 127, left, right)
 
     def division(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left / right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [y / x for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x / left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x / right for x in left]
+        return map_binary_function(lambda x, y: x / y, left, right)
 
     def wdivision(self, left, right):
         """Wrapped variant of the division method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.division(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x / left), right)) % 127
+        return map_binary_function(lambda x, y: (x / y) % 127, left, right)
 
     def floor_division(self, left, right):
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return left // right
-        elif all(map(lambda x: isinstance(x, list), [left, right])):
-            return [x // y for x, y in zip(cycle(right), left)]
-        if isinstance(left, (int, float)) and isinstance(right, list):
-            return [x // left for x in right]
-        elif isinstance(left, list) and isinstance(right, (float, int)):
-            return [x // right for x in left]
+        return map_binary_function(lambda x, y: x // y, left, right)
 
     def wfloor_division(self, left, right):
         """Wrapped variant of the floor division method"""
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            return self.floor_division(left, right) % 127
-        elif isinstance(right, list):
-            return list(map(lambda x: int(x // left), right)) % 127
+        return map_binary_function(lambda x, y: (x // y) % 127, left, right)
 
     def name_disamb(self, name):
         """Generating a name"""
@@ -747,11 +627,11 @@ class CalculateTree(Transformer):
         """
         return [name] * int(value)
 
-    def cosinus(self, x: Union[int, float]) -> Union[int, float]:
-        return cos(x)
+    def cosinus(self, x):
+        return map_unary_function(cos, x)
 
-    def sinus(self, x: Union[int, float]) -> Union[int, float]:
-        return sin(x)
+    def sinus(self, x):
+        return map_unary_function(sin, x)
 
-    def tangente(self, x: Union[int, float]) -> Union[int, float]:
-        return tan(x)
+    def tangente(self, x):
+        return map_unary_function(tan, x)

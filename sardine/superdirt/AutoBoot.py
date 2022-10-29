@@ -9,6 +9,7 @@ import tempfile
 import psutil
 import asyncio
 from rich.console import Console
+from rich.panel import Panel
 from rich import print
 
 __all__ = ("SuperColliderProcess",)
@@ -148,6 +149,7 @@ class SuperColliderProcess:
 
     def load_custom_synthdefs(self) -> None:
         buffer = ""
+        loaded_synthdefs_message = ["Loaded SynthDefs:"]
         _, _, files = next(walk(self._synth_directory))
 
         # Filter by file extension (only .sc and .scd)
@@ -160,9 +162,12 @@ class SuperColliderProcess:
 
             # sending the string to the interpreter
             self._write_stdin(buffer)
-            print("Loaded SynthDefs:")
             for f in files:
-                print("- {}".format(f))
+                loaded_synthdefs_message.append("- {}".format(f))
+        if len(loaded_synthdefs_message) == 1:
+            return
+        else:
+            print(Panel.fit("\n".join(loaded_synthdefs_message)))
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""

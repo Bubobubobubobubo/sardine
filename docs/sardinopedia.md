@@ -437,8 +437,8 @@ This will play the second file, etc... Numbers wrap around, so you can't overflo
 ```python
 @swim
 def hh(d=0.5):
-    S('jvbass:0', speed'1,2,3,4').out(i.i)
-    again(hh, d=0.5)
+    S('jvbass:0', speed='1,2,3,4').out(i.i)
+    again(hh, d=0.5)=
 ```
 You can pitch samples up or down by changing the playback speed. `1` is the normal playback speed, `2` twice as fast and `0` will not play anything at all. You can play a file in reverse speed by inputting negative values such as `-1` for backwards normal speed, etc... Beware of very low numbers close to `0` as they will be sometimes harder to hear but will still take memory to be played, especially if there is nothing to stop them.
 
@@ -447,7 +447,7 @@ You can pitch samples up or down by changing the playback speed. `1` is the nor
 ```python
 @swim
 def loud(d=0.5):
-    S('bd', speed'1', amp=1).out(i.i)
+    S('bd', speed='1', amp=1).out(i.i)
     again(hh, d=0.5)
 ```
 This bassdrum will be played very loud. The `amp` parameter will determine the volume of audio playback for a given sample. `0` equals to silence. `1` corresponds to full volume, with distortion of the audio signal being allowed for larger values.
@@ -455,7 +455,7 @@ This bassdrum will be played very loud. The `amp` parameter will determine the v
 ```python
 @swim
 def loud(d=0.5):
-    S('bd', speed'1', gain=1).out(i.i)
+    S('bd', speed='1', gain=1).out(i.i)
     again(hh, d=0.5)
 ```
 Gain is slightly similar to `amp`. The difference lies in the scaling. While `amp` is defined as a value on a linear scale, `gain` is defined on an exponential scale. The higher you go, the more subtle the change. Folks from the TidalCycles documentation recommend a value between `0` and `1.5` for better use.

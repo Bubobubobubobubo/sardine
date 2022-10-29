@@ -11,11 +11,12 @@ if TYPE_CHECKING:
 
 __all__ = ("MIDIIo",)
 
+
 class MidiNoteEvent:
     def __init__(self, event, due):
         self.event = event
         self.due = due
-    
+
     def __repr__(self) -> str:
         return f"Due: {self.due}, Event: {self.event}"
 
@@ -131,7 +132,7 @@ class MIDIIo(threading.Thread):
         """MIDI Start message"""
         self._midi.send(mido.Message("start"))
 
-    def schedule(self, message, delay: Union[int, float, None]=None):
+    def schedule(self, message, delay: Union[int, float, None] = None):
         async def _waiter():
             await handle
             if delay is not None:
@@ -142,26 +143,34 @@ class MIDIIo(threading.Thread):
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
-    async def note(self, 
-            delay: Union[int, float], 
-            note: int = 60,
-            velocity: int = 127, 
-            channel: int = 1) -> None:
+    async def note(
+        self,
+        delay: Union[int, float],
+        note: int = 60,
+        velocity: int = 127,
+        channel: int = 1,
+    ) -> None:
         """Send a MIDI Note through principal MIDI output"""
         note_id = f"{note}{channel}"
-        self._events[note_id+"on"] = MidiNoteEvent(
-                due=0, event=mido.Message('note_on', 
-                    note=note, channel=channel, velocity=velocity))
-        if note_id+"off" in self._events.keys():
-            self.schedule(mido.Message('note_off', note=note, channel=channel,
-                velocity=0), 0.0)
-            self._events[note_id+"off"] = MidiNoteEvent(due=delay,
-                    event=mido.Message('note_off', note=note, channel=channel,
-                        velocity=0))
+        self._events[note_id + "on"] = MidiNoteEvent(
+            due=0,
+            event=mido.Message(
+                "note_on", note=note, channel=channel, velocity=velocity
+            ),
+        )
+        if note_id + "off" in self._events.keys():
+            self.schedule(
+                mido.Message("note_off", note=note, channel=channel, velocity=0), 0.0
+            )
+            self._events[note_id + "off"] = MidiNoteEvent(
+                due=delay,
+                event=mido.Message("note_off", note=note, channel=channel, velocity=0),
+            )
         else:
-            self._events[note_id+"off"] = MidiNoteEvent(due=delay,
-                    event=mido.Message('note_off', note=note, channel=channel,
-                        velocity=0))
+            self._events[note_id + "off"] = MidiNoteEvent(
+                due=delay,
+                event=mido.Message("note_off", note=note, channel=channel, velocity=0),
+            )
 
     async def control_change(self, channel, control, value) -> None:
         """Control Change message"""

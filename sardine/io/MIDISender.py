@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Union, Optional
 from ..io import dirt
 from ..sequences import ListParser
 from math import floor
-from .SenderLogic import (pattern_element, compose_parametric_patterns)
+from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:
     from ..clock import Clock
@@ -102,9 +102,10 @@ class MIDISender:
 
         i = int(i)
         self.content |= {
-                "delay": self.delay,
-                "velocity": self.velocity,
-                "channel": self.channel}
+            "delay": self.delay,
+            "velocity": self.velocity,
+            "channel": self.channel,
+        }
 
         final_message = []
 
@@ -125,12 +126,13 @@ class MIDISender:
             if self.note == []:
                 return
             if isinstance(self.note, list):
-                new_element = self.note[pattern_element(
-                    iterator=i, div=div, speed=speed, pattern=self.note)]
+                new_element = self.note[
+                    pattern_element(iterator=i, div=div, speed=speed, pattern=self.note)
+                ]
                 if new_element is None:
                     return
                 else:
-                    final_message.extend( ["note", wrap_midinote_in_range(new_element)])
+                    final_message.extend(["note", wrap_midinote_in_range(new_element)])
             else:
                 if self.note is None:
                     return
@@ -142,7 +144,7 @@ class MIDISender:
                 if value == []:
                     continue
                 if isinstance(value, list):
-                    if key == 'delay':
+                    if key == "delay":
                         value = float(value[0])
                     else:
                         value = int(value[0])
@@ -159,37 +161,39 @@ class MIDISender:
             """Compose a message if an iterator is given"""
 
             # Decompose between note argument and other arguments
-            # Note is the most important because it can impose silence
+            # Note is the most important because it can impose silence
 
             if self.note == []:
                 return
             if isinstance(self.note, list):
-                new_element = self.note[pattern_element(
-                    iterator=i, div=div, speed=speed, pattern=self.note)]
+                new_element = self.note[
+                    pattern_element(iterator=i, div=div, speed=speed, pattern=self.note)
+                ]
                 if new_element is None:
                     return
                 else:
-                    final_message.extend( ["note", 
-                        wrap_midinote_in_range(new_element)])
+                    final_message.extend(["note", wrap_midinote_in_range(new_element)])
             else:
                 if self.note is None:
                     return
                 else:
-                    final_message.extend(["note", 
-                        wrap_midinote_in_range(self.note)])
+                    final_message.extend(["note", wrap_midinote_in_range(self.note)])
 
             # Parametric arguments
             pattern_result = compose_parametric_patterns(
-                    div=div, speed=speed, iterator=i,
-                    cast_to_int=True,
-                    midi_overflow_protection=True,
-                    items=self.content.items())
+                div=div,
+                speed=speed,
+                iterator=i,
+                cast_to_int=True,
+                midi_overflow_protection=True,
+                items=self.content.items(),
+            )
             final_message.extend(pattern_result)
             note_silence = final_message[final_message.index("note") + 1] is None
             if note_silence:
                 return
 
-            # Trig must always be included
+            # Trig must always be included
             if "trig" not in final_message:
                 final_message.extend(["trig", str(1)])
 

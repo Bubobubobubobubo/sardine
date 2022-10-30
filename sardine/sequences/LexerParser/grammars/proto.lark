@@ -18,7 +18,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | product "/" atom                -> division
      | product "//" atom               -> floor_division
      | product "|" atom                -> choice
-     | product ":" atom                -> random_in_range
+     | product "~" atom                -> random_in_range
      | product "!" atom                -> extend
      | product "!!" atom               -> extend_repeat
 

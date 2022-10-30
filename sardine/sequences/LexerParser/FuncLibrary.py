@@ -2,6 +2,7 @@ import random
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from itertools import cycle
 from math import cos, sin, tan
+from typing import Union
 
 
 def expand(collection):
@@ -15,14 +16,14 @@ def expand(collection):
         list: Chance-expanded list of integers
     """
 
-    def expand_number(number):
+    def expand_number(number: Union[int, float]) -> Union[int, float]:
         expansions = [0, -12, 12]
         return number + random.choice(expansions)
 
     return map_unary_function(expand_number, collection)
 
 
-def disco(collection):
+def disco(collection: list) -> list:
     """Takes every other note down an octave
 
     Args:
@@ -35,7 +36,7 @@ def disco(collection):
     return [x + offset for (x, offset) in zip(collection, offsets)]
 
 
-def palindrome(collection):
+def palindrome(collection: list) -> list:
     """Make a palindrome out of a newly generated collection
 
     Args:
@@ -48,7 +49,7 @@ def palindrome(collection):
     return collection + list(reversed(collection))
 
 
-def reverse(collection):
+def reverse(collection: list) -> list:
     """Reverse a newly generated collection.
 
     Args:
@@ -57,10 +58,10 @@ def reverse(collection):
     Returns:
         list: reversed list of integers from qualifier's based collection
     """
-    return reversed(collection)
+    return list(reversed(collection))
 
 
-def braid(collection):
+def braid(collection: list) -> list:
     """Take the first half of a list, take its second half, interleave.
 
     Args:
@@ -74,7 +75,7 @@ def braid(collection):
     return [val for pair in zip(first, second) for val in pair]
 
 
-def shuffle(collection):
+def shuffle(collection: list) -> list:
     """Shuffle a newly generated collection
 
     Args:
@@ -87,7 +88,7 @@ def shuffle(collection):
     return collection
 
 
-def drop2(collection):
+def drop2(collection: list) -> list:
     """Simulate a drop2 chord.
 
     Args:
@@ -100,7 +101,7 @@ def drop2(collection):
     return collection
 
 
-def drop3(collection):
+def drop3(collection: list) -> list:
     """Simulate a drop3 chord.
 
     Args:
@@ -113,7 +114,7 @@ def drop3(collection):
     return collection
 
 
-def drop2and4(collection):
+def drop2and4(collection: list) -> list:
     """Simulate a drop2&4 chord.
 
     Args:
@@ -128,13 +129,37 @@ def drop2and4(collection):
     return collection
 
 
-def cosinus(self, x):
+def cos(x: list) -> list:
+    """Basic cosinus function
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
     return map_unary_function(cos, x)
 
 
-def sinus(self, x):
+def sin(x: list) -> list:
+    """Basic sinus function
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
     return map_unary_function(sin, x)
 
 
-def tangente(self, x):
+def tan(x: list) -> list:
+    """Basic tangent function
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
     return map_unary_function(tan, x)

@@ -2,13 +2,15 @@ from lark import Transformer, v_args
 from typing import Union
 from .Qualifiers import qualifiers
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
+from . import FuncLibrary
 from lark.lexer import Token
 from typing import Any
 from itertools import cycle, takewhile, count
-from math import cos, sin, tan
 from time import time
 import datetime
 import random
+from rich import print
+from rich.panel import Panel
 
 
 @v_args(inline=True)
@@ -146,27 +148,6 @@ class CalculateTree(Transformer):
         """Move a note one octave down"""
         return note - 12
 
-    def add_modifier(self, col, *modifier):
-
-        quali = list(modifier)
-        quali = "".join([str(x) for x in quali])
-
-        modifiers_list = {
-            "expand": self.expand_collection,
-            "disco": self.disco_collection,
-            "palindrome": self.collection_palindrome,
-            "reverse": self.reverse_collection,
-            "braid": self.braid_collection,
-            "shuffle": self.shuffle_collection,
-            "drop2": self.collection_drop2,
-            "drop3": self.collection_drop3,
-            "drop2and4": self.collection_drop2and4,
-        }
-        try:
-            return modifiers_list[quali](col)
-        except Exception as e:
-            return col
-
     def add_qualifier(self, note, *quali):
         """Adding a qualifier to a note taken from a qualifier list.
         Adding a qualifier is the main method to generate scales and
@@ -199,145 +180,6 @@ class CalculateTree(Transformer):
             int: an integer
         """
         return int("".join(token))
-
-    def reverse_collection(self, collection):
-        """Reverse a newly generated collection.
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: reversed list of integers from qualifier's based collection
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            return reversed(collection)
-
-    def collection_palindrome(self, collection):
-        """Make a palindrome out of a newly generated collection
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: palindromed list of integers from qualifier's based
-            collection
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            return collection + list(reversed(collection))
-
-    def shuffle_collection(self, collection):
-        """Shuffle a newly generated collection
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: A shuffled list of integers
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            random.shuffle(collection)
-            return collection
-
-    def braid_collection(self, collection):
-        """Take the first half of a list, take its second half, interleave.
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: An interleaved list of integers
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            col_len = len(collection) // 2
-            first, second = collection[:col_len], collection[col_len:]
-            return [val for pair in zip(first, second) for val in pair]
-
-    def expand_collection(self, collection):
-        """Chance-based operation. Apply a random octave transposition process
-        to every note in a given collection.
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: Chance-expanded list of integers
-        """
-
-        def expand_number(number):
-            expansions = [0, -12, 12]
-            return number + random.choice(expansions)
-
-        return map_unary_function(expand_number, collection)
-
-    def disco_collection(self, collection):
-        """Takes every other note down an octave
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: A list of integers
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            offsets = cycle([-12, 0])
-            return [x + offset for (x, offset) in zip(collection, offsets)]
-
-    def collection_drop2(self, collection):
-        """Simulate a drop2 chord.
-
-        Args:
-            collection (list): A list of integers
-
-        Returns:
-            list: A list of integers with the second note dropped an octave.
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[1] = collection[1] - 12
-            return collection
-
-    def collection_drop3(self, collection):
-        """Simulate a drop3 chord.
-
-        Args:
-            collection (list): A list of integers
-
-        Returns:
-            list: A list of integers with the third note dropped an octave.
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[2] = collection[2] - 12
-            return collection
-
-    def collection_drop2and4(self, collection):
-        """Simulate a drop2&4 chord.
-
-        Args:
-            collection (list): A list of integers
-
-        Returns:
-            list: A list of integers with the second and fourth note dropped
-            an octave.
-        """
-        if not isinstance(collection, list):
-            return collection
-        else:
-            collection[1] = collection[1] - 12
-            collection[3] = collection[3] - 12
-            return collection
 
     def id(self, a):
         """Identity function. Returns first argument."""
@@ -559,11 +401,29 @@ class CalculateTree(Transformer):
 
         return map_binary_function(_simple_association, name, value)
 
-    def cosinus(self, x):
-        return map_unary_function(cos, x)
-
-    def sinus(self, x):
-        return map_unary_function(sin, x)
-
-    def tangente(self, x):
-        return map_unary_function(tan, x)
+    def function_call(self, func_name, *args):
+        modifiers_list = {
+            "expand": FuncLibrary.expand,
+            "disco": FuncLibrary.disco,
+            "palindrome": FuncLibrary.palindrome,
+            "reverse": FuncLibrary.reverse,
+            "braid": FuncLibrary.braid,
+            "shuffle": FuncLibrary.shuffle,
+            "drop2": FuncLibrary.drop2,
+            "drop3": FuncLibrary.drop3,
+            "drop2and4": FuncLibrary.drop2and4,
+            "sin": FuncLibrary.sin,
+            "cos": FuncLibrary.cos,
+            "tan": FuncLibrary.tan,
+        }
+        try:
+            return modifiers_list[func_name](*args)
+        except Exception as e:
+            # Fail safe
+            print(
+                Panel.fit(
+                    f"[red]/!\\\\[/red] Unknown function: [bold yellow]{func_name}[/bold yellow]\n"
+                    + "".join(f"\n- {name}" for name in modifiers_list.keys())
+                )
+            )
+            return args[0]

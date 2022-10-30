@@ -44,7 +44,8 @@ pattern: sum ("," sum?)* -> return_pattern
      | "T" "." "h"                                         -> get_hour
      | "T" "." "m"                                         -> get_minute
      | "T" "." "s"                                         -> get_second
-     | "T" "." "µ"                                         -> get_microsecond
+     | "T" "." "µ"                                         -> get_microsecond // Unicode character U+00B5
+     | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
      | "{" sum "," sum "}"                                 -> generate_ramp
      | "{" sum "," sum "," sum  "}"                        -> generate_ramp_with_range
      | "[" sum ("," sum)* ","? "]"                         -> make_list
@@ -71,16 +72,22 @@ pattern: sum ("," sum?)* -> return_pattern
 
 // Rules about notes /////////////////////////////////////////////////////////
 
-?col : note                                         -> id
-     | note "->" name                               -> add_qualifier
-     | col ":" name                                 -> add_modifier
+?col : note
+     | note "->" name           -> add_qualifier
+     | col ":" name             -> add_modifier
 
-note: NOTE              -> make_note
-    | note "b"          -> note_flat
-    | note "#"          -> note_sharp
-    | note NUMBER       -> note_set_octave
-    | note "'"          -> note_octave_up
-    | note "."          -> note_octave_down
+?note_base: NOTE                -> make_note
+
+?note_altered: note_base
+    | note_base "b"             -> note_flat
+    | note_base "#"             -> note_sharp
+
+?note_octaved: note_altered
+    | note_altered NUMBER       -> note_set_octave
+
+?note: note_octaved
+    | note "'"                  -> note_octave_up
+    | note "."                  -> note_octave_down
 
 ///////////////////////////////////////////////////////////////////////////////
      

@@ -375,6 +375,10 @@ class CalculateTree(Transformer):
 
         return map_binary_function(_simple_association, name, value)
 
+    def finish_patname(self, patname):
+        """Finish the patname construction"""
+        return [patname]
+
     def function_call(self, func_name, *args):
         modifiers_list = {
             "expand": FuncLibrary.expand,

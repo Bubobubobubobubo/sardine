@@ -58,7 +58,9 @@ pattern: sum ("," sum?)* -> return_pattern
 
 // Rules concerning names /////////////////////////////////////////////////////
 
-?patname: compose_name
+?patname: pre_patname                     -> finish_patname
+
+?pre_patname: compose_name
     | compose_name ":" sum                -> assoc_sp_number
 
 ?compose_name: name

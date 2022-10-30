@@ -767,10 +767,10 @@ Notes are one of the primitives you can use in patterns. Notes will always be co
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='C5->penta').out(i)
+    S('pluck', midinote='C5@penta').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can use the `->` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C->penta` will raise a major pentatonic scale based on middle C. There is a list of scales, modes, chords, structures, etc.. that are stored in memory. You can't do much with them and they will likely be removed sooner or later:
+You can use the `@` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C@penta` will raise a major pentatonic scale based on middle C. There is a list of scales, modes, chords, structures, etc.. that are stored in memory. You can't do much with them and they will likely be removed sooner or later:
 
 ```python
 # ====== #
@@ -888,19 +888,17 @@ This section is to take with a grain of salt. This will change pretty soon!
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='C5->penta.disco.braid').out(i)
+    S('pluck', midinote='disco(braid(C5@penta))'.out(i)
     again(notes, d=0.5, i=i+1)
 ```
-Some modifiers are available to fine-tune your note collections. There is currently no way to print out the list of `modifiers`. You will have to deep-dive in the source code to find them.
-
-This section is to take with a grain of salt. This will change pretty soon!
+Some functions can easily be applied to chords, scales and structures to add a twist :) There is no way to print out the list of these functions as of now. You will have to dig the source code to find them. Pro tip: try to call an arbitrary function and the list of possible functions will be printed in the terminal!
 
 #### Mathematics on notes
 
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='C5+0|4|8->penta.disco.braid').out(i)
+    S('pluck', midinote='disco(braid(C5+0|4|8@penta'))).out(i)
     again(notes, d=0.5, i=i+1)
 ```
 You can use arithmetic operators on notes like if they were a regular number. That's because they are really just numbers! Random and time-dependant numbers are numbers too. Notes are numbers too so you can add a note to a note even if it doesn't really make sense.
@@ -966,12 +964,14 @@ The `!` operator inspired by **TidalCycles** is used to denote the repetition of
 
 ### Sinus, Cosinus, Tangent
 
-**Sardine** also includes some very cool and common mathematical functions sunch as the sinus, cosinus and tangent function. They are denoted using the `s()`, `c()` and `t()` functions that you can apply on pretty much anything.
+**Sardine** also includes some very cool and common mathematical functions sunch as the sinus, cosinus and tangent function. They are denoted using the `sin()`, `cos()` and `tan()` functions that you can apply on pretty much anything.
 
 ```python
 @swim
 def sine_test(d=0.125, i=0):
-    S('crow', speed='1+s($/40)').out(i, div=1, speed=1)
+    S('crow', speed='1+sin($/40)').out(i, div=1, speed=1)
+    # S('crow', speed='1+cos($/40)').out(i, div=1, speed=1)
+    # S('crow', speed='1+tan($/40)').out(i, div=1, speed=1)
     a(sine_test, d=0.125, i=i+1)
 ```
 

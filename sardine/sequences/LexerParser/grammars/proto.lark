@@ -44,7 +44,8 @@ pattern: sum ("," sum?)* -> return_pattern
      | "T" "." "h"                                         -> get_hour
      | "T" "." "m"                                         -> get_minute
      | "T" "." "s"                                         -> get_second
-     | "T" "." "µ"                                         -> get_microsecond
+     | "T" "." "µ"                                         -> get_microsecond // Unicode character U+00B5
+     | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
      | "{" sum "," sum "}"                                 -> generate_ramp
      | "{" sum "," sum "," sum  "}"                        -> generate_ramp_with_range
      | "[" sum ("," sum)* ","? "]"                         -> make_list

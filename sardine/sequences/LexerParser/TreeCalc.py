@@ -104,29 +104,29 @@ class CalculateTree(Transformer):
         return random.randint(int(number0), int(number1))
 
     def make_note(self, note):
-        """Return a valid MIDI Note (fifth octave)
+        """Return a valid MIDI Note (fourth octave)
         from a valid anglo-saxon, french or canadian note name.
 
         Args:
             note (str): a string representing a valid note ("A" to "G", or "Do" to "Si").
 
         Returns:
-            int: A MIDI Note (fifth octave)
+            int: A MIDI Note (fourth octave)
         """
-        if note in ["A", "La"]:
-            return 0 + 12 * 5
-        elif note in ["B", "Si", "Ti"]:
-            return 2 + 12 * 5
-        elif note in ["C", "Do"]:
-            return 3 + 12 * 5
+        if note in ["C", "Do"]:
+            return 0 + 12 + 12 * 4
         elif note in ["D", "Re", "Ré"]:
-            return 5 + 12 * 5
+            return 2 + 12 + 12 * 4
         elif note in ["E", "Mi"]:
-            return 7 + 12 * 5
+            return 4 + 12 + 12 * 4
         elif note in ["F", "Fa"]:
-            return 8 + 12 * 5
+            return 5 + 12 + 12 * 4
         elif note in ["G", "Sol"]:
-            return 10 + 12 * 5
+            return 7 + 12 + 12 * 4
+        elif note in ["A", "La"]:
+            return 9 + 12 + 12 * 4
+        elif note in ["B", "Si", "Ti"]:
+            return 11 + 12 + 12 * 4
 
     def note_flat(self, note):
         """Flatten a note"""
@@ -138,7 +138,7 @@ class CalculateTree(Transformer):
 
     def note_set_octave(self, note, value):
         """Move a note to a given octave"""
-        return (note % 12) + 12 * int(value)
+        return ((note - 12) % 12) + 12 + 12 * int(value)
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
@@ -374,6 +374,10 @@ class CalculateTree(Transformer):
             return name + ":" + str(int(value))
 
         return map_binary_function(_simple_association, name, value)
+
+    def finish_patname(self, patname):
+        """Finish the patname construction"""
+        return [patname]
 
     def function_call(self, func_name, *args):
         modifiers_list = {

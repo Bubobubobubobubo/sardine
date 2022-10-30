@@ -24,9 +24,9 @@ class CalculateTree(Transformer):
 
     def number(self, number):
         try:
-            return int(number)
+            return [int(number)]
         except ValueError:
-            return float(number)
+            return [float(number)]
 
     def return_pattern(self, *args):
         return list(args)
@@ -48,17 +48,17 @@ class CalculateTree(Transformer):
 
     def get_variable(self, letter):
         letter = str(letter)
-        return getattr(self.variables, letter)
+        return [getattr(self.variables, letter)]
 
     def reset_variable(self, letter):
         letter = str(letter)
         self.variables.reset(letter)
-        return getattr(self.variables, letter)
+        return [getattr(self.variables, letter)]
 
     def set_variable(self, letter, number):
         letter, number = str(letter), int(number)
         setattr(self.variables, letter, number)
-        return getattr(self.variables, letter)
+        return [getattr(self.variables, letter)]
 
     # ---------------------------------------------------------------------- #
     # Iterators: methods concerning iterators
@@ -66,22 +66,22 @@ class CalculateTree(Transformer):
 
     def get_iterator(self, letter):
         letter = str(letter)
-        return getattr(self.iterators, letter)
+        return [getattr(self.iterators, letter)]
 
     def reset_iterator(self, letter):
         letter = str(letter)
         self.iterators.reset(letter)
-        return getattr(self.iterators, letter)
+        return [getattr(self.iterators, letter)]
 
     def set_iterator(self, letter, number):
         letter, number = str(letter), int(number)
         setattr(self.iterators, letter, number)
-        return getattr(self.iterators, letter)
+        return [getattr(self.iterators, letter)]
 
     def set_iterator_step(self, letter, number, step):
         letter, number, step = str(letter), int(number), int(step)
         setattr(self.iterators, letter, [number, step])
-        return getattr(self.iterators, letter)
+        return [getattr(self.iterators, letter)]
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -148,6 +148,10 @@ class CalculateTree(Transformer):
         """Move a note one octave down"""
         return note - 12
 
+    def finish_note(self, note):
+        """Finish the note construction"""
+        return [note]
+
     def add_qualifier(self, note, *quali):
         """Adding a qualifier to a note taken from a qualifier list.
         Adding a qualifier is the main method to generate scales and
@@ -191,57 +195,51 @@ class CalculateTree(Transformer):
         Returns:
             list: Gathered arguments in a list
         """
-        new_list = []
-        for element in args:
-            if isinstance(element, list):
-                new_list += element
-            else:
-                new_list.append(element)
-        return new_list
+        return sum(args, start=[])
 
     def get_time(self):
         """Return current clock time (tick) as integer"""
-        return int(self.clock.tick)
+        return [int(self.clock.tick)]
 
     def get_year(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().year)
+        return [int(datetime.datetime.now().year)]
 
     def get_month(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().month)
+        return [int(datetime.datetime.now().month)]
 
     def get_day(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().day)
+        return [int(datetime.datetime.now().day)]
 
     def get_hour(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().hour)
+        return [int(datetime.datetime.now().hour)]
 
     def get_minute(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().minute)
+        return [int(datetime.datetime.now().minute)]
 
     def get_second(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().second)
+        return [int(datetime.datetime.now().second)]
 
     def get_microsecond(self):
         """Return current clock time (tick) as integer"""
-        return int(datetime.datetime.now().microsecond)
+        return [int(datetime.datetime.now().microsecond)]
 
     def get_measure(self):
         """Return current measure (bar) as integer"""
-        return int(self.clock.bar)
+        return [int(self.clock.bar)]
 
     def get_phase(self):
         """Return current phase (phase) as integer"""
-        return int(self.clock.phase)
+        return [int(self.clock.phase)]
 
     def get_unix_time(self):
         """Return current unix time as integer"""
-        return int(time())
+        return [int(time())]
 
     def get_random_number(self):
         """Return a random number (alias used by parser)
@@ -249,7 +247,7 @@ class CalculateTree(Transformer):
         Returns:
             float: a random floating point number
         """
-        return random.random()
+        return [random.random()]
 
     def generate_ramp(self, left, right):
         """Generates a ramp of integers between x included and y
@@ -264,17 +262,11 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers
         """
-        if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-            if int(left) > int(right):
-                new_list = list(reversed(range(int(right), int(left) + 1)))
-                return new_list
-            else:
-                return list(range(int(left), int(right) + 1))
-
-        if isinstance(left, list):
-            if isinstance(right, (float, int)):
-                last = left.pop()
-                return left + self.generate_ramp(last, right)
+        ramp_from = left[-1]
+        ramp_to = right[0]
+        between = range(min(ramp_from, ramp_to) + 1, max(ramp_from, ramp_to))
+        between_flipped = between if ramp_from <= ramp_to else reversed(between)
+        return left + list(between_flipped) + right
 
     def generate_ramp_with_range(self, left, right, step=1):
         """Generates a ramp of integers between x included and y
@@ -321,30 +313,12 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers after applying the expansion rule.
         """
-        left_is_list = isinstance(left, list)
-        right_is_list = isinstance(right, list)
-        if not left_is_list and not right_is_list:
-            return [left] * int(right)
-        if left_is_list and not right_is_list:
-            return left * int(right)
-        if not left_is_list and right_is_list:
-            return [left] * sum(int(x) for x in right)
-        if left_is_list and right_is_list:
-            return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
+        return left * sum(int(x) for x in right)
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
         TODO: document this behavior."""
-        if isinstance(left, (float, int)):
-            if isinstance(right, (list, float, int)):
-                return self.extend(left, right)
-        if isinstance(left, list):
-            if isinstance(right, (int, float)):
-                return [x for x in left for _ in range(0, int(right))]
-            elif isinstance(right, list):
-                return sum(
-                    ([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[]
-                )
+        return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
 
     def choice(self, left, right):
         """Choose 50%-50% between the 'left' or 'right' token

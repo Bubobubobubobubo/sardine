@@ -31,11 +31,8 @@ def disco(collection):
     Returns:
         list: A list of integers
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        offsets = cycle([-12, 0])
-        return [x + offset for (x, offset) in zip(collection, offsets)]
+    offsets = cycle([0, -12])
+    return [x + offset for (x, offset) in zip(collection, offsets)]
 
 
 def palindrome(collection):
@@ -48,10 +45,7 @@ def palindrome(collection):
         list: palindromed list of integers from qualifier's based
         collection
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        return collection + list(reversed(collection))
+    return collection + list(reversed(collection))
 
 
 def reverse(collection):
@@ -63,10 +57,7 @@ def reverse(collection):
     Returns:
         list: reversed list of integers from qualifier's based collection
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        return reversed(collection)
+    return reversed(collection)
 
 
 def braid(collection):
@@ -78,12 +69,9 @@ def braid(collection):
     Returns:
         list: An interleaved list of integers
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        col_len = len(collection) // 2
-        first, second = collection[:col_len], collection[col_len:]
-        return [val for pair in zip(first, second) for val in pair]
+    col_len = len(collection) // 2
+    first, second = collection[:col_len], collection[col_len:]
+    return [val for pair in zip(first, second) for val in pair]
 
 
 def shuffle(collection):
@@ -95,11 +83,8 @@ def shuffle(collection):
     Returns:
         list: A shuffled list of integers
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        random.shuffle(collection)
-        return collection
+    random.shuffle(collection)
+    return collection
 
 
 def drop2(collection):
@@ -111,11 +96,8 @@ def drop2(collection):
     Returns:
         list: A list of integers with the second note dropped an octave.
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        collection[1] = collection[1] - 12
-        return collection
+    collection[1] = collection[1] - 12
+    return collection
 
 
 def drop3(collection):
@@ -127,11 +109,8 @@ def drop3(collection):
     Returns:
         list: A list of integers with the third note dropped an octave.
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        collection[2] = collection[2] - 12
-        return collection
+    collection[2] = collection[2] - 12
+    return collection
 
 
 def drop2and4(collection):
@@ -144,12 +123,9 @@ def drop2and4(collection):
         list: A list of integers with the second and fourth note dropped
         an octave.
     """
-    if not isinstance(collection, list):
-        return collection
-    else:
-        collection[1] = collection[1] - 12
-        collection[3] = collection[3] - 12
-        return collection
+    collection[1] = collection[1] - 12
+    collection[3] = collection[3] - 12
+    return collection
 
 
 def cosinus(self, x):

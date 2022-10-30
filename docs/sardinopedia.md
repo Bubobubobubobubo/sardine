@@ -937,10 +937,10 @@ The pipe operator `|` can be used on anything to make a 50/50% choice between tw
 ```python3
 @swim
 def ranges(d=0.5, i=0):
-    S('pluck|jvbass', speed='1:5').out(i)
+    S('pluck|jvbass', speed='1~5').out(i)
     again(ranges, d=0.5, i=i+1)
 ```
-If you want to generate a number in the range `x` to `y` included, you can use the `:` operator. It spits out integers if you are using integers as boundaries but it will spit out a floating point number if you are using floating point numbers as boundaries.
+If you want to generate a number in the range `x` to `y` included, you can use the `~` operator. It spits an integer if you are using integers as boundaries but it will spit out a floating point number if you are using floating point numbers as boundaries. If you use an integer on one side and a floating point number on the other side, a floating point number will be returned.
 
 ### Ramps
 

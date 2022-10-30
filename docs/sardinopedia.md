@@ -562,24 +562,25 @@ The `sustain` value will determine the length of audio playback (in seconds).
 ```python
 @swim
 def position(d=0.5):
-    S('long:0', begin='r/2', end=1).out(i.i)
-    again(position, d=0.5)
+    S('fire', speed='1', begin=0.1, end=0.5, amp=0.5).out(i.i)
+    again(position, d=2)
 ```
-If playing long audio samples, you might want to *scroll* through the file, moving the playhead accross the file. You can use the `begin` and `end` parameters (from `0` to `1`) to set the begin playback point and the end playback point. You can pattern the `begin` parameter with great expressive effect.
+When playing long audio samples, you might want to *scroll* through the file, moving the playhead accross the file. You can use the `begin` and `end` parameters (from `0` to `1`) to set the begin playback point and the end playback point. You can pattern the `begin` parameter with great expressive effect.
 
 ### Sample stretching (S)
 
 ```python
-@swim 
-def streeeetch():
-    S('long', 
+@swim
+def streeeetch(d=0.5):
+    S('fire', 
             begin='r/2',
-            legato=2, 
-            timescale=1.2).out()
+            legato=1,
+            amp=0.5,
+            timescale=2.7).out()
     a(streeeetch)
 ```
 
-You can get some interesting effects by using the `timescale` parameter (between `0` and `3` recommended) for stretching a sample over a given amount of time. This will result in a more *grainy* sound. This is some sort of timestretching for audio samples.
+You can get some interesting effects by using the `timescale` parameter (between `0` and `3` recommended) for stretching a sample over a given amount of time. This will result in a more *grainy* sound. This is some sort of timestretching for audio samples. Higher values ( >3 ) for timescale work with more distortion to the sound. This can yield interesting results for more experimental sound.
 
 ## Pitch
 
@@ -940,6 +941,7 @@ Similarly, you can define the step value between each value by providing a list 
 ## SuperCollider interface
 
 ### The SC Object
+Note: the SC object is only available when you boot SuperCollider / SuperDirt from Sardine. (See the Install page for details.)
 
 ```python
 SC.meter()

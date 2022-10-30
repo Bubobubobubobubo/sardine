@@ -21,10 +21,10 @@ class CalculateTree(Transformer):
         self.memory = {}
 
     def number(self, number):
-        return float(number)
-
-    def negative_number(self, number):
-        return -float(number)
+        try:
+            return int(number)
+        except ValueError:
+            return float(number)
 
     def return_pattern(self, *args):
         return list(args)
@@ -517,7 +517,13 @@ class CalculateTree(Transformer):
         return random.choice([left, right])
 
     def random_in_range(self, left, right):
-        return map_binary_function(random.uniform, left, right)
+        def my_random(low, high):
+            if isinstance(low, int) and isinstance(high, int):
+                return random.randint(low, high)
+            else:
+                return random.uniform(low, high)
+
+        return map_binary_function(my_random, left, right)
 
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)

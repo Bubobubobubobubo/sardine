@@ -104,10 +104,12 @@ qualifiers = {
     "octaves": [0, 12, 24, 36, 48],
 }
 
+
 def drop_x(collection, probability):
     """Not convinced"""
     n_elements = int(len(collection) * int(probability[0]) / 100)
     return random.sample(collection, n_elements)
+
 
 def custom_filter(collection: list, elements: list) -> list:
     """Equivalent of the filter function from functional languages..."""
@@ -115,15 +117,18 @@ def custom_filter(collection: list, elements: list) -> list:
         return not thing in elements
     return list(filter(cond, collection))
 
+
 def bassify(collection: list):
     """Drop the first note down an octave"""
     collection[0] = collection[0] - 12
     return collection
 
+
 def soprano(collection: list):
     """Last note up an octave"""
     collection[len(collection)-1] = collection[len(collection)-1] + 12
     return collection
+
 
 def _quantize(val, to_values):
     """Quantize a value with regards to a set of allowed values.
@@ -249,6 +254,21 @@ def palindrome(collection: list) -> list:
         collection
     """
     return collection + list(reversed(collection))
+
+
+def alternative_palindrome(collection: list) -> list:
+    """Make a palindrome out of a newly generated collection.
+    Don't repeat the last element of the first list when going
+    the opposite direction.
+
+    Args:
+        collection (list): A list generated through a qualifier
+
+    Returns:
+        list: palindromed list of integers from qualifier's based
+        collection
+    """
+    return collection + list(reversed(collection))[1:]
 
 
 def reverse(collection: list) -> list:

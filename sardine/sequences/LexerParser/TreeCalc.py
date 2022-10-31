@@ -383,7 +383,7 @@ class CalculateTree(Transformer):
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
-        return map_binary_function(_simple_association, name, value)
+        return map_binary_function(_simple_association, [str(name)], value)
 
     def finish_patname(self, patname):
         """Finish the patname construction"""

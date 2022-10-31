@@ -126,6 +126,21 @@ def euclidian_rhythm(
     return new_collection
 
 
+def find_voice_leading(collection, divider: Optional[Union[list, int]]=4) -> list:
+    """Simple voice leading algorithm"""
+    # Splitting the collection with divider
+    divider = divider[0] if isinstance(divider, list) else divider
+
+    collection = [collection[i:i + divider] for i in range(0, len(collection), divider)]
+    root_note = collection[0][0]
+    new_progression = []
+    for chord in collection:
+        new_chord = list(map(lambda x: x + 12 * (root_note // 12), [x % 12 for x in chord]))
+        new_chord.sort()
+        new_progression.append(new_chord)
+    return new_progression
+
+
 def mask(collection: list, mask: list) -> list:
     """
     Apply a boolean mask on values from the collection. 

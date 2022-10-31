@@ -268,7 +268,7 @@ class CalculateTree(Transformer):
         between_flipped = between if ramp_from <= ramp_to else reversed(between)
         return left + list(between_flipped) + right
 
-    def generate_ramp_with_range(self, left, right, step=1):
+    def generate_ramp_with_range(self, left, right, step):
         """Generates a ramp of integers between x included and y
         included (used by parser). Variant using a step param.
 
@@ -280,10 +280,12 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers with step
         """
-
-        epsilon = 0.0000001
-        start = min(left, right)
-        stop = max(left, right)
+        start, stop, step, epsilon = (
+                min(left, right)[0],
+                max(left, right)[0],
+                step[0],
+                0.0000001
+        )
         ramp = list(
             takewhile(
                 lambda x: x < stop + epsilon, (start + i * abs(step) for i in count())
@@ -390,9 +392,9 @@ class CalculateTree(Transformer):
             "drop2": FuncLibrary.drop2,
             "drop3": FuncLibrary.drop3,
             "drop2and4": FuncLibrary.drop2and4,
-            "sin": FuncLibrary.sin,
-            "cos": FuncLibrary.cos,
-            "tan": FuncLibrary.tan,
+            "sin": FuncLibrary.sinus,
+            "cos": FuncLibrary.cosinus,
+            "tan": FuncLibrary.tangent,
         }
         try:
             return modifiers_list[func_name](*args)

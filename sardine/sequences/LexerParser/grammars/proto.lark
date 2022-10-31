@@ -73,7 +73,7 @@ pattern: sum ("," sum?)* -> return_pattern
 // Rules about notes /////////////////////////////////////////////////////////
 
 ?col : note
-     | note "->" name            -> add_qualifier
+     | note "@" name            -> add_qualifier
 
 ?note0: NOTE                     -> make_note
 

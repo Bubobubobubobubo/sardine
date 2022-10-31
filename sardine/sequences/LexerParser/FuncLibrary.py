@@ -129,7 +129,7 @@ def drop2and4(collection: list) -> list:
     return collection
 
 
-def cos(x: list) -> list:
+def cosinus(x: list) -> list:
     """Basic cosinus function
 
     Args:
@@ -141,7 +141,7 @@ def cos(x: list) -> list:
     return map_unary_function(cos, x)
 
 
-def sin(x: list) -> list:
+def sinus(x: list) -> list:
     """Basic sinus function
 
     Args:
@@ -153,7 +153,7 @@ def sin(x: list) -> list:
     return map_unary_function(sin, x)
 
 
-def tan(x: list) -> list:
+def tangent(x: list) -> list:
     """Basic tangent function
 
     Args:

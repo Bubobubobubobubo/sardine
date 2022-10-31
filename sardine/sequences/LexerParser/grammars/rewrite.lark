@@ -1,0 +1,54 @@
+?start: pattern
+pattern: sum ("," sum)*
+       | directive ("," directive)*
+
+?directive: name
+          | "<" name ("," name)* ">" -> column
+          | directive ":" sum -> specify_index
+          | directive "!" sum -> repeat
+
+?name: NAME -> name_disamb
+     | name "/" name -> specify_address
+
+NAME: LETTER~2 (LETTER|DIGIT+)*
+
+?sum: product
+    | product "+" sum -> add
+    | product "-" sum -> substract
+
+?product: atom
+        | atom "*" product -> multiply
+        | atom "/" product -> divide
+
+?atom: token
+     | "<" token ("," token)* ">" -> column
+     | token "|" token ("|" token)* -> choice
+     | MATH_FUNC "(" sum ")" -> math_func
+     | "-" atom -> negate
+     | "(" sum ")"
+     | sequence
+     | "r" -> random_number
+     | sum "!" sum -> repeat
+
+MATH_FUNC: "sin"|"cos"|"tan"
+
+sequence: "[" INT ".." INT "]" -> ramp
+        | "[" INT ".." INT ".." INT "]" -> step_ramp
+
+?token: NUMBER -> number
+      | note
+
+note: NOTE INT? (FLAT|SHARP)? (OCTSHIFTDOWN|OCTSHIFTUP)*
+
+NOTE: "A"|"B"|"C"|"D"|"E"|"F"|"G"
+FLAT: "b"
+SHARP: "#"
+OCTSHIFTDOWN: "."
+OCTSHIFTUP: "'"
+
+%import common.NUMBER
+%import common.INT
+%import common.LETTER -> LETTER
+%import common.DIGIT  -> DIGIT
+%import common.WS_INLINE
+%ignore WS_INLINE

@@ -3,7 +3,7 @@ from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from itertools import cycle
 from math import cos, sin, tan
 from typing import Union
-from random import sample
+from random import shuffle
 
 qualifiers = {
     "dim": [0, 3, 6, 12],
@@ -105,10 +105,16 @@ qualifiers = {
 }
 
 
-def drop_x(collection, probability):
-    """Not convinced"""
-    n_elements = int(len(collection) * int(probability[0]) / 100)
-    return random.sample(collection, n_elements)
+def remove_x(collection: list, percentage) -> list:
+    """
+    Replace x % of the list by silences
+    """
+    percentage = len(collection) * percentage[0] // 100
+    shuffled_indexes = list(range(0, len(collection)))
+    shuffle(shuffled_indexes)
+    for _ in range(percentage):
+        collection[shuffled_indexes[_]] = [None]
+    return collection
 
 
 def custom_filter(collection: list, elements: list) -> list:

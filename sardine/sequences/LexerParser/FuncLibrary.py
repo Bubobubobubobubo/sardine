@@ -109,6 +109,12 @@ def drop_x(collection, probability):
     n_elements = int(len(collection) * int(probability[0]) / 100)
     return random.sample(collection, n_elements)
 
+def custom_filter(collection: list, elements: list) -> list:
+    """Equivalent of the filter function from functional languages..."""
+    def cond(thing) -> bool:
+        return not thing in elements
+    return list(filter(cond, collection))
+
 def bassify(collection: list):
     """Drop the first note down an octave"""
     collection[0] = collection[0] - 12
@@ -137,6 +143,8 @@ def _quantize(val, to_values):
     
     Taken from: https://gist.github.com/aleju/eb75fa01a1d5d5a785cf
     """
+    if isinstance(val, type(None)):
+        return [None]
     best_match = None
     best_match_diff = None
     for other_val in to_values:
@@ -147,7 +155,9 @@ def _quantize(val, to_values):
     return best_match
 
 
-def quantize(collection: list, quant_reference: list):
+def quantize(
+        collection: list, 
+        quant_reference: list):
     """
     Quantize function. It takes a collection as left argument and a reference
     to a quantifier or an arbitrary collection as right argument. Will quanti-
@@ -165,7 +175,8 @@ def quantize(collection: list, quant_reference: list):
             new_reference = []
             for i in range(0, 11): # nb_oct
                 new_reference.append([(12 * i) + x for x in quant_reference])
-            new_reference = list(set([item for sublist in new_reference for item in sublist]))
+            new_reference = list(set([item for sublist in new_reference 
+                for item in sublist]))
             new_reference.extend(quant_reference)
             quant_reference = new_reference
         except KeyError:
@@ -175,13 +186,16 @@ def quantize(collection: list, quant_reference: list):
 
     # Quantization takes place here
     for value in collection:
-        new_collection.append(_quantize(int(value), quant_reference)) 
+        new_collection.append(_quantize(value, quant_reference)) 
 
     return new_collection
 
-def expand(collection):
-    """Chance-based operation. Apply a random octave transposition process
-    to every note in a given collection.
+
+def expand(collection: list, factor: list) -> list:
+    """
+    Chance-based operation. Apply a random octave transposition process
+    to every note in a given collection. There is an optional factor 
+    parameter that multiplies the octave transposition.
 
     Args:
         collection (list): A list generated through a qualifier
@@ -189,10 +203,11 @@ def expand(collection):
     Returns:
         list: Chance-expanded list of integers
     """
+    factor = factor[0]
 
     def expand_number(number: Union[int, float]) -> Union[int, float]:
         expansions = [0, -12, 12]
-        return number + random.choice(expansions)
+        return number + (random.choice(expansions) * factor)
 
     return map_unary_function(expand_number, collection)
 
@@ -207,6 +222,19 @@ def disco(collection: list) -> list:
         list: A list of integers
     """
     offsets = cycle([0, -12])
+    return [x + offset for (x, offset) in zip(collection, offsets)]
+
+
+def antidisco(collection: list) -> list:
+    """Takes every other note up an octave
+
+    Args:
+        collection (list): A list generated through a qualifier
+
+    Returns:
+        list: A list of integers
+    """
+    offsets = cycle([0, +12])
     return [x + offset for (x, offset) in zip(collection, offsets)]
 
 
@@ -327,6 +355,18 @@ def sinus(x: list) -> list:
     return map_unary_function(sin, x)
 
 
+def absolute(x: list) -> list:
+    """Basic absolute function
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
+    return map_unary_function(abs, x)
+
+
 def tangent(x: list) -> list:
     """Basic tangent function
 
@@ -337,6 +377,3 @@ def tangent(x: list) -> list:
         list: a valid pattern.
     """
     return map_unary_function(tan, x)
-
-# Qualifiers List
-

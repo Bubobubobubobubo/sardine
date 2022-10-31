@@ -393,21 +393,20 @@ class CalculateTree(Transformer):
         modifiers_list = {
             "expand": FuncLibrary.expand,
             "disco": FuncLibrary.disco,
-            "palindrome": FuncLibrary.palindrome,
+            "antidisco": FuncLibrary.antidisco,
             "pal": FuncLibrary.palindrome,
-            "reverse": FuncLibrary.reverse,
+            "rev": FuncLibrary.reverse,
             "braid": FuncLibrary.braid,
-            "shuffle": FuncLibrary.shuffle,
-            "drop2": FuncLibrary.drop2,
-            "drop3": FuncLibrary.drop3,
-            "drop2and4": FuncLibrary.drop2and4,
+            "shuf": FuncLibrary.shuffle,
             "sin": FuncLibrary.sinus,
             "cos": FuncLibrary.cosinus,
             "tan": FuncLibrary.tangent,
+            "abs": FuncLibrary.absolute,
+            "filter": FuncLibrary.custom_filter,
             "drop": FuncLibrary.drop_x,
-            "bassify": FuncLibrary.bassify,
-            "soprano": FuncLibrary.soprano,
-            "quantize": FuncLibrary.quantize,
+            "bass": FuncLibrary.bassify,
+            "sopr": FuncLibrary.soprano,
+            "quant": FuncLibrary.quantize,
         }
         try:
             return modifiers_list[func_name](*args)
@@ -416,8 +415,8 @@ class CalculateTree(Transformer):
             print(e)
             print(
                 Panel.fit(
-                    f"[red]/!\\\\[/red] Unknown or malformed function: [bold yellow]{func_name}[/bold yellow]\n"
-                    + "".join(f"\n- {name}" for name in modifiers_list.keys())
+                    f"[red]/!\\\\[/red] Unknown or malformed function: [bold yellow]{func_name}[/bold yellow]. Possible functions are: \n\n"
+                    + "".join(f"{name} " for name in modifiers_list.keys())
                 )
             )
             return args[0]

@@ -391,23 +391,24 @@ class CalculateTree(Transformer):
 
     def function_call(self, func_name, *args):
         modifiers_list = {
+            "clamp":  FuncLibrary.clamp,
             "vanish": FuncLibrary.remove_x,
             "expand": FuncLibrary.expand,
-            "disco": FuncLibrary.disco,
+            "disco":  FuncLibrary.disco,
             "adisco": FuncLibrary.antidisco,
-            "pal": FuncLibrary.palindrome,
-            "apal": FuncLibrary.alternative_palindrome,
-            "rev": FuncLibrary.reverse,
-            "braid": FuncLibrary.braid,
-            "shuf": FuncLibrary.shuffle,
-            "sin": FuncLibrary.sinus,
-            "cos": FuncLibrary.cosinus,
-            "tan": FuncLibrary.tangent,
-            "abs": FuncLibrary.absolute,
-            "filt": FuncLibrary.custom_filter,
-            "bass": FuncLibrary.bassify,
-            "sopr": FuncLibrary.soprano,
-            "quant": FuncLibrary.quantize,
+            "pal":    FuncLibrary.palindrome,
+            "apal":   FuncLibrary.alternative_palindrome,
+            "rev":    FuncLibrary.reverse,
+            "braid":  FuncLibrary.braid,
+            "shuf":   FuncLibrary.shuffle,
+            "sin":    FuncLibrary.sinus,
+            "cos":    FuncLibrary.cosinus,
+            "tan":    FuncLibrary.tangent,
+            "abs":    FuncLibrary.absolute,
+            "filt":   FuncLibrary.custom_filter,
+            "bass":   FuncLibrary.bassify,
+            "sopr":   FuncLibrary.soprano,
+            "quant":  FuncLibrary.quantize,
         }
         try:
             return modifiers_list[func_name](*args)

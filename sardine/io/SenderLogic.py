@@ -2,14 +2,14 @@ from typing import List, Tuple, Any
 from math import floor
 
 
-def pattern_element(div: int, speed: int, iterator: int, pattern: list) -> int:
+def pattern_element(div: int, rate: int, iterator: int, pattern: list) -> int:
     """Joseph Enguehard's algorithm for solving iteration speed"""
-    return floor(iterator * speed / div) % len(pattern)
+    return floor(iterator * rate / div) % len(pattern)
 
 
 def compose_parametric_patterns(
     div: int,
-    speed: int,
+    rate: int,
     iterator: int,
     items: List[Tuple[str, Any]],
     cast_to_int: bool = False,
@@ -24,7 +24,7 @@ def compose_parametric_patterns(
             continue
         if isinstance(value, list):
             new_value = value[
-                pattern_element(iterator=iterator, div=div, speed=speed, pattern=value)
+                pattern_element(iterator=iterator, div=div, rate=rate, pattern=value)
             ]
             if new_value is None:
                 for decreasing_index in range(iterator, -1, -1):
@@ -32,7 +32,7 @@ def compose_parametric_patterns(
                         pattern_element(
                             iterator=decreasing_index,
                             div=div,
-                            speed=speed,
+                            rate=rate,
                             pattern=value,
                         )
                     ]

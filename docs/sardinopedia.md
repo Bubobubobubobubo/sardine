@@ -153,11 +153,11 @@ This section requires a good understanding of general **Sardine** concepts. I re
 
 @swim 
 def fast(d=0.25, i=0):
-    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, speed=2)
+    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, rate=2)
     S('hh, jvbass:0|8|4,', 
             pan='{0,1,0.1}',
             legato=0.1).out(i, div=8 if rarely()
-                    else 5, speed=2)
+                    else 5, rate=2)
     S('cp', legato=0.1).out(i, div=8)
     a(fast, d=1/8, i=i+1)
 ```
@@ -167,7 +167,7 @@ The recipe for *fast swimming* is the following:
 
 - Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
 
-- Play a lot with silences and with the arguments of `.out(iterator, div, speed)`. 
+- Play a lot with silences and with the arguments of `.out(iterator, div, rate)`. 
 
 ### Fast swimming template
 
@@ -177,7 +177,7 @@ def fast(d=0.5, i=0):
     # print("Damn, that's fast!")
     a(fast, d=1/32, i=i+1)
 ```
-This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as [amphibian variables](#amphibian-variables)). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following sections about divisors and the speed factor.
+This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as [amphibian variables](#amphibian-variables)). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following sections about divisors and the rate factor.
 
 ### Divisors
 
@@ -194,7 +194,7 @@ The `.out()` method as well as the independant `P()` [object](#patterning-freely
 
 - `div` (*int*): **a timing divisor**. It feels like using a modulo operation. If `div=4`, the event will hit once every 4 iterations. The default is `div=1`, where every event is a hit!
 
-- `speed` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a speed of `0.5`, the result will be `1, 1, 2, 2, 3, 3`.
+- `rate` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a rate of `0.5`, the result will be `1, 1, 2, 2, 3, 3`.
 
 In the above example, we are playing with various divisors to get an interesting rythmic pattern.
 
@@ -221,14 +221,14 @@ hush()
 # This is a fast Sardine function
 @swim 
 def fast(d=1/16):
-    S('bd, hh, sn, hh').out(i.i, div=4, speed=1)
+    S('bd, hh, sn, hh').out(i.i, div=4, rate=1)
     a(fast, d=1/16)
 ```
-The two functions above yield a similar musical result. However, the fast version goes further by making use of all the parameters `.out()` can take. As you can see, there is a `speed` argument determining how fast we should iterate over the values of our pattern. Try altering it to see what is going on!
+The two functions above yield a similar musical result. However, the fast version goes further by making use of all the parameters `.out()` can take. As you can see, there is a `rate` argument determining how fast we should iterate over the values of our pattern. Try altering it to see what is going on!
 
-By default, `speed=1` means that we will move forward to the next index of our patterns for every division (`1`). Changing speed to `2` (`speed=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`speed=0.5`), etc...
+By default, `rate=1` means that we will move forward to the next index of our patterns for every division (`1`). Changing rate to `2` (`rate=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`rate=0.5`), etc...
 
-It is not currently possible to have one speed for each and every value in the pattern. The speed is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
+It is not currently possible to have one rate for each and every value in the pattern. The rate is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
 
 ## Senders
 

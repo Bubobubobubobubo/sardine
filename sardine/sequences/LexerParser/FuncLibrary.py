@@ -4,6 +4,7 @@ from itertools import cycle
 from math import cos, sin, tan
 from typing import Union
 from random import shuffle
+from functools import partial
 
 qualifiers = {
     "dim": [0, 3, 6, 12],
@@ -103,6 +104,14 @@ qualifiers = {
     "thirds": [0, 4, 8, 12],
     "octaves": [0, 12, 24, 36, 48],
 }
+
+def clamp(collection: list, low_boundary: list, high_boundary: list) -> list:
+    """Simple clamp function"""
+    def _work(n, smallest, largest): 
+        return max(smallest, min(n, largest))
+    # Retourner en cyclant sur quelque chose
+    return list(map(_work, collection, low_boundary, high_boundary))
+
 
 
 def remove_x(collection: list, percentage) -> list:

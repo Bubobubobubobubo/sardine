@@ -76,7 +76,7 @@ class OSCSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="osc-scheduler")
 
-    def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
+    def out(self, i: int = 0, div: int = 1, rate: int = 1) -> None:
         """Sender method"""
 
         if i % div != 0:
@@ -141,7 +141,7 @@ class OSCSender:
             if isinstance(self.address, list):
                 new_element = self.address[
                     pattern_element(
-                        iterator=i, div=div, speed=speed, pattern=self.address
+                        iterator=i, div=div, rate=rate, pattern=self.address
                     )
                 ]
                 if new_element is None:
@@ -156,7 +156,7 @@ class OSCSender:
 
             final_message["message"] = []
             pattern_result = compose_parametric_patterns(
-                div=div, speed=speed, iterator=i, items=self.content.items()
+                div=div, rate=rate, iterator=i, items=self.content.items()
             )
             final_message["message"].extend(pattern_result)
 
@@ -164,7 +164,7 @@ class OSCSender:
             if isinstance(self.content["trig"], list):
                 trig = self.content["trig"][
                     pattern_element(
-                        iterator=i, div=div, speed=speed, pattern=self.content["trig"]
+                        iterator=i, div=div, rate=rate, pattern=self.content["trig"]
                     )
                 ]
                 if trig is None:
@@ -173,7 +173,7 @@ class OSCSender:
                             pattern_element(
                                 iterator=decreasing_index,
                                 div=div,
-                                speed=speed,
+                                rate=rate,
                                 pattern=self.content["trig"],
                             )
                         ]

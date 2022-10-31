@@ -299,7 +299,7 @@ def lang_debug() -> None:
 
 
 # Interface to the patterning system
-def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1) -> Any:
+def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     """Generates a pattern
 
     Args:
@@ -312,11 +312,11 @@ def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1) -> Any:
     parser = c.parser
     result = parser.parse(pattern)
 
-    def _pattern_element(div: int, speed: int, iterator: int, pattern: list) -> Any:
+    def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
         """Joseph Enguehard's algorithm for solving iteration speed"""
-        return floor(iterator * speed / div) % len(pattern)
+        return floor(iterator * rate / div) % len(pattern)
 
-    return result[_pattern_element(div=div, speed=speed, iterator=i, pattern=result)]
+    return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
 
 
 def print_scales() -> None:

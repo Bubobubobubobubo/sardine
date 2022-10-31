@@ -394,6 +394,7 @@ class CalculateTree(Transformer):
             "expand": FuncLibrary.expand,
             "disco": FuncLibrary.disco,
             "palindrome": FuncLibrary.palindrome,
+            "pal": FuncLibrary.palindrome,
             "reverse": FuncLibrary.reverse,
             "braid": FuncLibrary.braid,
             "shuffle": FuncLibrary.shuffle,
@@ -403,14 +404,19 @@ class CalculateTree(Transformer):
             "sin": FuncLibrary.sinus,
             "cos": FuncLibrary.cosinus,
             "tan": FuncLibrary.tangent,
+            "drop": FuncLibrary.drop_x,
+            "bassify": FuncLibrary.bassify,
+            "soprano": FuncLibrary.soprano,
+            "quantize": FuncLibrary.quantize,
         }
         try:
             return modifiers_list[func_name](*args)
         except Exception as e:
             # Fail safe
+            print(e)
             print(
                 Panel.fit(
-                    f"[red]/!\\\\[/red] Unknown function: [bold yellow]{func_name}[/bold yellow]\n"
+                    f"[red]/!\\\\[/red] Unknown or malformed function: [bold yellow]{func_name}[/bold yellow]\n"
                     + "".join(f"\n- {name}" for name in modifiers_list.keys())
                 )
             )

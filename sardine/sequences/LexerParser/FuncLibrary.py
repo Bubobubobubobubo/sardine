@@ -1,10 +1,11 @@
 import random
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
-from itertools import cycle
+from itertools import cycle, islice
 from math import cos, sin, tan
-from typing import Union
+from typing import Union, Callable, Optional
 from random import shuffle
 from functools import partial
+from ...sequences.Sequence import euclid
 
 qualifiers = {
     "dim": [0, 3, 6, 12],
@@ -105,18 +106,49 @@ qualifiers = {
     "octaves": [0, 12, 24, 36, 48],
 }
 
+
+def euclidian_rhythm(
+        collection: list, 
+        pulses: list, 
+        steps: list,
+        rotation: Optional[list] = None) -> list:
+    """
+    Apply an euclidian rhythm as a boolean mask on values from the collection. 
+    True values will return the value itself, others will return a silence.
+    """
+    # This one-liner is creating a collection-length euclidian rhythm (repeating the rhythm)
+    boolean_mask = list(islice(
+        cycle(euclid(pulses[0], steps[0],
+            rotation[0] if rotation is not None else 0)), len(collection)))
+    new_collection = []
+    for item, mask in zip(collection, boolean_mask):
+        new_collection.append(item if mask == 1 else [None])
+    return new_collection
+
+
+def mask(collection: list, mask: list) -> list:
+    """
+    Apply a boolean mask on values from the collection. 
+    True values will return the value itself, others will
+    return a silence.
+    """
+    new_collection = []
+    for item, mask in zip(collection, mask):
+        new_collection.append(item if mask == 1 else [None])
+    return new_collection
+
 def clamp(collection: list, low_boundary: list, high_boundary: list) -> list:
-    """Simple clamp function"""
+    """
+    Simple clamp function, restraining collection to a given range.
+    """
     def _work(n, smallest, largest): 
         return max(smallest, min(n, largest))
-    # Retourner en cyclant sur quelque chose
     return list(map(_work, collection, low_boundary, high_boundary))
-
 
 
 def remove_x(collection: list, percentage) -> list:
     """
-    Replace x % of the list by silences
+    Replacing x % of the collection by silences
     """
     percentage = len(collection) * percentage[0] // 100
     shuffled_indexes = list(range(0, len(collection)))
@@ -200,7 +232,9 @@ def quantize(
             new_reference.extend(quant_reference)
             quant_reference = new_reference
         except KeyError:
-            raise KeyError('Quantization reference not found!')
+            raise KeyError(
+                    'Unknown qualifier! Possible quantifiers are: ' +
+                    f"{', '.join(qualifiers)}")
     else:
         quant_reference = quant_reference
 

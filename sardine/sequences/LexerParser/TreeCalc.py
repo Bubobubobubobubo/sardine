@@ -391,6 +391,8 @@ class CalculateTree(Transformer):
 
     def function_call(self, func_name, *args):
         modifiers_list = {
+            "euclid":  FuncLibrary.euclidian_rhythm,
+            "mask":   FuncLibrary.mask,
             "clamp":  FuncLibrary.clamp,
             "vanish": FuncLibrary.remove_x,
             "expand": FuncLibrary.expand,

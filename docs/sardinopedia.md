@@ -686,7 +686,7 @@ This section is very likely to change in upcoming versions.
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))')).out(i)
+    print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))', i))
     again(number, d=0.5, i=i+1)
 ```
 You can write numbers and use common operators such as addition, substraction, division, multiplication, modulo, etc... You can be specific about priority by using parenthesis.
@@ -696,7 +696,7 @@ You can write numbers and use common operators such as addition, substraction, d
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('$, r, m, p')).out(i)
+    print(P('$, r, m, p', i))
     again(number, d=0.5, i=i+1)
 ```
 Some number tokens are time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time. 
@@ -709,7 +709,7 @@ Some number tokens are time dependant (based on **Sardine** clock time) and refe
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('r, m, p')).out(i)
+    print(P('r, m, p', i))
     again(number, d=0.5, i=i+1)
 ```
 

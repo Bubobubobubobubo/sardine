@@ -1,6 +1,5 @@
 from lark import Transformer, v_args
 from typing import Union
-from .Qualifiers import qualifiers
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from . import FuncLibrary
 from lark.lexer import Token
@@ -171,7 +170,8 @@ class CalculateTree(Transformer):
         quali = list(quali)
         quali = "".join([str(x) for x in quali])
         try:
-            return [note + x for x in qualifiers[str(quali)]]
+            return map_binary_function(lambda x, y: x + y, note, 
+                    FuncLibrary.qualifiers[str(quali)])
         except KeyError:
             return note
 

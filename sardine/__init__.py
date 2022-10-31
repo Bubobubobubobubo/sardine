@@ -36,8 +36,8 @@ from .io import OSCSender, MIDISender
 from .sequences import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
-from .sequences.LexerParser.Qualifiers import qualifiers
 from .sequences.Sequence import E, euclid, mod, imod, pick, text_eater
+from .sequences.LexerParser.FuncLibrary import qualifiers
 from .sequences import *
 
 warnings.filterwarnings("ignore")
@@ -331,6 +331,9 @@ def panic() -> None:
     S("superpanic").out()  # Superpanic is a synth capable of
     # cutting every other synth
 
+def print_qualities():
+    """Return the list of qualifiers"""
+    return qualifiers
 
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables

@@ -323,12 +323,12 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers after applying the expansion rule.
         """
-        return left * sum(int(x) for x in right)
+        return left * sum(int(x) if x is not None else 0 for x in right)
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
         TODO: document this behavior."""
-        return sum(([x] * int(y) for (x, y) in zip_cycle(left, right)), start=[])
+        return sum(([x] * (int(y) if y is not None else 0) for (x, y) in zip_cycle(left, right)), start=[])
 
     def choice(self, left, right):
         """Choose 50%-50% between the 'left' or 'right' token

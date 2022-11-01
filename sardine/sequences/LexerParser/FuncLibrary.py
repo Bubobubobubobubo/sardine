@@ -313,8 +313,6 @@ def quantize(
     from the collection.
     """
 
-    new_collection = []
-
     # Deal with finding the reference
     if len(quant_reference) == 1 and isinstance(quant_reference[0], str):
         try:
@@ -335,11 +333,7 @@ def quantize(
         quant_reference = quant_reference
 
     # Quantization takes place here
-    for value in collection:
-        new_collection.append(_quantize(value, quant_reference)) 
-
-    return new_collection
-
+    return map_unary_function(lambda value: _quantize(value, quant_reference), collection)
 
 def expand(collection: list, factor: list) -> list:
     """
@@ -372,7 +366,7 @@ def disco(collection: list) -> list:
         list: A list of integers
     """
     offsets = cycle([0, -12])
-    return [x + offset for (x, offset) in zip(collection, offsets)]
+    return [x + offset if x is not None else None for (x, offset) in zip(collection, offsets)]
 
 
 def antidisco(collection: list) -> list:
@@ -385,7 +379,7 @@ def antidisco(collection: list) -> list:
         list: A list of integers
     """
     offsets = cycle([0, +12])
-    return [x + offset for (x, offset) in zip(collection, offsets)]
+    return [x + offset if x is not None else None for (x, offset) in zip(collection, offsets)]
 
 
 def palindrome(collection: list) -> list:

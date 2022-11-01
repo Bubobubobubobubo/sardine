@@ -291,8 +291,8 @@ def _quantize(val, to_values):
     
     Taken from: https://gist.github.com/aleju/eb75fa01a1d5d5a785cf
     """
-    if isinstance(val, type(None)):
-        return [None]
+    if val is None:
+        return None
     best_match = None
     best_match_diff = None
     for other_val in to_values:
@@ -317,23 +317,17 @@ def quantize(
     if len(quant_reference) == 1 and isinstance(quant_reference[0], str):
         try:
             quant_reference = qualifiers[quant_reference[0]]
-            # Extending the quant_reference to all possible octaves
-            new_reference = []
-            for i in range(0, 11): # nb_oct
-                new_reference.append([(12 * i) + x for x in quant_reference])
-            new_reference = list(set([item for sublist in new_reference 
-                for item in sublist]))
-            new_reference.extend(quant_reference)
-            quant_reference = new_reference
         except KeyError:
             raise KeyError(
                     'Unknown qualifier! Possible quantifiers are: ' +
                     f"{', '.join(qualifiers)}")
-    else:
-        quant_reference = quant_reference
+
+    # Extending the quant_reference to all possible octaves
+    initial_extended_reference = (12*i+ (x%12) for x in quant_reference for i in range(0, 11))
+    extended_reference = [x for x in set(initial_extended_reference) if x <= 127]
 
     # Quantization takes place here
-    return map_unary_function(lambda value: _quantize(value, quant_reference), collection)
+    return map_unary_function(lambda value: _quantize(value, extended_reference), collection)
 
 def expand(collection: list, factor: list) -> list:
     """

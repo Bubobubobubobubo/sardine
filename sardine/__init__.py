@@ -338,3 +338,9 @@ def print_qualities():
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
 P = Pat
+
+if config.debug:
+    try:
+        lang_debug()
+    except Exception as e:
+        lang_debug()

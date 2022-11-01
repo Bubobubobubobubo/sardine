@@ -6,6 +6,10 @@ from typing import Union, Callable, Optional
 from random import shuffle
 from functools import partial
 from ...sequences.Sequence import euclid
+from easing_functions import (
+        BounceEaseIn,
+        BounceEaseOut, 
+        BounceEaseInOut)
 
 qualifiers = {
     "dim": [0, 3, 6, 12],
@@ -105,6 +109,42 @@ qualifiers = {
     "thirds": [0, 4, 8, 12],
     "octaves": [0, 12, 24, 36, 48],
 }
+
+# ============================================================================ # 
+# Easing Functions
+# ============================================================================ # 
+
+def _remap(x, in_min, in_max, out_min, out_max):
+    """Remapping a value from a [x, y] range to a [x', y'] range"""
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+def scale(collection: list, imin: list, imax: list, omin: list=[0], omax: list=[1]) -> list:
+    """User-facing scaling function"""
+    return list(map(lambda x: _remap(x, imin[0], imax[0], omin[0], omax[0]), collection))
+
+def _generic_easing(easing_func, start: float=0.0, end: float=1.0):
+    """Return an Easing Object ready to be used"""
+    return easing_func(start, end, duration=1)
+
+def bounceEaseIn(collection: list, start: list=[0.0], end: list=[1.0]):
+    """This is broken. I'm too tired to correct it. """
+    _easer = _generic_easing(BounceEaseIn, start=start[0], end=end[0])
+    # We need the lowest and highest value in the collection for scaling
+    if len(collection) > 1:
+        min_col, max_col = min(collection), max(collection)
+        print(f"Min and max: {min_col}, {max_col}")
+    else:
+        min_col, max_col = 0.001, max(collection)
+        print(f"Min and max: {min_col}, {max_col}")
+
+    # We need to get rid of some values and prefer an epsilon minimum
+    collection = list(map(abs, [0.001 if x == 0.0 else x for x in collection]))
+    print(f"After getting rid of 0: {collection}")
+
+    # Rescaling the input and passing through the easing function
+    collection = list(map(lambda x: _remap(x, min_col, max_col, 0.001, 1.0), collection))
+    print(f"After remapping: {collection}")
+    return list(map(_easer, collection))
 
 
 def euclidian_rhythm(

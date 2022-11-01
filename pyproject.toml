@@ -25,6 +25,7 @@ LinkPython = "^0.1"
 python-rtmidi = [
     {version = "^1.4.9"}
 ]
+easing-functions = "^1.0.4"
 mido = "^1.2.10"
 osc4py3 = "^1.0.8"
 uvloop = {version = "^0.16.0", markers = "sys_platform == 'linux' or sys_platform == 'darwin'"}

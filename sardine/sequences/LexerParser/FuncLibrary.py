@@ -1,4 +1,5 @@
 import random
+from collections.abc import Iterable
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from itertools import cycle, islice
 from math import cos, sin, tan
@@ -110,6 +111,45 @@ qualifiers = {
     "octaves": [0, 12, 24, 36, 48],
 }
 
+
+# ============================================================================ #
+# Dmitri Tymoczko algorithm
+# ============================================================================ #
+
+def dmitri_tymoczko_algorithm():
+
+    def octave_transform(input_chord, root):
+        """
+        Squish things into a single octave for comparison between chords and
+        sort from lowest to highest.
+        """
+        result = sorted(list(map(lambda x: root + (x%12), input_chord)))
+        return result
+
+    def t_matrix(chord_a, chord_b):
+        """Get the distance between notes"""
+        root = chord_a[0]
+        return [j - i for i, j in zip(
+            octave_transform(chord_a, root),
+            octave_transform(chord_b, root))]
+
+    def voice_lead(chord_a, chord_b):
+        """
+        Get mapping of notes in chord a to the sorted version of the chord a
+        """
+        root = chord_a[0]
+        a = list(map(lambda x:
+            [x, octave_transform(chord_a, root).index(root + (x%12))], chord_a))
+        t = t_matrix(chord_a, chord_b)
+        chord_x = (x[0] for x in a)
+        chord_y = (x[1] for x in a)
+        print(a)
+        b_voicing = list(map(lambda x, y: x + t[y], chord_x, chord_y))
+        return b_voicing
+
+    # Now for the part where we can take a list of x chords and voice them.
+    pass
+
 # ============================================================================ # 
 # Easing Functions
 # ============================================================================ # 
@@ -118,33 +158,15 @@ def _remap(x, in_min, in_max, out_min, out_max):
     """Remapping a value from a [x, y] range to a [x', y'] range"""
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
-def scale(collection: list, imin: list, imax: list, omin: list=[0], omax: list=[1]) -> list:
+def scale(
+        collection: list, 
+        imin: list, 
+        imax: list, 
+        omin: list=[0], 
+        omax: list=[1]
+    ) -> list:
     """User-facing scaling function"""
     return list(map(lambda x: _remap(x, imin[0], imax[0], omin[0], omax[0]), collection))
-
-def _generic_easing(easing_func, start: float=0.0, end: float=1.0):
-    """Return an Easing Object ready to be used"""
-    return easing_func(start, end, duration=1)
-
-def bounceEaseIn(collection: list, start: list=[0.0], end: list=[1.0]):
-    """This is broken. I'm too tired to correct it. """
-    _easer = _generic_easing(BounceEaseIn, start=start[0], end=end[0])
-    # We need the lowest and highest value in the collection for scaling
-    if len(collection) > 1:
-        min_col, max_col = min(collection), max(collection)
-        print(f"Min and max: {min_col}, {max_col}")
-    else:
-        min_col, max_col = 0.001, max(collection)
-        print(f"Min and max: {min_col}, {max_col}")
-
-    # We need to get rid of some values and prefer an epsilon minimum
-    collection = list(map(abs, [0.001 if x == 0.0 else x for x in collection]))
-    print(f"After getting rid of 0: {collection}")
-
-    # Rescaling the input and passing through the easing function
-    collection = list(map(lambda x: _remap(x, min_col, max_col, 0.001, 1.0), collection))
-    print(f"After remapping: {collection}")
-    return list(map(_easer, collection))
 
 
 def euclidian_rhythm(

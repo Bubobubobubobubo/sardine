@@ -96,7 +96,7 @@ class CalculateTree(Transformer):
 
     def specify_address(self, name0, name1):
         """Convert underscore into slash for name based addresses"""
-        return "".join([name0, "/", name1])
+        return map_binary_function(lambda x,y: x + "/" + y, name0, name1)
 
     def random_note_in_range(self, number0, number1):
         """Generates a random MIDI Note in the range number0 - number1.
@@ -377,17 +377,13 @@ class CalculateTree(Transformer):
 
     def name(self, name):
         """Generating a name"""
-        return str(name)
+        return [str(name)]
 
     def assoc_sp_number(self, name, value):
         def _simple_association(name, value):
             return name + ":" + str(int(value))
 
-        return map_binary_function(_simple_association, [str(name)], value)
-
-    def finish_patname(self, patname):
-        """Finish the patname construction"""
-        return [patname]
+        return map_binary_function(_simple_association, name, value)
 
     def function_call(self, func_name, *args):
         modifiers_list = {

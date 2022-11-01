@@ -58,22 +58,27 @@ pattern: sum ("," sum?)* -> return_pattern
 
 // Rules concerning names /////////////////////////////////////////////////////
 
-?patname: pre_patname                     -> finish_patname
+?patname: name_sum
 
-?pre_patname: compose_name
-    | compose_name ":" sum                -> assoc_sp_number
+?name_sum: name_product
+    | name_sum "!" sum                                    -> extend
+    | name_sum "!!" sum                                   -> extend_repeat
+    | name_sum "/" name_product                           -> specify_address
+    | name_sum ":" sum                                    -> assoc_sp_number
 
-?compose_name: name
-    | compose_name "/" name               -> specify_address
+?name_product: name_atom
+    | name_product "|" name_atom                          -> choice
 
-?name: NAME                               -> name
+?name_atom: NAME                                          -> name
+    | "(" name_sum ")"
+    | "[" name_sum ("," name_sum)* ","? "]"               -> make_list
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules about notes /////////////////////////////////////////////////////////
 
 ?col : note
-     | note "@" name             -> add_qualifier
+     | note "@" NAME             -> add_qualifier
 
 ?note0: NOTE                     -> make_note
 

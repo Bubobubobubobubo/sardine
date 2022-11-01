@@ -1,7 +1,7 @@
 import random
 from collections.abc import Iterable
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
-from itertools import cycle, islice
+from itertools import cycle, islice, zip_longest
 from math import cos, sin, tan
 from typing import Union, Callable, Optional
 from random import shuffle
@@ -116,7 +116,8 @@ qualifiers = {
 # Dmitri Tymoczko algorithm
 # ============================================================================ #
 
-def dmitri_tymoczko_algorithm():
+
+def dmitri_tymoczko_algorithm(collection: list, chord_len: int = 4) -> list:
 
     def octave_transform(input_chord, root):
         """
@@ -143,12 +144,28 @@ def dmitri_tymoczko_algorithm():
         t = t_matrix(chord_a, chord_b)
         chord_x = (x[0] for x in a)
         chord_y = (x[1] for x in a)
-        print(a)
         b_voicing = list(map(lambda x, y: x + t[y], chord_x, chord_y))
         return b_voicing
 
+    def _slice_collection(collection: list, slice_size= chord_len) -> list:
+        """Slice a collection in chunks of length n"""
+        return [collection[i:i + slice_size] for i in range(
+            0, len(collection), slice_size)]
+
     # Now for the part where we can take a list of x chords and voice them.
-    pass
+    chords = _slice_collection(collection)
+
+    for i in range(len(chords) - 1):
+        # print(f"Première passe: {chords}")
+        chords[i+1] = voice_lead(chords[i], chords[i+1])
+
+    chords[-1] = voice_lead(chords[-2], chords[-1])
+
+    return chords
+
+def dmitri(collection: list, chord_len: list = [4]) -> list:
+    voiced = dmitri_tymoczko_algorithm(collection, chord_len[0])
+    return voiced
 
 # ============================================================================ # 
 # Easing Functions
@@ -244,8 +261,10 @@ def custom_filter(collection: list, elements: list) -> list:
 
 def bassify(collection: list):
     """Drop the first note down an octave"""
-    collection[0] = collection[0] - 12
-    return collection
+    try:
+        return list(map(lambda x: x[0] - 12, collection))
+    except TypeError:
+        return [None]
 
 
 def soprano(collection: list):

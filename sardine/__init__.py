@@ -11,6 +11,8 @@ from rich import print
 import asyncio
 import warnings
 import sys
+import os
+import importlib
 
 try:
     import uvloop
@@ -26,6 +28,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
 from rich import pretty
+from rich.panel import Panel
 from .io import read_user_configuration, pretty_print_configuration_file
 from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
@@ -56,7 +59,7 @@ def _ticked(condition: bool):
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
-sardine = """
+sardine_intro = """
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
 ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
 ╚█████╗░███████║██████╔╝██║░░██║██║██╔██╗██║█████╗░░
@@ -69,54 +72,27 @@ Play music, read the docs, contribute, and have fun!
 WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
 GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
 """
-from rich.panel import Panel
-
-print(Panel.fit(f"[red]{sardine}[/red]"))
-
-print(
-    f" [yellow]BPM: [red]{config.bpm}[/red],",
-    f"[yellow]BEATS: [red]{config.beats}[/red]",
-    f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
-    f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
-    f"[yellow]MIDI: [red]{config.midi}[/red]",
-)
 
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 # Here starts the complex and convoluted session setup process. #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 
 # Booting SuperCollider / SuperDirt
-if config.boot_superdirt is True:
-    try:
-        SC = SuperColliderProcess(
-            startup_file=config.superdirt_config_path,  # config file
-            verbose=config.verbose_superdirt,  # verbosity for SC output
-        )
-    except OSError as error:
-        print("[red]SuperCollider could not be found![/red]")
-else:
-    print("[green]Booting without SuperCollider![/green]")
+SC = None
 
-# Starting the default Clock
-c = Clock(
-    midi_port=config.midi,  # default MIDI port
-    bpm=config.bpm,  # default BPM configuration
-    beats_per_bar=config.beats,  # default beats per bar
-    ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
-    deferred_scheduling=config.deferred_scheduling,  # Clock related
-)
+# Initialize the default Clock
+c = None
+cs = again = anew = a = None
+cr = stop = None
+children = None
+S = None
+M = None
+O = None
+MidiSend = None
 
-# Synonyms for swimming function management
-cs = again = anew = a = c.schedule_func  # aliases for recursion
-cr = stop = c.remove
-children = c.print_children
-
-# Senders: the most important I/O objects
-S = c.note  # default SuperDirt Sender
-M = c.midinote  # default Midi Sender
-O = c.oscmessage  # default OSC Sender
-
-MidiSend = MIDISender
+# Amphibian iterators and amphibian variables
+i = None
+v = None
 
 
 def hush(*args):
@@ -242,25 +218,6 @@ def sleep(n_beats: Union[int, float]):
     c.tick_shift += ticks
 
 
-# IMPORTANT: this is where the clock starts being active (looping infinitely).
-c.start(active=config.active_clock)
-
-
-# Loading user_configuration.py from configuration folder
-import importlib
-
-if Path(f"{config.user_config_path}").is_file():
-    spec = importlib.util.spec_from_file_location(
-        "user_configuration", config.user_config_path
-    )
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    from user_configuration import *
-else:
-    print(f"[red]No user provided configuration file found...")
-
-
 # Debugging parser: pure Sardine pattern syntax parser. Used for debugging when
 # developping Sardine. Will print the AST and result of a given operation.
 
@@ -346,5 +303,61 @@ class Pile:
             self._pat.out(i)
 
 
-# Amphibian iterators and amphibian variables
-i, v = c.iterators, c.variables
+if os.getenv('SARDINE_INIT_SESSION') is not None and os.getenv('SARDINE_INIT_SESSION') == 'YES':
+    # Print intro
+    print(Panel.fit(f"[red]{sardine_intro}[/red]"))
+    print(
+        f" [yellow]BPM: [red]{config.bpm}[/red],",
+        f"[yellow]BEATS: [red]{config.beats}[/red]",
+        f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
+        f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
+        f"[yellow]MIDI: [red]{config.midi}[/red]",
+    )
+
+    # Boot SuperCollider
+    if config.boot_superdirt is True:
+        try:
+            SC = SuperColliderProcess(
+                startup_file=config.superdirt_config_path,  # config file
+                verbose=config.verbose_superdirt,  # verbosity for SC output
+            )
+        except OSError as error:
+            print("[red]SuperCollider could not be found![/red]")
+    else:
+        print("[green]Booting without SuperCollider![/green]")
+
+    # Init default clock
+    c = Clock(
+        midi_port=config.midi,  # default MIDI port
+        bpm=config.bpm,  # default BPM configuration
+        beats_per_bar=config.beats,  # default beats per bar
+        ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
+        deferred_scheduling=config.deferred_scheduling,  # Clock related
+    )
+    # Synonyms for swimming function management
+    cs = again = anew = a = c.schedule_func  # aliases for recursion
+    cr = stop = c.remove
+    children = c.print_children
+    # Senders: the most important I/O objects
+    S = c.note  # default SuperDirt Sender
+    M = c.midinote  # default Midi Sender
+    O = c.oscmessage  # default OSC Sender
+    MidiSend = MIDISender
+
+    # Start default clock
+    c.start(active=config.active_clock)
+
+    # Load user config
+    if Path(f"{config.user_config_path}").is_file():
+        spec = importlib.util.spec_from_file_location(
+            "user_configuration", config.user_config_path
+        )
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        from user_configuration import *
+    else:
+        print(f"[red]No user provided configuration file found...")
+
+    # Init amphibian
+    i, v = c.iterators, c.variables

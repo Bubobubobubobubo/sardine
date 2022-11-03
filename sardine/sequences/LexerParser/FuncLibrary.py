@@ -428,13 +428,24 @@ def leave(*args) -> list:
     """
     return list(chain(*zip(*args)))
 
-def insertp(collection: list, element: list) -> list:
+def insert_pair(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as pair element of each list"""
-    return [i for x in collection for i in (x, element[0])][:-1]
+    return [i for x in collection for i in (x, element)][:-1]
 
 def insert(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as odd element of each list"""
-    return [i for x in collection for i in (element[0], x)][:-1]
+    return [i for x in collection for i in (element, x)][:-1]
+
+def insert_pair_rotate(collection: list, element: list) -> list:
+    """Insert function to insert a fixed element as odd element of each list"""
+    rotation = cycle(element)
+    return [i for x in collection for i in (next(rotation), x)][:-1]
+
+def insert_rotate(collection: list, element: list) -> list:
+    """Insert function to insert a fixed element as odd element of each list"""
+    rotation = cycle(element)
+    return [i for x in collection for i in (next(rotation), x)][:-1]
+
 
 def shuffle(collection: list) -> list:
     """Shuffle a newly generated collection

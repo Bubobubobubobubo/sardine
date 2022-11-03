@@ -409,8 +409,10 @@ class CalculateTree(Transformer):
             "apal":    FuncLibrary.alternative_palindrome,
             "rev":     FuncLibrary.reverse,
             "leave":   FuncLibrary.leave,
-            "insertp":   FuncLibrary.insertp,
-            "insert":   FuncLibrary.insert,
+            "inp":   FuncLibrary.insert_pair,
+            "in":   FuncLibrary.insert,
+            "inprot":   FuncLibrary.insert_pair_rotate,
+            "inrot":   FuncLibrary.insert_rotate,
             "shuf":    FuncLibrary.shuffle,
             # Math functions
             "clamp":   FuncLibrary.clamp,

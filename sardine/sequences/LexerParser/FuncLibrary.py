@@ -2,7 +2,7 @@ import random
 import statistics
 from collections.abc import Iterable
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
-from itertools import cycle, islice, zip_longest
+from itertools import cycle, islice, chain
 from math import cos, sin, tan
 from typing import Union, Callable, Optional
 from random import shuffle
@@ -417,19 +417,24 @@ def reverse(collection: list) -> list:
     return list(reversed(collection))
 
 
-def braid(collection: list) -> list:
-    """Take the first half of a list, take its second half, interleave.
+def leave(*args) -> list:
+    """Braid multiple lists of uneven length
 
     Args:
-        collection (list): A list generated through a qualifier
+        collection (list): Lists
 
     Returns:
-        list: An interleaved list of integers
+        list: An interleaved list
     """
-    col_len = len(collection) // 2
-    first, second = collection[:col_len], collection[col_len:]
-    return [val for pair in zip(first, second) for val in pair]
+    return list(chain(*zip(*args)))
 
+def insertp(collection: list, element: list) -> list:
+    """Insert function to insert a fixed element as pair element of each list"""
+    return [i for x in collection for i in (x, element[0])][:-1]
+
+def insert(collection: list, element: list) -> list:
+    """Insert function to insert a fixed element as odd element of each list"""
+    return [i for x in collection for i in (element[0], x)][:-1]
 
 def shuffle(collection: list) -> list:
     """Shuffle a newly generated collection

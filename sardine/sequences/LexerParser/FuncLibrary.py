@@ -1,4 +1,5 @@
 import random
+import statistics
 from collections.abc import Iterable
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
 from itertools import cycle, islice, zip_longest
@@ -507,6 +508,40 @@ def sinus(x: list) -> list:
     """
     return map_unary_function(sin, x)
 
+def maximum(x: Union[list, float, int]) -> list:
+    """Maximum operation
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
+    return map_unary_function(max, [x])
+
+def mean(x: list) -> list:
+    """Mean operation
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
+    return statistics.mean(list(x))
+
+
+
+def minimum(x: Union[list, float, int]) -> list:
+    """Minimum operation
+
+    Args:
+        x (list): pattern
+
+    Returns:
+        list: a valid pattern.
+    """
+    return map_unary_function(max, [x])
 
 def absolute(x: list) -> list:
     """Basic absolute function

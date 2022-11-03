@@ -26,6 +26,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | col
      | patname
      | "-" atom                                            -> negation
+     | atom "?"                                            -> add_mystery
      | "$"                                                 -> get_time
      | "$" "." "m"                                         -> get_measure
      | "$" "." "p"                                         -> get_phase

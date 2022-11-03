@@ -351,6 +351,10 @@ class CalculateTree(Transformer):
 
         return map_binary_function(my_random, left, right)
 
+    def add_mystery(self, value):
+        return map_unary_function(lambda x: 
+                x if random.random() > 0.5 else None, value)
+
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)
 
@@ -387,28 +391,36 @@ class CalculateTree(Transformer):
 
     def function_call(self, func_name, *args):
         modifiers_list = {
+            # Voice leading operations
             "dmitri":   FuncLibrary.dmitri,
-            "scale":   FuncLibrary.scale,
             "voice":   FuncLibrary.find_voice_leading,
-            "euclid":  FuncLibrary.euclidian_rhythm,
-            "mask":    FuncLibrary.mask,
-            "clamp":   FuncLibrary.clamp,
-            "vanish":  FuncLibrary.remove_x,
-            "expand":  FuncLibrary.expand,
+            "sopr":    FuncLibrary.soprano,
+            "quant":   FuncLibrary.quantize,
             "disco":   FuncLibrary.disco,
             "adisco":  FuncLibrary.antidisco,
+            "bass":    FuncLibrary.bassify,
+            "sopr":    FuncLibrary.soprano,
+            # Boolean mask operations
+            "euclid":  FuncLibrary.euclidian_rhythm,
+            "mask":    FuncLibrary.mask,
+            "vanish":  FuncLibrary.remove_x,
+            "expand":  FuncLibrary.expand,
             "pal":     FuncLibrary.palindrome,
             "apal":    FuncLibrary.alternative_palindrome,
             "rev":     FuncLibrary.reverse,
             "braid":   FuncLibrary.braid,
             "shuf":    FuncLibrary.shuffle,
+            # Math functions
+            "clamp":   FuncLibrary.clamp,
             "sin":     FuncLibrary.sinus,
             "cos":     FuncLibrary.cosinus,
             "tan":     FuncLibrary.tangent,
             "abs":     FuncLibrary.absolute,
+            "max":     FuncLibrary.maximum,
+            "min":     FuncLibrary.minimum,
+            "mean":     FuncLibrary.mean,
+            "scale":   FuncLibrary.scale,
             "filt":    FuncLibrary.custom_filter,
-            "bass":    FuncLibrary.bassify,
-            "sopr":    FuncLibrary.soprano,
             "quant":   FuncLibrary.quantize,
         }
         try:

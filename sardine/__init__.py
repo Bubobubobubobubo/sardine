@@ -335,6 +335,37 @@ def print_qualities():
     """Return the list of qualifiers"""
     return qualifiers
 
+
+class Delay():
+    """
+    with delay(0.5):
+        do_stuff()
+    """
+
+    def __init__(self, duration: Union[int, float]=1, delayFirst: bool=True):
+        """
+        This compound statements needs to know two things, already provided
+        by some default values:
+        duration: for how long do we wait before or after the block?
+        delayFirst: are we waiting before or after the block?
+        """
+        self.duration = duration
+        self.delayFirst = delayFirst
+
+    def __call__(self, duration=1, delayFirst = False):
+        self.duration = duration
+        self.delayFirst = delayFirst
+        return self
+
+    def __enter__(self):
+        if self.delayFirst:
+            sleep(self.duration)
+
+    def __exit__(self, exc_type, exc_val, exc_tb ):
+        if not self.delayFirst:
+            sleep(self.duration)
+
+
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
 P = Pat

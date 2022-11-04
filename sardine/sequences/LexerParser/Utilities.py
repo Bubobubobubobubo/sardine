@@ -18,6 +18,30 @@ def floating_point_range(start, end, step):
     return islice(count(start, step), sample_count)
 
 
+def allow_silence_1(func):
+    """Wrap a unary function to return None when called with None"""
+
+    def result_func(x):
+        if x is not None:
+            return func(x)
+        else:
+            return None
+
+    return result_func
+
+
+def allow_silence_2(func):
+    """Wrap a binary function to return None when called with None"""
+
+    def result_func(x, y):
+        if x is not None and y is not None:
+            return func(x, y)
+        else:
+            return None
+
+    return result_func
+
+
 def map_unary_function(func, value):
     """Apply an unary function to a value or a list of values
 
@@ -25,11 +49,7 @@ def map_unary_function(func, value):
         func: The function to apply
         value: The value or the list of values
     """
-    if isinstance(value, (float, int)):
-        return func(value)
-    if isinstance(value, list):
-        return [func(x) for x in value]
-    return None
+    return [allow_silence_1(func)(x) for x in value]
 
 
 def zip_cycle(left, right):
@@ -48,12 +68,4 @@ def map_binary_function(func, left, right):
         left: The left value or list of values
         right: The right value or list of values
     """
-    if all(map(lambda x: isinstance(x, (float, int)), [left, right])):
-        return func(left, right)
-    if all(map(lambda x: isinstance(x, list), [left, right])):
-        return [func(x, y) for x, y in zip_cycle(left, right)]
-    if isinstance(left, (int, float)) and isinstance(right, list):
-        return [func(left, x) for x in right]
-    if isinstance(left, list) and isinstance(right, (float, int)):
-        return [func(x, right) for x in left]
-    return None
+    return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]

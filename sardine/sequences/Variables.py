@@ -37,9 +37,9 @@ class Variables(object):
         the second number is the step increment.
         """
         if name in ascii_letters:
-            if isinstance(value, (int, float, str)):
+            if isinstance(value, (int, float, str, list)):
                 self._iterators[name] = value
             else:
-                raise ValueError("You can only set int, floats or str")
+                raise ValueError("You can only set int, floats, list or strings")
         else:
             super(Variables, self).__setattr__(name, value)

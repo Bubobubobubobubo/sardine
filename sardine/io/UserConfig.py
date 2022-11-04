@@ -21,6 +21,7 @@ TEMPLATE_CONFIGURATION = {
         "midi": "Sardine",
         "bpm": 135,
         "beats": 4,
+        "debug": False,
         "ppqn": 24,
         "parameters": [],
         "boot_superdirt": False,
@@ -50,6 +51,7 @@ class Config:
     parameters: list
     ppqn: int
     bpm: int
+    debug: bool
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
@@ -63,6 +65,7 @@ class Config:
         return cls(
             midi=config["midi"],
             beats=config["beats"],
+            debug=config["debug"],
             parameters=config["parameters"],
             ppqn=config["ppqn"],
             bpm=config["bpm"],
@@ -79,6 +82,7 @@ class Config:
             "config": {
                 "midi": self.midi,
                 "beats": self.beats,
+                "debug": self.debug,
                 "parameters": self.parameters,
                 "ppqn": self.ppqn,
                 "bpm": self.bpm,

@@ -71,7 +71,7 @@ class SuperDirtSender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="superdirt-scheduler")
 
-    def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
+    def out(self, i: int = 0, div: int = 1, rate: int = 1) -> None:
         """
         Prototype for the Sender output.
         """
@@ -124,9 +124,7 @@ class SuperDirtSender:
                 return
             if isinstance(self.sound, list):
                 new_element = self.sound[
-                    pattern_element(
-                        iterator=i, div=div, speed=speed, pattern=self.sound
-                    )
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
                 ]
                 if new_element is None:
                     return
@@ -140,7 +138,7 @@ class SuperDirtSender:
 
             # Parametric arguments
             pattern_result = compose_parametric_patterns(
-                div=div, speed=speed, iterator=i, items=self.content.items()
+                div=div, rate=rate, iterator=i, items=self.content.items()
             )
             final_message.extend(pattern_result)
 

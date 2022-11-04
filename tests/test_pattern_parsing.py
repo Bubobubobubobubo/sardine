@@ -8,6 +8,25 @@ PARSER = ListParser(None, None, None)
 
 class TestPatternParsing(unittest.TestCase):
 
+    def test_silence(self):
+        """
+        Test the silence operator (.)
+        """
+        parser = PARSER
+        patterns = [
+                ".",
+                ".!4",
+                ".?",
+        ]
+        expected = [
+                [None],
+                [None]*4,
+                [None]
+        ]
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                self.assertEqual(parser.parse(pattern), expected[i])
+
     def test_choice_operator(self):
         """
         Test the choice (|) operator 

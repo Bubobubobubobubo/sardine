@@ -9,6 +9,7 @@ import tempfile
 import psutil
 import asyncio
 from rich.console import Console
+from rich.panel import Panel
 from rich import print
 
 __all__ = ("SuperColliderProcess",)
@@ -25,6 +26,7 @@ class SuperColliderProcess:
         self._synth_directory = self._find_synths_directory()
         self._startup_file = self._find_startup_file(user_file=startup_file)
         self.temp_file = tempfile.NamedTemporaryFile()
+        self._verbose = verbose
 
         # If preemptive, all previously running instances of SuperCollider
         # will be killed to prevent more issues...
@@ -33,8 +35,7 @@ class SuperColliderProcess:
 
         self.boot()
 
-        if verbose:
-            asyncio.create_task(self.monitor())
+        asyncio.create_task(self.monitor())
 
     def _find_vanilla_startup_file(self):
         """Find the startup file when booting Sardine"""
@@ -75,6 +76,43 @@ class SuperColliderProcess:
         self._write_stdin("Server.killAll; 0.exit;")
         self._sclang.terminate()
 
+    def _analyze_and_warn(self, decoded_line: str):
+        """
+        Analyse the last line from SuperCollider logs and warn the user if something
+        shady is going on (like not being able to boot the server, late messages)
+        """
+        if "late 0." in decoded_line:
+            print("\n")
+            print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))
+        if "listening to Tidal on port 57120" in decoded_line:
+            print("\n")
+            print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
+        if "ERROR: failed to open UDP socket: address in use" in decoded_line:
+            print("\n")
+            print(
+                Panel.fit(
+                    (
+                        f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
+                        + "\nrunning somewhere. It might be a mistake or a"
+                        + "\nzombie process. Run `Server.killAll` in an SC"
+                        + "\nwindow (can be the IDE of `sclang` in term..)"
+                    )
+                )
+            )
+        if "Mismatched sample rates are not supported" in decoded_line:
+            print("\n")
+            print(
+                Panel.fit(
+                    (
+                        f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
+                        + "\nsure that your audio input sample rate and"
+                        + "\nyour audio output sample rate are the same."
+                        + "\nThis is usually modified in your OS audio"
+                        + "\nconfiguration menus. Reboot Sardine!"
+                    )
+                )
+            )
+
     async def monitor(self):
         """
         Monitoring SuperCollider output using an asynchronous function
@@ -88,10 +126,13 @@ class SuperColliderProcess:
                 where = self.temp_file.tell()
                 lines = self.temp_file.read()
                 if not lines:
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.05)
                     self.temp_file.seek(where)
                 else:
-                    sys.__stdout__.write(lines.decode())
+                    if self._verbose:
+                        sys.__stdout__.write(lines.decode())
+                    else:
+                        self._analyze_and_warn(lines.decode())
                     sys.__stdout__.flush()
             sys.__stdout__.write(self.temp_file.read())
             sys.__stdout__.flush()
@@ -105,7 +146,6 @@ class SuperColliderProcess:
                 if any(
                     procstr in proc.name() for procstr in ["sclang", "scide", "scsynth"]
                 ):
-                    print(f"Killing {proc.name()}")
                     proc.kill()
         except Exception:
             pass
@@ -148,6 +188,7 @@ class SuperColliderProcess:
 
     def load_custom_synthdefs(self) -> None:
         buffer = ""
+        loaded_synthdefs_message = ["Loaded SynthDefs:"]
         _, _, files = next(walk(self._synth_directory))
 
         # Filter by file extension (only .sc and .scd)
@@ -160,9 +201,12 @@ class SuperColliderProcess:
 
             # sending the string to the interpreter
             self._write_stdin(buffer)
-            print("Loaded SynthDefs:")
             for f in files:
-                print("- {}".format(f))
+                loaded_synthdefs_message.append("- {}".format(f))
+        if len(loaded_synthdefs_message) == 1:
+            return
+        else:
+            print(Panel.fit("\n".join(loaded_synthdefs_message)))
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""
@@ -190,7 +234,6 @@ class SuperColliderProcess:
     def boot(self) -> None:
         """Booting a background instance of SCLang!"""
         console = Console()
-        from time import sleep
 
         with console.status(
             "[yellow][red]Sardine[/red] is booting \
@@ -205,7 +248,6 @@ SCLang && SuperDirt...[/yellow]"
                 universal_newlines=True,
                 start_new_session=True,
             )
-            sleep(1)
             self._write_stdin(message="""load("{}")""".format(self._startup_file))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()

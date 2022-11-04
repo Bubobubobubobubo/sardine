@@ -6,7 +6,6 @@
 
 from random import random, randint, choice
 from math import floor
-from typing import Union
 from rich import print
 import asyncio
 import warnings
@@ -21,7 +20,7 @@ else:
     uvloop.install()
 
 from random import random, randint, choice
-from typing import Union
+from typing import Union, Any
 from pathlib import Path
 from rich.console import Console
 from rich.markdown import Markdown
@@ -37,9 +36,8 @@ from .io import OSCSender, MIDISender
 from .sequences import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
-from .sequences.LexerParser.Qualifiers import qualifiers
 from .sequences.Sequence import E, euclid, mod, imod, pick, text_eater
-from typing import Union
+from .sequences.LexerParser.FuncLibrary import qualifiers
 from .sequences import *
 
 warnings.filterwarnings("ignore")
@@ -185,6 +183,9 @@ def die(fn):
     return fn
 
 
+drown = die
+
+
 def sleep(n_beats: Union[int, float]):
     """Artificially sleep in the current function for `n_beats`.
 
@@ -271,7 +272,7 @@ def parser(pattern: str):
     print(parser.parse(pattern))
 
 
-def parser_repl(parser_type: str):
+def parser_repl(parser_type: str) -> None:
     """Parse a single expression and get result"""
     parser = ListParser(
         clock=c, iterators=c.iterators, variables=c.variables, parser_type=parser_type
@@ -292,13 +293,13 @@ def parser_repl(parser_type: str):
         pass
 
 
-def lang_debug():
+def lang_debug() -> None:
     """Debug mode for language dev"""
     return parser_repl(parser_type="proto")
 
 
 # Interface to the patterning system
-def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1):
+def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     """Generates a pattern
 
     Args:
@@ -311,40 +312,66 @@ def Pat(pattern: str, i: int = 0, div: int = 1, speed: int = 1):
     parser = c.parser
     result = parser.parse(pattern)
 
-    def _pattern_element(div: int, speed: int, iterator: int, pattern: list):
+    def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
         """Joseph Enguehard's algorithm for solving iteration speed"""
-        return floor(iterator * speed / div) % len(pattern)
+        return floor(iterator * rate / div) % len(pattern)
 
-    return result[_pattern_element(div=div, speed=speed, iterator=i, pattern=result)]
-
-
-P = Pat
+    return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
 
 
-def print_scales():
+def print_scales() -> None:
     """Print the list of built-in scales and chords"""
     """Print all available scales in the patterning system"""
     print(qualifiers.keys())
 
 
-def panic():
+def panic() -> None:
     """Panic function, will cut everything"""
-    # Stop everything
-    hush()
-    # Superpanic is a synth capable of cutting every other synth
-    S("superpanic").out()
+    hush()  # Stop everything
+    S("superpanic").out()  # Superpanic is a synth capable of
+    # cutting every other synth
+
+def print_qualities():
+    """Return the list of qualifiers"""
+    return qualifiers
 
 
-class Pile:
-    """Fast and dirty way to get polyphony working for sender objects"""
+class Delay():
+    """
+    with delay(0.5):
+        do_stuff()
+    """
 
-    def __init__(self, pattern):
-        self._pat = pattern
+    def __init__(self, duration: Union[int, float]=1, delayFirst: bool=True):
+        """
+        This compound statements needs to know two things, already provided
+        by some default values:
+        duration: for how long do we wait before or after the block?
+        delayFirst: are we waiting before or after the block?
+        """
+        self.duration = duration
+        self.delayFirst = delayFirst
 
-    def out(self, iterator, height):
-        for i in range(iterator, iterator + height):
-            self._pat.out(i)
+    def __call__(self, duration=1, delayFirst = False):
+        self.duration = duration
+        self.delayFirst = delayFirst
+        return self
+
+    def __enter__(self):
+        if self.delayFirst:
+            sleep(self.duration)
+
+    def __exit__(self, exc_type, exc_val, exc_tb ):
+        if not self.delayFirst:
+            sleep(self.duration)
 
 
 # Amphibian iterators and amphibian variables
 i, v = c.iterators, c.variables
+P = Pat
+
+if config.debug:
+    try:
+        lang_debug()
+    except Exception as e:
+        lang_debug()

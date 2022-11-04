@@ -23,8 +23,8 @@ from rich.panel import Panel
 system = platform.system()
 
 # Setting very high priority for this process (time-critical)
-warning_text = "[red bold]Run Sardine using administrator priviledges to get \
-better_performances[/red bold]"
+warning_text = "[yellow]/!\\\\[/yellow] [red bold]Run Sardine faster by starting it using\
+\nadministrator priviledges (sudo on Unix..)[/red bold]"
 if system == "Windows":
     try:
         p = psutil.Process(os.getpid())

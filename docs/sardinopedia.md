@@ -81,7 +81,7 @@ The most common function. A function with a duration and an iterator passed as a
 ```python3
 @swim 
 def basic(d=0.5, i=0, j=0, k=0):
-    print(f'I am swimming with {i}, {j}, and k{}!')
+    print(f'I am swimming with {i}, {j}, and {k}!')
     again(basic, d=0.5, i=i+1, j=j+2, k=P('r*10', i))
 
 hush(basic)
@@ -145,7 +145,7 @@ The function to perform recursion has multiple names because it is very importan
 
 ## Advanced (Swimming fast)
 
-This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation / *Sardinopedia* before diving into the following section. You need to understand [patterns](#patterning-basics), [senders](#senders), and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
+This section requires a good understanding of general **Sardine** concepts. I recommend reading the rest of documentation/*Sardinopedia* before diving into the following section. You need to understand [patterns](#patterning-basics), [senders](#senders), and a few other concepts. Moreover, you don't need it to be a proficient **Sardine** user anyway!
 
 ### Swimming at clock speed
 
@@ -153,11 +153,11 @@ This section requires a good understanding of general **Sardine** concepts. I re
 
 @swim 
 def fast(d=0.25, i=0):
-    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, speed=2)
+    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, rate=2)
     S('hh, jvbass:0|8|4,', 
             pan='{0,1,0.1}',
             legato=0.1).out(i, div=8 if rarely()
-                    else 5, speed=2)
+                    else 5, rate=2)
     S('cp', legato=0.1).out(i, div=8)
     a(fast, d=1/8, i=i+1)
 ```
@@ -167,7 +167,7 @@ The recipe for *fast swimming* is the following:
 
 - Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
 
-- Play a lot with silences and with the arguments of `.out(iterator, div, speed)`. 
+- Play a lot with silences and with the arguments of `.out(iterator, div, rate)`. 
 
 ### Fast swimming template
 
@@ -177,7 +177,7 @@ def fast(d=0.5, i=0):
     # print("Damn, that's fast!")
     a(fast, d=1/32, i=i+1)
 ```
-This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as [amphibian variables](#amphibian-variables)). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following sections about divisors and the speed factor.
+This is the template for a fast swimming function. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as [amphibian variables](#amphibian-variables)). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following sections about divisors and the rate factor.
 
 ### Divisors
 
@@ -194,7 +194,7 @@ The `.out()` method as well as the independant `P()` [object](#patterning-freely
 
 - `div` (*int*): **a timing divisor**. It feels like using a modulo operation. If `div=4`, the event will hit once every 4 iterations. The default is `div=1`, where every event is a hit!
 
-- `speed` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a speed of `0.5`, the result will be `1, 1, 2, 2, 3, 3`.
+- `rate` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a rate of `0.5`, the result will be `1, 1, 2, 2, 3, 3`.
 
 In the above example, we are playing with various divisors to get an interesting rythmic pattern.
 
@@ -221,14 +221,14 @@ hush()
 # This is a fast Sardine function
 @swim 
 def fast(d=1/16):
-    S('bd, hh, sn, hh').out(i.i, div=4, speed=1)
+    S('bd, hh, sn, hh').out(i.i, div=4, rate=1)
     a(fast, d=1/16)
 ```
-The two functions above yield a similar musical result. However, the fast version goes further by making use of all the parameters `.out()` can take. As you can see, there is a `speed` argument determining how fast we should iterate over the values of our pattern. Try altering it to see what is going on!
+The two functions above yield a similar musical result. However, the fast version goes further by making use of all the parameters `.out()` can take. As you can see, there is a `rate` argument determining how fast we should iterate over the values of our pattern. Try altering it to see what is going on!
 
-By default, `speed=1` means that we will move forward to the next index of our patterns for every division (`1`). Changing speed to `2` (`speed=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`speed=0.5`), etc...
+By default, `rate=1` means that we will move forward to the next index of our patterns for every division (`1`). Changing rate to `2` (`rate=2`) means that we will move forward to the next index of the pattern twice as slow, because it will take 2 divisions to do so. You can also move in a pattern twice as fast (`rate=0.5`), etc...
 
-It is not currently possible to have one speed for each and every value in the pattern. The speed is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
+It is not currently possible to have one rate for each and every value in the pattern. The rate is globally applied to each and every parameter. However, clever use of the pattern notation will allow you to give a duration to each and every event :)
 
 ## Senders
 
@@ -247,7 +247,7 @@ A simple bassdrum playing on every half-beat. This is the most basic sound-makin
 ```python3
 @swim
 def bd(d=0.5):
-    S('bd', speed='r*4', legato='r', cutoff='100+(r*4000)').out()
+    S('bd', speed='r*4', legato='r', cutoff='100+0~4000').out()
     again(bd, d=0.25)
 ```
 A simple bassdrum but some parameters have been tweaked to be random.
@@ -263,7 +263,7 @@ The additional parameters are :
 ```python3
 @swim
 def bd(d=0.5, i=0):
-    S('amencutup:r*20').out(i)
+    S('amencutup:0~20').out(i)
     again(bd, d=0.25, i=i+1)
 ```
 Picking a random sample in a folder containing slices of the classic [amen break](https://en.wikipedia.org/wiki/Amen_break). You could have a successful career doing this in front of audiences. Once again, the *magic* happens with the `sample:r*X` notation, which randomizes which sample is read on each execution, making it unpredictable.
@@ -381,7 +381,7 @@ You will find your usual suspects: `port`, `ip` and `name` (that is not used for
 
 - `.get(address)` : retrieve the last received value to that address. You must have used `.watch()` before to register this address to be watched. Otherwise, you will get nothing.
 
-### Blending OSC in a pattern
+### Blending OSC in a pattern (0)
 
 If you are receiving something, you can now use it in your patterns to map a captor, a sensor or a controller to a **Sardine** pattern. If you combo this with [amphibian-variables](#amphibian-variables), you can now contaminate your patterns with values coming from your incoming data:
 
@@ -446,8 +446,8 @@ Building euclidian rhythms by using the `trig` argument. Note that this is not r
 @swim
 def bd(d=0.5, i=0):
     S('bd:r*20', trig=euclid(1,4)).out(i)
-    S('hh:r*20', trig=euclid(6,8)).out(i)
-    S('sd:r*20', trig=euclid(2,4)).out(i)
+    S('hh:0~5', trig=euclid(6,8)).out(i)
+    S('sd:$%20', trig=euclid(2,4)).out(i)
     again(bd, d=P('0.5!8, 0.25!4', i), i=i+1)
 ```
 Pattern the recursion delay to get free rhythms! You can even skip playing with `trig` and just play with the recursion `delay` if you feel like it!
@@ -679,9 +679,11 @@ You can be creative with pattern indexes and get random sequences, drunk walks, 
 
 ## Pattern syntax
 
-This section is very likely to change in upcoming versions.
+There is a whole programming language inside of **Sardine**. This language is dedicated to creating patterns of notes, numbers, samples and addresses. It is an ongoing project and might be subject to change in upcoming versions but there is a subset of stable features that you can use without risking your code to break too fast :) The syntax, much like the syntax of a regular general-purpose programming languages is organised in primitive types and things you can do on/with them. It is very reminescent of **Python** but with a twist!
 
-### Numbers
+## Primitive types
+
+### Integers and floating-point numbers
 
 ```python3
 @swim
@@ -689,9 +691,10 @@ def number(d=0.5, i=0):
     print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))', i))
     again(number, d=0.5, i=i+1)
 ```
-You can write numbers and use common operators such as addition, substraction, division, multiplication, modulo, etc... You can be specific about priority by using parenthesis.
+You can write numbers (both *integers* and *floating point numbers*) and use common operators such as **addition**, **substraction**, **division**, **multiplication**, **modulo**, etc... For precision in your calculations, you can of course resort to using parentheses. By default, **Sardine** is made so that most arithmetic operators can be used on almost anything, expect if intuitively it doesn't make sense at all like multiplying a string against a string.
 
-### Time tokens
+
+#### Time-dependant numbers 
 
 ```python3
 @swim
@@ -699,37 +702,44 @@ def number(d=0.5, i=0):
     print(P('$, r, m, p', i))
     again(number, d=0.5, i=i+1)
 ```
-Some number tokens are time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time. 
 
-- `$`: tick, the tick number since the clock started.
-- `r`: random, between `0` and `1`.
-- `p`: phase, a number between `0` and your `c.ppqn`.
-- `m`: measure, the measure since the clock started.
+Some number tokens are clock-time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a tiny and predictible moment in time. 
+
+- `$`: **tick**, the tick number since the clock started.
+- `$.p`: **phase**, a number between `0` and your `c.ppqn`.
+- `$.m`: **measure**, the measure since the clock started.
+
 
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('r, m, p', i))
+    print(P('$, $.m, $.p')).out(i)
     again(number, d=0.5, i=i+1)
 ```
 
-Some number tokens are time dependant, but will refer to absolute time. They are mostly used for long-running sequences and/or for introduction a random factor in your computation. You will notice that they are prefixed by `$`.
+Some other number tokens are absolute-time dependant. They are mostly used for long-running sequences and/or for introducing a random factor in the result of the expression. You will notice that they are prefixed by `$`.
+
 ```python3
 @swim
 def random(d=0.5, i=0):
-    print(P('$.Y, $.M, $.D, $.H, $.m, $.S, $.µ', i))
+    print(P('T.U, T.Y, T.M, T.D, T.h, T.m, T.s, T.µ', i))
     again(random, d=0.5, i=i+1)
 ```
 
-- `$.Y`: year, the current year.
-- `$.M`: month, the current month.
-- `$.D`: day, the current day.
-- `$.H`: hour, the current hour.
-- `$.m`: minute, the current minute.
-- `$.S`: second, the current second.
-- `$.µ`: microsecond, the current microsecond.
+- `T.U`: Unix Time, the current Unix Time.
+- `T.Y`: year, the current year.
+- `T.M`: month, the current month.
+- `T.D`: day, the current day.
+- `T.h`: hour, the current hour.
+- `T.m`: minute, the current minute.
+- `T.s`: second, the current second.
+- `T.µ`: microsecond, the current microsecond.
 
-### Timed maths
+#### Random numbers
+
+You can write random numbers by using the letter `r`. By default, `r` will return a floating point number between `0.0` and `1.0` but it will be casted to integer if it makes more sense in that context (`e.g.` `sample:r*8`).
+
+#### Generating patterns out of time-dependant numbers
 
 ```python3
 @swim
@@ -737,7 +747,7 @@ def random(d=0.5, i=0):
     S('cp', speed='$%20').out(i)
     again(random, d=0.5, i=i+1)
 ```
-Timed tokens make good low frequency oscillators or random values for generating interesting patterns. Playing with time tokens is a great way to get generative results out of a predictible sequence.
+Timed tokens make good *low frequency oscillators*, *ramps* or oscillating patterns. Playing with time tokens using modulos, using the `s()`, `c()` or `t()` function is a great way to get generative results out of a predictible sequence. It is very important to practice doing this, especially if you are planning to do some [fast swimming](#advanced-swimming-fast).
 
 ### Notes
 
@@ -747,41 +757,157 @@ def notes(d=0.5, i=0):
     S('pluck', midinote='C5,D5,E5,F5,G5').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can write notes in patterns. Notes will be converted to some MIDI value used by **SuperDirt**. It means that notes are numbers too and that you can do math on them if you wish to. The syntax to write notes is the following. The steps 2 and 3 can be omitted:
+Notes are one of the primitives you can use in patterns. Notes will always be converted to some MIDI value (an integer value between `0` and `127`). Notes will be converted to some MIDI value used by **SuperDirt**. If you need more precision, speak in hertzs (`freq=402.230239`). Notes are numbers too (!!). You can do math on them if you wish to. The syntax to write notes is the following:
 
-- 1) capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`
-- 2) flat or sharp: `#`, `b` 
-- 3) octave number: `0`..`9` 
+- 1) **[MANDATORY]** capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`.
+- 2) **[FACULTATIVE]** flat or sharp: `#`, `b`.
+- 3) **[FACULTATIVE]** octave number: `0`..`9`.
 
-### Note qualifiers
+You can also use french/canadian note names if you will: `Do, Ré, Mi, Fa, Sol, La, Si`. If MIDI is your prefered language and you only think about numbers, use numbers!
 
-```python3
-@swim
-def notes(d=0.5, i=0):
-    S('pluck', midinote='C5->penta').out(i)
-    again(notes, d=0.5, i=i+1)
-```
-Use the `print_scales()` function to print out the list of possible scales, chords and structures you can play with. You can use the `->` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C->penta` will raise a major pentatonic scale based on middle C.
 
-### Note modifiers
+#### Note qualifiers
 
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='C5->penta.disco.braid').out(i)
+    S('pluck', midinote='C5@penta').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-Some modifiers are available to fine-tune your note collections. There is currently no way to print out the list of `modifiers`. You will have to deep-dive in the source code to find them.
+You can use the `@` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C@penta` will raise a major pentatonic scale based on middle C. Be careful while using them as they will instantly turn a single token into a list of `x` tokens. You might want to filter part of a qualifiers note collection.
 
-### Note maths
+```python
+# ====== #
+# Chords #
+# ====== #
+
+"dim": [0, 3, 6, 12]
+"dim9": [0, 3, 6, 9, 14]
+"hdim7": [0, 3, 6, 10]
+"hdim9": [0, 3, 6, 10, 14]
+"hdimb9": [0, 3, 6, 10, 13]
+"dim7": [0, 3, 6, 9]
+"7dim5": [0, 4, 6, 10]
+"aug": [0, 4, 8, 12]
+"augMaj7": [0, 4, 8, 11]
+"aug7": [0, 4, 8, 10]
+"aug9": [0, 4, 10, 14]
+"maj": [0, 4, 7, 12]
+"maj7": [0, 4, 7, 11]
+"maj9": [0, 4, 11, 14]
+"minmaj7": [0, 3, 7, 11]
+"5": [0, 7, 12]
+"6": [0, 4, 7, 9]
+"7": [0, 4, 7, 10]
+"9": [0, 4, 10, 14]
+"b9": [0, 4, 10, 13]
+"mM9": [0, 3, 11, 14]
+"min": [0, 3, 7, 12]
+"min7": [0, 3, 7, 10]
+"min9": [0, 3, 10, 14]
+"sus4": [0, 5, 7, 12]
+"sus2": [0, 2, 7, 12]
+"b5": [0, 4, 6, 12]
+"mb5": [0, 3, 6, 12]
+
+# ================== #
+# Scales begin here  #
+# ================== #
+
+"major": [0, 2, 4, 5, 7, 9, 11]
+"minor": [0, 2, 3, 5, 7, 8, 10]
+"hminor": [0, 2, 3, 5, 7, 8, 11]
+"^minor": [0, 2, 3, 5, 7, 9, 11]  # doesn't work
+"vminor": [0, 2, 3, 5, 7, 8, 10]
+"penta": [0, 2, 4, 7, 9]
+"acoustic": [0, 2, 4, 6, 7, 9, 10]
+"aeolian": [0, 2, 3, 5, 7, 8, 10]
+"algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17]
+"superlocrian": [0, 1, 3, 4, 6, 8, 10]
+"augmented": [0, 3, 4, 7, 8, 11]
+"bebop": [0, 2, 4, 5, 7, 9, 10, 11]
+"blues": [0, 3, 5, 6, 7, 10]
+"chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+"dorian": [0, 2, 3, 5, 7, 9, 10]
+"doubleharmonic": [0, 1, 4, 5, 8, 11]
+"enigmatic": [0, 1, 4, 6, 8, 10, 11]
+"flamenco": [0, 1, 4, 5, 7, 8, 11]
+"gypsy": [0, 2, 3, 6, 7, 8, 10]
+"halfdim": [0, 2, 3, 5, 6, 8, 10]
+"harmmajor": [0, 2, 4, 5, 7, 8, 11]
+"harmminor": [0, 2, 3, 5, 7, 8, 11]
+"hirajoshi": [0, 4, 6, 7, 11]
+"hungarianminor": [0, 2, 3, 6, 7, 8, 11]
+"hungarianmajor": [0, 3, 4, 6, 7, 9, 10]
+"in": [0, 1, 5, 7, 8]
+"insen": [0, 1, 5, 7, 10]
+"ionian": [0, 2, 4, 5, 7, 9, 11]
+"istrian": [0, 1, 3, 4, 6, 7]
+"iwato": [0, 1, 5, 6, 10]
+"locrian": [0, 1, 3, 5, 6, 8, 10]
+"lydianaug": [0, 2, 4, 6, 8, 9, 11]
+"lydian": [0, 2, 4, 5, 7, 8, 9, 11]
+"majorlocrian": [0, 2, 4, 5, 6, 8, 10]
+"majorpenta": [0, 2, 4, 7, 9]
+"minorpenta": [0, 3, 5, 7, 10]
+"melominup": [0, 2, 3, 5, 7, 9, 11]
+"melomindown": [0, 2, 3, 5, 7, 8, 10]
+"mixolydian": [0, 2, 4, 5, 7, 9, 10]
+"neapolitan": [0, 1, 3, 5, 7, 8, 11]
+"octatonic": [0, 2, 3, 5, 6, 8, 9, 11]
+"octatonic2": [0, 1, 3, 4, 6, 7, 9, 10]
+"persian": [0, 1, 4, 5, 6, 8, 11]
+"phrygian": [0, 1, 4, 5, 7, 8, 10]
+"prometheus": [0, 2, 4, 6, 9, 10]
+"harmonics": [0, 3, 4, 5, 7, 9]
+"tritone": [0, 1, 4, 6, 7, 10]
+"ukrainian": [0, 2, 3, 6, 7, 9, 10]
+"whole": [0, 2, 4, 6, 8, 10]
+"yo": [0, 3, 5, 7, 10]
+"symetrical": [0, 1, 2, 6, 7, 10]
+"symetrical2": [0, 2, 3, 6, 8, 10]
+"messiaen1": [0, 2, 4, 6, 8, 10]
+"messiaen2": [0, 1, 3, 4, 6, 7, 9, 10]
+"messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11]
+"messiaen4": [0, 1, 2, 4, 6, 7, 8, 11]
+"messiaen5": [0, 1, 5, 6, 7, 11]
+"messiaen6": [0, 2, 4, 5, 6, 8]
+"messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11]
+
+# ================================== #
+# Structures (other musical objects) #
+# ================================== #
+
+"fourths": [0, 4, 10, 15, 20]
+"fifths": [0, 7, 14, 21, 28]
+"sixths": [0, 9, 17, 26, 35]
+"thirds": [0, 4, 8, 12]
+"octaves": [0, 12, 24, 36, 48]
+```
+
+These qualifiers are useful in combination with some other functions like `filt()` or `quant()` because they allow you to build complex tonal objets by entering a random list of integers.
+
+
+#### Note modifiers
 
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='C5+0|4|8->penta.disco.braid').out(i)
+    S('pluck', midinote='disco(C5@penta)'.out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can use arithmetic operators on notes.
+
+Functions can be used to further refine the effect of a modifier. There is a long list of functions that you can apply, such as `disco()` or `adisco()` as shown in the preceding example. If you ever wonder about the list of possible functions, refer to the **Sardinopedia** or enter any function name. If the function name is wrong, the list of possible functions will be printed out in the terminal.
+
+#### Mathematics on notes
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='disco(braid(C5+0|4|8@penta'))).out(i)
+    again(notes, d=0.5, i=i+1)
+```
+You can use arithmetic operators on notes like if they were a regular number. That's because they are really just numbers! Random and time-dependant numbers are numbers too. Notes are numbers too so you can add a note to a note even if it doesn't really make sense.
 
 ### Names
 
@@ -791,9 +917,14 @@ def names(d=0.5, i=0):
     S('bd, pluck, bd, pluck:2+4').out(i)
     again(names, d=0.5, i=i+1)
 ```
-You are using name patterns since you first started! You can also pattern names. The whole pattern syntax works just the same.
+You are using name patterns since you first started to read the **Sardinopedia**! A single letter (if it's not already a note name) can be considered as a name. Be careful! 
 
-### Addresses
+#### Addresses
+
+```python3
+O(osc_client, "an/address, another/address", value=1, other_value=2).out()
+```
+Addresses are just like names except that they can contain a `/` separator just like any other typical OSC address out there. They are not really distinct from a name. The difference is only conceptual and in how you use strings.
 
 ### Choice 
 
@@ -803,17 +934,17 @@ def choosing_stuff(d=0.5, i=0):
     S('bd|pluck', speed='1|2').out(i)
     again(choosing_stuff, d=0.5, i=i+1)
 ```
-The pipe operator `|` can be used to make a 50/50% choice between two tokens. You can also chain them: `1|2|3|4`.
+The pipe operator `|` can be used on anything to make a 50/50% choice between two tokens. You can also chain them: `1|2|3|4`.
 
 ### Ranges
 
 ```python3
 @swim
 def ranges(d=0.5, i=0):
-    S('pluck|jvbass', speed='1:5').out(i)
+    S('pluck|jvbass', speed='1~5').out(i)
     again(ranges, d=0.5, i=i+1)
 ```
-If you want to generate a number in the range `x` to `y` included, you can use the `:` operator.
+If you want to generate a number in the range `x` to `y` included, you can use the `~` operator. It spits an integer if you are using integers as boundaries but it will spit out a floating point number if you are using floating point numbers as boundaries. If you use an integer on one side and a floating point number on the other side, a floating point number will be returned.
 
 ### Ramps
 
@@ -825,8 +956,7 @@ def ramps(d=0.5, i=0):
         cutoff='{1,10}*100').out(i)
     again(ramps, d=0.5, i=i+1)
 ```
-
-You can generate ramps using the `{1,10}` syntax. This will generate the following list: `[1, 2, 3, 4, 5, ..., 10]`. You can generate lists ramping up and down. This is an extended version of Python base `range` function. You can also generate a ramp with a floating point range by specifying it as the third argument: `{1,10,0.1}`.
+You can generate ramps of integers using the `{1,10}` syntax. This works just like **Python**'s range function. Well, almost... it's way better! You can generate descending ramps easily: `{10,1}`. You can also generate ascending ramps of floating point numbers by precising a step other than `1`: `{1,10,0.5}`. Of course, this also works the other way around :)
 
 ### Repeat
 
@@ -836,7 +966,7 @@ def repeat_stuff(d=0.5, i=0):
     S('pluck|jvbass', speed='1:2', midinote='C4!4, E4!3, E5, G4!4').out(i)
     again(repeat_stuff, d=0.5, i=i+1)
 ```
-The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed elsewhere.
+The `!` operator inspired by **TidalCycles** is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit different, because it is supposed to be used on lists. You can do maths on lists as well with **Sardine**, but this will be detailed in a section later on.
 
 ### Silence
 
@@ -857,7 +987,6 @@ You can use a dot (`.`) inside any pattern to indicate a silence. Silence is a v
 - `O()`: a silence is the absence of an address. The event will be skipped.
 
 There is also the interesting case of what I like to call *'parametric silences'*. Take a look at the following example:
-
 
 ```python
 @swim 
@@ -937,6 +1066,72 @@ def amphi_iter(d=0.25):
     a(amphi_iter, d=0.25)
 ```
 Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.
+
+## The Function Library
+
+**Sardine** pattern notation now comes with a function library. These are functions that should be used directly in the pattern notation to alter a list or a pattern you are working on. They can take basically any input but you will soon figure that some are more specialised than others.
+
+### Sinus, Cosinus, Tangent
+
+* `sin(x)`: **sinus of input** (single tokens or lists). Classic mathematical sinus function.
+
+* `cos(x)`: **cosinus of input** (single tokens or lists). Classic mathematical cosinus function.
+
+* `tan(x)`: **tangent of input** (single tokens or lists). Classic mathematical tangent function.
+
+### Scaling, measuring
+
+* `abs(x)`: Absolute value.
+* `max(x)`: Maximum value of list or token itself.
+* `min(x)`: Minimum value of list or token itself.
+* `mean(x)`: Mean of list or token itself.
+* `scale(z, x, y, x', y')`: Bring a value `z` from range `x-y` to range `x'-y'`.
+* `clamp(x, y, z)`: Clamp function, limit a value `x` to the minimum `y` to the maximum `z`.
+
+### Reversal, shuffling
+
+* `rev(x)`: Reverse a list.
+* `shuf(x)`: Shuffle a list.
+* `pal(x)`: palindrome of list.
+* `apal(x)`: palindrome of list without repetition of last value.
+
+### Musical functions
+
+* `disco(x)`: Disco function. Every pair note down an octave.
+* `adisco(x)`: Anti-disco function. Every pair note up an octave. 
+* `bass(x)`: The first note of list is down an octave (not very useful).
+* `sopr(x)`: The last note of list is up an octave (not very useful).
+* `quant(x, y)`: The last note of list is up an octave (not very useful).
+
+### Voice Leading 
+
+These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
+
+* `voice(x)`: four-note voice leading algorithm. Naive implementation.
+* `dmitri(x)`: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
+
+### Probabilities 
+
+* `vanish(x, y)`: Takes a list `x`, output only `y`% of values from it.
+
+### Booleans
+
+* `euclid(a, b, c, d)`: Euclidian rhythm function applied to patterns. Takes a pattern `a`, a number of pulses `b`, a number of steps `c` and a rotation amount `d`. Outputs a pattern where the absence of a pulse is a silence and where pulses are values from the pattern.
+
+* `mask(x, y)`: Generalisation of the euclidian rhythm algorithm. Works for any pattern and list of booleans.
+
+### Insertion and rotation
+
+To be documented:
+
+* `in(x, y)`:
+* `inp(x, y)`:
+* `inrot(x, y)`:
+* `inprot(x, y)`:
+
+### Filtering
+
+* `filt(x, y)`:
 
 ## SuperCollider interface
 

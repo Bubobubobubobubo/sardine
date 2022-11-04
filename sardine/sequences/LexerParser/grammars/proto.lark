@@ -1,154 +1,114 @@
 // A pattern is a succession of things ////////////////////////////////////////
 
 ?start: pattern
-pattern: (item|list) (_COMMA (item|list)?)* -> return_pattern
+pattern: sum ("," sum?)* -> return_pattern
+
 
 ///////////////////////////////////////////////////////////////////////////////
-
-// Rules concerning lists and interaction with other tokens ///////////////////
-
-item: (sum|col|patname)                            -> id
-list: _LBRA item (_COMMA item)* _COMMA? _RBRA      -> make_list
-
-///////////////////////////////////////////////////////////////////////////////
-
 
 // Rules concerning numbers ///////////////////////////////////////////////////
 
 ?sum: product
-    | product _PLUS sum                -> addition
-    | product _MINUS sum               -> substraction
-    | product _MODULO sum              -> modulo
+    | product "+" sum                  -> addition
+    | product "-" sum                  -> substraction
+    | product "%" sum                  -> modulo
 
 ?product: atom
-     | product _TIMES atom             -> multiplication
+     | product "*" atom                -> multiplication
      | product "/" atom                -> division
      | product "//" atom               -> floor_division
-     | product _PIPE atom              -> choice
-     | product _COLON atom             -> random_in_range
-     | product _REPEAT atom            -> extend
-     | product _REPEAT2 atom           -> extend_repeat
+     | product "|" atom                -> choice
+     | product "~" atom                -> random_in_range
+     | product "!" atom                -> extend
+     | product "!!" atom               -> extend_repeat
 
 ?atom: NUMBER                                              -> number
-     | _NEG atom                                           -> negation
-     | _TIME                                               -> get_time
-     | _MEASURE                                            -> get_measure
-     | _PHASE                                              -> get_phase
-     | _UNIXTIME                                           -> get_unix_time
-     | _RANDOM                                             -> get_random_number
-     | _ITER _DOT LETTER                                   -> get_iterator
-     | _ITER _DOT LETTER _EQUAL sum                        -> set_iterator
-     | _ITER _DOT LETTER _EQUAL _LBRA sum _COMMA sum _RBRA -> set_iterator_step
-     | _ITER _DOT LETTER _DOT "reset"                      -> reset_iterator
-     | _VAR _DOT LETTER                                    -> get_variable
-     | _VAR _DOT LETTER _EQUAL sum                         -> set_variable
-     | _VAR _DOT LETTER _DOT "reset"                       -> reset_variable
-     | _TIME _DOT "Y"                                      -> get_year
-     | _TIME _DOT "M"                                      -> get_month
-     | _TIME _DOT "D"                                      -> get_day
-     | _TIME _DOT "H"                                      -> get_hour
-     | _TIME _DOT "m"                                      -> get_minute
-     | _TIME _DOT "S"                                      -> get_second
-     | _TIME _DOT "µ"                                      -> get_microsecond
-     | _CLBRA sum _COMMA sum _CRBRA                        -> generate_ramp
-     | _CLBRA sum _COMMA sum _COMMA sum  _CRBRA            -> generate_ramp_with_range
-     | _LBRA sum (_COMMA sum)* _COMMA? _RBRA               -> make_list
-     | _COS _LPAR sum _RPAR                                -> cosinus
-     | _SIN _LPAR sum _RPAR                                -> sinus
-     | _TAN _LPAR sum _RPAR                                -> tangente
+     | col
+     | patname
+     | "-" atom                                            -> negation
+     | atom "?"                                            -> add_mystery
+     | "$"                                                 -> get_time
+     | "$" "." "m"                                         -> get_measure
+     | "$" "." "p"                                         -> get_phase
+     | "r"                                                 -> get_random_number
+     | "i" "." LETTER                                      -> get_iterator
+     | "i" "." LETTER "=" sum                              -> set_iterator
+     | "i" "." LETTER "=" "[" sum "," sum "]"              -> set_iterator_step
+     | "i" "." LETTER "." "reset"                          -> reset_iterator
+     | "v" "." LETTER                                      -> get_variable
+     | "v" "." LETTER "=" sum                              -> set_variable
+     | "v" "." LETTER "." "reset"                          -> reset_variable
+     | "T" "." "U"                                         -> get_unix_time
+     | "T" "." "Y"                                         -> get_year
+     | "T" "." "M"                                         -> get_month
+     | "T" "." "D"                                         -> get_day
+     | "T" "." "h"                                         -> get_hour
+     | "T" "." "m"                                         -> get_minute
+     | "T" "." "s"                                         -> get_second
+     | "T" "." "µ"                                         -> get_microsecond // Unicode character U+00B5
+     | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
+     | "{" sum "," sum "}"                                 -> generate_ramp
+     | "{" sum "," sum "," sum  "}"                        -> generate_ramp_with_range
+     | "[" sum ("," sum)* ","? "]"                         -> make_list
      | SILENCE+                                            -> silence
-     | _LPAR sum _RPAR
+     | "(" sum ")"
+     | NAME "(" sum ("," sum)* ")"                         -> function_call
 
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules concerning names /////////////////////////////////////////////////////
 
-?patname: compose_name
-    | compose_name _COLON (sum|list)      -> assoc_sp_number
-    | (compose_name|patname) _REPEAT sum  -> repeat_name
-    | compose_name  _PIPE patname         -> choice_name
+?patname: name_sum
 
-?compose_name: name
-    | compose_name "/" name               -> specify_address
+?name_sum: name_product
+    | name_sum "!" sum                                    -> extend
+    | name_sum "!!" sum                                   -> extend_repeat
+    | name_sum "/" name_product                           -> specify_address
+    | name_sum ":" sum                                    -> assoc_sp_number
 
-?name: NAME                               -> name_disamb
-    | NAME sum                            -> name_from_name_number
-    | _LPAR patname _RPAR
+?name_product: name_atom
+    | name_product "|" name_atom                          -> choice
+
+?name_atom: NAME                                          -> name
+    | "(" name_sum ")"
+    | "[" name_sum ("," name_sum)* ","? "]"               -> make_list
 
 ///////////////////////////////////////////////////////////////////////////////
 
 // Rules about notes /////////////////////////////////////////////////////////
 
-?col : note                                                 -> id
-     | col _RIGHT_ARROW name                                -> add_qualifier
-     | col _COLON name                                      -> add_modifier
+?col : note
+     | note "@" NAME             -> add_qualifier
 
-?note: NOTE (NUMBER)? (FLAT|SHARP)? (OCTSHIFTUP|OCTSHIFTDOWN)* -> make_note
-     | note _PLUS   (col|sum)                     -> waddition
-     | note _MINUS  (col|sum)                     -> wsubstraction 
-     | note _TIMES  (col|sum)                     -> wmultiplication
-     | note _MODULO (col|sum)                     -> wmodulo
-     | note "/"     (col|sum)                     -> wdivision
-     | note "//"    (col|sum)                     -> wfloor_division
-     | note _REPEAT (sum|list)                    -> extend
-     | note _PIPE  note                           -> choice
-     | _LPAR col _RPAR
+?note0: NOTE                     -> make_note
+
+?note1: note0
+    | note0 "b"                  -> note_flat
+    | note0 "#"                  -> note_sharp
+
+?note2: note1
+    | note1 NUMBER               -> note_set_octave
+
+?note3: note2
+    | note3 "'"                  -> note_octave_up
+    | note3 "."                  -> note_octave_down
+
+?note: note3                     -> finish_note
 
 ///////////////////////////////////////////////////////////////////////////////
      
 // Tokens /////////////////////////////////////////////////////////////////////
 
-A.0: "A"
-B.0: "B"
-C.0: "C"
-D.0: "D"
-E.0: "E"
-F.0: "F"
-G.0: "G"
-NOTE.0: (A|B|C|D|E|F|G)
-NAME.10: (LETTER)~2 (LETTER|DIGIT+)*
-OCTSHIFTUP: "'"
-OCTSHIFTDOWN: "."
-FLAT: "b"
-SHARP: "#"
-_AROB: "@"
-_RIGHT_ARROW: "->"
-_LEFT_ARROW: "<-"
-_PLUS: "+"
-_MINUS: "-"
-_NEG: "-"
-_TIMES: "*"
-_EQUAL: "="
-_MODULO: "%"
-_REPEAT: "!"
-_REPEAT2: "!!"
-_LPAR: "("
-_RPAR: ")"
-_LBRA: "["
-_RBRA: "]"
-_CLBRA: "{"
-_CRBRA: "}"
-_PIPE: "|"
-_US: "_"
-_COLON: ":"
-_SEMICOLON : ";"
-_COMMA: ","
-_DOT: "."
-_RANDOM: "r"
-_TIME: "$"
-_MEASURE: "m"
-_PHASE: "p"
-_UNIXTIME: "u"
-_FLAT: "f"
-_SHARP: "#"
-_COS: "c"
-_SIN: "s"
-_TAN: "t"
-_ITER: "i"
-_VAR: "v"
+// Notes start with an uppercase letter, other names start with a lower case letter.
+// This helps disambiguating the syntax.
+NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
+NAME: LCASE_LETTER (LETTER|DIGIT+)*
+
 SILENCE: "."
 
+%import common.LCASE_LETTER
+%import common.UCASE_LETTER
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT
 %import common.NUMBER

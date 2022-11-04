@@ -95,7 +95,7 @@ class MIDISender:
         handle = self.clock.wait_after(n_ticks=ticks)
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
-    def out(self, i: int = 0, div: int = 1, speed: int = 1) -> None:
+    def out(self, i: int = 0, div: int = 1, rate: int = 1) -> None:
         """Must be able to deal with polyphonic messages"""
         if i % div != 0:
             return
@@ -127,7 +127,7 @@ class MIDISender:
                 return
             if isinstance(self.note, list):
                 new_element = self.note[
-                    pattern_element(iterator=i, div=div, speed=speed, pattern=self.note)
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.note)
                 ]
                 if new_element is None:
                     return
@@ -167,7 +167,7 @@ class MIDISender:
                 return
             if isinstance(self.note, list):
                 new_element = self.note[
-                    pattern_element(iterator=i, div=div, speed=speed, pattern=self.note)
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.note)
                 ]
                 if new_element is None:
                     return
@@ -182,7 +182,7 @@ class MIDISender:
             # Parametric arguments
             pattern_result = compose_parametric_patterns(
                 div=div,
-                speed=speed,
+                rate=rate,
                 iterator=i,
                 cast_to_int=True,
                 midi_overflow_protection=True,

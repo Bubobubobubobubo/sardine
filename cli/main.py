@@ -77,6 +77,7 @@ def main():
     parser.add_argument("--beats", type=int, help="Beats per bar")
     parser.add_argument("--ppqn", type=float, help="ppqn")
     parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
+    parser.add_argument("--debug", type=str2bool, help="Parser debugging mode")
     parser.add_argument(
         "--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output"
     )

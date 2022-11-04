@@ -1109,8 +1109,28 @@ These are two voice leading algorithms. These are only temporary until I figure 
 * `voice(x)`: four-note voice leading algorithm. Naive implementation.
 * `dmitri(x)`: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
 
-### 
+### Probabilities 
 
+* `vanish(x, y)`: Takes a list `x`, output only `y`% of values from it.
+
+### Booleans
+
+* `euclid(a, b, c, d)`: Euclidian rhythm function applied to patterns. Takes a pattern `a`, a number of pulses `b`, a number of steps `c` and a rotation amount `d`. Outputs a pattern where the absence of a pulse is a silence and where pulses are values from the pattern.
+
+* `mask(x, y)`: Generalisation of the euclidian rhythm algorithm. Works for any pattern and list of booleans.
+
+### Insertion and rotation
+
+To be documented:
+
+* `in(x, y)`:
+* `inp(x, y)`:
+* `inrot(x, y)`:
+* `inprot(x, y)`:
+
+### Filtering
+
+* `filt(x, y)`:
 
 ## SuperCollider interface
 

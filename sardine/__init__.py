@@ -382,8 +382,9 @@ if os.getenv('SARDINE_INIT_SESSION') is not None and os.getenv('SARDINE_INIT_SES
     # Init amphibian
     i, v = c.iterators, c.variables
     P = Pat
+
     if config.debug:
-    try:
-        lang_debug()
-    except Exception as e:
-        lang_debug()
+        try:
+            lang_debug()
+        except Exception as e:
+            exit()

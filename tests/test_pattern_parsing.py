@@ -8,6 +8,27 @@ PARSER = ListParser(None, None, None)
 
 class TestPatternParsing(unittest.TestCase):
 
+    def test_choice_operator(self):
+        """
+        Test the choice (|) operator 
+        """
+        parser = PARSER
+        patterns = [
+                "1|2|3|4",
+                "[1,2,3,4]|[., .]",
+                "baba|dada",
+                "(baba:2)|(dada:4)"
+        ]
+        expected = [
+                [[1],[2],[3],[4]],
+                [[1,2,3,4], [None, None]],
+                [["baba"], ["dada"]],
+                [["baba:2"], ["dada:4"]]
+        ]
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                self.assertIn(parser.parse(pattern), expected[i])
+
     def test_presence_operator(self):
         """
         Test the presence operator (?) that can make things disappear

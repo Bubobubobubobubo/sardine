@@ -11,12 +11,14 @@ class TestPatternParsing(unittest.TestCase):
         """
         parser = ListParser(None, None, None)
         patterns = [
-            ".5", "0.5",
+            ".5", 
+            "0.5",
             "1, 2, 3",
             "1+1, 2*3, 4-1, 5/2",
         ]
         expected = [
-            [.5], [0.5],
+            [.5], 
+            [0.5],
             [1, 2, 3],
             [2, 6, 3, 2.5],
         ]
@@ -25,8 +27,38 @@ class TestPatternParsing(unittest.TestCase):
                 result = parser.parse(pattern)
                 self.assertEqual(len(result), len(expected[i]))
                 for x, y in zip(result, expected[i]):
-                    # we use assertAlmostEqual instead of assertEqual here
-                    # because we are dealing with floats
+                    self.assertAlmostEqual(x, y)
+
+    def test_list_arithmetic(self):
+        """
+        Test parsing several patterns composed of numbers and simple math operations.
+        """
+        parser = ListParser(None, None, None)
+        patterns = [
+            "[1,2,3]+1, [1,2,3]*2", 
+            "[1,2,3]/2, [1,2,3]//2", 
+            "[2,3,4]-2, [2,3,4]%2", 
+            "[1,2,3,4]+[1,2,3,4]", 
+            "[1,2,3,4]*[1,2,3,4]", 
+            "[1,2,3,4]/[1,2,3,4]", 
+            "[1,2,3,4]/[2,3,4,5]", 
+            "[2,4,6,8]%[12,8]", 
+        ]
+        expected = [
+            [2, 3, 4, 2, 4, 6], 
+            [0.5, 1.0, 1.5, 0, 1, 1], 
+            [0, 1, 2, 0, 1, 0], 
+            [2, 4, 6, 8], 
+            [1, 4, 9, 16], 
+            [1.0, 1.0, 1.0, 1.0], 
+            [0.5, 0.6666666666666666, 0.75, 0.8], 
+            [2, 4, 6, 0], 
+        ]
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                result = parser.parse(pattern)
+                self.assertEqual(len(result), len(expected[i]))
+                for x, y in zip(result, expected[i]):
                     self.assertAlmostEqual(x, y)
 
     def test_notes(self):

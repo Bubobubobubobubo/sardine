@@ -88,7 +88,7 @@ th, td {
 | Parameter         | Brief description                                          | Typical range|
 |-------------------|------------------------------------------------------------|--------------|
 |**`room`**         |Size of the room                                            |0 -> 1        |
-|**`size`**         |Size of the reverb - eep below 1 (inf)                      |0 -> x        |
+|**`size`**         |Size of the reverb - keep below 1 (inf)                     |0 -> x        |
 |**`dry`**          |Dry/Wet balance                                             |0 -> 1        |
 
 ```python
@@ -109,7 +109,7 @@ The `delay` effect is initially built for Tidal, which is based on a cyclical ti
 |-------------------|------------------------------------------------------------|--------------|
 |**`delay`**        |Wet/Dry                                                     |0 -> 1        |
 |**`delaytime`**    |Delay time                                                  |0 -> x        |
-|**`delayfeedback`**|Amount of reinjection of dry signal - don't go over         |0 -> .99      |
+|**`delayfeedback`**|Amount of reinjection of dry signal - don't go over 1       |0 -> .99      |
 
 
 ```python
@@ -201,12 +201,12 @@ def test_fx(d=0.25, i=0):
 #### Filters
 
 | Parameter         | Brief description                                          | Typical range|
-|-------------------|------------------------------------------------------------|------------------|
-|**`cutoff`**       |Low-pass filter cutoff frequency (in hertz)                 |0 -> x  us. >2Khz |
+|-------------------|------------------------------------------------------------|-------------------|
+|**`cutoff`**       |Low-pass filter cutoff frequency (in hertz)                 |0 -> x  us. >2Khz  |
 |**`hcutoff`**      |High-pass filter cutoff frequency (in hertz)                |0 -> x  us. < 500hz|
-|**`bandf`**        |Bandpass filter cutoff frequency (in hertz)                 |0 -> x          |
-|**`resonance`**    |Filter resonance                                            |0 -> 1          |
-|**`bandqf`**       |Bandpass resonance                                          |0 -> x          |
+|**`bandf`**        |Bandpass filter cutoff frequency (in hertz)                 |0 -> x             |
+|**`resonance`**    |Filter resonance                                            |0 -> 1             |
+|**`bandqf`**       |Bandpass resonance                                          |0 -> x             |
 
 ```python
 @swim 

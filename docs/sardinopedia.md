@@ -678,7 +678,7 @@ You can be creative with pattern indexes and get random sequences, drunk walks, 
 
 ## Pattern syntax
 
-There is a whole programming language inside of **Sardine**. This language is dedicated to creating patterns of notes, numbers, samples and addresses. It is an ongoing project and might be subject to change in upcoming versions but there is a subset of stable features that you can use without risking your code to break too fast :) The syntax, much like the syntax of a regular general-purpose programming languages is oganised in primitive types and things you can do on/with them. It is very reminescent of **Python** but with a twist!
+There is a whole programming language inside of **Sardine**. This language is dedicated to creating patterns of notes, numbers, samples and addresses. It is an ongoing project and might be subject to change in upcoming versions but there is a subset of stable features that you can use without risking your code to break too fast :) The syntax, much like the syntax of a regular general-purpose programming languages is organised in primitive types and things you can do on/with them. It is very reminescent of **Python** but with a twist!
 
 ## Primitive types
 
@@ -759,8 +759,11 @@ def notes(d=0.5, i=0):
 Notes are one of the primitives you can use in patterns. Notes will always be converted to some MIDI value (an integer value between `0` and `127`). Notes will be converted to some MIDI value used by **SuperDirt**. If you need more precision, speak in hertzs (`freq=402.230239`). Notes are numbers too (!!). You can do math on them if you wish to. The syntax to write notes is the following:
 
 - 1) **[MANDATORY]** capital letter indicating the note name: `C`,`D`,`E`,`F`,`G`,`A`,`B`.
-- 3) **[FACULTATIVE]** octave number: `0`..`9`.
 - 2) **[FACULTATIVE]** flat or sharp: `#`, `b`.
+- 3) **[FACULTATIVE]** octave number: `0`..`9`.
+
+You can also use french/canadian note names if you will: `Do, Ré, Mi, Fa, Sol, La, Si`. If MIDI is your prefered language and you only think about numbers, use numbers!
+
 
 #### Note qualifiers
 
@@ -770,7 +773,7 @@ def notes(d=0.5, i=0):
     S('pluck', midinote='C5@penta').out(i)
     again(notes, d=0.5, i=i+1)
 ```
-You can use the `@` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C@penta` will raise a major pentatonic scale based on middle C. There is a list of scales, modes, chords, structures, etc.. that are stored in memory. You can't do much with them and they will likely be removed sooner or later:
+You can use the `@` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C@penta` will raise a major pentatonic scale based on middle C. Be careful while using them as they will instantly turn a single token into a list of `x` tokens. You might want to filter part of a qualifiers note collection.
 
 ```python
 # ====== #
@@ -881,17 +884,19 @@ You can use the `@` to **qualify** a note, to summon a collection of notes or a 
 "octaves": [0, 12, 24, 36, 48]
 ```
 
-This section is to take with a grain of salt. This will change pretty soon!
+These qualifiers are useful in combination with some other functions like `filt()` or `quant()` because they allow you to build complex tonal objets by entering a random list of integers.
+
 
 #### Note modifiers
 
 ```python3
 @swim
 def notes(d=0.5, i=0):
-    S('pluck', midinote='disco(braid(C5@penta))'.out(i)
+    S('pluck', midinote='disco(C5@penta)'.out(i)
     again(notes, d=0.5, i=i+1)
 ```
-Some functions can easily be applied to chords, scales and structures to add a twist :) There is no way to print out the list of these functions as of now. You will have to dig the source code to find them. Pro tip: try to call an arbitrary function and the list of possible functions will be printed in the terminal!
+
+Functions can be used to further refine the effect of a modifier. There is a long list of functions that you can apply, such as `disco()` or `adisco()` as shown in the preceding example. If you ever wonder about the list of possible functions, refer to the **Sardinopedia** or enter any function name. If the function name is wrong, the list of possible functions will be printed out in the terminal.
 
 #### Mathematics on notes
 
@@ -911,7 +916,7 @@ def names(d=0.5, i=0):
     S('bd, pluck, bd, pluck:2+4').out(i)
     again(names, d=0.5, i=i+1)
 ```
-You are using name patterns since you first started to read the **Sardinopedia**! To be fully qualified as a name, a string **must be longer than one character**. It can also contain numbers but **not as the first character of the string**.
+You are using name patterns since you first started to read the **Sardinopedia**! A single letter (if it's not already a note name) can be considered as a name. Be careful! 
 
 #### Addresses
 
@@ -960,20 +965,7 @@ def repeat_stuff(d=0.5, i=0):
     S('pluck|jvbass', speed='1:2', midinote='C4!4, E4!3, E5, G4!4').out(i)
     again(repeat_stuff, d=0.5, i=i+1)
 ```
-The `!` operator inspired by **TidalCycles** is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. Know that it's there for now. It will make more sense and be really more interesting when we will have learned about lists and collections.
-
-### Sinus, Cosinus, Tangent
-
-**Sardine** also includes some very cool and common mathematical functions sunch as the sinus, cosinus and tangent function. They are denoted using the `sin()`, `cos()` and `tan()` functions that you can apply on pretty much anything.
-
-```python
-@swim
-def sine_test(d=0.125, i=0):
-    S('crow', speed='1+sin($/40)').out(i, div=1, speed=1)
-    # S('crow', speed='1+cos($/40)').out(i, div=1, speed=1)
-    # S('crow', speed='1+tan($/40)').out(i, div=1, speed=1)
-    a(sine_test, d=0.125, i=i+1)
-```
+The `!` operator inspired by **TidalCycles** is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit different, because it is supposed to be used on lists. You can do maths on lists as well with **Sardine**, but this will be detailed in a section later on.
 
 ### Silence
 
@@ -994,7 +986,6 @@ You can use a dot (`.`) inside any pattern to indicate a silence. Silence is a v
 - `O()`: a silence is the absence of an address. The event will be skipped.
 
 There is also the interesting case of what I like to call *'parametric silences'*. Take a look at the following example:
-
 
 ```python
 @swim 
@@ -1074,6 +1065,52 @@ def amphi_iter(d=0.25):
     a(amphi_iter, d=0.25)
 ```
 Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.
+
+## The Function Library
+
+**Sardine** pattern notation now comes with a function library. These are functions that should be used directly in the pattern notation to alter a list or a pattern you are working on. They can take basically any input but you will soon figure that some are more specialised than others.
+
+### Sinus, Cosinus, Tangent
+
+* `sin(x)`: **sinus of input** (single tokens or lists). Classic mathematical sinus function.
+
+* `cos(x)`: **cosinus of input** (single tokens or lists). Classic mathematical cosinus function.
+
+* `tan(x)`: **tangent of input** (single tokens or lists). Classic mathematical tangent function.
+
+### Scaling, measuring
+
+* `abs(x)`: Absolute value.
+* `max(x)`: Maximum value of list or token itself.
+* `min(x)`: Minimum value of list or token itself.
+* `mean(x)`: Mean of list or token itself.
+* `scale(z, x, y, x', y')`: Bring a value `z` from range `x-y` to range `x'-y'`.
+* `clamp(x, y, z)`: Clamp function, limit a value `x` to the minimum `y` to the maximum `z`.
+
+### Reversal, shuffling
+
+* `rev(x)`: Reverse a list.
+* `shuf(x)`: Shuffle a list.
+* `pal(x)`: palindrome of list.
+* `apal(x)`: palindrome of list without repetition of last value.
+
+### Musical functions
+
+* `disco(x)`: Disco function. Every pair note down an octave.
+* `adisco(x)`: Anti-disco function. Every pair note up an octave. 
+* `bass(x)`: The first note of list is down an octave (not very useful).
+* `sopr(x)`: The last note of list is up an octave (not very useful).
+* `quant(x, y)`: The last note of list is up an octave (not very useful).
+
+### Voice Leading 
+
+These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
+
+* `voice(x)`: four-note voice leading algorithm. Naive implementation.
+* `dmitri(x)`: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
+
+### 
+
 
 ## SuperCollider interface
 

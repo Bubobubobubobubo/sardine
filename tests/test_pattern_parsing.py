@@ -1,15 +1,48 @@
 import unittest
 from sardine.sequences.LexerParser.ListParser import ListParser
 from typing import Union
+from unittest import mock
 
+
+PARSER = ListParser(None, None, None)
 
 class TestPatternParsing(unittest.TestCase):
+
+    def test_presence_operator(self):
+        """
+        Test the presence operator (?) that can make things disappear
+        50% of the time
+        """
+        parser = PARSER
+        patterns = [
+                "[1,2,3,4,5]?",
+                "1?,2?,3?,4?",
+        ]
+        expected_true = [
+                [1,2,3,4,5],
+                [1,2,3,4]
+        ]
+        expected_false = [
+                [None]*5,
+                [None]*4
+        ]
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                mocked_random_choice = lambda : 1.0
+                with mock.patch('random.random', mocked_random_choice):
+                    result = parser.parse(pattern)
+                    self.assertEqual(expected_true[i], result)
+                mocked_random_choice = lambda : 0.0
+                with mock.patch('random.random', mocked_random_choice):
+                    result = parser.parse(pattern)
+                    self.assertEqual(expected_false[i], result)
+
 
     def test_number_pattern(self):
         """
         Test parsing several patterns composed of numbers and simple math operations.
         """
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
             ".5", 
             "0.5",
@@ -33,7 +66,7 @@ class TestPatternParsing(unittest.TestCase):
         """
         Test parsing several patterns composed of numbers and simple math operations.
         """
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
             "[1,2,3]+1, [1,2,3]*2", 
             "[1,2,3]/2, [1,2,3]//2", 
@@ -65,7 +98,7 @@ class TestPatternParsing(unittest.TestCase):
         """
         Test parsing simple note composition
         """
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
                 "C,D,E,F,G,A,B",
                 "Do,Re,Mi,Fa,Sol,La,Si",
@@ -103,7 +136,7 @@ class TestPatternParsing(unittest.TestCase):
         def in_range(test_range: list, y: Union[int, float]) -> bool:
             return y in test_range
 
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
                 "0~1", 
                 "0~10", 
@@ -127,7 +160,7 @@ class TestPatternParsing(unittest.TestCase):
         Test the ! and !! operators for expanding lists
         """
 
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
                 "[1,2]!2", 
                 "[1,2]!!2", 
@@ -152,7 +185,7 @@ class TestPatternParsing(unittest.TestCase):
         Test the ! and !! operators for expanding lists
         """
 
-        parser = ListParser(None, None, None)
+        parser = PARSER
         patterns = [
                 "-1", 
                 "-22.231",

@@ -56,7 +56,9 @@ def xox(sequence: str, reverse: bool = False):
     return itertools.cycle(fseq)
 
 
-def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0, lo: int = 0, hi: int = 1):
+def euclidean_rhythm(
+    beats: int, pulses: int, rotation: int = 0, lo: int = 0, hi: int = 1
+):
     """Computes Euclidean rhythm of beats/pulses
     Examples:
         euclidean_rhythm(8, 5)          -> [1, 0, 1, 1, 0, 1, 1, 0]
@@ -74,9 +76,16 @@ def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0, lo: int = 0, hi
         - https://kountanis.com/2017/06/13/python-euclidean/
         - [Foxdot](https://github.com/Qirky/FoxDot/blob/76318f9630bede48ff3994146ed644affa27bfa4/FoxDot/lib/Utils/__init__.py#L69)
     """
-    beats, pulses, rotation, hi, lo = int(beats), int(pulses), int(rotation), int(hi), int(lo)
+    beats, pulses, rotation, hi, lo = (
+        int(beats),
+        int(pulses),
+        int(rotation),
+        int(hi),
+        int(lo),
+    )
 
-    if pulses == 0: return [pulses for i in range(beats)]
+    if pulses == 0:
+        return [pulses for i in range(beats)]
 
     # Initialization of the lookup as a 2-dimension list containing a #pulses
     # number of hi values and a (#beats - #pulses) number of lo values

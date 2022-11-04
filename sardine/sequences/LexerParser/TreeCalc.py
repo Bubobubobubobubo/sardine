@@ -48,7 +48,7 @@ class CalculateTree(Transformer):
     def get_variable(self, letter):
         """
         Prototype of getting a variable coming from the Python side.
-        It can only be an int, a float or a string. The result will 
+        It can only be an int, a float or a string. The result will
         get turned to a list anyways, whatever happens.
         """
         return [getattr(self.variables, str(letter))]
@@ -96,7 +96,7 @@ class CalculateTree(Transformer):
 
     def specify_address(self, name0, name1):
         """Convert underscore into slash for name based addresses"""
-        return map_binary_function(lambda x,y: x + "/" + y, name0, name1)
+        return map_binary_function(lambda x, y: x + "/" + y, name0, name1)
 
     def random_note_in_range(self, number0, number1):
         """Generates a random MIDI Note in the range number0 - number1.
@@ -178,8 +178,9 @@ class CalculateTree(Transformer):
         quali = list(quali)
         quali = "".join([str(x) for x in quali])
         try:
-            return map_binary_function(lambda x, y: x + y, note, 
-                    FuncLibrary.qualifiers[str(quali)])
+            return map_binary_function(
+                lambda x, y: x + y, note, FuncLibrary.qualifiers[str(quali)]
+            )
         except KeyError:
             return note
 
@@ -289,10 +290,10 @@ class CalculateTree(Transformer):
             list: a ramp of ascending or descending integers with step
         """
         start, stop, step, epsilon = (
-                min(left, right)[0],
-                max(left, right)[0],
-                step[0],
-                0.0000001
+            min(left, right)[0],
+            max(left, right)[0],
+            step[0],
+            0.0000001,
         )
         ramp = list(
             takewhile(
@@ -328,7 +329,13 @@ class CalculateTree(Transformer):
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
         TODO: document this behavior."""
-        return sum(([x] * (int(y) if y is not None else 0) for (x, y) in zip_cycle(left, right)), start=[])
+        return sum(
+            (
+                [x] * (int(y) if y is not None else 0)
+                for (x, y) in zip_cycle(left, right)
+            ),
+            start=[],
+        )
 
     def choice(self, left, right):
         """Choose 50%-50% between the 'left' or 'right' token
@@ -352,8 +359,7 @@ class CalculateTree(Transformer):
         return map_binary_function(my_random, left, right)
 
     def add_mystery(self, value):
-        return map_unary_function(lambda x: 
-                x if random.random() > 0.5 else None, value)
+        return map_unary_function(lambda x: x if random.random() > 0.5 else None, value)
 
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)
@@ -391,41 +397,41 @@ class CalculateTree(Transformer):
 
     def function_call(self, func_name, *args):
         modifiers_list = {
-            # Voice leading operations
-            "dmitri":   FuncLibrary.dmitri,
-            "voice":   FuncLibrary.find_voice_leading,
-            "sopr":    FuncLibrary.soprano,
-            "quant":   FuncLibrary.quantize,
-            "disco":   FuncLibrary.disco,
-            "adisco":  FuncLibrary.antidisco,
-            "bass":    FuncLibrary.bassify,
-            "sopr":    FuncLibrary.soprano,
-            # Boolean mask operations
-            "euclid":  FuncLibrary.euclidian_rhythm,
-            "mask":    FuncLibrary.mask,
-            "vanish":  FuncLibrary.remove_x,
-            "expand":  FuncLibrary.expand,
-            "pal":     FuncLibrary.palindrome,
-            "apal":    FuncLibrary.alternative_palindrome,
-            "rev":     FuncLibrary.reverse,
-            "leave":   FuncLibrary.leave,
-            "inp":   FuncLibrary.insert_pair,
-            "in":   FuncLibrary.insert,
-            "inprot":   FuncLibrary.insert_pair_rotate,
-            "inrot":   FuncLibrary.insert_rotate,
-            "shuf":    FuncLibrary.shuffle,
-            # Math functions
-            "clamp":   FuncLibrary.clamp,
-            "sin":     FuncLibrary.sinus,
-            "cos":     FuncLibrary.cosinus,
-            "tan":     FuncLibrary.tangent,
-            "abs":     FuncLibrary.absolute,
-            "max":     FuncLibrary.maximum,
-            "min":     FuncLibrary.minimum,
-            "mean":     FuncLibrary.mean,
-            "scale":   FuncLibrary.scale,
-            "filt":    FuncLibrary.custom_filter,
-            "quant":   FuncLibrary.quantize,
+            # Voice leading operations
+            "dmitri": FuncLibrary.dmitri,
+            "voice": FuncLibrary.find_voice_leading,
+            "sopr": FuncLibrary.soprano,
+            "quant": FuncLibrary.quantize,
+            "disco": FuncLibrary.disco,
+            "adisco": FuncLibrary.antidisco,
+            "bass": FuncLibrary.bassify,
+            "sopr": FuncLibrary.soprano,
+            # Boolean mask operations
+            "euclid": FuncLibrary.euclidian_rhythm,
+            "mask": FuncLibrary.mask,
+            "vanish": FuncLibrary.remove_x,
+            "expand": FuncLibrary.expand,
+            "pal": FuncLibrary.palindrome,
+            "apal": FuncLibrary.alternative_palindrome,
+            "rev": FuncLibrary.reverse,
+            "leave": FuncLibrary.leave,
+            "inp": FuncLibrary.insert_pair,
+            "in": FuncLibrary.insert,
+            "inprot": FuncLibrary.insert_pair_rotate,
+            "inrot": FuncLibrary.insert_rotate,
+            "shuf": FuncLibrary.shuffle,
+            # Math functions
+            "clamp": FuncLibrary.clamp,
+            "sin": FuncLibrary.sinus,
+            "cos": FuncLibrary.cosinus,
+            "tan": FuncLibrary.tangent,
+            "abs": FuncLibrary.absolute,
+            "max": FuncLibrary.maximum,
+            "min": FuncLibrary.minimum,
+            "mean": FuncLibrary.mean,
+            "scale": FuncLibrary.scale,
+            "filt": FuncLibrary.custom_filter,
+            "quant": FuncLibrary.quantize,
         }
         try:
             return modifiers_list[func_name](*args)

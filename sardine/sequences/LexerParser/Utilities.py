@@ -17,23 +17,30 @@ def floating_point_range(start, end, step):
     sample_count = int(abs(end - start) / step)
     return islice(count(start, step), sample_count)
 
+
 def allow_silence_1(func):
     """Wrap a unary function to return None when called with None"""
+
     def result_func(x):
         if x is not None:
             return func(x)
         else:
             return None
+
     return result_func
+
 
 def allow_silence_2(func):
     """Wrap a binary function to return None when called with None"""
+
     def result_func(x, y):
-        if x is not None and y is not None :
+        if x is not None and y is not None:
             return func(x, y)
         else:
             return None
+
     return result_func
+
 
 def map_unary_function(func, value):
     """Apply an unary function to a value or a list of values

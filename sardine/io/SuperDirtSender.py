@@ -124,9 +124,7 @@ class SuperDirtSender:
                 return
             if isinstance(self.sound, list):
                 new_element = self.sound[
-                    pattern_element(
-                        iterator=i, div=div, rate=rate, pattern=self.sound
-                    )
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
                 ]
                 if new_element is None:
                     return

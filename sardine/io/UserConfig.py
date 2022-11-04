@@ -51,7 +51,7 @@ class Config:
     parameters: list
     ppqn: int
     bpm: int
-    debug: bool 
+    debug: bool
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str

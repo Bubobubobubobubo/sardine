@@ -8,10 +8,7 @@ from typing import Union, Callable, Optional
 from random import shuffle
 from functools import partial
 from ...sequences.Sequence import euclid
-from easing_functions import (
-        BounceEaseIn,
-        BounceEaseOut, 
-        BounceEaseInOut)
+from easing_functions import BounceEaseIn, BounceEaseOut, BounceEaseInOut
 
 qualifiers = {
     "dim": [0, 3, 6, 12],
@@ -119,103 +116,120 @@ qualifiers = {
 
 
 def dmitri_tymoczko_algorithm(collection: list, chord_len: int = 4) -> list:
-
     def octave_transform(input_chord, root):
         """
         Squish things into a single octave for comparison between chords and
         sort from lowest to highest.
         """
-        result = sorted(list(map(lambda x: root + (x%12), input_chord)))
+        result = sorted(list(map(lambda x: root + (x % 12), input_chord)))
         return result
 
     def t_matrix(chord_a, chord_b):
         """Get the distance between notes"""
         root = chord_a[0]
-        return [j - i for i, j in zip(
-            octave_transform(chord_a, root),
-            octave_transform(chord_b, root))]
+        return [
+            j - i
+            for i, j in zip(
+                octave_transform(chord_a, root), octave_transform(chord_b, root)
+            )
+        ]
 
     def voice_lead(chord_a, chord_b):
         """
         Get mapping of notes in chord a to the sorted version of the chord a
         """
         root = chord_a[0]
-        a = list(map(lambda x:
-            [x, octave_transform(chord_a, root).index(root + (x%12))], chord_a))
+        a = list(
+            map(
+                lambda x: [x, octave_transform(chord_a, root).index(root + (x % 12))],
+                chord_a,
+            )
+        )
         t = t_matrix(chord_a, chord_b)
         chord_x = (x[0] for x in a)
         chord_y = (x[1] for x in a)
         b_voicing = list(map(lambda x, y: x + t[y], chord_x, chord_y))
         return b_voicing
 
-    def _slice_collection(collection: list, slice_size= chord_len) -> list:
+    def _slice_collection(collection: list, slice_size=chord_len) -> list:
         """Slice a collection in chunks of length n"""
-        return [collection[i:i + slice_size] for i in range(
-            0, len(collection), slice_size)]
+        return [
+            collection[i : i + slice_size]
+            for i in range(0, len(collection), slice_size)
+        ]
 
     # Now for the part where we can take a list of x chords and voice them.
     chords = _slice_collection(collection)
 
     for i in range(len(chords) - 1):
-        # print(f"Première passe: {chords}")
-        chords[i+1] = voice_lead(chords[i], chords[i+1])
+        # print(f"Première passe: {chords}")
+        chords[i + 1] = voice_lead(chords[i], chords[i + 1])
 
     chords[-1] = voice_lead(chords[-2], chords[-1])
 
     return chords
 
+
 def dmitri(collection: list, chord_len: list = [4]) -> list:
     voiced = dmitri_tymoczko_algorithm(collection, chord_len[0])
     return voiced
 
-# ============================================================================ # 
+
+# ============================================================================ #
 # Easing Functions
-# ============================================================================ # 
+# ============================================================================ #
+
 
 def _remap(x, in_min, in_max, out_min, out_max):
     """Remapping a value from a [x, y] range to a [x', y'] range"""
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+
 def scale(
-        collection: list, 
-        imin: list, 
-        imax: list, 
-        omin: list=[0], 
-        omax: list=[1]
-    ) -> list:
+    collection: list, imin: list, imax: list, omin: list = [0], omax: list = [1]
+) -> list:
     """User-facing scaling function"""
-    return list(map(lambda x: _remap(x, imin[0], imax[0], omin[0], omax[0]), collection))
+    return list(
+        map(lambda x: _remap(x, imin[0], imax[0], omin[0], omax[0]), collection)
+    )
 
 
 def euclidian_rhythm(
-        collection: list, 
-        pulses: list, 
-        steps: list,
-        rotation: Optional[list] = None) -> list:
+    collection: list, pulses: list, steps: list, rotation: Optional[list] = None
+) -> list:
     """
-    Apply an euclidian rhythm as a boolean mask on values from the collection. 
+    Apply an euclidian rhythm as a boolean mask on values from the collection.
     True values will return the value itself, others will return a silence.
     """
-    # This one-liner is creating a collection-length euclidian rhythm (repeating the rhythm)
-    boolean_mask = list(islice(
-        cycle(euclid(pulses[0], steps[0],
-            rotation[0] if rotation is not None else 0)), len(collection)))
+    # This one-liner is creating a collection-length euclidian rhythm (repeating the rhythm)
+    boolean_mask = list(
+        islice(
+            cycle(
+                euclid(pulses[0], steps[0], rotation[0] if rotation is not None else 0)
+            ),
+            len(collection),
+        )
+    )
     new_collection = []
     for item, mask in zip(collection, boolean_mask):
         new_collection.append(item if mask == 1 else [None])
     return new_collection
 
 
-def find_voice_leading(collection, divider: Optional[Union[list, int]]=4) -> list:
+def find_voice_leading(collection, divider: Optional[Union[list, int]] = 4) -> list:
     """Simple voice leading algorithm"""
-    # Splitting the collection with divider
+    # Splitting the collection with divider
     divider = divider[0] if isinstance(divider, list) else divider
 
-    collection = [collection[i:i + divider] for i in range(0, len(collection), divider)]
+    collection = [
+        collection[i : i + divider] for i in range(0, len(collection), divider)
+    ]
     root_note = collection[0][0]
     new_progression = []
     for chord in collection:
-        new_chord = list(map(lambda x: x + 12 * (root_note // 12), [x % 12 for x in chord]))
+        new_chord = list(
+            map(lambda x: x + 12 * (root_note // 12), [x % 12 for x in chord])
+        )
         new_chord.sort()
         new_progression.append(new_chord)
     return new_progression
@@ -223,7 +237,7 @@ def find_voice_leading(collection, divider: Optional[Union[list, int]]=4) -> lis
 
 def mask(collection: list, mask: list) -> list:
     """
-    Apply a boolean mask on values from the collection. 
+    Apply a boolean mask on values from the collection.
     True values will return the value itself, others will
     return a silence.
     """
@@ -232,12 +246,15 @@ def mask(collection: list, mask: list) -> list:
         new_collection.append(item if mask == 1 else [None])
     return new_collection
 
+
 def clamp(collection: list, low_boundary: list, high_boundary: list) -> list:
     """
     Simple clamp function, restraining collection to a given range.
     """
-    def _work(n, smallest, largest): 
+
+    def _work(n, smallest, largest):
         return max(smallest, min(n, largest))
+
     return list(map(_work, collection, low_boundary, high_boundary))
 
 
@@ -255,8 +272,10 @@ def remove_x(collection: list, percentage) -> list:
 
 def custom_filter(collection: list, elements: list) -> list:
     """Equivalent of the filter function from functional languages..."""
+
     def cond(thing) -> bool:
         return not thing in elements
+
     return list(filter(cond, collection))
 
 
@@ -270,26 +289,26 @@ def bassify(collection: list):
 
 def soprano(collection: list):
     """Last note up an octave"""
-    collection[len(collection)-1] = collection[len(collection)-1] + 12
+    collection[len(collection) - 1] = collection[len(collection) - 1] + 12
     return collection
 
 
 def _quantize(val, to_values):
     """Quantize a value with regards to a set of allowed values.
-    
+
     Examples:
         quantize(49.513, [0, 45, 90]) -> 45
         quantize(43, [0, 10, 20, 30]) -> 30
-    
+
     Note: function doesn't assume to_values to be sorted and
     iterates over all values (i.e. is rather slow).
-    
+
     Args:
         val        The value to quantize
         to_values  The allowed values
     Returns:
         Closest value among allowed values.
-    
+
     Taken from: https://gist.github.com/aleju/eb75fa01a1d5d5a785cf
     """
     if val is None:
@@ -304,9 +323,7 @@ def _quantize(val, to_values):
     return best_match
 
 
-def quantize(
-        collection: list, 
-        quant_reference: list):
+def quantize(collection: list, quant_reference: list):
     """
     Quantize function. It takes a collection as left argument and a reference
     to a quantifier or an arbitrary collection as right argument. Will quanti-
@@ -320,20 +337,26 @@ def quantize(
             quant_reference = qualifiers[quant_reference[0]]
         except KeyError:
             raise KeyError(
-                    'Unknown qualifier! Possible quantifiers are: ' +
-                    f"{', '.join(qualifiers)}")
+                "Unknown qualifier! Possible quantifiers are: "
+                + f"{', '.join(qualifiers)}"
+            )
 
-    # Extending the quant_reference to all possible octaves
-    initial_extended_reference = (12*i+ (x%12) for x in quant_reference for i in range(0, 11))
+    # Extending the quant_reference to all possible octaves
+    initial_extended_reference = (
+        12 * i + (x % 12) for x in quant_reference for i in range(0, 11)
+    )
     extended_reference = [x for x in set(initial_extended_reference) if x <= 127]
 
-    # Quantization takes place here
-    return map_unary_function(lambda value: _quantize(value, extended_reference), collection)
+    # Quantization takes place here
+    return map_unary_function(
+        lambda value: _quantize(value, extended_reference), collection
+    )
+
 
 def expand(collection: list, factor: list) -> list:
     """
     Chance-based operation. Apply a random octave transposition process
-    to every note in a given collection. There is an optional factor 
+    to every note in a given collection. There is an optional factor
     parameter that multiplies the octave transposition.
 
     Args:
@@ -361,7 +384,10 @@ def disco(collection: list) -> list:
         list: A list of integers
     """
     offsets = cycle([0, -12])
-    return [x + offset if x is not None else None for (x, offset) in zip(collection, offsets)]
+    return [
+        x + offset if x is not None else None
+        for (x, offset) in zip(collection, offsets)
+    ]
 
 
 def antidisco(collection: list) -> list:
@@ -374,7 +400,10 @@ def antidisco(collection: list) -> list:
         list: A list of integers
     """
     offsets = cycle([0, +12])
-    return [x + offset if x is not None else None for (x, offset) in zip(collection, offsets)]
+    return [
+        x + offset if x is not None else None
+        for (x, offset) in zip(collection, offsets)
+    ]
 
 
 def palindrome(collection: list) -> list:
@@ -428,18 +457,22 @@ def leave(*args) -> list:
     """
     return list(chain(*zip(*args)))
 
+
 def insert_pair(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as pair element of each list"""
     return [i for x in collection for i in (x, element)][:-1]
+
 
 def insert(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as odd element of each list"""
     return [i for x in collection for i in (element, x)][:-1]
 
+
 def insert_pair_rotate(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as odd element of each list"""
     rotation = cycle(element)
     return [i for x in collection for i in (next(rotation), x)][:-1]
+
 
 def insert_rotate(collection: list, element: list) -> list:
     """Insert function to insert a fixed element as odd element of each list"""
@@ -524,6 +557,7 @@ def sinus(x: list) -> list:
     """
     return map_unary_function(sin, x)
 
+
 def maximum(x: Union[list, float, int]) -> list:
     """Maximum operation
 
@@ -534,6 +568,7 @@ def maximum(x: Union[list, float, int]) -> list:
         list: a valid pattern.
     """
     return map_unary_function(max, [x])
+
 
 def mean(x: list) -> list:
     """Mean operation
@@ -547,7 +582,6 @@ def mean(x: list) -> list:
     return statistics.mean(list(x))
 
 
-
 def minimum(x: Union[list, float, int]) -> list:
     """Minimum operation
 
@@ -558,6 +592,7 @@ def minimum(x: Union[list, float, int]) -> list:
         list: a valid pattern.
     """
     return map_unary_function(max, [x])
+
 
 def absolute(x: list) -> list:
     """Basic absolute function

@@ -331,18 +331,19 @@ def panic() -> None:
     S("superpanic").out()  # Superpanic is a synth capable of
     # cutting every other synth
 
+
 def print_qualities():
     """Return the list of qualifiers"""
     return qualifiers
 
 
-class Delay():
+class Delay:
     """
     with delay(0.5):
         do_stuff()
     """
 
-    def __init__(self, duration: Union[int, float]=1, delayFirst: bool=True):
+    def __init__(self, duration: Union[int, float] = 1, delayFirst: bool = True):
         """
         This compound statements needs to know two things, already provided
         by some default values:
@@ -352,7 +353,7 @@ class Delay():
         self.duration = duration
         self.delayFirst = delayFirst
 
-    def __call__(self, duration=1, delayFirst = False):
+    def __call__(self, duration=1, delayFirst=False):
         self.duration = duration
         self.delayFirst = delayFirst
         return self
@@ -361,7 +362,7 @@ class Delay():
         if self.delayFirst:
             sleep(self.duration)
 
-    def __exit__(self, exc_type, exc_val, exc_tb ):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         if not self.delayFirst:
             sleep(self.duration)
 

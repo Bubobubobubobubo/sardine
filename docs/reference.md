@@ -87,8 +87,8 @@ th, td {
 
 | Parameter         | Brief description                                          | Typical range|
 |-------------------|------------------------------------------------------------|--------------|
-|**`room`**         |Size of the room                                            |0 -> 1        |
-|**`size`**         |Size of the reverb - keep below 1 (inf)                     |0 -> x        |
+|**`room`**         |Size of the room                                            |0 -> x        |
+|**`size`**         |Size of the reverb - keep below 1 (inf)                     |0 -> 1        |
 |**`dry`**          |Dry/Wet balance                                             |0 -> 1        |
 
 ```python

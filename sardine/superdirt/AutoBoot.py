@@ -7,6 +7,7 @@ from typing import Union
 from appdirs import *
 import tempfile
 import psutil
+import re
 import asyncio
 from rich.console import Console
 from rich.panel import Panel
@@ -81,6 +82,10 @@ class SuperColliderProcess:
         Analyse the last line from SuperCollider logs and warn the user if something
         shady is going on (like not being able to boot the server, late messages)
         """
+        if "no synth or sample" in decoded_line:
+            sample_name = decoded_line.split("'")
+            print("\n")
+            print(Panel.fit(f"[red]/!\\\\[/red] - Sample {sample_name[1]} not found."))
         if "late 0." in decoded_line:
             print("\n")
             print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))

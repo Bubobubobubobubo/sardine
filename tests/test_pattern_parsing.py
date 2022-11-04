@@ -31,7 +31,7 @@ class TestPatternParsing(unittest.TestCase):
 
     def test_notes(self):
         """
-        Test parsing notes 
+        Test parsing simple note composition
         """
         parser = ListParser(None, None, None)
         patterns = [
@@ -41,6 +41,9 @@ class TestPatternParsing(unittest.TestCase):
                 "C0,C1,C2,C3,C4,C5,C6,C7,C8,C9",
                 "C, C#, Cb", 
                 "C, Eb, G",
+                "C, C., C.., C...",
+                "C, C', C'', C'''",
+                "C@maj7, C@min7",
         ]
         expected = [
             [60, 62, 64, 65, 67, 69, 71],
@@ -48,7 +51,10 @@ class TestPatternParsing(unittest.TestCase):
             [60, 62, 64, 65, 67, 69, 71],
             [12, 24, 36, 48, 60, 72, 84, 96, 108, 120],
             [60, 61, 59], 
-            [60, 63, 67]
+            [60, 63, 67],
+            [60, 48, 36, 24],
+            [60, 72, 84, 96],
+            [60, 64, 67, 71, 60, 63, 67, 70],
         ]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
@@ -81,9 +87,55 @@ class TestPatternParsing(unittest.TestCase):
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
                 result = parser.parse(pattern)[0]
-                print(result)
                 self.assertTrue(in_range(
                     expected[i], y=result))
+
+    def test_list_expansion(self):
+        """
+        Test the ! and !! operators for expanding lists
+        """
+
+        parser = ListParser(None, None, None)
+        patterns = [
+                "[1,2]!2", 
+                "[1,2]!!2", 
+                "[1,.]!2", 
+                "[1,.]!!2", 
+        ]
+
+        expected = [
+                [1,2,1,2],
+                [1,1,2,2],
+                [1,None,1,None],
+                [1,1,None,None],
+        ]
+
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                result = parser.parse(pattern)
+                self.assertEqual(expected[i], result)
+
+    def test_negation(self):
+        """
+        Test the ! and !! operators for expanding lists
+        """
+
+        parser = ListParser(None, None, None)
+        patterns = [
+                "-1", 
+                "-22.231",
+        ]
+
+        expected = [
+                [-1],
+                [-22.231],
+        ]
+
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                result = parser.parse(pattern)
+                self.assertEqual(expected[i], result)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

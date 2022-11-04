@@ -562,24 +562,25 @@ The `sustain` value will determine the length of audio playback (in seconds).
 ```python
 @swim
 def position(d=0.5):
-    S('long:0', begin='r/2', end=1).out(i.i)
-    again(position, d=0.5)
+    S('fire', speed='1', begin=0.1, end=0.5, amp=0.5).out(i.i)
+    again(position, d=2)
 ```
-If playing long audio samples, you might want to *scroll* through the file, moving the playhead accross the file. You can use the `begin` and `end` parameters (from `0` to `1`) to set the begin playback point and the end playback point. You can pattern the `begin` parameter with great expressive effect.
+When playing long audio samples, you might want to *scroll* through the file, moving the playhead accross the file. You can use the `begin` and `end` parameters (from `0` to `1`) to set the begin playback point and the end playback point. You can pattern the `begin` parameter with great expressive effect.
 
 ### Sample stretching (S)
 
 ```python
-@swim 
-def streeeetch():
-    S('long', 
-        begin='r/2', 
-        legato=2, 
-        timescale=1.2).out()
+@swim
+def streeeetch(d=0.5):
+    S('fire', 
+            begin='r/2',
+            legato=1,
+            amp=0.5,
+            timescale=2.7).out()
     a(streeeetch)
 ```
 
-You can get some interesting effects by using the `timescale` parameter (between `0` and `3` recommended) for stretching a sample over a given amount of time. This will result in a more *grainy* sound. This is some sort of timestretching for audio samples.
+You can get some interesting effects by using the `timescale` parameter (between `0` and `3` recommended) for stretching a sample over a given amount of time. This will result in a more *grainy* sound. This is some sort of timestretching for audio samples. Higher values ( >3 ) for timescale work with more distortion to the sound. This can yield interesting results for more experimental sound.
 
 ## Pitch
 
@@ -687,7 +688,7 @@ There is a whole programming language inside of **Sardine**. This language is de
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))')).out(i)
+    print(P('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))', i))
     again(number, d=0.5, i=i+1)
 ```
 You can write numbers (both *integers* and *floating point numbers*) and use common operators such as **addition**, **substraction**, **division**, **multiplication**, **modulo**, etc... For precision in your calculations, you can of course resort to using parentheses. By default, **Sardine** is made so that most arithmetic operators can be used on almost anything, expect if intuitively it doesn't make sense at all like multiplying a string against a string.
@@ -698,7 +699,7 @@ You can write numbers (both *integers* and *floating point numbers*) and use co
 ```python3
 @swim
 def number(d=0.5, i=0):
-    print(P('$, r, m, p')).out(i)
+    print(P('$, r, m, p', i))
     again(number, d=0.5, i=i+1)
 ```
 
@@ -1135,6 +1136,7 @@ To be documented:
 ## SuperCollider interface
 
 ### The SC Object
+Note: the SC object is only available when you boot SuperCollider / SuperDirt from Sardine. (See the Install page for details.)
 
 ```python
 SC.meter()

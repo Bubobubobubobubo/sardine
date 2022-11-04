@@ -56,53 +56,53 @@ def xox(sequence: str, reverse: bool = False):
     return itertools.cycle(fseq)
 
 
-def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0):
+def euclidean_rhythm(beats: int, pulses: int, rotation: int = 0, lo: int = 0, hi: int = 1):
     """Computes Euclidean rhythm of beats/pulses
-
     Examples:
-        euclidean_rhythm(8, 5) -> [1, 0, 1, 0, 1, 0, 1, 1]
-        euclidean_rhythm(7, 3) -> [1, 0, 0, 1, 0, 1, 0]
-
+        euclidean_rhythm(8, 5)          -> [1, 0, 1, 1, 0, 1, 1, 0]
+        euclidean_rhythm(8, 5, 1, 0, 1) -> [0, 1, 1, 0, 1, 1, 0, 1]
+        euclidean_rhythm(8, 5, 1, 1, 2) -> [1, 2, 2, 1, 2, 2, 1, 2]
     Args:
         beats  (int): Beats of the rhythm
         pulses (int): Pulses to distribute. Should be <= beats
-
+        rotation (int): Number of beats to shift on result i.e. [0,1,2] => [1,2,0]
+        lo (int): low value (rest)
+        hi (int): high value (pulse)
     Returns:
-        list: 1s are pulses, zeros rests
-
-    Taken from: https://kountanis.com/2017/06/13/python-euclidean/
+        list: An unidimensional list of integers (#hi and #lo values) with #beats length and #pulses number of #hi values
+    Inspired by:
+        - https://kountanis.com/2017/06/13/python-euclidean/
+        - [Foxdot](https://github.com/Qirky/FoxDot/blob/76318f9630bede48ff3994146ed644affa27bfa4/FoxDot/lib/Utils/__init__.py#L69)
     """
-    beats, pulses, rotation = int(beats), int(pulses), int(rotation)
+    beats, pulses, rotation, hi, lo = int(beats), int(pulses), int(rotation), int(hi), int(lo)
 
-    def rotate(seq, k):
-        return seq[k:] + seq[:k]
+    if pulses == 0: return [pulses for i in range(beats)]
 
-    if pulses is None or pulses < 0:
-        pulses = 0
-    if beats is None or beats < 0:
-        beats = 0
-    if pulses > beats:
-        beats, pulses = pulses, beats
-    if beats == 0:
-        return []
+    # Initialization of the lookup as a 2-dimension list containing a #pulses
+    # number of hi values and a (#beats - #pulses) number of lo values
+    # eg: [[1], [1], [1], [1], [1], [0], [0], [0]]
+    lookup = [[hi if i < pulses else lo] for i in range(beats)]
 
-    rests = beats - pulses
-    result = [1] * pulses
-    pivot = 1
-    interval = 2
+    while True:
+        beats = beats - pulses
+        if beats <= 1:
+            break
+        elif beats < pulses:
+            pulses, beats = beats, pulses
+        for i in range(pulses):
+            # The last element of the lookup list is appended to its #i element
+            # and then removed
+            # e.g. [[1], [1], [1], [1], [1], [0], [0], [0]]
+            # =>   [[1, 0], [1], [1], [1], [1], [0], [0]]
+            lookup[i] += lookup[-1]
+            del lookup[-1]
 
-    while rests > 0:
-        if pivot > len(result):
-            pivot = 1
-            interval += 1
-
-        result.insert(pivot, 0)
-
-        pivot += interval
-        rests -= 1
+    # The lookup list needs to be flattened
+    # [[1, 0, 1], [1, 0, 1], [1, 0]] => [1, 0, 1, 1, 0, 1, 1, 0]
+    result = [x for y in lookup for x in y]
 
     if rotate != 0:
-        result = rotate(result, rotation)
+        result = result[rotation:] + result[:rotation]
 
     return result
 

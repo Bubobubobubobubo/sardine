@@ -81,6 +81,8 @@ pattern: sum ("," sum?)* -> return_pattern
 ?col : note
      | note "@" NAME             -> add_qualifier
 
+// Add sugar for chord inversions
+
 ?note0: NOTE                     -> make_note
 
 ?note1: note0

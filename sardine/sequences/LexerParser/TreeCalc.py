@@ -147,6 +147,14 @@ class CalculateTree(Transformer):
         """Move a note to a given octave"""
         return ((note - 12) % 12) + 12 + 12 * int(value)
 
+    def reverse_up(self, notes: list) -> list:
+        """Chord inversion upwards"""
+        return FuncLibrary.invert(notes, 1)
+
+    def reverse_down(self, notes: list) -> list:
+        """Chord inversion downwards"""
+        return FuncLibrary.invert(notes, -1)
+
     def note_octave_up(self, note):
         """Move a note one octave up"""
         return note + 12
@@ -406,6 +414,7 @@ class CalculateTree(Transformer):
             "adisco": FuncLibrary.antidisco,
             "bass": FuncLibrary.bassify,
             "sopr": FuncLibrary.soprano,
+            "invert": FuncLibrary.invert,
             # Boolean mask operations
             "euclid": FuncLibrary.euclidian_rhythm,
             "mask": FuncLibrary.mask,

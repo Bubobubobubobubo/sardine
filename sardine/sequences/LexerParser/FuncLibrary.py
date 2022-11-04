@@ -116,6 +116,7 @@ qualifiers = {
 
 
 def dmitri_tymoczko_algorithm(collection: list, chord_len: int = 4) -> list:
+
     def octave_transform(input_chord, root):
         """
         Squish things into a single octave for comparison between chords and
@@ -178,6 +179,25 @@ def dmitri(collection: list, chord_len: list = [4]) -> list:
 # ============================================================================ #
 # Easing Functions
 # ============================================================================ #
+
+def invert(x: list, how_many:list=[0]) -> list:
+    """Chord inversion"""
+
+    def get_index_at(x, i):
+        return x[i % len(x) - 1]
+
+    if how_many[0] == 0:
+        return x
+    elif how_many[0] > 0:
+        for _ in range(0, how_many[0] + 1):
+            x[_ % len(x) - 1] = get_index_at(x, _+1) + 12
+        return x
+    elif how_many[0] < 0:
+        for _ in range(0, how_many[0] - 1, -1):
+            x[_ % len(x) - 1] = get_index_at(x, _+1) - 12
+        return x
+
+
 
 
 def _remap(x, in_min, in_max, out_min, out_max):

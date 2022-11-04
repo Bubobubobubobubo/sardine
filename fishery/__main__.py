@@ -103,6 +103,8 @@ class REPLThread(threading.Thread):
     def run(self):
         try:
             banner = ()
+            console.push("""import os""")
+            console.push("""os.environ['SARDINE_INIT_SESSION'] = 'YES'""")
             console.push("""from sardine import *""")
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
         finally:

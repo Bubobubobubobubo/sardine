@@ -78,8 +78,14 @@ pattern: sum ("," sum?)* -> return_pattern
 
 // Rules about notes /////////////////////////////////////////////////////////
 
-?col : note
-     | note "@" NAME             -> add_qualifier
+?col0 : note
+      | note "@" NAME             -> add_qualifier
+
+?col1 : col0
+      | col0 "^" sum              -> chord_reverse
+
+?col : col1
+
 
 // Add sugar for chord inversions
 

@@ -15,6 +15,10 @@ The Sardinopedia is a growing collection of interesting **Sardine** patterns. Pa
 
 This is a collaborative **Sardine** patterns repository. Feel free to contribute by altering the file in your `docs/` folder and to add whatever you see fit! There are some areas where the Sardinopedia is a bit lacking!
 
+!!! info "Consulting the Sardinopedia locally"
+
+    You can consult the **Sardinopedia** locally by summoning the `help()` function or the verbose `print_sardinopedia()` function.
+
 ## Demonstration patterns
 
 These patterns are small songs and/or long patterns that you can copy and paste to familiarise yourself with the syntax. Change some values, comment a few lines here and there. Try to learn how to move and alter **Sardine** code.

@@ -61,6 +61,30 @@ class SuperDirtSender:
         return self
 
     def schedule(self, message):
+        """
+        Higher logic of the schedule function. Is able to send both monophonic
+        and polyphonic messages.
+        """
+        # Analyse message to find chords lying around
+        def chords_in_message(message: list) -> bool:
+            return any(isinstance(x, Chord) for x in message)
+
+        def longest_list_in_message(message: list) -> int:
+            return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in message)
+
+        if chords_in_message(message):
+            # We need to compose len(longest_list) messages
+            longest_list = longest_list_in_message(message)
+            list_of_messages = []
+            for _ in range(0, longest_list):
+                note_message = [x if not isinstance(x, Chord) else x[_] for x in message]
+                list_of_messages.append(note_message)
+            for message in list_of_messages:
+                self._schedule(message)
+        else:
+            self._schedule(message)
+
+    def _schedule(self, message):
         async def _waiter():
             await handle
             await asyncio.sleep(self._nudge)
@@ -119,7 +143,7 @@ class SuperDirtSender:
                     continue
                 if isinstance(value, composite_tokens):
                     value = value[0]
-                final_message.extend([key, float(value)])
+                final_message.extend([key, value])
 
             # =================================================================
             # TRIGGER MANAGEMENT

@@ -18,7 +18,10 @@ def compose_parametric_patterns(
 ) -> list:
     final_message = []
 
-    conv_function = int if cast_to_int else float
+    if cast_to_int:
+        conv_function = int
+    else:
+        conv_function = lambda x: x
 
     for key, value in items:
         if value == []:

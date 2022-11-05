@@ -21,7 +21,8 @@ pattern: sum ("," sum?)* -> return_pattern
      | product "~" atom                -> random_in_range
      | product "!" atom                -> extend
      | product "!!" atom               -> extend_repeat
-     | product "^" atom               -> chord_reverse
+     | product "^" atom                -> chord_reverse
+     | product "&" atom                -> get_slice
 
 ?atom: NUMBER                                              -> number
      | col

@@ -1,4 +1,5 @@
 from itertools import islice, count, cycle
+from itertools import cycle, takewhile, dropwhile
 
 
 def floating_point_range(start, end, step):
@@ -69,3 +70,30 @@ def map_binary_function(func, left, right):
         right: The right value or list of values
     """
     return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]
+
+
+# Taken from:
+# https://stackoverflow.com/questions/26531116/is-it-a-way-to-know-index-using-itertools-cycle
+
+class CyclicalList:
+    def __init__(self, initial_list):
+        self._initial_list = initial_list
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            if item.stop is None:
+                raise ValueError("Cannot slice without stop")
+            iterable = enumerate(cycle(self._initial_list))
+            if item.start:
+                iterable = dropwhile(lambda x: x[0] < item.start, iterable)
+            return [
+                element
+                for _, element in takewhile(lambda x: x[0] < item.stop, iterable)
+            ]
+
+        for index, element in enumerate(cycle(self._initial_list)):
+            if index == item:
+                return element
+
+    def __iter__(self):
+        return cycle(self._initial_list)

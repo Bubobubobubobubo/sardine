@@ -54,6 +54,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | "[" sum ("," sum)* ","? "]"                         -> make_list
      | SILENCE+                                            -> silence
      | "(" sum ")"
+     | "<" sum ">"                                         -> chordify
      | NAME "(" sum ("," sum)* ")"                         -> function_call
 
 

@@ -2,6 +2,7 @@ import random
 import statistics
 from collections.abc import Iterable
 from .Utilities import zip_cycle, map_unary_function, map_binary_function
+from .Chords import Chord
 from itertools import cycle, islice, chain
 from math import cos, sin, tan
 from typing import Union, Callable, Optional
@@ -175,10 +176,9 @@ def dmitri(collection: list, chord_len: list = [4]) -> list:
     return voiced
 
 
-# ============================================================================ #
-# Easing Functions
-# ============================================================================ #
-
+def chordify(x: list) -> list:
+    """Turn a list into a chord"""
+    return Chord(elements=x)
 
 def invert(x: list, how_many: list = [0]) -> list:
     """Chord inversion"""

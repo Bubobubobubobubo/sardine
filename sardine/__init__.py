@@ -28,13 +28,15 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich import pretty
 from rich.panel import Panel
-from .io import read_user_configuration, pretty_print_configuration_file
-from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 from .clock import *
 from .superdirt import SuperColliderProcess
 from .io import Client as OSC
 from .io import Receiver as Receiver
 from .io import OSCSender, MIDISender
+from .io import read_user_configuration, pretty_print_configuration_file
+from .io import open_sardinopedia as open_help
+from .io import print_sardinopedia as help
+from .io import ClockListener, MidiListener, ControlTarget, NoteTarget
 
 from .sequences import ListParser
 from .sequences.Iterators import Iterator
@@ -323,7 +325,11 @@ class Delay:
         if not self.delayFirst:
             sleep(self.duration)
 
-if os.getenv('SARDINE_INIT_SESSION') is not None and os.getenv('SARDINE_INIT_SESSION') == 'YES':
+
+if (
+    os.getenv("SARDINE_INIT_SESSION") is not None
+    and os.getenv("SARDINE_INIT_SESSION") == "YES"
+):
     # Print intro
     print(Panel.fit(f"[red]{sardine_intro}[/red]"))
     print(

@@ -6,43 +6,34 @@ from unittest import mock
 
 PARSER = ListParser(None, None, None)
 
-class TestPatternParsing(unittest.TestCase):
 
+class TestPatternParsing(unittest.TestCase):
     def test_silence(self):
         """
         Test the silence operator (.)
         """
         parser = PARSER
         patterns = [
-                ".",
-                ".!4",
-                ".?",
+            ".",
+            ".!4",
+            ".?",
         ]
-        expected = [
-                [None],
-                [None]*4,
-                [None]
-        ]
+        expected = [[None], [None] * 4, [None]]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
                 self.assertEqual(parser.parse(pattern), expected[i])
 
     def test_choice_operator(self):
         """
-        Test the choice (|) operator 
+        Test the choice (|) operator
         """
         parser = PARSER
-        patterns = [
-                "1|2|3|4",
-                "[1,2,3,4]|[., .]",
-                "baba|dada",
-                "(baba:2)|(dada:4)"
-        ]
+        patterns = ["1|2|3|4", "[1,2,3,4]|[., .]", "baba|dada", "(baba:2)|(dada:4)"]
         expected = [
-                [[1],[2],[3],[4]],
-                [[1,2,3,4], [None, None]],
-                [["baba"], ["dada"]],
-                [["baba:2"], ["dada:4"]]
+            [[1], [2], [3], [4]],
+            [[1, 2, 3, 4], [None, None]],
+            [["baba"], ["dada"]],
+            [["baba:2"], ["dada:4"]],
         ]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
@@ -55,28 +46,21 @@ class TestPatternParsing(unittest.TestCase):
         """
         parser = PARSER
         patterns = [
-                "[1,2,3,4,5]?",
-                "1?,2?,3?,4?",
+            "[1,2,3,4,5]?",
+            "1?,2?,3?,4?",
         ]
-        expected_true = [
-                [1,2,3,4,5],
-                [1,2,3,4]
-        ]
-        expected_false = [
-                [None]*5,
-                [None]*4
-        ]
+        expected_true = [[1, 2, 3, 4, 5], [1, 2, 3, 4]]
+        expected_false = [[None] * 5, [None] * 4]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
-                mocked_random_choice = lambda : 1.0
-                with mock.patch('random.random', mocked_random_choice):
+                mocked_random_choice = lambda: 1.0
+                with mock.patch("random.random", mocked_random_choice):
                     result = parser.parse(pattern)
                     self.assertEqual(expected_true[i], result)
-                mocked_random_choice = lambda : 0.0
-                with mock.patch('random.random', mocked_random_choice):
+                mocked_random_choice = lambda: 0.0
+                with mock.patch("random.random", mocked_random_choice):
                     result = parser.parse(pattern)
                     self.assertEqual(expected_false[i], result)
-
 
     def test_number_pattern(self):
         """
@@ -84,13 +68,13 @@ class TestPatternParsing(unittest.TestCase):
         """
         parser = PARSER
         patterns = [
-            ".5", 
+            ".5",
             "0.5",
             "1, 2, 3",
             "1+1, 2*3, 4-1, 5/2",
         ]
         expected = [
-            [.5], 
+            [0.5],
             [0.5],
             [1, 2, 3],
             [2, 6, 3, 2.5],
@@ -108,24 +92,24 @@ class TestPatternParsing(unittest.TestCase):
         """
         parser = PARSER
         patterns = [
-            "[1,2,3]+1, [1,2,3]*2", 
-            "[1,2,3]/2, [1,2,3]//2", 
-            "[2,3,4]-2, [2,3,4]%2", 
-            "[1,2,3,4]+[1,2,3,4]", 
-            "[1,2,3,4]*[1,2,3,4]", 
-            "[1,2,3,4]/[1,2,3,4]", 
-            "[1,2,3,4]/[2,3,4,5]", 
-            "[2,4,6,8]%[12,8]", 
+            "[1,2,3]+1, [1,2,3]*2",
+            "[1,2,3]/2, [1,2,3]//2",
+            "[2,3,4]-2, [2,3,4]%2",
+            "[1,2,3,4]+[1,2,3,4]",
+            "[1,2,3,4]*[1,2,3,4]",
+            "[1,2,3,4]/[1,2,3,4]",
+            "[1,2,3,4]/[2,3,4,5]",
+            "[2,4,6,8]%[12,8]",
         ]
         expected = [
-            [2, 3, 4, 2, 4, 6], 
-            [0.5, 1.0, 1.5, 0, 1, 1], 
-            [0, 1, 2, 0, 1, 0], 
-            [2, 4, 6, 8], 
-            [1, 4, 9, 16], 
-            [1.0, 1.0, 1.0, 1.0], 
-            [0.5, 0.6666666666666666, 0.75, 0.8], 
-            [2, 4, 6, 0], 
+            [2, 3, 4, 2, 4, 6],
+            [0.5, 1.0, 1.5, 0, 1, 1],
+            [0, 1, 2, 0, 1, 0],
+            [2, 4, 6, 8],
+            [1, 4, 9, 16],
+            [1.0, 1.0, 1.0, 1.0],
+            [0.5, 0.6666666666666666, 0.75, 0.8],
+            [2, 4, 6, 0],
         ]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
@@ -140,22 +124,22 @@ class TestPatternParsing(unittest.TestCase):
         """
         parser = PARSER
         patterns = [
-                "C,D,E,F,G,A,B",
-                "Do,Re,Mi,Fa,Sol,La,Si",
-                "Do,Ré,Mi,Fa,Sol,La,Si",
-                "C0,C1,C2,C3,C4,C5,C6,C7,C8,C9",
-                "C, C#, Cb", 
-                "C, Eb, G",
-                "C, C., C.., C...",
-                "C, C', C'', C'''",
-                "C@maj7, C@min7",
+            "C,D,E,F,G,A,B",
+            "Do,Re,Mi,Fa,Sol,La,Si",
+            "Do,Ré,Mi,Fa,Sol,La,Si",
+            "C0,C1,C2,C3,C4,C5,C6,C7,C8,C9",
+            "C, C#, Cb",
+            "C, Eb, G",
+            "C, C., C.., C...",
+            "C, C', C'', C'''",
+            "C@maj7, C@min7",
         ]
         expected = [
             [60, 62, 64, 65, 67, 69, 71],
             [60, 62, 64, 65, 67, 69, 71],
             [60, 62, 64, 65, 67, 69, 71],
             [12, 24, 36, 48, 60, 72, 84, 96, 108, 120],
-            [60, 61, 59], 
+            [60, 61, 59],
             [60, 63, 67],
             [60, 48, 36, 24],
             [60, 72, 84, 96],
@@ -178,22 +162,17 @@ class TestPatternParsing(unittest.TestCase):
 
         parser = PARSER
         patterns = [
-                "0~1", 
-                "0~10", 
-                "100~200",
+            "0~1",
+            "0~10",
+            "100~200",
         ]
 
-        expected = [
-            list(range(0,2)),
-            list(range(0,11)),
-            list(range(100,201))
-        ]
+        expected = [list(range(0, 2)), list(range(0, 11)), list(range(100, 201))]
 
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):
                 result = parser.parse(pattern)[0]
-                self.assertTrue(in_range(
-                    expected[i], y=result))
+                self.assertTrue(in_range(expected[i], y=result))
 
     def test_list_expansion(self):
         """
@@ -202,17 +181,17 @@ class TestPatternParsing(unittest.TestCase):
 
         parser = PARSER
         patterns = [
-                "[1,2]!2", 
-                "[1,2]!!2", 
-                "[1,.]!2", 
-                "[1,.]!!2", 
+            "[1,2]!2",
+            "[1,2]!!2",
+            "[1,.]!2",
+            "[1,.]!!2",
         ]
 
         expected = [
-                [1,2,1,2],
-                [1,1,2,2],
-                [1,None,1,None],
-                [1,1,None,None],
+            [1, 2, 1, 2],
+            [1, 1, 2, 2],
+            [1, None, 1, None],
+            [1, 1, None, None],
         ]
 
         for i, pattern in enumerate(patterns):
@@ -227,13 +206,13 @@ class TestPatternParsing(unittest.TestCase):
 
         parser = PARSER
         patterns = [
-                "-1", 
-                "-22.231",
+            "-1",
+            "-22.231",
         ]
 
         expected = [
-                [-1],
-                [-22.231],
+            [-1],
+            [-22.231],
         ]
 
         for i, pattern in enumerate(patterns):
@@ -242,5 +221,5 @@ class TestPatternParsing(unittest.TestCase):
                 self.assertEqual(expected[i], result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main(verbosity=2)

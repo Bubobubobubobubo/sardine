@@ -7,7 +7,6 @@ from typing import Union
 from appdirs import *
 import tempfile
 import psutil
-import re
 import asyncio
 from rich.console import Console
 from rich.panel import Panel

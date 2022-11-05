@@ -899,6 +899,18 @@ def notes(d=0.5, i=0):
 
 Functions can be used to further refine the effect of a modifier. There is a long list of functions that you can apply, such as `disco()` or `adisco()` as shown in the preceding example. If you ever wonder about the list of possible functions, refer to the **Sardinopedia** or enter any function name. If the function name is wrong, the list of possible functions will be printed out in the terminal.
 
+#### Chord / Collection inversion
+
+
+```python3
+@swim
+def notes(d=0.5, i=0):
+    S('pluck', midinote='disco(C5@maj7^4)'.out(i)
+    again(notes, d=0.5, i=i+1)
+```
+
+You can write chord inversions using the `^` syntax. It will accept any valid expression like `^1~5`. You can also feed negative numbers for inverting a chord downwards. Chord inversions are not only for chords but they also work on lists, which means that you can write custom chords and transpose them up or down :)
+
 #### Mathematics on notes
 
 ```python3

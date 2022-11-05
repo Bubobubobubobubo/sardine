@@ -189,7 +189,7 @@ def invert(x: list, how_many: list = [0]) -> list:
     if how_many[0] == 0:
         return x
     elif how_many[0] > 0:
-        for _ in range(0, how_many[0] + 1):
+        for _ in range(0, how_many[0]):
             x[_ % len(x)] = get_index_at(x, _ + 1) + 12
         return x
     elif how_many[0] < 0:

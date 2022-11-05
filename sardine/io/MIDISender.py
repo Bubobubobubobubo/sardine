@@ -116,10 +116,8 @@ class MIDISender:
                 note_message = [x if not isinstance(x, Chord) else x[_] for x in message]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
-                print(f"Polyphonie: {message}")
                 self._schedule(dict(zip(message[::2], message[1::2])))
         else:
-            print(f"Single note: {message}")
             self._schedule(dict(zip(message[::2], message[1::2])))
 
 

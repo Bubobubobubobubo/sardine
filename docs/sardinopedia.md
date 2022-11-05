@@ -159,7 +159,7 @@ This section requires a good understanding of general **Sardine** concepts. I re
 def fast(d=0.25, i=0):
     S('bd', speed='0.5,2', legato=0.1).out(i, div=4, rate=2)
     S('hh, jvbass:0|8|4,', 
-            pan='{0,1,0.1}',
+            pan='[0:1,0.1]',
             legato=0.1).out(i, div=8 if rarely()
                     else 5, rate=2)
     S('cp', legato=0.1).out(i, div=8)
@@ -593,7 +593,7 @@ You can get some interesting effects by using the `timescale` parameter (between
 ```python3
 @swim
 def hh(d=0.5, i=0):
-    S('hh', speed='{1,8}').out(i)
+    S('hh', speed='[1:8]').out(i)
     again(hh, d=0.5, i=i+1)
 ```
 Changing the speed of audio playback for a given audio sample. Cheap version of tuning.
@@ -949,7 +949,7 @@ The **Sardine** pattern notation is built around the idea of having multiple way
 ```python
 [0,1,2,3]%8
 [0,2,4,5]*[4,5]
-{1,8,0.1}&[2,9]
+[1:8,0.1]&[2,9]
 [0,2,4,5,9,10,12,14]!2
 [0,2,4,5,9,10,12,14]!!4
 ```
@@ -1026,12 +1026,12 @@ If you want to generate a number in the range `x` to `y` included, you can use t
 ```python3
 @swim
 def ramps(d=0.5, i=0):
-    S('amencutup:{0,10}', 
-        room='{0,1,0.1}',
-        cutoff='{1,10}*100').out(i)
+    S('amencutup:[0:10]', 
+        room='[0:1,0.1]',
+        cutoff='[1:10]*100').out(i)
     again(ramps, d=0.5, i=i+1)
 ```
-You can generate ramps of integers using the `{1,10}` syntax. This works just like **Python**'s range function. Well, almost... it's way better! You can generate descending ramps easily: `{10,1}`. You can also generate ascending ramps of floating point numbers by precising a step other than `1`: `{1,10,0.5}`. Of course, this also works the other way around :)
+You can generate ramps of integers using the `[1:10]` syntax. This works just like **Python**'s range function. Well, almost... it's way better! You can generate descending ramps easily: `[10:1]`. You can also generate ascending ramps of floating point numbers by precising a step other than `1`: `[1:10,0.5]`. Of course, this also works the other way around :)
 
 ### Repeat
 
@@ -1066,7 +1066,7 @@ There is also the interesting case of what I like to call *'parametric silences'
 ```python
 @swim 
 def silence_demo(d=0.5, i=0):
-    S('sitar', legato='0.5', speed='{1,4}, .!8').out(i, div=1)
+    S('sitar', legato='0.5', speed='[1:4], .!8').out(i, div=1)
     a(silence_demo, d=1/8, i=i+1)
 ```
 
@@ -1115,7 +1115,7 @@ There is a finite list of actions you can perform on *amphibian variables*:
 ```python
 @swim
 def amphi_iter(d=0.25):
-    S('amencutup:{1,10}').out(i.i)
+    S('amencutup:[1:10]').out(i.i)
     if random() > 0.8:
         i.i = 0
     a(amphi_iter, d=0.25)
@@ -1125,7 +1125,7 @@ Similarly to *amphibian variables*, there is a thing called *amphibian iterators
 ```python
 @swim
 def amphi_iter(d=0.25):
-    S('amencutup:{1,10}', speed='1|2|i.i=0').out(i.i)
+    S('amencutup:[1:10]', speed='1|2|i.i=0').out(i.i)
     a(amphi_iter, d=0.25)
 ```
 These iterators can be reset or set on the pattern side!
@@ -1137,7 +1137,7 @@ def amphi_iter(d=0.25):
         i.i = [1, 5]
     else:
         i.i = [1, 2]
-    S('amencutup:{1,10}', speed='i.v|i.v=[1,2]').out(i.i)
+    S('amencutup:[1:10]', speed='i.v|i.v=[1,2]').out(i.i)
     a(amphi_iter, d=0.25)
 ```
 Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.

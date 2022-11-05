@@ -72,8 +72,9 @@ def map_binary_function(func, left, right):
     return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]
 
 
-# Taken from:
-# https://stackoverflow.com/questions/26531116/is-it-a-way-to-know-index-using-itertools-cycle
+# Taken from:
+# https://stackoverflow.com/questions/26531116/is-it-a-way-to-know-index-using-itertools-cycle
+
 
 class CyclicalList:
     def __init__(self, initial_list):

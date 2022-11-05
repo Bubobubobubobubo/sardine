@@ -225,17 +225,12 @@ class TestPatternParsing(unittest.TestCase):
         Test ramps with and without step
         """
         parser = PARSER
-        patterns = [
-            "[1:5]",
-            "[0:1,.3]",
-            "[10:8,.5]",
-            "0, [1:3], 4, 5"
-        ]
+        patterns = ["[1:5]", "[0:1,.3]", "[10:8,.5]", "0, [1:3], 4, 5"]
         expected = [
             [1, 2, 3, 4, 5],
-            [0, .3, .6, .9],
+            [0, 0.3, 0.6, 0.9],
             [10, 9.5, 9, 8.5, 8],
-            [0, 1, 2, 3, 4, 5]
+            [0, 1, 2, 3, 4, 5],
         ]
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):

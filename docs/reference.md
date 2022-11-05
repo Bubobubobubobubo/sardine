@@ -174,9 +174,9 @@ A simple tremolo effect.
 ```python
 @swim 
 def test_fx(d=0.25, i=0):
-    S('amencutup:{1,20}', 
+    S('amencutup:[1:20]', 
             tremolorate='16|32',
-            tremolodepth='{0,1,0.25}').out(i)
+            tremolodepth='[0:1,0.25]').out(i)
     a(test_fx, d=0.5, i=i+1)
 ```
 
@@ -192,9 +192,9 @@ This is a weird granular effect probably intended to serve as a building block f
 ```python
 @swim 
 def test_fx(d=0.25, i=0):
-    S('amencutup:{1,20}', 
+    S('amencutup:[1:20]', 
             psrate='2',
-            psdisp='{0,1,0.5}').out(i)
+            psdisp='[0:1,0.5]').out(i)
     a(test_fx, d=0.5, i=i+1)
 ```
 
@@ -283,7 +283,7 @@ make your sound louder the more you ramp up the value.
 ```python
 @swim 
 def test_fx(d=0.25, i=0):
-    S('amencutup:{1,20}', shape='{0,1,0.1}').out(i)
+    S('amencutup:[1:20]', shape='[0:1,0.1]').out(i)
     a(test_fx, d=0.5, i=i+1)
 ```
 ##### Crush

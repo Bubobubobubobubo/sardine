@@ -1,10 +1,6 @@
 from lark import Transformer, v_args
 from typing import Union
-from .Utilities import (
-        zip_cycle, 
-        map_unary_function, 
-        map_binary_function,
-        CyclicalList)
+from .Utilities import zip_cycle, map_unary_function, map_binary_function, CyclicalList
 from . import FuncLibrary
 from lark.lexer import Token
 from typing import Any
@@ -151,13 +147,13 @@ class CalculateTree(Transformer):
         """Move a note to a given octave"""
         return ((note - 12) % 12) + 12 + 12 * int(value)
 
-    def get_slice(self, content: list, list_slice: list) -> list: 
+    def get_slice(self, content: list, list_slice: list) -> list:
         """Return a slice of the given list"""
         if len(list_slice) == 1:
             return content[list_slice[0] % len(content) - 1]
         else:
             content = CyclicalList(content)
-            return content[list_slice[0]:list_slice[1]] 
+            return content[list_slice[0] : list_slice[1]]
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""

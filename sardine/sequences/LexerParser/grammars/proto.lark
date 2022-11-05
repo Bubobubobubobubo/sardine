@@ -49,8 +49,8 @@ pattern: sum ("," sum?)* -> return_pattern
      | "T" "." "s"                                         -> get_second
      | "T" "." "µ"                                         -> get_microsecond // Unicode character U+00B5
      | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
-     | "{" sum "," sum "}"                                 -> generate_ramp
-     | "{" sum "," sum "," sum  "}"                        -> generate_ramp_with_range
+     | "[" sum ":" sum "]"                                 -> generate_ramp
+     | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
      | "[" sum ("," sum)* ","? "]"                         -> make_list
      | SILENCE+                                            -> silence
      | "(" sum ")"
@@ -107,7 +107,7 @@ pattern: sum ("," sum?)* -> return_pattern
 ?note: note3                     -> finish_note
 
 ///////////////////////////////////////////////////////////////////////////////
-     
+
 // Tokens /////////////////////////////////////////////////////////////////////
 
 // Notes start with an uppercase letter, other names start with a lower case letter.

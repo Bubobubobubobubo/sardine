@@ -220,6 +220,30 @@ class TestPatternParsing(unittest.TestCase):
                 result = parser.parse(pattern)
                 self.assertEqual(expected[i], result)
 
+    def test_ramps(self):
+        """
+        Test ramps with and without step
+        """
+        parser = PARSER
+        patterns = [
+            "[1:5]",
+            "[0:1,.3]",
+            "[10:8,.5]",
+            "0, [1:3], 4, 5"
+        ]
+        expected = [
+            [1, 2, 3, 4, 5],
+            [0, .3, .6, .9],
+            [10, 9.5, 9, 8.5, 8],
+            [0, 1, 2, 3, 4, 5]
+        ]
+        for i, pattern in enumerate(patterns):
+            with self.subTest(i=i, pattern=pattern):
+                result = parser.parse(pattern)
+                self.assertEqual(len(result), len(expected[i]))
+                for x, y in zip(result, expected[i]):
+                    self.assertAlmostEqual(x, y)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

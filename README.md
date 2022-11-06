@@ -1,4 +1,5 @@
 <h2 align="center"><b>Sardine</b>: ✨ Live Coding Library for Python ✨</h2>
+<p align="center"><i>Python's missing algorave module. Simple/hackable live coding tool for modern Python (< 3.10)</i></p>
 
 <p align="center">
   <img src=https://img.shields.io/discord/1029399269574193203 />

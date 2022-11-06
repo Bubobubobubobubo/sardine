@@ -1,4 +1,11 @@
 <h2 align="center"><b>Sardine</b>: ✨ Live Coding Library for Python ✨</h2>
+
+<p align="center">
+  <img src=https://img.shields.io/discord/1029399269574193203 />
+  <img src=https://img.shields.io/github/license/Bubobubobubobubo/sardine />
+  <img src=https://img.shields.io/github/stars/Bubobubobubobubo/sardine />
+</p>
+
 <p align="center">
   <a href="https://discord.gg/aPgV7mSFZh">Discord</a> |
   <a href="https://sardine.raphaelforment.fr/">Website</a> |

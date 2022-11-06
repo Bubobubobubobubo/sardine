@@ -5,6 +5,7 @@ import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
+from ..sequences.LexerParser.Chords import Chord
 from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:
@@ -60,6 +61,30 @@ class SuperDirtSender:
         return self
 
     def schedule(self, message):
+        """
+        Higher logic of the schedule function. Is able to send both monophonic
+        and polyphonic messages.
+        """
+        # Analyse message to find chords lying around
+        def chords_in_message(message: list) -> bool:
+            return any(isinstance(x, Chord) for x in message)
+
+        def longest_list_in_message(message: list) -> int:
+            return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in message)
+
+        if chords_in_message(message):
+            # We need to compose len(longest_list) messages
+            longest_list = longest_list_in_message(message)
+            list_of_messages = []
+            for _ in range(0, longest_list):
+                note_message = [x if not isinstance(x, Chord) else x[_] for x in message]
+                list_of_messages.append(note_message)
+            for message in list_of_messages:
+                self._schedule(message)
+        else:
+            self._schedule(message)
+
+    def _schedule(self, message):
         async def _waiter():
             await handle
             await asyncio.sleep(self._nudge)
@@ -77,37 +102,52 @@ class SuperDirtSender:
         """
         if i % div != 0:
             return
-
-        # Value checking
         i = int(i)
-
         final_message = []
 
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
-            # Sound
+            composite_tokens = (list, Chord)
+            single_tokens = (type(None), str)
+
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
+
             if self.sound == []:
                 return
-            if isinstance(self.sound, list):
+
+            # Handling lists
+            if isinstance(self.sound, composite_tokens):
                 first_element = self.sound[0]
-                # This is a check for handling silence
                 if first_element is not None:
                     final_message.extend(["sound", self.sound[0]])
                 else:
                     return
-            elif isinstance(self.sound, (str, type(None))):
+
+            # Handling other representations (str, None)
+            elif isinstance(self.sound, single_tokens):
                 if self.sound is None:
                     return
                 else:
                     final_message.extend(["sound", self.sound])
 
-            # Parametric values
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
+
+            # Handling other non-essential keys
             for key, value in self.content.items():
+                # We don't care if there is no value, just drop it
                 if value == []:
                     continue
-                if isinstance(value, list):
+                if isinstance(value, composite_tokens):
                     value = value[0]
-                final_message.extend([key, float(value)])
+                final_message.extend([key, value])
+
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
 
             if "trig" not in final_message:
                 final_message.extend(["trig", 1])
@@ -118,13 +158,23 @@ class SuperDirtSender:
 
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
+            composite_tokens = (list, Chord)
+            single_tokens = (type(None), str)
 
-            # Sound
+
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
+
             if self.sound == []:
                 return
-            if isinstance(self.sound, list):
+            if isinstance(self.sound, composite_tokens):
                 new_element = self.sound[
-                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
+                    pattern_element(
+                        iterator=i, 
+                        div=div, 
+                        rate=rate, 
+                        pattern=self.sound)
                 ]
                 if new_element is None:
                     return
@@ -136,11 +186,18 @@ class SuperDirtSender:
                 else:
                     final_message.extend(["sound", self.sound])
 
-            # Parametric arguments
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
+
             pattern_result = compose_parametric_patterns(
                 div=div, rate=rate, iterator=i, items=self.content.items()
             )
             final_message.extend(pattern_result)
+
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
 
             # Trig must always be included
             if "trig" not in final_message:

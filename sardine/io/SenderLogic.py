@@ -1,4 +1,5 @@
 from typing import List, Tuple, Any
+from ..sequences.LexerParser.Chords import Chord
 from math import floor
 
 
@@ -17,14 +18,18 @@ def compose_parametric_patterns(
 ) -> list:
     final_message = []
 
-    conv_function = int if cast_to_int else float
+    if cast_to_int:
+        conv_function = int
+    else:
+        conv_function = lambda x: x
 
     for key, value in items:
         if value == []:
             continue
-        if isinstance(value, list):
+        if isinstance(value, (list, Chord)):
             new_value = value[
-                pattern_element(iterator=iterator, div=div, rate=rate, pattern=value)
+                pattern_element(iterator=iterator, 
+                    div=div, rate=rate, pattern=value)
             ]
             if new_value is None:
                 for decreasing_index in range(iterator, -1, -1):
@@ -58,31 +63,3 @@ def compose_parametric_patterns(
             final_message.extend([key, conv_function(value)])
 
     return final_message
-
-    # for key, value in self.content.items():
-    #     if value == []:
-    #         continue
-    #     if isinstance(value, list):
-    #         new_value = value[pattern_element(
-    #             iterator=i, div=div,
-    #             speed=speed, pattern=value)]
-    #         if new_value is None:
-    #             # Besoin d'un index, d'un pattern
-    #             for decreasing_index in range(i, -1, -1):
-    #                 new_value = value[pattern_element(
-    #                     iterator=decreasing_index,
-    #                     div=div, speed=speed,
-    #                     pattern=value)]
-    #                 if new_value is None:
-    #                     continue
-    #                 else:
-    #                     value = float(new_value)
-    #                     break
-    #             # Si on a vraiment trouvé aucune valeur, il faut renvoyer une erreur
-    #             if value is None:
-    #                 raise ValueError('Pattern does not contain any value')
-    #         else:
-    #             value = float(new_value)
-    #         final_message.extend([key, value])
-    #     else:
-    #         final_message.extend([key, float(value)])

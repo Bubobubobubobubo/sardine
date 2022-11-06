@@ -1,43 +1,51 @@
-# Sardine: Python based live coding library with MIDI and OSC support ✨
-[Discord Server](https://discord.gg/aPgV7mSFZh) | [Website](https://sardine.raphaelforment.fr) | [Sardinopedia](https://sardine.raphaelforment.fr/sardinopedia) | [About the author](https://raphaelforment.fr) | [About live coding](https://toplap.org/)
+# **Sardine**: ✨ Live Coding Library for Python ✨
 
-
-<p align='center'>
-<a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
+<p align="center">
+  <a href="https://discord.gg/aPgV7mSFZh">Discord</a> |
+  <a href="https://sardine.raphaelforment.fr/">Website</a> |
+  <a href="https://sardine.raphaelforment.fr/sardinopedia">Examples</a> |
+  <a href="https://sardine.raphaelforment.fr/installation">Installation</a> |
+  <a href="https://raphaelforment.fr/">Author</a>  |
+  <a href="https://toplap.org/">About Live Coding</a>
+  <br><br>
+  <p align='center'>
+  <a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=bubobubobubobubo/sardine" />
-</a>
-  @arnaldorusso
+  </a>
+</p>
+
 </p>
 
 -----------
 
-<p align="center">
-   <b>A big update of software and documentation is planned for November!</b><br>
-   <b>Sardine</b> has survived its first gigs! It is now being updated to improve on that new-acquired experience!
-</p>
+Sardine is a hacker-friendly Python library tailored for musical improvisation, algorithmic composition and much more. **Sardine** is transforming your typical **Python** interpreter into a music instrument that allows you to write melodic and rhythmic patterns of any kind and to map them to any electronic instrument: **MIDI**, **OSC** and/or **SuperCollider**. Using **Sardine**, you can:
+- **improvise music freely on stage / in the studio / for your own enjoyment.**
+    * **Sardine** can talk to any MIDI/OSC device and to the **SuperCollider** audio engine.
+    * Bindings for **SuperDirt**, a well-known synthesis engine used by live coders around the world.
+- **build complex and rich audio/visual installations using **MIDI** and **OSC** *I/O*.**
+    * Attach **callbacks** to any OSC event, turn **Sardine** into a complex reactive toolbox.
+    * Watch values as they change and propagate them to your musical patterns or code.
+- **synchronise with other computers / other musical instruments**
+    * **MIDI Clock** In and Out.
+    * **Link Protocol** support.
+- **make Python code time-aware**
+    * Using temporal recursion, you can make any Python code time and tempo aware.
+    * Launch any sync or async function precisely in time, with results falling back on time.
+    * Hack your own **Senders** or **Receivers** to turn **Sardine** to your liking!
 
-Sardine is a Python library tailored for musical live coding. **Sardine** can turn Python into a fun and fruitful music instrument or stage control tool for electronic musicians. It is based on the principle of [temporal recursion](http://extempore.moso.com.au/temporal_recursion.html). You can play music with **Sardine** and synchronize your other MIDI equipment or lock multiple computers on the same groove using the **Link** protocol. You can sequence synthesizers, samples, MIDI and OSC signals or even arbitrary Python code with a strict timing! Sardine is also able to piggy-back on the [SuperDirt](https://github.com/musikinformatik/SuperDirt) audio engine, a famous backend used by many live coders worldwide. 
+Broadly speaking, **Sardine** can be said to have three main features: 
 
+* A **Clock** system capable of syncing itself to other computers instruments. This clock is organizing your **Python** code so that it can be time / tempo aware. Using temporal recursion, **Sardine** is pretty good at describing looping processes, musical patterns, etc... 
+* A **Pattern language** that lives inside **Sardine**, designed to make musical sequences/patterns easier and fun to write. This is a language focused on generative/algorithmic music making, capable of matching your typical sequencer.
+* **Senders** dispatching your patterns to variouts **outputs** (**MIDI**, **OSC**, **SuperCollider**). The list is centered around what I am using but adding a **Sender** is fairly easy to do. There is a plan to support more (**DMX**, other audio engines, etc..). 
 
 ## Contributions
 
-There is no version number yet. We are still exploring what we created and you might see some things changing pretty quickly as a result. The first version, `0.0.1` is planned for release later this year. **Sardine** is looking for contributors! You can contact the **Sardine** community directly on **Discord** or MP me if you have specific questions.
+There is no version number yet. We are still exploring what **Sardine** is and what it could be and you might see some things changing pretty quickly as a result. The first version, `0.0.1` is planned for release later this year. **Sardine** is looking for contributors! Anybody is welcome to contribute with code/documentation/thoughts, etc... You can contact the **Sardine** community directly on **Discord** or **PM** me if you have specific questions.
 
-### Contributing to documentation
+### Documenting Sardine
 
-The documentation lives in the `docs/` folder. It is simply a bunch a Markdown files. You can contribute by editing these files and adding the missing bit of information you would like to see being updated or added.
+**Sardine** is a **Python** library that you learn to use as a musical instrument. For this reason, documentation is of paramount importance so that others can learn your cool tricks too :). The documentation resides in the `docs/` folder. It is a bunch of loosely organised Markdown files. You can contribute by editing these files and adding the missing bit of information you would like to see being updated or added.
 
-The code source lives in the `cli/` and `sardine/` folder. Most functions are already documented but the architecture of **Sardine** needs to be explained somewhere. You can contact me directly if you would like to learn more about it. There are no contributions rules for the moment, and I will explore each and every request that you would like to propose!
-
-# Website
-
-To learn more about Sardine, please consult the project website: [Sardine](https://sardine.raphaelforment.fr). It contains instructions for installation / configuration as well as tutorials to get started!
-
-# Screenshots
-
-![sardine-boot-screen](pictures/sardine_boot_screen.png)
-
-![sardine-config-screen](pictures/sardine_config_screen.png)
-
-![sardine-usage](pictures/sardine_usage.png)
+The code source lives in the `cli/`, `fishery/` and `sardine/` folders. Most functions are already documented but the architecture of **Sardine** needs some time to get used to. You can contact me directly if you would like to learn more about it. There are no contributions rules for the moment, and I will explore each and every request that you would like to propose!
 

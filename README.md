@@ -1,5 +1,4 @@
-# **Sardine**: ✨ Live Coding Library for Python ✨
-
+<h2 align="center"><b>Sardine</b>: ✨ Live Coding Library for Python ✨</h2>
 <p align="center">
   <a href="https://discord.gg/aPgV7mSFZh">Discord</a> |
   <a href="https://sardine.raphaelforment.fr/">Website</a> |
@@ -9,11 +8,10 @@
   <a href="https://toplap.org/">About Live Coding</a>
   <br><br>
   <p align='center'>
-  <a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=bubobubobubobubo/sardine" />
-  </a>
-</p>
-
+    <a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=bubobubobubobubo/sardine" />
+    </a>
+  </p>
 </p>
 
 -----------

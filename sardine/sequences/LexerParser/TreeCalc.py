@@ -423,6 +423,7 @@ class CalculateTree(Transformer):
             "bass": FuncLibrary.bassify,
             "sopr": FuncLibrary.soprano,
             "invert": FuncLibrary.invert,
+            "aspeed": FuncLibrary.anti_speed,
             # Boolean mask operations
             "euclid": FuncLibrary.euclidian_rhythm,
             "mask": FuncLibrary.mask,

@@ -180,6 +180,9 @@ def chordify(x: list) -> list:
     """Turn a list into a chord"""
     return Chord(elements=x)
 
+def anti_speed(x: list) -> list:
+    list_of_silences = [[None]*x for x in range(0, len(x))]
+    return list(zip(x, list_of_silences))
 
 def invert(x: list, how_many: list = [0]) -> list:
     """Chord inversion"""

@@ -65,7 +65,7 @@ class SuperDirtSender:
         Higher logic of the schedule function. Is able to send both monophonic
         and polyphonic messages.
         """
-        # Analyse message to find chords lying around
+        # Analyse message to find chords lying around
         def chords_in_message(message: list) -> bool:
             return any(isinstance(x, Chord) for x in message)
 
@@ -73,11 +73,13 @@ class SuperDirtSender:
             return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in message)
 
         if chords_in_message(message):
-            # We need to compose len(longest_list) messages
+            # We need to compose len(longest_list) messages
             longest_list = longest_list_in_message(message)
             list_of_messages = []
             for _ in range(0, longest_list):
-                note_message = [x if not isinstance(x, Chord) else x[_] for x in message]
+                note_message = [
+                    x if not isinstance(x, Chord) else x[_] for x in message
+                ]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
                 self._schedule(message)
@@ -110,14 +112,14 @@ class SuperDirtSender:
             composite_tokens = (list, Chord)
             single_tokens = (type(None), str)
 
-            # =================================================================
-            # HANDLING THE SOUND PARAMETER
-            # =================================================================
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
 
             if self.sound == []:
                 return
 
-            # Handling lists
+            # Handling lists
             if isinstance(self.sound, composite_tokens):
                 first_element = self.sound[0]
                 if first_element is not None:
@@ -125,29 +127,29 @@ class SuperDirtSender:
                 else:
                     return
 
-            # Handling other representations (str, None)
+            # Handling other representations (str, None)
             elif isinstance(self.sound, single_tokens):
                 if self.sound is None:
                     return
                 else:
                     final_message.extend(["sound", self.sound])
 
-            # =================================================================
-            # HANDLING OTHER PARAMETERS
-            # =================================================================
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
 
             # Handling other non-essential keys
             for key, value in self.content.items():
-                # We don't care if there is no value, just drop it
+                # We don't care if there is no value, just drop it
                 if value == []:
                     continue
                 if isinstance(value, composite_tokens):
                     value = value[0]
                 final_message.extend([key, value])
 
-            # =================================================================
-            # TRIGGER MANAGEMENT
-            # =================================================================
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
 
             if "trig" not in final_message:
                 final_message.extend(["trig", 1])
@@ -161,20 +163,15 @@ class SuperDirtSender:
             composite_tokens = (list, Chord)
             single_tokens = (type(None), str)
 
-
-            # =================================================================
-            # HANDLING THE SOUND PARAMETER
-            # =================================================================
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
 
             if self.sound == []:
                 return
             if isinstance(self.sound, composite_tokens):
                 new_element = self.sound[
-                    pattern_element(
-                        iterator=i, 
-                        div=div, 
-                        rate=rate, 
-                        pattern=self.sound)
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
                 ]
                 if new_element is None:
                     return
@@ -186,18 +183,18 @@ class SuperDirtSender:
                 else:
                     final_message.extend(["sound", self.sound])
 
-            # =================================================================
-            # HANDLING OTHER PARAMETERS
-            # =================================================================
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
 
             pattern_result = compose_parametric_patterns(
                 div=div, rate=rate, iterator=i, items=self.content.items()
             )
             final_message.extend(pattern_result)
 
-            # =================================================================
-            # TRIGGER MANAGEMENT
-            # =================================================================
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
 
             # Trig must always be included
             if "trig" not in final_message:

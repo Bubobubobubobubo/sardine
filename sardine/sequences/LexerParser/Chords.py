@@ -1,9 +1,10 @@
-class Chord():
+class Chord:
     """
     Chord is a polyphonic token. It will be sent out
     as a polyphonic object when trated by the `.out()`
     method.
     """
+
     def __init__(self, elements: list):
         self._elements = elements
 
@@ -25,6 +26,7 @@ class Chord():
         return self._elements[key % len(self._elements) - 1]
 
     def _clamp(self) -> list:
-        def _clamp(n, smallest, largest): 
+        def _clamp(n, smallest, largest):
             return max(smallest, min(n, largest))
+
         return list(map(lambda x: _clamp(x, 0, 127), self._elements))

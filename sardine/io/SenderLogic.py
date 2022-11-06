@@ -28,8 +28,7 @@ def compose_parametric_patterns(
             continue
         if isinstance(value, (list, Chord)):
             new_value = value[
-                pattern_element(iterator=iterator, 
-                    div=div, rate=rate, pattern=value)
+                pattern_element(iterator=iterator, div=div, rate=rate, pattern=value)
             ]
             if new_value is None:
                 for decreasing_index in range(iterator, -1, -1):

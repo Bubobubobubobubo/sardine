@@ -82,7 +82,7 @@ class MIDISender:
         Higher logic of the schedule function. Is able to send both monophonic
         and polyphonic messages
         """
-        # Analyse message to find chords lying around
+        # Analyse message to find chords lying around
         def chords_in_message(message: list) -> bool:
             return any(isinstance(x, Chord) for x in message)
 
@@ -91,8 +91,10 @@ class MIDISender:
 
         def clamp_everything_to_midi_range(message: list) -> list:
             """Clamp every value to MIDI Range (0-127)"""
-            def _clamp(n, smallest, largest): 
+
+            def _clamp(n, smallest, largest):
                 return max(smallest, min(n, largest))
+
             new_list = []
             for _ in message:
                 if isinstance(_, str):
@@ -105,21 +107,22 @@ class MIDISender:
                     new_list.append(_)
             return new_list
 
-        # Clamping values for safety
+        # Clamping values for safety
         message = clamp_everything_to_midi_range(message)
 
         if chords_in_message(message):
-            # We need to compose len(longest_list) messages
+            # We need to compose len(longest_list) messages
             longest_list = longest_list_in_message(message)
             list_of_messages = []
             for _ in range(0, longest_list):
-                note_message = [x if not isinstance(x, Chord) else x[_] for x in message]
+                note_message = [
+                    x if not isinstance(x, Chord) else x[_] for x in message
+                ]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
                 self._schedule(dict(zip(message[::2], message[1::2])))
         else:
             self._schedule(dict(zip(message[::2], message[1::2])))
-
 
     def _schedule(self, message):
         async def _waiter():
@@ -141,129 +144,121 @@ class MIDISender:
         asyncio.create_task(_waiter(), name="midi-scheduler")
 
     def out(self, i: int = 0, div: int = 1, rate: int = 1) -> None:
-            """
-            Prototype for the Sender output.
-            """
-            if i % div != 0:
+        """
+        Prototype for the Sender output.
+        """
+        if i % div != 0:
+            return
+        i = int(i)
+        final_message = []
+
+        # Mimicking the SuperDirtSender behavior
+        self.sound = self.note
+        self.content |= {
+            "delay": self.delay,
+            "velocity": self.velocity,
+            "channel": self.channel,
+        }
+
+        def _message_without_iterator():
+            """Compose a message if no iterator is given"""
+            composite_tokens = (list, Chord)
+            single_tokens = (type(None), str)
+
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
+
+            if self.sound == []:
                 return
-            i = int(i)
-            final_message = []
-    
-            # Mimicking the SuperDirtSender behavior
-            self.sound = self.note
-            self.content |= {
-                "delay": self.delay,
-                "velocity": self.velocity,
-                "channel": self.channel
-            }
-    
-            def _message_without_iterator():
-                """Compose a message if no iterator is given"""
-                composite_tokens = (list, Chord)
-                single_tokens = (type(None), str)
-    
-                # =================================================================
-                # HANDLING THE SOUND PARAMETER
-                # =================================================================
-    
-                if self.sound == []:
-                    return
-    
-                # Handling lists
-                if isinstance(self.sound, composite_tokens):
-                    first_element = self.sound[0]
-                    if first_element is not None:
-                        final_message.extend(["sound", self.sound[0]])
-                    else:
-                        return
-    
-                # Handling other representations (str, None)
-                elif isinstance(self.sound, single_tokens):
-                    if self.sound is None:
-                        return
-                    else:
-                        final_message.extend(["sound", self.sound])
-    
-                # =================================================================
-                # HANDLING OTHER PARAMETERS
-                # =================================================================
-    
-                # Handling other non-essential keys
-                for key, value in self.content.items():
-                    # We don't care if there is no value, just drop it
-                    if value == []:
-                        continue
-                    if isinstance(value, composite_tokens):
-                        value = value[0]
-                    final_message.extend([key, value])
-    
-                # =================================================================
-                # TRIGGER MANAGEMENT
-                # =================================================================
-    
-                if "trig" not in final_message:
-                    final_message.extend(["trig", 1])
-    
-                trig_value = final_message[final_message.index("trig") + 1]
-                if trig_value:
-                    return self.schedule(final_message)
-    
-            def _message_with_iterator():
-                """Compose a message if an iterator is given"""
-                composite_tokens = (list, Chord)
-                single_tokens = (type(None), str)
-    
-    
-                # =================================================================
-                # HANDLING THE SOUND PARAMETER
-                # =================================================================
-    
-                if self.sound == []:
-                    return
-                if isinstance(self.sound, composite_tokens):
-                    new_element = self.sound[
-                        pattern_element(
-                            iterator=i, 
-                            div=div, 
-                            rate=rate, 
-                            pattern=self.sound)
-                    ]
-                    if new_element is None:
-                        return
-                    else:
-                        final_message.extend(["sound", new_element])
+
+            # Handling lists
+            if isinstance(self.sound, composite_tokens):
+                first_element = self.sound[0]
+                if first_element is not None:
+                    final_message.extend(["sound", self.sound[0]])
                 else:
-                    if self.sound is None:
-                        return
-                    else:
-                        final_message.extend(["sound", self.sound])
-    
-                # =================================================================
-                # HANDLING OTHER PARAMETERS
-                # =================================================================
-    
-                pattern_result = compose_parametric_patterns(
-                    div=div, 
-                    rate=rate, 
-                    iterator=i, 
-                    items=self.content.items()
-                )
-                final_message.extend(pattern_result)
-    
-                # =================================================================
-                # TRIGGER MANAGEMENT
-                # =================================================================
-    
-                # Trig must always be included
-                if "trig" not in final_message:
-                    final_message.extend(["trig", str(1)])
-    
-                trig_value = final_message[final_message.index("trig") + 1]
-                if trig_value:
-                    return self.schedule(final_message)
-    
-            # Ultimately composing and sending message
-            if i == 0:
-                return _message_without_iterator()
+                    return
+
+            # Handling other representations (str, None)
+            elif isinstance(self.sound, single_tokens):
+                if self.sound is None:
+                    return
+                else:
+                    final_message.extend(["sound", self.sound])
+
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
+
+            # Handling other non-essential keys
+            for key, value in self.content.items():
+                # We don't care if there is no value, just drop it
+                if value == []:
+                    continue
+                if isinstance(value, composite_tokens):
+                    value = value[0]
+                final_message.extend([key, value])
+
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
+
+            if "trig" not in final_message:
+                final_message.extend(["trig", 1])
+
+            trig_value = final_message[final_message.index("trig") + 1]
+            if trig_value:
+                return self.schedule(final_message)
+
+        def _message_with_iterator():
+            """Compose a message if an iterator is given"""
+            composite_tokens = (list, Chord)
+            single_tokens = (type(None), str)
+
+            # =================================================================
+            # HANDLING THE SOUND PARAMETER
+            # =================================================================
+
+            if self.sound == []:
+                return
+            if isinstance(self.sound, composite_tokens):
+                new_element = self.sound[
+                    pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
+                ]
+                if new_element is None:
+                    return
+                else:
+                    final_message.extend(["sound", new_element])
             else:
-                return _message_with_iterator()
+                if self.sound is None:
+                    return
+                else:
+                    final_message.extend(["sound", self.sound])
+
+            # =================================================================
+            # HANDLING OTHER PARAMETERS
+            # =================================================================
+
+            pattern_result = compose_parametric_patterns(
+                div=div, rate=rate, iterator=i, items=self.content.items()
+            )
+            final_message.extend(pattern_result)
+
+            # =================================================================
+            # TRIGGER MANAGEMENT
+            # =================================================================
+
+            # Trig must always be included
+            if "trig" not in final_message:
+                final_message.extend(["trig", str(1)])
+
+            trig_value = final_message[final_message.index("trig") + 1]
+            if trig_value:
+                return self.schedule(final_message)
+
+        # Ultimately composing and sending message
+        if i == 0:
+            return _message_without_iterator()
+        else:
+            return _message_with_iterator()

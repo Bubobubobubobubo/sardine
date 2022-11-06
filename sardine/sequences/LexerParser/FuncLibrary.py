@@ -180,12 +180,14 @@ def chordify(x: list) -> list:
     """Turn a list into a chord"""
     return Chord(elements=x)
 
+
 def invert(x: list, how_many: list = [0]) -> list:
     """Chord inversion"""
     x = list(reversed(x)) if how_many[0] < 0 else x
     for _ in range(abs(how_many[0])):
-        x[_%len(x)] += (- 12 if how_many[0] <=0 else 12)
+        x[_ % len(x)] += -12 if how_many[0] <= 0 else 12
     return x
+
 
 def _remap(x, in_min, in_max, out_min, out_max):
     """Remapping a value from a [x, y] range to a [x', y'] range"""

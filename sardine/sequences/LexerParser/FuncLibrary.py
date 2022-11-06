@@ -182,21 +182,10 @@ def chordify(x: list) -> list:
 
 def invert(x: list, how_many: list = [0]) -> list:
     """Chord inversion"""
-
-    def get_index_at(x, i):
-        return x[i % len(x) - 1]
-
-    if how_many[0] == 0:
-        return x
-    elif how_many[0] > 0:
-        for _ in range(0, how_many[0]):
-            x[_ % len(x)] = get_index_at(x, _ + 1) + 12
-        return x
-    elif how_many[0] < 0:
-        for _ in range(0, how_many[0] - 1, -1):
-            x[_ % len(x)] = get_index_at(x, _ + 1) - 12
-        return x
-
+    x = list(reversed(x)) if how_many[0] < 0 else x
+    for _ in range(abs(how_many[0])):
+        x[_%len(x)] += (- 12 if how_many[0] <=0 else 12)
+    return x
 
 def _remap(x, in_min, in_max, out_min, out_max):
     """Remapping a value from a [x, y] range to a [x', y'] range"""

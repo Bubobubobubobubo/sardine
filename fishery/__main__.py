@@ -23,8 +23,8 @@ from rich.panel import Panel
 system = platform.system()
 
 # Setting very high priority for this process (time-critical)
-warning_text = "[yellow]/!\\\\[/yellow] [red bold]Run Sardine faster by starting it using\
-\nadministrator priviledges (sudo on Unix..)[/red bold]"
+warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
+\nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
 if system == "Windows":
     try:
         p = psutil.Process(os.getpid())
@@ -98,8 +98,6 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             else:
                 self.showtraceback()
 
-from sys import argv
-print(f"File name: {argv[0]}")
 
 class REPLThread(threading.Thread):
     def run(self):

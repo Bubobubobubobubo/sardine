@@ -78,8 +78,8 @@ class SuperDirtSender:
             list_of_messages = []
             for _ in range(0, longest_list):
                 note_message = [
-                    x if not isinstance(x, Chord) else x[
-                        _ % len(x)] for x in message]
+                    x if not isinstance(x, Chord) else x[_ % len(x)] for x in message
+                ]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
                 self._schedule(message)

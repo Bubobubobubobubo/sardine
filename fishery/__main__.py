@@ -98,6 +98,8 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             else:
                 self.showtraceback()
 
+from sys import argv
+print(f"File name: {argv[0]}")
 
 class REPLThread(threading.Thread):
     def run(self):

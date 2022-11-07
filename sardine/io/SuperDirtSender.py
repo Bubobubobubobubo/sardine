@@ -78,8 +78,8 @@ class SuperDirtSender:
             list_of_messages = []
             for _ in range(0, longest_list):
                 note_message = [
-                    x if not isinstance(x, Chord) else x[_] for x in message
-                ]
+                    x if not isinstance(x, Chord) else x[
+                        _ % len(x)] for x in message]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
                 self._schedule(message)
@@ -190,7 +190,6 @@ class SuperDirtSender:
             pattern_result = compose_parametric_patterns(
                 div=div, rate=rate, iterator=i, items=self.content.items()
             )
-            print(pattern_result)
             final_message.extend(pattern_result)
 
             # =================================================================

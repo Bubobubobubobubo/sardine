@@ -69,6 +69,7 @@ pattern: sum ("," sum?)* -> return_pattern
     | name_sum "!!" sum                                   -> extend_repeat
     | name_sum "/" name_product                           -> specify_address
     | name_sum ":" sum                                    -> assoc_sp_number
+    | name_sum "?"                                        -> add_mystery
 
 ?name_product: name_atom
     | name_product "|" name_atom                          -> choice

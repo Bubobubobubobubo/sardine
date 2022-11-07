@@ -26,20 +26,20 @@ FUNNY_TEXT = """
 """
 
 
-# def str2bool(v):
-#     """Boolean validation method for argparse type checking"""
-#     if v.lower() in ("yes", "true", "t", "y", "1"):
-#         return True
-#     elif v.lower() in ("no", "false", "f", "n", "0"):
-#         return False
-#     else:
-#         raise argparse.ArgumentTypeError("Boolean value expected.")
-# 
-# 
-# def pairwise(iterable):
-#     """s -> (s0, s1), (s2, s3), (s4, s5), ..."""
-#     a = iter(iterable)
-#     return zip(a, a)
+# def str2bool(v):
+#     """Boolean validation method for argparse type checking"""
+#     if v.lower() in ("yes", "true", "t", "y", "1"):
+#         return True
+#     elif v.lower() in ("no", "false", "f", "n", "0"):
+#         return False
+#     else:
+#         raise argparse.ArgumentTypeError("Boolean value expected.")
+#
+#
+# def pairwise(iterable):
+#     """s -> (s0, s1), (s2, s3), (s4, s5), ..."""
+#     a = iter(iterable)
+#     return zip(a, a)
 
 
 # ============================================================================ #
@@ -67,7 +67,7 @@ def write_json_file(data: dict):
 
 # def old_main():
 #     """Entry method for the argparse parser"""
-# 
+#
 #     # Check if the configuration file exists, otherwise, warn user
 #     if not CONFIG_JSON.is_file():
 #         print(
@@ -76,7 +76,7 @@ def write_json_file(data: dict):
 #         )
 #         exit()
 #     data = read_json_file()
-# 
+#
 #     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
 #     parser.add_argument("--midi", type=str, help="Default MIDI port")
 #     parser.add_argument("--bpm", type=float, help="Beats per minute")
@@ -97,24 +97,24 @@ def write_json_file(data: dict):
 #     parser.add_argument(
 #         "--User Config Path", type=bool, help="Python User Configuration file"
 #     )
-# 
+#
 #     if len(sys.argv) < 2:
 #         print(f"[red]{FUNNY_TEXT}")
 #         print(f"Your configuration file is located at: {USER_DIR}")
 #         parser.print_help()
 #         exit()
-# 
+#
 #     # Grabing arguments from parser.parse_args()
 #     args = parser.parse_args()
 #     to_update = list(chain.from_iterable([x for x in args._get_kwargs()]))
-# 
+#
 #     # Iterating over the collected kwargs and write to file if needed
 #     for name, value in pairwise(to_update):
 #         if value is not None:
 #             data["config"][name] = value
 #     write_json_file(data)
-# 
-# 
+#
+#
 def _edit_configuration(file_name: str):
     configuration_file = USER_DIR / file_name
     # If the file already exists, we will read it first before opening editor
@@ -154,37 +154,54 @@ def _select_midi_output(config_file: dict) -> dict:
 
     choices = ["Automatic", "Manual", "Custom (advanced)"]
     midi_ports = mido.get_output_names()
-    print(Panel.fit(f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"))
+    print(
+        Panel.fit(
+            f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
+        )
+    )
     menu_select = inquirer.select(
-                message="Select a method for choosing output port:",
-                choices=choices).execute()
-    if menu_select == choices[1]: # Manual selection
-        midi_port_selection = inquirer.select("Select a MIDI port in the following list:",
-                choices=midi_ports).execute()
-    elif menu_select == choices[0]: # Automatic selection
+        message="Select a method for choosing output port:", choices=choices
+    ).execute()
+    if menu_select == choices[1]:  # Manual selection
+        midi_port_selection = inquirer.select(
+            "Select a MIDI port in the following list:", choices=midi_ports
+        ).execute()
+    elif menu_select == choices[0]:  # Automatic selection
         midi_port_selection = "Sardine"
-    elif menu_select == choices[2]: # Custom selection
-       midi_port_selection = inquirer.text(
-               message="Enter your desired MIDI Port",
-               completer={k: None for k in midi_ports},
-               multicolumn_complete=True).execute()
+    elif menu_select == choices[2]:  # Custom selection
+        midi_port_selection = inquirer.text(
+            message="Enter your desired MIDI Port",
+            completer={k: None for k in midi_ports},
+            multicolumn_complete=True,
+        ).execute()
     else:
-       midi_port_selection = inquirer.text(
-               message="Enter your desired MIDI Port",
-               completer={k: None for k in midi_ports},
-               multicolumn_complete=True).execute()
-    config_file['midi'] = midi_port_selection
-    print(Panel.fit(f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"))
+        midi_port_selection = inquirer.text(
+            message="Enter your desired MIDI Port",
+            completer={k: None for k in midi_ports},
+            multicolumn_complete=True,
+        ).execute()
+    config_file["midi"] = midi_port_selection
+    print(
+        Panel.fit(
+            f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
+        )
+    )
     return config_file
+
 
 def _select_bpm_and_timing(config_file: dict) -> dict:
     """
     Selection of BPM and various Timing related information
     """
-    print(Panel.fit((
-        f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | " +  
-        f"[red]Beats: [green]{config_file['beats']}[/green][/red] | " + 
-        f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]")))
+    print(
+        Panel.fit(
+            (
+                f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
+                + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
+                + f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]"
+            )
+        )
+    )
     active_clock = inquirer.select(
         message="Should the Clock be active or passive?",
         choices=[
@@ -193,31 +210,51 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
         ],
         default=None,
     ).execute()
-    config_file['active_clock'] = active_clock
+    config_file["active_clock"] = active_clock
     tempo = inquirer.number(
         message="Input a new default tempo (BPM):",
-        min_allowed=20, max_allowed=800, validate=EmptyInputValidator(),).execute()
-    config_file['bpm'] = float(tempo)
+        min_allowed=20,
+        max_allowed=800,
+        validate=EmptyInputValidator(),
+    ).execute()
+    config_file["bpm"] = float(tempo)
     beats = inquirer.number(
         message="Select a new number of beats per measure:",
-        default=4, min_allowed=1, max_allowed=999,).execute()
-    config_file['beats'] = int(beats)
+        default=4,
+        min_allowed=1,
+        max_allowed=999,
+    ).execute()
+    config_file["beats"] = int(beats)
     ppqn = inquirer.number(
         message="Select a new number of ppqn (Pulses per Quarter Note):",
-        min_allowed=1, max_allowed=999, default=48, float_allowed=False,
+        min_allowed=1,
+        max_allowed=999,
+        default=48,
+        float_allowed=False,
     ).execute()
-    config_file['ppqn'] = int(ppqn)
-    print(Panel.fit((
-        f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | " +  
-        f"[red]Beats: [green]{config_file['beats']}[/green][/red] | " + 
-        f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]")))
+    config_file["ppqn"] = int(ppqn)
+    print(
+        Panel.fit(
+            (
+                f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
+                + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
+                + f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]"
+            )
+        )
+    )
     return config_file
+
 
 def _select_supercollider_settings(config_file: dict) -> dict:
     """Configuration for the SuperCollider subprocess"""
-    print(Panel.fit((
-        f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | " +  
-        f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]")))
+    print(
+        Panel.fit(
+            (
+                f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | "
+                + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
+            )
+        )
+    )
     boot = inquirer.select(
         message="Boot SuperCollider along with Sardine?",
         choices=[
@@ -226,7 +263,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
         ],
         default=None,
     ).execute()
-    config_file['boot_superdirt'] = boot
+    config_file["boot_superdirt"] = boot
     verbose_superdirt = inquirer.select(
         message="Turn on verbose output for SuperCollider?",
         choices=[
@@ -235,22 +272,35 @@ def _select_supercollider_settings(config_file: dict) -> dict:
         ],
         default=None,
     ).execute()
-    config_file['verbose_superdirt'] = verbose_superdirt
+    config_file["verbose_superdirt"] = verbose_superdirt
 
-    boot_path = inquirer.text(message="Enter your SuperDirt boot path\n\
-(leave blank for default):").execute()
+    boot_path = inquirer.text(
+        message="Enter your SuperDirt boot path\n\
+(leave blank for default):"
+    ).execute()
     if boot_path != "":
-        config_file['superdirt_config_path'] = boot_path
-    print(Panel.fit((
-        f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | " +  
-        f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]")))
+        config_file["superdirt_config_path"] = boot_path
+    print(
+        Panel.fit(
+            (
+                f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | "
+                + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
+            )
+        )
+    )
     return config_file
+
 
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
-    print(Panel.fit((
-        f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | " +  
-        f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]")))
+    print(
+        Panel.fit(
+            (
+                f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | "
+                + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
+            )
+        )
+    )
     debug = inquirer.select(
         message="Turn on parser debug mode?",
         choices=[
@@ -259,47 +309,57 @@ def _select_additional_options(config_file: dict) -> dict:
         ],
         default=None,
     ).execute()
-    config_file['debug'] = debug
-    user_config_path = inquirer.text(message="Enter your user Python config file path\n\
-(leave blank for default):").execute()
+    config_file["debug"] = debug
+    user_config_path = inquirer.text(
+        message="Enter your user Python config file path\n\
+(leave blank for default):"
+    ).execute()
     if user_config_path != "":
-        config_file['user_config_path'] = user_config_path 
-    print(Panel.fit((
-        f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | " +  
-        f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]")))
+        config_file["user_config_path"] = user_config_path
+    print(
+        Panel.fit(
+            (
+                f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | "
+                + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
+            )
+        )
+    )
     return config_file
+
 
 def main():
     """
     New point of entry for the configuration tool. It is now an hybrid between a
-    TUI and CLI. Simple contextual menu that allows the user to change values in 
-    the JSON file without the need of writing too much. It is based on a very 
+    TUI and CLI. Simple contextual menu that allows the user to change values in
+    the JSON file without the need of writing too much. It is based on a very
     primitive while loop that ends when the user is done editing to its liking.
 
-    Just like before, we are building a monolothic configuration dict that we 
+    Just like before, we are building a monolothic configuration dict that we
     inject into the current config.json file. Not fancy but cool nonetheless!
     """
     MENU_CHOICES = ["Show Config", "MIDI", "Clock", "SuperCollider", "More", "Exit"]
     try:
-        USER_CONFIG = read_json_file()['config']
+        USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
-        print("[bold red]No Sardine Configuration found. Please boot Sardine first![/bold red]")
+        print(
+            "[bold red]No Sardine Configuration found. Please boot Sardine first![/bold red]"
+        )
         exit()
-    print(Panel.fit("[red]"+FUNNY_TEXT+"[/red]"))
+    print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
     while True:
         menu_select = inquirer.select(
-                message="Select an option",
-                choices=MENU_CHOICES).execute()
+            message="Select an option", choices=MENU_CHOICES
+        ).execute()
         if menu_select == "Exit":
             write_to_file = inquirer.confirm(
-                    message="Do you wish to save the current config file?").execute()
+                message="Do you wish to save the current config file?"
+            ).execute()
             if write_to_file:
                 try:
                     write_json_file({"config": USER_CONFIG})
                 except Exception:
                     raise SystemError("Couldn't write config file!")
-            exit_from_conf = inquirer.confirm(
-                    message="Do you wish to exit?").execute()
+            exit_from_conf = inquirer.confirm(message="Do you wish to exit?").execute()
             if exit_from_conf:
                 exit()
             else:
@@ -314,6 +374,7 @@ def main():
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)
+
 
 if __name__ == "__main__":
     main()

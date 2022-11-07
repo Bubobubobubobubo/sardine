@@ -169,7 +169,7 @@ class SuperDirtSender:
 
             if self.sound == []:
                 return
-            if isinstance(self.sound, composite_tokens):
+            if isinstance(self.sound, list):
                 new_element = self.sound[
                     pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
                 ]

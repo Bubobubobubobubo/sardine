@@ -24,7 +24,6 @@ def compose_parametric_patterns(
         conv_function = lambda x: x
 
     for key, value in items:
-        print(type(value))
         if value == []:
             continue
         if isinstance(value, list):

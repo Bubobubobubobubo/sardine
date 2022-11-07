@@ -1,6 +1,7 @@
 from lark import Lark, Tree
 from pathlib import Path
 from .TreeCalc import CalculateTree
+from .Chords import Chord
 
 # __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")
@@ -80,7 +81,7 @@ class ListParser:
         from collections.abc import Iterable
 
         for x in pat:
-            if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
+            if isinstance(x, Iterable) and not isinstance(x, (str, bytes, Chord)):
                 yield from self._flatten_result(x)
             else:
                 yield x

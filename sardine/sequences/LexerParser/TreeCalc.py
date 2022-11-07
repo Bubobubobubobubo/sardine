@@ -155,9 +155,9 @@ class CalculateTree(Transformer):
             content = CyclicalList(content)
             return content[list_slice[0] : list_slice[1]]
 
-    def chordify(self, collection: list):
+    def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return FuncLibrary.chordify(x=collection)
+        return FuncLibrary.chordify(*sum(args, start=[]))
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""

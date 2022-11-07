@@ -52,9 +52,9 @@ pattern: sum ("," sum?)* -> return_pattern
      | "[" sum ":" sum "]"                                 -> generate_ramp
      | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
      | "[" sum ("," sum)* ","? "]"                         -> make_list
+     | "<" sum ("," sum)* ","? ">"                         -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
-     | "<" sum ">"                                         -> chordify
      | NAME "(" sum ("," sum)* ")"                         -> function_call
 
 

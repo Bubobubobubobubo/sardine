@@ -190,6 +190,7 @@ class SuperDirtSender:
             pattern_result = compose_parametric_patterns(
                 div=div, rate=rate, iterator=i, items=self.content.items()
             )
+            print(pattern_result)
             final_message.extend(pattern_result)
 
             # =================================================================

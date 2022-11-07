@@ -176,9 +176,9 @@ def dmitri(collection: list, chord_len: list = [4]) -> list:
     return voiced
 
 
-def chordify(x: list) -> list:
+def chordify(*x) -> list:
     """Turn a list into a chord"""
-    return Chord(elements=x)
+    return Chord(*x)
 
 
 def anti_speed(x: list) -> list:

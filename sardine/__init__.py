@@ -327,9 +327,10 @@ class Delay:
 
 
 from sys import argv
+
 hook_path = argv[0]
 if "__main__.py" in hook_path:
-    os.environ['SARDINE_INIT_SESSION'] = 'YES'
+    os.environ["SARDINE_INIT_SESSION"] = "YES"
 
 if (
     os.getenv("SARDINE_INIT_SESSION") is not None

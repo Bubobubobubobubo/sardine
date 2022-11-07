@@ -23,7 +23,6 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "debug": False,
         "ppqn": 24,
-        "parameters": [],
         "boot_superdirt": False,
         "verbose_superdirt": False,
         "active_clock": True,
@@ -48,7 +47,6 @@ def _recursive_update(dest: dict, src: dict):
 class Config:
     midi: Union[str, None]
     beats: int
-    parameters: list
     ppqn: int
     bpm: int
     debug: bool
@@ -66,7 +64,6 @@ class Config:
             midi=config["midi"],
             beats=config["beats"],
             debug=config["debug"],
-            parameters=config["parameters"],
             ppqn=config["ppqn"],
             bpm=config["bpm"],
             boot_superdirt=config["boot_superdirt"],
@@ -83,7 +80,6 @@ class Config:
                 "midi": self.midi,
                 "beats": self.beats,
                 "debug": self.debug,
-                "parameters": self.parameters,
                 "ppqn": self.ppqn,
                 "bpm": self.bpm,
                 "boot_superdirt": self.boot_superdirt,
@@ -149,4 +145,7 @@ def read_user_configuration() -> Config:
 
 
 if __name__ == "__main__":
-    config = read_user_configuration()
+    try:
+        config = read_user_configuration()
+    except FileNotFoundError as e:
+        raise FileNotFoundError("No Sardine Config found. Please start Sardine first")

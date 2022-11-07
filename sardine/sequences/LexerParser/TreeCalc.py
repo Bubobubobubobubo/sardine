@@ -155,9 +155,9 @@ class CalculateTree(Transformer):
             content = CyclicalList(content)
             return content[list_slice[0] : list_slice[1]]
 
-    def chordify(self, collection: list):
+    def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return FuncLibrary.chordify(x=collection)
+        return FuncLibrary.chordify(*sum(args, start=[]))
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""
@@ -375,7 +375,9 @@ class CalculateTree(Transformer):
         return map_binary_function(my_random, left, right)
 
     def add_mystery(self, value):
-        return map_unary_function(lambda x: x if random.random() > 0.5 else None, value)
+        return map_unary_function(
+            lambda x: x if random.random() > 0.5 else [None], value
+        )
 
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)

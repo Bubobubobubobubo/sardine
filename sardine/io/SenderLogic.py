@@ -26,7 +26,7 @@ def compose_parametric_patterns(
     for key, value in items:
         if value == []:
             continue
-        if isinstance(value, (list, Chord)):
+        if isinstance(value, list):
             new_value = value[
                 pattern_element(iterator=iterator, div=div, rate=rate, pattern=value)
             ]
@@ -57,6 +57,8 @@ def compose_parametric_patterns(
                         value = 127
                     elif value < 0:
                         value = 0
+            final_message.extend([key, value])
+        elif isinstance(value, Chord):
             final_message.extend([key, value])
         else:
             final_message.extend([key, conv_function(value)])

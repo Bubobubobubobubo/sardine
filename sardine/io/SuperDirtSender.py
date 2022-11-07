@@ -78,7 +78,7 @@ class SuperDirtSender:
             list_of_messages = []
             for _ in range(0, longest_list):
                 note_message = [
-                    x if not isinstance(x, Chord) else x[_] for x in message
+                    x if not isinstance(x, Chord) else x[_ % len(x)] for x in message
                 ]
                 list_of_messages.append(note_message)
             for message in list_of_messages:
@@ -169,7 +169,7 @@ class SuperDirtSender:
 
             if self.sound == []:
                 return
-            if isinstance(self.sound, composite_tokens):
+            if isinstance(self.sound, list):
                 new_element = self.sound[
                     pattern_element(iterator=i, div=div, rate=rate, pattern=self.sound)
                 ]

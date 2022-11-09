@@ -136,8 +136,9 @@ class ListParser:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
             raise ParserError(f"Non valid token: {pattern}: {e}")
-
-        print(f"Pat: {self._flatten_result(final_pattern)}")
+        
+        if self.debug:
+            print(f"Pat: {self._flatten_result(final_pattern)}")
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):

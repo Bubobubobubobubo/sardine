@@ -1,5 +1,6 @@
 from itertools import islice, count, cycle
 from itertools import cycle, takewhile, dropwhile
+from .Chords import Chord
 
 
 def floating_point_range(start, end, step):
@@ -50,7 +51,10 @@ def map_unary_function(func, value):
         func: The function to apply
         value: The value or the list of values
     """
-    return [allow_silence_1(func)(x) for x in value]
+    if isinstance(value, Chord):
+        return Chord(*[allow_silence_1(func)(x) for x in value])
+    else:
+        return [allow_silence_1(func)(x) for x in value]
 
 
 def zip_cycle(left, right):
@@ -69,7 +73,10 @@ def map_binary_function(func, left, right):
         left: The left value or list of values
         right: The right value or list of values
     """
-    return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]
+    if any(isinstance(x, Chord) for x in (left, right)):
+        return Chord(*[allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)])
+    else:
+        return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]
 
 
 # Taken from:

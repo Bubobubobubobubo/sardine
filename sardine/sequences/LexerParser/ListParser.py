@@ -2,6 +2,7 @@ from lark import Lark, Tree
 from pathlib import Path
 from .TreeCalc import CalculateTree
 from .Chords import Chord
+from rich import print
 
 # __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")
@@ -21,7 +22,7 @@ grammar = grammar_path / "grammars/proto.lark"
 
 
 class ListParser:
-    def __init__(self, clock, iterators, variables, parser_type: str = "proto"):
+    def __init__(self, clock, iterators, variables, parser_type: str = "proto", debug: bool=False):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
         up to the user to choose the parser that fits best to a task. Each
@@ -35,6 +36,7 @@ class ListParser:
         """
         # Reference to clock for the "t" grammar token
         self.clock = clock
+        self.debug = debug
         self.iterators = iterators
         self.variables = variables
 
@@ -135,6 +137,7 @@ class ListParser:
         except Exception as e:
             raise ParserError(f"Non valid token: {pattern}: {e}")
 
+        print(f"Pat: {self._flatten_result(final_pattern)}")
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):

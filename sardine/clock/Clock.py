@@ -97,6 +97,7 @@ class Clock:
         bpm: Union[float, int] = 120,
         beats_per_bar: int = 4,
         deferred_scheduling: bool = True,
+        debug: bool = True,
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
 
@@ -144,8 +145,12 @@ class Clock:
         # Parser
         self.iterators = Iterator()
         self.variables = Variables()
+        self._parser_debug = debug
         self.parser = ListParser(
-            clock=self, variables=self.variables, iterators=self.iterators
+            clock=self, 
+            variables=self.variables, 
+            iterators=self.iterators,
+            debug=self._parser_debug,
         )
 
     def __repr__(self):

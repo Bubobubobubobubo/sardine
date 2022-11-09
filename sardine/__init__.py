@@ -365,6 +365,7 @@ if (
         beats_per_bar=config.beats,  # default beats per bar
         ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
         deferred_scheduling=config.deferred_scheduling,  # Clock related
+        debug=config.debug # Debug mode for printing every pattern
     )
     # Synonyms for swimming function management
     cs = again = anew = a = c.schedule_func  # aliases for recursion
@@ -394,9 +395,3 @@ if (
     # Init amphibian
     i, v = c.iterators, c.variables
     P = Pat
-
-    if config.debug:
-        try:
-            lang_debug()
-        except Exception as e:
-            exit()

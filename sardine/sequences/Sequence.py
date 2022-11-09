@@ -70,7 +70,7 @@ def euclidian_rhythm(pulses: int, length: int, rotate: int= 0):
     bool_list = [_starts_descent(res_list, index) for index in range(length)]
     def rotation(l, n):
         return l[-n:] + l[:-n]
-    return rotation(bool_list, rotate)
+    return rotation([1 if x is True else 0 for x in bool_list], rotate)
 
 
 euclid = euclidian_rhythm

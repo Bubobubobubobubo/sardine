@@ -720,6 +720,7 @@ class Clock:
         velocity: Union[int, str] = 100,
         channel: Union[int, str] = 0,
         dur: Union[int, float, str] = 48,
+        trig: Union[bool, int]= 1,
         at: int = 0,
         **kwargs,
     ) -> MIDISender:
@@ -729,6 +730,7 @@ class Clock:
             at=at,
             delay=dur,
             note=note,
+            trig=trig,
             velocity=velocity,
             channel=channel,
             nudge=self._midi_nudge,

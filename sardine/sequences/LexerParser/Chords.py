@@ -21,4 +21,4 @@ class Chord(list):
         def _clamp(n, smallest, largest):
             return max(smallest, min(n, largest))
 
-        return list(map(lambda x: _clamp(x, 0, 127), self))
+        return Chord(*map(lambda x: _clamp(x, 0, 127), self))

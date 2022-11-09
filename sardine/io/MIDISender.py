@@ -102,7 +102,7 @@ class MIDISender:
                 elif isinstance(_, (float, int)):
                     new_list.append(_clamp(_, 0, 127))
                 elif isinstance(_, Chord):
-                    new_list.append(Chord(_._clamp()))
+                    new_list.append(_._clamp())
                 else:
                     new_list.append(_)
             return new_list
@@ -158,12 +158,13 @@ class MIDISender:
             "delay": self.delay,
             "velocity": self.velocity,
             "channel": self.channel,
+            "trig": self.trig,
         }
 
         def _message_without_iterator():
             """Compose a message if no iterator is given"""
             composite_tokens = (list, Chord)
-            single_tokens = (type(None), str)
+            single_tokens = (type(None), str, int, float)
 
             # =================================================================
             # HANDLING THE SOUND PARAMETER
@@ -172,14 +173,13 @@ class MIDISender:
             if self.sound == []:
                 return
 
-            # Handling lists
+            # Handling lists and chords
             if isinstance(self.sound, composite_tokens):
                 first_element = self.sound[0]
                 if first_element is not None:
                     final_message.extend(["sound", self.sound[0]])
                 else:
                     return
-
             # Handling other representations (str, None)
             elif isinstance(self.sound, single_tokens):
                 if self.sound is None:
@@ -214,12 +214,11 @@ class MIDISender:
         def _message_with_iterator():
             """Compose a message if an iterator is given"""
             composite_tokens = (list, Chord)
-            single_tokens = (type(None), str)
+            single_tokens = (type(None), str, float, int)
 
             # =================================================================
             # HANDLING THE SOUND PARAMETER
             # =================================================================
-
             if self.sound == []:
                 return
             if isinstance(self.sound, composite_tokens):
@@ -230,6 +229,11 @@ class MIDISender:
                     return
                 else:
                     final_message.extend(["sound", new_element])
+            elif isinstance(self.sound, single_tokens):
+                if self.sound is None:
+                    return
+                else:
+                    final_message.extend(["sound", self.sound])
             else:
                 if self.sound is None:
                     return
@@ -251,7 +255,7 @@ class MIDISender:
 
             # Trig must always be included
             if "trig" not in final_message:
-                final_message.extend(["trig", str(1)])
+                final_message.extend(["trig", 1])
 
             trig_value = final_message[final_message.index("trig") + 1]
             if trig_value:

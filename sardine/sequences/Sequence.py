@@ -56,67 +56,24 @@ def xox(sequence: str, reverse: bool = False):
     return itertools.cycle(fseq)
 
 
-def euclidean_rhythm(
-    beats: int, pulses: int, rotation: int = 0, lo: int = 0, hi: int = 1
-):
-    """Computes Euclidean rhythm of beats/pulses
-    Examples:
-        euclidean_rhythm(8, 5)          -> [1, 0, 1, 1, 0, 1, 1, 0]
-        euclidean_rhythm(8, 5, 1, 0, 1) -> [0, 1, 1, 0, 1, 1, 0, 1]
-        euclidean_rhythm(8, 5, 1, 1, 2) -> [1, 2, 2, 1, 2, 2, 1, 2]
-    Args:
-        beats  (int): Beats of the rhythm
-        pulses (int): Pulses to distribute. Should be <= beats
-        rotation (int): Number of beats to shift on result i.e. [0,1,2] => [1,2,0]
-        lo (int): low value (rest)
-        hi (int): high value (pulse)
-    Returns:
-        list: An unidimensional list of integers (#hi and #lo values) with #beats length and #pulses number of #hi values
-    Inspired by:
-        - https://kountanis.com/2017/06/13/python-euclidean/
-        - [Foxdot](https://github.com/Qirky/FoxDot/blob/76318f9630bede48ff3994146ed644affa27bfa4/FoxDot/lib/Utils/__init__.py#L69)
-    """
-    beats, pulses, rotation, hi, lo = (
-        int(beats),
-        int(pulses),
-        int(rotation),
-        int(hi),
-        int(lo),
-    )
+# Found here: https://github.com/tsmorrill/Sweepings/blob/main/python3/euclid_descent.py
+# Paper: https://arxiv.org/pdf/2206.12421.pdf
 
-    if pulses == 0:
-        return [pulses for i in range(beats)]
+def _starts_descent(list, index):
+    length = len(list)
+    next_index = (index + 1) % length
+    return list[index] > list[next_index]
 
-    # Initialization of the lookup as a 2-dimension list containing a #pulses
-    # number of hi values and a (#beats - #pulses) number of lo values
-    # eg: [[1], [1], [1], [1], [1], [0], [0], [0]]
-    lookup = [[hi if i < pulses else lo] for i in range(beats)]
-
-    while True:
-        beats = beats - pulses
-        if beats <= 1:
-            break
-        elif beats < pulses:
-            pulses, beats = beats, pulses
-        for i in range(pulses):
-            # The last element of the lookup list is appended to its #i element
-            # and then removed
-            # e.g. [[1], [1], [1], [1], [1], [0], [0], [0]]
-            # =>   [[1, 0], [1], [1], [1], [1], [0], [0]]
-            lookup[i] += lookup[-1]
-            del lookup[-1]
-
-    # The lookup list needs to be flattened
-    # [[1, 0, 1], [1, 0, 1], [1, 0]] => [1, 0, 1, 1, 0, 1, 1, 0]
-    result = [x for y in lookup for x in y]
-
-    if rotate != 0:
-        result = result[rotation:] + result[:rotation]
-
-    return result
+def euclidian_rhythm(pulses: int, length: int, rotate: int= 0):
+    """Calculate Euclidean rhythms"""
+    res_list = [pulses * t % length for t in range(-1, length - 1)]
+    bool_list = [_starts_descent(res_list, index) for index in range(length)]
+    def rotation(l, n):
+        return l[-n:] + l[:-n]
+    return rotation(bool_list, rotate)
 
 
-euclid = euclidean_rhythm
+euclid = euclidian_rhythm
 
 
 def E(step: int, maximum: int, index: int) -> bool:

@@ -18,6 +18,8 @@ class Chord(list):
         super().__setitem__(index, item)
 
     def _clamp(self) -> list:
+        """Clamp all values to range 0-127 for MIDI Notes"""
+
         def _clamp(n, smallest, largest):
             return max(smallest, min(n, largest))
 

@@ -378,11 +378,6 @@ class CalculateTree(Transformer):
 
         return map_binary_function(my_random, left, right)
 
-    def add_mystery(self, value):
-        return map_unary_function(
-            lambda x: x if random.random() > 0.5 else [None], value
-        )
-
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)
 

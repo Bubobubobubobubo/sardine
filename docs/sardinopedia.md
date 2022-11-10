@@ -193,7 +193,7 @@ PB.rate = 2
 ```
 Simple application of some of the details I have explained/detailed in the above sections!
 
-### Shutting down Quickstep patterns
+### Stop Quickstep patterns
 
 **Quickstep** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` function like always. You will have to reevaluate these patterns to start again:
 

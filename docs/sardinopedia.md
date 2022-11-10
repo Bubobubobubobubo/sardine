@@ -200,7 +200,8 @@ Simple application of some of the details I have explained/detailed in the above
 ```python
 PA >> play('bd, ., hhh, .')
 PA.rate = 1
-PA.rate = 2
+
+hush()
 ```
 
 ## Advanced (Swimming fast)

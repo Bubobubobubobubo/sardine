@@ -22,7 +22,14 @@ grammar = grammar_path / "grammars/proto.lark"
 
 
 class ListParser:
-    def __init__(self, clock, iterators, variables, parser_type: str = "proto", debug: bool=False):
+    def __init__(
+        self,
+        clock,
+        iterators,
+        variables,
+        parser_type: str = "proto",
+        debug: bool = False,
+    ):
         """ListParser is the main interface for the pattern syntax. It can be
         initialised in three different modes: 'number', 'note', 'name'. It is
         up to the user to choose the parser that fits best to a task. Each
@@ -136,7 +143,7 @@ class ListParser:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
             raise ParserError(f"Non valid token: {pattern}: {e}")
-        
+
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
         return self._flatten_result(final_pattern)

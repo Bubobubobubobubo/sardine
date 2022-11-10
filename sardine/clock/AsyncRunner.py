@@ -328,7 +328,7 @@ class AsyncRunner:
         self.swim()
         last_state = self.states[-1]
         name = last_state.func.__name__
-        if name != '_global_runner':
+        if name != "_global_runner":
             print_panel(f"[yellow][[red]{name}[/red] is swimming][/yellow]")
 
         try:
@@ -341,11 +341,13 @@ class AsyncRunner:
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    if name != '_global_runner':
+                    if name != "_global_runner":
                         if pushed:
                             print_panel(f"[yellow][Updating [red]{name}[/red]]")
                         else:
-                            print_panel(f"[yellow][Saving [red]{name}[/red] from crash]")
+                            print_panel(
+                                f"[yellow][Saving [red]{name}[/red] from crash]"
+                            )
                     last_state = state
 
                 signature = inspect.signature(state.func)

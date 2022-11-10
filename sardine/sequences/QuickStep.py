@@ -2,12 +2,12 @@
 #
 # Quickstep is another dance similar to FoxTrot. All in all, this is as bad pun
 # to name this feature: an emulation of FoxDot (https://foxdot.org/) patterning
-# system. It works in a rather similar way, at least for the public interface.
-# The rest is just carefully attributing senders to a _global_runner function
-# that behaves just like any other swimming function.
+# system. It works in a rather similar way, at least for the public interface.
+# The rest is just carefully attributing senders to a _global_runner function
+# that behaves just like any other swimming function.
 #
 # It can be useful to quickly lay down some drumming materials while using swim-
-# ming functions for more delicate operations :)
+# ming functions for more delicate operations :)
 ################################################################################
 from string import ascii_uppercase, ascii_lowercase
 from typing import Union, TYPE_CHECKING
@@ -20,13 +20,14 @@ if TYPE_CHECKING:
     from ..io.SuperDirtSender import SuperDirtSender
     from ..io.OSCSender import OSCSender
 
-__all__ = ('Player', 'PatternHolder')
+__all__ = ("Player", "PatternHolder")
+
 
 class Player:
 
     """
     A Player is a lone Sender that will be activated by a central QuickStep
-    swimming function. It contains the sender and basic information about 
+    swimming function. It contains the sender and basic information about
     div, rate, etc...
     """
 
@@ -38,7 +39,7 @@ class Player:
         rate: Union[int, float] = 1,
     ):
         self._name = name
-        self._content = content 
+        self._content = content
         self._rate = rate
         self._div = div
 
@@ -47,21 +48,21 @@ class Player:
         """
         The play method will call a SuperDirtSender
         """
-        return {'type': 'sound', 'args': args, 'kwargs': kwargs}
+        return {"type": "sound", "args": args, "kwargs": kwargs}
 
     @classmethod
     def play_midi(cls, *args, **kwargs):
         """
         The play MIDI method will call a MIDISender
         """
-        return {'type': 'MIDI', 'args': args, 'kwargs': kwargs}
+        return {"type": "MIDI", "args": args, "kwargs": kwargs}
 
     @classmethod
     def play_osc(cls, *args, **kwargs):
         """
         The play_osc method will call an OSCSender
         """
-        return {'type': 'OSC', 'args': args, 'kwargs': kwargs}
+        return {"type": "OSC", "args": args, "kwargs": kwargs}
 
     def __rshift__(self, method_result):
         """
@@ -102,11 +103,13 @@ class PatternHolder:
     information to play a sender, including its rate, div, etc...
     """
 
-    def __init__(self, 
-            MIDISender: 'MIDISender',
-            OSCSender: 'OSCSender',
-            SuperDirtSender: 'SuperDirtSender',
-            clock):
+    def __init__(
+        self,
+        MIDISender: "MIDISender",
+        OSCSender: "OSCSender",
+        SuperDirtSender: "SuperDirtSender",
+        clock,
+    ):
         self._midisender = MIDISender
         self._oscsender = OSCSender
         self._superdirtsender = SuperDirtSender
@@ -124,41 +127,43 @@ class PatternHolder:
     def _init_internal_dictionary(self):
         """
         Initialisation process. Create the dictionary keys, add one player per
-        key. We can't push the dictionary to globals now. It needs to be done 
+        key. We can't push the dictionary to globals now. It needs to be done
         during the __init__ process like so:
 
         for (k, v) in self._patterns.items():
             globals()[k] = v
         """
-        names = ["P" + l for l in ascii_uppercase+ascii_lowercase]
+        names = ["P" + l for l in ascii_uppercase + ascii_lowercase]
         self._patterns = {k: Player(name=k) for k in names}
 
     def _global_runner(self, d=0.5, i=0):
         """
         This is a template for a global swimming function that can hold all
-        the player/senders together for scheduling. 
+        the player/senders together for scheduling.
         """
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
         for player in patterns:
             try:
-                if player._content['type'] == "MIDI":
-                    self._midisender(**player._content['kwargs']).out(
-                            i=i, div=player._div, rate=player._rate)
-                elif player._content['type'] == "OSC":
+                if player._content["type"] == "MIDI":
+                    self._midisender(**player._content["kwargs"]).out(
+                        i=i, div=player._div, rate=player._rate
+                    )
+                elif player._content["type"] == "OSC":
                     self._oscsender(
-                            *player._content['args'], 
-                            **player._content['kwargs']).out(
-                            i=i, div=player._div, rate=player._rate)
-                elif player._content['type'] == "sound":
+                        *player._content["args"], **player._content["kwargs"]
+                    ).out(i=i, div=player._div, rate=player._rate)
+                elif player._content["type"] == "sound":
                     self._superdirtsender(
-                            *player._content['args'], 
-                            **player._content['kwargs']).out(
-                            i=i, div=player._div, rate=player._rate)
+                        *player._content["args"], **player._content["kwargs"]
+                    ).out(i=i, div=player._div, rate=player._rate)
             except Exception as e:
-                print(Panel.fit("[red]/!\\\\[/red] [yellow]Error in QuickStep pattern[/yellow]"))
+                print(
+                    Panel.fit(
+                        "[red]/!\\\\[/red] [yellow]Error in QuickStep pattern[/yellow]"
+                    )
+                )
                 continue
-        self._clock.schedule_func(self._global_runner, d=d, i=i+1)
-
+        self._clock.schedule_func(self._global_runner, d=d, i=i + 1)
 
     # def __legacy_init(self):
     #     names = list(product(*([ascii_uppercase] * 2)))

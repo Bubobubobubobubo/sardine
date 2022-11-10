@@ -147,8 +147,8 @@ class Clock:
         self.variables = Variables()
         self._parser_debug = debug
         self.parser = ListParser(
-            clock=self, 
-            variables=self.variables, 
+            clock=self,
+            variables=self.variables,
             iterators=self.iterators,
             debug=self._parser_debug,
         )
@@ -725,7 +725,7 @@ class Clock:
         velocity: Union[int, str] = 100,
         channel: Union[int, str] = 0,
         dur: Union[int, float, str] = 48,
-        trig: Union[bool, int]= 1,
+        trig: Union[bool, int] = 1,
         at: int = 0,
         **kwargs,
     ) -> MIDISender:

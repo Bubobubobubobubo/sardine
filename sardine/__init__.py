@@ -96,8 +96,6 @@ i = None
 v = None
 
 
-
-
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
     """Helper function to send a MIDI Note"""
     asyncio.create_task(
@@ -354,7 +352,7 @@ if (
         beats_per_bar=config.beats,  # default beats per bar
         ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
         deferred_scheduling=config.deferred_scheduling,  # Clock related
-        debug=config.debug # Debug mode for printing every pattern
+        debug=config.debug,  # Debug mode for printing every pattern
     )
     # Synonyms for swimming function management
     cs = again = anew = a = c.schedule_func  # aliases for recursion
@@ -385,8 +383,10 @@ if (
     i, v = c.iterators, c.variables
     P = Pat
 
-    # Quickstep functionality (similar to FoxDot)
-    __quickstep_patterns = PatternHolder(clock=c, MIDISender=M, SuperDirtSender=S, OSCSender=O)
+    # Quickstep functionality (similar to FoxDot)
+    __quickstep_patterns = PatternHolder(
+        clock=c, MIDISender=M, SuperDirtSender=S, OSCSender=O
+    )
     for (key, value) in __quickstep_patterns._patterns.items():
         globals()[key] = value
     c.schedule_func(__quickstep_patterns._global_runner)
@@ -406,7 +406,7 @@ if (
                     c.remove(runner)
             else:
                 for name, runner in c.runners.items():
-                    if name != '_global_runner':
+                    if name != "_global_runner":
                         runner.stop()
         finally:
             __quickstep_patterns.reset()

@@ -621,7 +621,7 @@ class Clock:
 
     def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
-        if not inspect.isfunction(func):
+        if not (inspect.isfunction(func) or inspect.ismethod(func)):
             raise TypeError(f"func must be a function, not {type(func).__name__}")
 
         name = func.__name__

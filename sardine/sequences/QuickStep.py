@@ -77,7 +77,7 @@ class Player:
         self._div = int(value)
 
     def __repr__(self) -> str:
-        return f"Player: {self._content}, div: {self._div}, rate: {self._rate}"
+        return f"[Player {self._name}]: {self._content}, div: {self._div}, rate: {self._rate}"
 
 
 class PatternHolder:
@@ -86,7 +86,10 @@ class PatternHolder:
     A Pattern Holder, at core, is simply a dict. This dict will contaminate the
     global namespace with references to players, just like FoxDot. Dozens of re-
     ferences to Players() will be inserted in the global namespace to be used by
-    musicians. Resetting the PatternHolder will reset/cancel all the Players.
+    musicians.
+
+    Players are senders in disguise. This tiny object will hold all the required
+    information to play a sender, including its rate, div, etc...
     """
 
     def __init__(self, 
@@ -105,27 +108,25 @@ class PatternHolder:
         """
         Reset the internal dictionary of player/senders.
         """
-        # I am not sure that this is working
-        for v in globals().values():
-            if isinstance(v, Player): 
-                v = None
-        self._init_internal_dictionary()
+        for key in self._patterns.keys():
+            self._patterns[key]._content = {}
 
     def _init_internal_dictionary(self):
         """
         Initialisation process. Create the dictionary keys, add one player per
-        key. Can also be specialised for resetting purposes.
+        key. We can't push the dictionary to globals now. It needs to be done 
+        during the __init__ process like so:
+
+        for (k, v) in self._patterns.items():
+            globals()[k] = v
         """
-        # We compose player names 
         names = ["P" + l for l in ascii_uppercase]
-        self._patterns |= {k: Player(name=k) for k in names}
-        # We will need to push them from the global namespace itself like so
-        # for (k, v) in self._patterns.items():
-        #     globals()[k] = v
+        self._patterns = {k: Player(name=k) for k in names}
 
     def _global_runner(self, d=0.5, i=0):
-        """This is a template for a global swimming function that can hold all
-        the player/senders together for scheduling.
+        """
+        This is a template for a global swimming function that can hold all
+        the player/senders together for scheduling. 
         """
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
         for player in patterns:

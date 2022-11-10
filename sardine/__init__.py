@@ -410,6 +410,3 @@ if (
                         runner.stop()
         finally:
             __quickstep_patterns.reset()
-            for (key, value) in __quickstep_patterns._patterns.items():
-                globals()[key] = value
-

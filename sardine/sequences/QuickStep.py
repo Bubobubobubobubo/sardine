@@ -1,4 +1,16 @@
-from itertools import product
+# QuickStep mode ###############################################################
+#
+# Quickstep is another dance similar to FoxTrot. All in all, this is as bad pun
+# to name this feature: an emulation of FoxDot (https://foxdot.org/) patterning
+# system. It works in a rather similar way, at least for the public interface.
+# The rest is just carefully attributing senders to a _global_runner function
+# that behaves just like any other swimming function.
+#
+# It can be useful to quickly lay down some drumming materials while using swim-
+# ming functions for more delicate operations :)
+################################################################################
+
+
 from string import ascii_uppercase
 from typing import Union, TYPE_CHECKING
 from rich import print

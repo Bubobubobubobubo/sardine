@@ -146,6 +146,62 @@ Feeding one swimming function with the data of another.
 
 The function to perform recursion has multiple names because it is very important: `again`, `anew`, `a`. These aliases all refer to the same low-level function named `c.schedule` that talks directly to **Sardine**'s scheduler.
 
+## QuickStep swimming
+
+There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). It uses the same syntax and the same philosophy of patterning, but on **Sardine**'s foundations. This mode of *swimming* is basically assigning [Senders](#senders) to an invisible *swimming functions* that is out of your reach. It is an emulation/simulation of FoxDot that is designed to work along with **Sardine** usual mode of operation.
+
+### Players
+
+By default, there are 48 `Players` ready for Quickstepping. This is more than you will ever need! They are named in a consistent way from `Pa`, to `PZ`: `[Pa, Pb, Pc, Pd, Pe, Pf, ..., PA, PB, PC, ... PZ]`. These objects can be interacted with using a single method: `>>`. Just like anything else with **Sardine**, you can also fine-tune your patterns with some setters that will alter how the pattern is read by the computer. We will use `Pa` for demonstration purposes:
+
+* `Pa.rate`: rate of your pattern (see [Fast Swimming](#advanced-swimming-fast)).
+* `Pa.div`: division factor of your pattern.
+
+While quickstepping, you will only ever need to deal with these three methods. All the rest is integrated with the rest of the **Sardine** ecosystem: 
+
+```python
+Pa >> play('bd, ., hh')
+Pa.rate = 1
+Pa.rate = 2
+```
+
+In addition to that, take note of the `play()` method used for assigning a **Sender** to **Players**. There is one method per available default **Sender**:
+
+* `play(*args, **kwargs)`: the default **SuperDirt** (or **S**) Sender.
+* `play_midi(*args, **kwargs)`: the default **MIDI** (or **M**) Sender.
+* `play_osc(*args, **kwargs)`: the default **OSC** (or **O**) Sender.
+
+They are basically senders with a different name! You will have to learn how to use **Senders** to be truly efficient with the Quickstepping mode. You can spend your life using **Sardine** this way or combine it with *swimming functions*, that is entirely up to you! This mode was initially designed in order to demonstrate the syntax of [FoxDot](https://foxdot.org). I find it to be a fun and efficient way to jam along with friends as well :)
+
+### Drumming
+
+```python
+PB >> play('jvbass:r*8, ..., pluck, ...')
+PA >> play('bd, ., hh, sn, hh', 
+        amp=0.4,
+        legato='0.3~1', speed='1')
+```
+By using the `play()` method combined with regular patterns, you can generate efficient drum patterns without having to type too much! I won't document this further because the [Senders](#senders) and [Patterning](#pattern-syntax) sections will teach you everything you need about this!
+
+### Using MIDI with Quickstep
+
+```python
+PA >> play_midi(note='<C@maj7>', dur='1~8')
+PA.div = 3
+PB >> play_midi(note="C.., C|C'|C''", dur='1~8')
+PB.rate = 2
+```
+Simple application of some of the details I have explained/detailed in the above sections!
+
+### Stop Quickstep patterns
+
+**Quickstep** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` function like always. You will have to reevaluate these patterns to start again:
+
+```python
+PA >> play('bd, ., hhh, .')
+PA.rate = 1
+PA.rate = 2
+```
 
 ## Advanced (Swimming fast)
 
@@ -780,112 +836,114 @@ def notes(d=0.5, i=0):
 You can use the `@` to **qualify** a note, to summon a collection of notes or a structure based on the provided note. `C@penta` will raise a major pentatonic scale based on middle C. Be careful while using them as they will instantly turn a single token into a list of `x` tokens. You might want to filter part of a qualifiers note collection.
 
 ```python
-# ====== #
-# Chords #
-# ====== #
 
-"dim": [0, 3, 6, 12]
-"dim9": [0, 3, 6, 9, 14]
-"hdim7": [0, 3, 6, 10]
-"hdim9": [0, 3, 6, 10, 14]
-"hdimb9": [0, 3, 6, 10, 13]
-"dim7": [0, 3, 6, 9]
-"7dim5": [0, 4, 6, 10]
-"aug": [0, 4, 8, 12]
-"augMaj7": [0, 4, 8, 11]
-"aug7": [0, 4, 8, 10]
-"aug9": [0, 4, 10, 14]
-"maj": [0, 4, 7, 12]
-"maj7": [0, 4, 7, 11]
-"maj9": [0, 4, 11, 14]
-"minmaj7": [0, 3, 7, 11]
-"5": [0, 7, 12]
-"6": [0, 4, 7, 9]
-"7": [0, 4, 7, 10]
-"9": [0, 4, 10, 14]
-"b9": [0, 4, 10, 13]
-"mM9": [0, 3, 11, 14]
-"min": [0, 3, 7, 12]
-"min7": [0, 3, 7, 10]
-"min9": [0, 3, 10, 14]
-"sus4": [0, 5, 7, 12]
-"sus2": [0, 2, 7, 12]
-"b5": [0, 4, 6, 12]
-"mb5": [0, 3, 6, 12]
+qualifiers = {
 
-# ================== #
-# Scales begin here  #
-# ================== #
+    ##########
+    # Chords #
+    ##########
 
-"major": [0, 2, 4, 5, 7, 9, 11]
-"minor": [0, 2, 3, 5, 7, 8, 10]
-"hminor": [0, 2, 3, 5, 7, 8, 11]
-"^minor": [0, 2, 3, 5, 7, 9, 11]  # doesn't work
-"vminor": [0, 2, 3, 5, 7, 8, 10]
-"penta": [0, 2, 4, 7, 9]
-"acoustic": [0, 2, 4, 6, 7, 9, 10]
-"aeolian": [0, 2, 3, 5, 7, 8, 10]
-"algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17]
-"superlocrian": [0, 1, 3, 4, 6, 8, 10]
-"augmented": [0, 3, 4, 7, 8, 11]
-"bebop": [0, 2, 4, 5, 7, 9, 10, 11]
-"blues": [0, 3, 5, 6, 7, 10]
-"chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-"dorian": [0, 2, 3, 5, 7, 9, 10]
-"doubleharmonic": [0, 1, 4, 5, 8, 11]
-"enigmatic": [0, 1, 4, 6, 8, 10, 11]
-"flamenco": [0, 1, 4, 5, 7, 8, 11]
-"gypsy": [0, 2, 3, 6, 7, 8, 10]
-"halfdim": [0, 2, 3, 5, 6, 8, 10]
-"harmmajor": [0, 2, 4, 5, 7, 8, 11]
-"harmminor": [0, 2, 3, 5, 7, 8, 11]
-"hirajoshi": [0, 4, 6, 7, 11]
-"hungarianminor": [0, 2, 3, 6, 7, 8, 11]
-"hungarianmajor": [0, 3, 4, 6, 7, 9, 10]
-"in": [0, 1, 5, 7, 8]
-"insen": [0, 1, 5, 7, 10]
-"ionian": [0, 2, 4, 5, 7, 9, 11]
-"istrian": [0, 1, 3, 4, 6, 7]
-"iwato": [0, 1, 5, 6, 10]
-"locrian": [0, 1, 3, 5, 6, 8, 10]
-"lydianaug": [0, 2, 4, 6, 8, 9, 11]
-"lydian": [0, 2, 4, 5, 7, 8, 9, 11]
-"majorlocrian": [0, 2, 4, 5, 6, 8, 10]
-"majorpenta": [0, 2, 4, 7, 9]
-"minorpenta": [0, 3, 5, 7, 10]
-"melominup": [0, 2, 3, 5, 7, 9, 11]
-"melomindown": [0, 2, 3, 5, 7, 8, 10]
-"mixolydian": [0, 2, 4, 5, 7, 9, 10]
-"neapolitan": [0, 1, 3, 5, 7, 8, 11]
-"octatonic": [0, 2, 3, 5, 6, 8, 9, 11]
-"octatonic2": [0, 1, 3, 4, 6, 7, 9, 10]
-"persian": [0, 1, 4, 5, 6, 8, 11]
-"phrygian": [0, 1, 4, 5, 7, 8, 10]
-"prometheus": [0, 2, 4, 6, 9, 10]
-"harmonics": [0, 3, 4, 5, 7, 9]
-"tritone": [0, 1, 4, 6, 7, 10]
-"ukrainian": [0, 2, 3, 6, 7, 9, 10]
-"whole": [0, 2, 4, 6, 8, 10]
-"yo": [0, 3, 5, 7, 10]
-"symetrical": [0, 1, 2, 6, 7, 10]
-"symetrical2": [0, 2, 3, 6, 8, 10]
-"messiaen1": [0, 2, 4, 6, 8, 10]
-"messiaen2": [0, 1, 3, 4, 6, 7, 9, 10]
-"messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11]
-"messiaen4": [0, 1, 2, 4, 6, 7, 8, 11]
-"messiaen5": [0, 1, 5, 6, 7, 11]
-"messiaen6": [0, 2, 4, 5, 6, 8]
-"messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11]
+    "dim": [0, 3, 6, 12],
+    "dim9": [0, 3, 6, 9, 14],
+    "hdim7": [0, 3, 6, 10],
+    "hdim9": [0, 3, 6, 10, 14],
+    "hdimb9": [0, 3, 6, 10, 13],
+    "dim7": [0, 3, 6, 9],
+    "aug": [0, 4, 8, 12],
+    "augMaj7": [0, 4, 8, 11],
+    "aug7": [0, 4, 8, 10],
+    "aug9": [0, 4, 10, 14],
+    "maj": [0, 4, 7, 12],
+    "maj7": [0, 4, 7, 11],
+    "maj9": [0, 4, 11, 14],
+    "minmaj7": [0, 3, 7, 11],
+    "five": [0, 7, 12],
+    "six": [0, 4, 7, 9],
+    "seven": [0, 4, 7, 10],
+    "nine": [0, 4, 10, 14],
+    "b9": [0, 4, 10, 13],
+    "mM9": [0, 3, 11, 14],
+    "min": [0, 3, 7, 12],
+    "min7": [0, 3, 7, 10],
+    "min9": [0, 3, 10, 14],
+    "sus4": [0, 5, 7, 12],
+    "sus2": [0, 2, 7, 12],
+    "b5": [0, 4, 6, 12],
+    "mb5": [0, 3, 6, 12],
 
-# ================================== #
-# Structures (other musical objects) #
-# ================================== #
+    ##########
+    # Scales #
+    ##########
 
-"fourths": [0, 4, 10, 15, 20]
-"fifths": [0, 7, 14, 21, 28]
-"sixths": [0, 9, 17, 26, 35]
-"thirds": [0, 4, 8, 12]
-"octaves": [0, 12, 24, 36, 48]
+    "major": [0, 2, 4, 5, 7, 9, 11],
+    "minor": [0, 2, 3, 5, 7, 8, 10],
+    "hminor": [0, 2, 3, 5, 7, 8, 11],
+    "vminor": [0, 2, 3, 5, 7, 8, 10],
+    "penta": [0, 2, 4, 7, 9],
+    "acoustic": [0, 2, 4, 6, 7, 9, 10],
+    "aeolian": [0, 2, 3, 5, 7, 8, 10],
+    "algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17],
+    "superlocrian": [0, 1, 3, 4, 6, 8, 10],
+    "augmented": [0, 3, 4, 7, 8, 11],
+    "bebop": [0, 2, 4, 5, 7, 9, 10, 11],
+    "blues": [0, 3, 5, 6, 7, 10],
+    "chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "dorian": [0, 2, 3, 5, 7, 9, 10],
+    "doubleharmonic": [0, 1, 4, 5, 8, 11],
+    "enigmatic": [0, 1, 4, 6, 8, 10, 11],
+    "flamenco": [0, 1, 4, 5, 7, 8, 11],
+    "gypsy": [0, 2, 3, 6, 7, 8, 10],
+    "halfdim": [0, 2, 3, 5, 6, 8, 10],
+    "harmmajor": [0, 2, 4, 5, 7, 8, 11],
+    "harmminor": [0, 2, 3, 5, 7, 8, 11],
+    "hirajoshi": [0, 4, 6, 7, 11],
+    "hungarianminor": [0, 2, 3, 6, 7, 8, 11],
+    "hungarianmajor": [0, 3, 4, 6, 7, 9, 10],
+    "in": [0, 1, 5, 7, 8],
+    "insen": [0, 1, 5, 7, 10],
+    "ionian": [0, 2, 4, 5, 7, 9, 11],
+    "istrian": [0, 1, 3, 4, 6, 7],
+    "iwato": [0, 1, 5, 6, 10],
+    "locrian": [0, 1, 3, 5, 6, 8, 10],
+    "lydianaug": [0, 2, 4, 6, 8, 9, 11],
+    "lydian": [0, 2, 4, 5, 7, 8, 9, 11],
+    "majorlocrian": [0, 2, 4, 5, 6, 8, 10],
+    "majorpenta": [0, 2, 4, 7, 9],
+    "minorpenta": [0, 3, 5, 7, 10],
+    "melominup": [0, 2, 3, 5, 7, 9, 11],
+    "melomindown": [0, 2, 3, 5, 7, 8, 10],
+    "mixolydian": [0, 2, 4, 5, 7, 9, 10],
+    "neapolitan": [0, 1, 3, 5, 7, 8, 11],
+    "octatonic": [0, 2, 3, 5, 6, 8, 9, 11],
+    "octatonic2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "persian": [0, 1, 4, 5, 6, 8, 11],
+    "phrygian": [0, 1, 4, 5, 7, 8, 10],
+    "prometheus": [0, 2, 4, 6, 9, 10],
+    "harmonics": [0, 3, 4, 5, 7, 9],
+    "tritone": [0, 1, 4, 6, 7, 10],
+    "ukrainian": [0, 2, 3, 6, 7, 9, 10],
+    "whole": [0, 2, 4, 6, 8, 10],
+    "yo": [0, 3, 5, 7, 10],
+    "symetrical": [0, 1, 2, 6, 7, 10],
+    "symetrical2": [0, 2, 3, 6, 8, 10],
+    "messiaen1": [0, 2, 4, 6, 8, 10],
+    "messiaen2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11],
+    "messiaen4": [0, 1, 2, 4, 6, 7, 8, 11],
+    "messiaen5": [0, 1, 5, 6, 7, 11],
+    "messiaen6": [0, 2, 4, 5, 6, 8],
+    "messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11],
+
+    ##############
+    # Structures #
+    ##############
+
+    "fourths": [0, 4, 10, 15, 20],
+    "fifths": [0, 7, 14, 21, 28],
+    "sixths": [0, 9, 17, 26, 35],
+    "thirds": [0, 4, 8, 12],
+    "octaves": [0, 12, 24, 36, 48],
+}
 ```
 
 These qualifiers are useful in combination with some other functions like `filt()` or `quant()` because they allow you to build complex tonal objets by entering a random list of integers.

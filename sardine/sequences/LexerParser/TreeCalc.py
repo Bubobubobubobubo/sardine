@@ -1,6 +1,7 @@
 from lark import Transformer, v_args
 from typing import Union
 from .Utilities import zip_cycle, map_unary_function, map_binary_function, CyclicalList
+from .Chords import Chord
 from . import FuncLibrary
 from lark.lexer import Token
 from typing import Any
@@ -340,7 +341,12 @@ class CalculateTree(Transformer):
         Returns:
             list: A list of integers after applying the expansion rule.
         """
-        return left * sum(int(x) if x is not None else 0 for x in right)
+        if isinstance(left, Chord):
+            return [self.make_chord(left)] * sum(
+                int(x) if x is not None else 0 for x in right
+            )
+        else:
+            return left * sum(int(x) if x is not None else 0 for x in right)
 
     def extend_repeat(self, left, right):
         """Variation of the preceding rule.
@@ -373,11 +379,6 @@ class CalculateTree(Transformer):
                 return random.uniform(low, high)
 
         return map_binary_function(my_random, left, right)
-
-    def add_mystery(self, value):
-        return map_unary_function(
-            lambda x: x if random.random() > 0.5 else [None], value
-        )
 
     def negation(self, value):
         return map_unary_function(lambda x: -x, value)

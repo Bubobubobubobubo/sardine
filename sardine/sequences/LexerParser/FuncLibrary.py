@@ -18,7 +18,6 @@ qualifiers = {
     "hdim9": [0, 3, 6, 10, 14],
     "hdimb9": [0, 3, 6, 10, 13],
     "dim7": [0, 3, 6, 9],
-    "7dim5": [0, 4, 6, 10],
     "aug": [0, 4, 8, 12],
     "augMaj7": [0, 4, 8, 11],
     "aug7": [0, 4, 8, 10],
@@ -27,10 +26,10 @@ qualifiers = {
     "maj7": [0, 4, 7, 11],
     "maj9": [0, 4, 11, 14],
     "minmaj7": [0, 3, 7, 11],
-    "5": [0, 7, 12],
-    "6": [0, 4, 7, 9],
-    "7": [0, 4, 7, 10],
-    "9": [0, 4, 10, 14],
+    "five": [0, 7, 12],
+    "six": [0, 4, 7, 9],
+    "seven": [0, 4, 7, 10],
+    "nine": [0, 4, 10, 14],
     "b9": [0, 4, 10, 13],
     "mM9": [0, 3, 11, 14],
     "min": [0, 3, 7, 12],
@@ -46,7 +45,6 @@ qualifiers = {
     "major": [0, 2, 4, 5, 7, 9, 11],
     "minor": [0, 2, 3, 5, 7, 8, 10],
     "hminor": [0, 2, 3, 5, 7, 8, 11],
-    "^minor": [0, 2, 3, 5, 7, 9, 11],  # doesn't work
     "vminor": [0, 2, 3, 5, 7, 8, 10],
     "penta": [0, 2, 4, 7, 9],
     "acoustic": [0, 2, 4, 6, 7, 9, 10],
@@ -181,7 +179,9 @@ def chordify(*x) -> list:
     return Chord(*x)
 
 
-def anti_speed(x: list) -> list:
+def anti_speed(*x) -> list:
+    """Adds one silence per element in the list"""
+    x = list(chain(*x))
     list_of_silences = [[None] * x for x in range(0, len(x))]
     return list(zip(x, list_of_silences))
 
@@ -293,17 +293,18 @@ def custom_filter(collection: list, elements: list) -> list:
     return list(filter(cond, collection))
 
 
-def bassify(collection: list):
+def bassify(*collection):
     """Drop the first note down an octave"""
-    try:
-        return list(map(lambda x: x[0] - 12, collection))
-    except TypeError:
-        return [None]
+    collection = list(chain(*collection))
+    print(f"La collection est: {collection}")
+    collection[0] -= 12
+    return collection
 
 
-def soprano(collection: list):
+def soprano(*collection) -> list:
     """Last note up an octave"""
-    collection[len(collection) - 1] = collection[len(collection) - 1] + 12
+    collection = list(chain(*collection))
+    collection[len(collection) - 1] += 12
     return collection
 
 
@@ -388,7 +389,7 @@ def expand(collection: list, factor: list) -> list:
     return map_unary_function(expand_number, collection)
 
 
-def disco(collection: list) -> list:
+def disco(*collection) -> list:
     """Takes every other note down an octave
 
     Args:
@@ -397,6 +398,7 @@ def disco(collection: list) -> list:
     Returns:
         list: A list of integers
     """
+    collection = list(chain(*collection))
     offsets = cycle([0, -12])
     return [
         x + offset if x is not None else None
@@ -404,7 +406,7 @@ def disco(collection: list) -> list:
     ]
 
 
-def antidisco(collection: list) -> list:
+def antidisco(*collection) -> list:
     """Takes every other note up an octave
 
     Args:
@@ -413,6 +415,7 @@ def antidisco(collection: list) -> list:
     Returns:
         list: A list of integers
     """
+    collection = list(chain(*collection))
     offsets = cycle([0, +12])
     return [
         x + offset if x is not None else None
@@ -420,7 +423,7 @@ def antidisco(collection: list) -> list:
     ]
 
 
-def palindrome(collection: list) -> list:
+def palindrome(*collection) -> list:
     """Make a palindrome out of a newly generated collection
 
     Args:
@@ -430,10 +433,11 @@ def palindrome(collection: list) -> list:
         list: palindromed list of integers from qualifier's based
         collection
     """
+    collection = list(chain(*collection))
     return collection + list(reversed(collection))
 
 
-def alternative_palindrome(collection: list) -> list:
+def alternative_palindrome(*collection) -> list:
     """Make a palindrome out of a newly generated collection.
     Don't repeat the last element of the first list when going
     the opposite direction.
@@ -445,10 +449,11 @@ def alternative_palindrome(collection: list) -> list:
         list: palindromed list of integers from qualifier's based
         collection
     """
+    collection = list(chain(*collection))
     return collection + list(reversed(collection))[1:]
 
 
-def reverse(collection: list) -> list:
+def reverse(*collection) -> list:
     """Reverse a newly generated collection.
 
     Args:
@@ -457,6 +462,7 @@ def reverse(collection: list) -> list:
     Returns:
         list: reversed list of integers from qualifier's based collection
     """
+    collection = list(chain(*collection))
     return list(reversed(collection))
 
 
@@ -494,7 +500,7 @@ def insert_rotate(collection: list, element: list) -> list:
     return [i for x in collection for i in (next(rotation), x)][:-1]
 
 
-def shuffle(collection: list) -> list:
+def shuffle(*collection) -> list:
     """Shuffle a newly generated collection
 
     Args:
@@ -503,52 +509,12 @@ def shuffle(collection: list) -> list:
     Returns:
         list: A shuffled list of integers
     """
+    collection = list(chain(*collection))
     random.shuffle(collection)
     return collection
 
 
-def drop2(collection: list) -> list:
-    """Simulate a drop2 chord.
-
-    Args:
-        collection (list): A list of integers
-
-    Returns:
-        list: A list of integers with the second note dropped an octave.
-    """
-    collection[1] = collection[1] - 12
-    return collection
-
-
-def drop3(collection: list) -> list:
-    """Simulate a drop3 chord.
-
-    Args:
-        collection (list): A list of integers
-
-    Returns:
-        list: A list of integers with the third note dropped an octave.
-    """
-    collection[2] = collection[2] - 12
-    return collection
-
-
-def drop2and4(collection: list) -> list:
-    """Simulate a drop2&4 chord.
-
-    Args:
-        collection (list): A list of integers
-
-    Returns:
-        list: A list of integers with the second and fourth note dropped
-        an octave.
-    """
-    collection[1] = collection[1] - 12
-    collection[3] = collection[3] - 12
-    return collection
-
-
-def cosinus(x: list) -> list:
+def cosinus(*x) -> list:
     """Basic cosinus function
 
     Args:
@@ -557,10 +523,11 @@ def cosinus(x: list) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(cos, x)
 
 
-def sinus(x: list) -> list:
+def sinus(*x) -> list:
     """Basic sinus function
 
     Args:
@@ -569,10 +536,11 @@ def sinus(x: list) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(sin, x)
 
 
-def maximum(x: Union[list, float, int]) -> list:
+def maximum(*x) -> list:
     """Maximum operation
 
     Args:
@@ -581,10 +549,11 @@ def maximum(x: Union[list, float, int]) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(max, [x])
 
 
-def mean(x: list) -> list:
+def mean(*x) -> list:
     """Mean operation
 
     Args:
@@ -593,10 +562,11 @@ def mean(x: list) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return statistics.mean(list(x))
 
 
-def minimum(x: Union[list, float, int]) -> list:
+def minimum(*x) -> list:
     """Minimum operation
 
     Args:
@@ -605,10 +575,11 @@ def minimum(x: Union[list, float, int]) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(max, [x])
 
 
-def absolute(x: list) -> list:
+def absolute(*x) -> list:
     """Basic absolute function
 
     Args:
@@ -617,16 +588,16 @@ def absolute(x: list) -> list:
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(abs, x)
 
 
-def tangent(x: list) -> list:
+def tangent(*x) -> list:
     """Basic tangent function
-
     Args:
         x (list): pattern
-
     Returns:
         list: a valid pattern.
     """
+    x = list(chain(*x))
     return map_unary_function(tan, x)

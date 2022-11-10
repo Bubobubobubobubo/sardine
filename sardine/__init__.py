@@ -43,6 +43,7 @@ from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .sequences.Sequence import E, euclid, mod, imod, pick, text_eater
 from .sequences.LexerParser.FuncLibrary import qualifiers
+from .sequences import Player, PatternHolder
 from .sequences import *
 
 warnings.filterwarnings("ignore")
@@ -93,20 +94,6 @@ MidiSend = None
 # Amphibian iterators and amphibian variables
 i = None
 v = None
-
-
-def hush(*args):
-    """
-    Name taken from Tidal. This is the most basic function to stop function(s)
-    from being called again. Will silence all functions by default. You can
-    also specify one or more functions to be stopped, keeping the others alive.
-    """
-    if len(args) >= 1:
-        for runner in args:
-            c.remove(runner)
-    else:
-        for runner in c.runners.values():
-            runner.stop()
 
 
 def midinote(delay, note: int = 60, velocity: int = 127, channel: int = 1):
@@ -365,6 +352,7 @@ if (
         beats_per_bar=config.beats,  # default beats per bar
         ppqn=config.ppqn,  # default pulses per quarter note (MIDI/Clock related)
         deferred_scheduling=config.deferred_scheduling,  # Clock related
+        debug=config.debug,  # Debug mode for printing every pattern
     )
     # Synonyms for swimming function management
     cs = again = anew = a = c.schedule_func  # aliases for recursion
@@ -395,8 +383,30 @@ if (
     i, v = c.iterators, c.variables
     P = Pat
 
-    if config.debug:
+    # Quickstep functionality (similar to FoxDot)
+    __quickstep_patterns = PatternHolder(
+        clock=c, MIDISender=M, SuperDirtSender=S, OSCSender=O
+    )
+    for (key, value) in __quickstep_patterns._patterns.items():
+        globals()[key] = value
+    c.schedule_func(__quickstep_patterns._global_runner)
+    play, play_midi, play_osc = Player.play, Player.play_midi, Player.play_osc
+
+    def hush(*args):
+        """
+        Name taken from Tidal. This is the most basic function to stop function(s)
+        from being called again. Will silence all functions by default. You can
+        also specify one or more functions to be stopped, keeping the others alive.
+
+        This function has been updated to take into account the new Quickstep patterns.
+        """
         try:
-            lang_debug()
-        except Exception as e:
-            exit()
+            if len(args) >= 1:
+                for runner in args:
+                    c.remove(runner)
+            else:
+                for name, runner in c.runners.items():
+                    if name != "_global_runner":
+                        runner.stop()
+        finally:
+            __quickstep_patterns.reset()

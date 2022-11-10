@@ -97,6 +97,7 @@ class Clock:
         bpm: Union[float, int] = 120,
         beats_per_bar: int = 4,
         deferred_scheduling: bool = True,
+        debug: bool = True,
     ):
         self._midi = MIDIIo(port_name=midi_port, clock=self)
 
@@ -144,8 +145,12 @@ class Clock:
         # Parser
         self.iterators = Iterator()
         self.variables = Variables()
+        self._parser_debug = debug
         self.parser = ListParser(
-            clock=self, variables=self.variables, iterators=self.iterators
+            clock=self,
+            variables=self.variables,
+            iterators=self.iterators,
+            debug=self._parser_debug,
         )
 
     def __repr__(self):
@@ -616,7 +621,7 @@ class Clock:
 
     def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
-        if not inspect.isfunction(func):
+        if not (inspect.isfunction(func) or inspect.ismethod(func)):
             raise TypeError(f"func must be a function, not {type(func).__name__}")
 
         name = func.__name__
@@ -720,7 +725,7 @@ class Clock:
         velocity: Union[int, str] = 100,
         channel: Union[int, str] = 0,
         dur: Union[int, float, str] = 48,
-        trig: Union[bool, int]= 1,
+        trig: Union[bool, int] = 1,
         at: int = 0,
         **kwargs,
     ) -> MIDISender:

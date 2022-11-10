@@ -9,7 +9,7 @@
 # It can be useful to quickly lay down some drumming materials while using swim-
 # ming functions for more delicate operations :)
 ################################################################################
-from string import ascii_uppercase
+from string import ascii_uppercase, ascii_lowercase
 from typing import Union, TYPE_CHECKING
 from rich import print
 from rich.panel import Panel
@@ -130,7 +130,7 @@ class PatternHolder:
         for (k, v) in self._patterns.items():
             globals()[k] = v
         """
-        names = ["P" + l for l in ascii_uppercase]
+        names = ["P" + l for l in ascii_uppercase+ascii_lowercase]
         self._patterns = {k: Player(name=k) for k in names}
 
     def _global_runner(self, d=0.5, i=0):

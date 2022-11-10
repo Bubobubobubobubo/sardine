@@ -148,7 +148,7 @@ The function to perform recursion has multiple names because it is very importan
 
 ## QuickStep swimming
 
-There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). It uses the same syntax and the same philosophy of patterning, but on **Sardine**'s foundations. This mode of *swimming* is basically assigning [Senders](#senders) to an invisible *swimming functions* that is out of your reach. It is an emulation/simulation of FoxDot that is designed to work along with **Sardine** usual mode of operation.
+There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). It uses the same syntax and the same philosophy of patterning but on **Sardine**'s foundations. This mode of *swimming* is basically assigning [Senders](#senders) to an invisible *swimming functions* that is out of your reach. It is an emulation/simulation of FoxDot that is designed to work along with **Sardine** usual mode of operation.
 
 ### Players
 

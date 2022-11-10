@@ -146,6 +146,62 @@ Feeding one swimming function with the data of another.
 
 The function to perform recursion has multiple names because it is very important: `again`, `anew`, `a`. These aliases all refer to the same low-level function named `c.schedule` that talks directly to **Sardine**'s scheduler.
 
+## QuickStep swimming
+
+There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). It uses the same syntax and the same philosophy of patterning, but on **Sardine**'s foundations. This mode of *swimming* is basically assigning [Senders](#senders) to an invisible *swimming functions* that is out of your reach. It is an emulation/simulation of FoxDot that is designed to work along with **Sardine** usual mode of operation.
+
+### Players
+
+By default, there are 48 `Players` ready for Quickstepping. This is more than you will ever need! They are named in a consistent way from `Pa`, to `PZ`: `[Pa, Pb, Pc, Pd, Pe, Pf, ..., PA, PB, PC, ... PZ]`. These objects can be interacted with using a single method: `>>`. Just like anything else with **Sardine**, you can also fine-tune your patterns with some setters that will alter how the pattern is read by the computer. We will use `Pa` for demonstration purposes:
+
+* `Pa.rate`: rate of your pattern (see [Fast Swimming](#advanced-swimming-fast)).
+* `Pa.div`: division factor of your pattern.
+
+While quickstepping, you will only ever need to deal with these three methods. All the rest is integrated with the rest of the **Sardine** ecosystem: 
+
+```python
+Pa >> play('bd, ., hh')
+Pa.rate = 1
+Pa.rate = 2
+```
+
+In addition to that, take note of the `play()` method used for assigning a **Sender** to **Players**. There is one method per available default **Sender**:
+
+* `play(*args, **kwargs)`: the default **SuperDirt** (or **S**) Sender.
+* `play_midi(*args, **kwargs)`: the default **MIDI** (or **M**) Sender.
+* `play_osc(*args, **kwargs)`: the default **OSC** (or **O**) Sender.
+
+They are basically senders with a different name! You will have to learn how to use **Senders** to be truly efficient with the Quickstepping mode. You can spend your life using **Sardine** this way or combine it with *swimming functions*, that is entirely up to you! This mode was initially designed in order to demonstrate the syntax of [FoxDot](https://foxdot.org). I find it to be a fun and efficient way to jam along with friends as well :)
+
+### Drumming
+
+```python
+PB >> play('jvbass:r*8, ..., pluck, ...')
+PA >> play('bd, ., hh, sn, hh', 
+        amp=0.4,
+        legato='0.3~1', speed='1')
+```
+By using the `play()` method combined with regular patterns, you can generate efficient drum patterns without having to type too much! I won't document this further because the [Senders](#senders) and [Patterning](#pattern-syntax) sections will teach you everything you need about this!
+
+### Using MIDI with Quickstep
+
+```python
+PA >> play_midi(note='<C@maj7>', dur='1~8')
+PA.div = 3
+PB >> play_midi(note="C.., C|C'|C''", dur='1~8')
+PB.rate = 2
+```
+Simple application of some of the details I have explained/detailed in the above sections!
+
+### Shutting down Quickstep patterns
+
+**Quickstep** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` function like always. You will have to reevaluate these patterns to start again:
+
+```python
+PA >> play('bd, ., hhh, .')
+PA.rate = 1
+PA.rate = 2
+```
 
 ## Advanced (Swimming fast)
 

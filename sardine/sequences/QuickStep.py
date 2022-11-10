@@ -9,8 +9,6 @@
 # It can be useful to quickly lay down some drumming materials while using swim-
 # ming functions for more delicate operations :)
 ################################################################################
-
-
 from string import ascii_uppercase
 from typing import Union, TYPE_CHECKING
 from rich import print

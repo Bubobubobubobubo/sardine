@@ -296,7 +296,6 @@ def custom_filter(collection: list, elements: list) -> list:
 def bassify(*collection):
     """Drop the first note down an octave"""
     collection = list(chain(*collection))
-    print(f"La collection est: {collection}")
     collection[0] -= 12
     return collection
 

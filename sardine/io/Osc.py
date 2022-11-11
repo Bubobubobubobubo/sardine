@@ -184,7 +184,7 @@ class Client:
         """Build and send OSC bundles"""
         message = message + [
             'cps', (clock.bpm / 60 / clock.beat_per_bar),
-            'delta', clock._delta]
+            'delta', (clock._get_tick_duration() * 100)]
         msg = oscbuildparse.OSCMessage("/dirt/play", None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]

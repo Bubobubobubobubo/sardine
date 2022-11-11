@@ -35,7 +35,7 @@ class Player:
         self,
         name: str,
         content: Union[None, dict] = {},
-        div: int = 1,
+        div: int = 8,
         rate: Union[int, float] = 1,
     ):
         self._name = name
@@ -145,7 +145,9 @@ class PatternHolder:
         for player in patterns:
             try:
                 if player._content["type"] == "MIDI":
-                    self._midisender(**player._content["kwargs"]).out(
+                    self._midisender(
+                        note=player._content['args'],
+                        **player._content["kwargs"]).out(
                         i=i, div=player._div, rate=player._rate
                     )
                 elif player._content["type"] == "OSC":

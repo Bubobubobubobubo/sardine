@@ -200,8 +200,9 @@ class Client:
 client = Client()
 
 
-def dirt(message, clock):
+def dirt(message, clock, ahead_amount: Union[int, float] = 0.03):
     """Sending messages to SuperDirt/SuperCollider"""
+    client.ahead_amount = ahead_amount
     client.send_timed_message(
             message=message, 
             clock=clock)

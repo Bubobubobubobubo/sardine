@@ -89,8 +89,7 @@ class SuperDirtSender:
     def _schedule(self, message):
         async def _waiter():
             await handle
-            await asyncio.sleep(self._nudge)
-            dirt(message, self.clock)
+            dirt(message, self.clock, ahead_amount=self._nudge)
 
         ticks = self.clock.get_beat_ticks(self.after, sync=False)
         # Beat synchronization is disabled since `self.after`

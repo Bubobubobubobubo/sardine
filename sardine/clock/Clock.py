@@ -16,7 +16,12 @@ from . import AsyncRunner
 from ..sequences import ListParser
 from ..sequences.Iterators import Iterator
 from ..sequences.Variables import Variables
-from ..io import MIDIIo, ClockListener, SuperDirtSender, MIDISender, OSCSender
+from ..io import (
+        MIDIIo, 
+        ClockListener, 
+        SuperDirtSender, 
+        MIDISender, 
+        OSCSender)
 
 __all__ = ("Clock", "TickHandle")
 

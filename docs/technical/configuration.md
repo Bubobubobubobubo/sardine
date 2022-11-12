@@ -1,15 +1,10 @@
----
-hide:
-    - navigation
----
+This page will help you to learn how to configure **Sardine**. You will soon figure out that **Sardine** is really modular in nature and it has been designed to be altered. You can toggle on and off certain features, you can pre-configure many things and fine-tune to be up and ready for your next sessions, etc...
 
-# Configuration
+## I - Code Editors
 
-This page will help you to learn how to configure **Sardine** to your desire. You will soon learn that **Sardine** is really modular in nature. You can toggle on and off certain features, you can pre-configure many things and fine-tune to be up and ready for your next sessions, etc...
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it, but you will be pretty limited in what you can do. You might also dislike the fact that popups will be printed pretty frequently if you make mistakes. It is sometimes enough to run quick sound/MIDI tests but not much more. After a while, you will figure out that working this way is fairly cumbersome and you will likely be searching for a better text editor. 
 
-## Code Editors for fishing
-
-You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it, but you will be pretty limited in what you can do. It is sometimes enough to run quick sound/MIDI tests. After a while, you will figure out that working this way is fairly cumbersome and you will likely be searching for a better text editor. **Sardine** code can become quite verbose when dealing with complex *swimming* functions. As you might have guessed already, there is no `Sardine` plugin for **VSCode**, **Atom** or any popular code editor **yet**. However, **Sardine** is just Python and there are great plugins to deal with interactive Python code. Here are a few things you can try.
+**Sardine** code can become quite verbose when dealing with complex *swimming* functions. As you might have guessed already, there is no `Sardine` plugin for **VSCode**, **Atom** or any popular code editor **yet**. However, **Sardine** is just Python and there are great plugins to deal with interactive Python code already. Here are a few things you can try.
 
 ### Vim / Neovim
 
@@ -68,7 +63,7 @@ From now on, **Sardine** is installed in the notebook you just created. You can 
 
 The venerable [Emacs](https://www.gnu.org/software/emacs/) is of course able to do what the other ones are doing and it is particularly well suited for the task of running interpreted code. Please use the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin. This mode will allow you to pipe easily your code from a text buffer to a running interpeter. The plugin is adding quality-of-life features for working with **Python** in general but also makes working with a **REPL** much easier and much more convenient. If you are new to the vast world of Emacs, it is probably worthwhile to take a look at [Doom Emacs](https://github.com/doomemacs/doomemacs) or [Spacemacs](https://www.spacemacs.org/), both being really great distributions of plugins. I will not dive into more details, as Emacs users are generally able to figure out their prefered way of working by themselves :)
 
-## Configuration
+## II - Configuration options
 
 **Sardine** is relying on a configuration folder that will be silently created the first time you open it. The path leading to the configuration folder can be printed out by typing `print_config()`. This command will also print out the content of your main configuration file. How practical! 
 
@@ -78,29 +73,34 @@ There are three files you can tweak to configure **Sardine**:
 - `default_superdirt.scd`: **SuperDirt** configuration file.
 - `user_configuration.py`: Python code runned everytime you boot **Sardine** (facultative).
 
-There is also a `synths` folder made to store synthesis definitions (synthesizers, effects). This system is currently broken but be aware of its existence.
+There is also a `synths` folder made to store synthesis definitions (synthesizers, effects).
 
-- `synths` folder: store new synthesizers written with **SuperCollider**.
+- `synths` folder: store new synthesizers written with **SuperCollider**, usually one synth per `.scd file`.
 
-### Sardine
+### A - Sardine
 
 The `config.json` file will allow you to finetune **Sardine** by choosing a default MIDI port, a default PPQN (*pulses per quarter note*, used for the MIDI Clock), and BPM (*beats per minute*), etc... You can edit it manually but you don't have too. There is a tool made for that, installed by default on your `$PATH`. Access it by typing `sardine-config`.
 
-![Configuration tool](images/config_tool.png)
+![Configuration tool](images/configuration_screen.png)
 
-You can use it as a regular command-line tool, by following instructions and feeding the right arguments. For instance, if you would like to change your default BPM to 140, write the following:
+**Sardine** can generate its own MIDI port which is very convenient if you don't have any virtual MIDI port ready to be hijacked. This feature however is limited to MacOS/Linux.
 
-```bash
-sardine-config --bpm 140
-```
+Here is a rundown of what each option is doing in the config file:
 
-To select a default MIDI port without having to choose everytime you boot Sardine, enter something similar, matching the MIDI Port name with a port available on your computer:
+| Syntax      | Description |
+| -----------: | :----------- |
+|`active_clock`| Whether the MIDI Clock must be active (ticking and sending clock messages) or passive (waiting for a clock) |
+|`beats`| number of beats per bar |
+|`boot_superdirt`| whether **Sardine** should boot its own instance of **SuperDirt** when it starts |
+|`bpm`| default tempo (you can change it later by running `c.bpm = x`) |
+|`debug`|  print the raw result of every pattern (used by devs)|
+|`deferred_scheduling`| low-level option used by devs to troubleshot scheduling (not exposed in the config tool) |
+|`midi`| your default MIDI port. If the port is `Sardine` or `internal`, **Sardine** will create its own MIDI port |
+|`ppqn`| Pulses per quarter note, the lowest rhythmical division **Sardine** can handle. `24` or `48` are safe values|
+|`config_paths`| various paths for the files used by configuration|
 
-```bash
-sardine-config --midi "MIDI Bus 1"
-```
 
-### SuperDirt
+### B - SuperDirt
 
 The `default_superdirt.scd` is... your default `SuperDirt` configuration. You must edit it manually if you are willing to load more audio samples, change your audio outputs or add anything that you need on the **SuperCollider** side. The `synths` folder is a repository for your `SynthDefs` file. Each synthesizer should be saved in its own file and will be loaded automatically at boot time. 
 
@@ -145,7 +145,7 @@ s.reboot {
 
 Many people already use the **SuperDirt** audio backend for live-coding, more specifically people working with [TidalCycles](https://tidalcycles.org). You will find a lot of configuration tips, tools and extensions by searching in the TOPLAP / Tidal communities forums and chats.
 
-### Python
+### C - Python
 
 The last configuration file is named `user_configuration.py`. It is not created by default. It must be added manually if you wish to use this feature. All the code placed in this file will be imported by default everytime you boot **Sardine**. It is an incredibely useful feature to automate some things:
 

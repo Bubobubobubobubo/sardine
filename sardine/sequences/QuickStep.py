@@ -115,7 +115,6 @@ class Player:
         new_div = 1 if new_div == 0 else new_div
         new_div = slow_limit if new_div > slow_limit else new_div
 
-        print(f"La nouvelle div vaut {new_div}")
         self._dur = value
         self._div = new_div
 
@@ -191,7 +190,7 @@ class PatternHolder:
             try:
                 if player._content["type"] == "MIDI":
                     self._midisender(
-                        note=player._content['args'],
+                        note=player._content['args'][0],
                         **player._content["kwargs"]).out(
                         i=i, div=player._div, rate=player._rate
                     )

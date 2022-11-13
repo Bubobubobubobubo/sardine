@@ -14,7 +14,7 @@ nav:
       - Learning:
         - Swimming: 'documentation/sardinopedia/basic_swimming_lessons.md'
         - Senders: 'documentation/sardinopedia/senders.md'
-        - Patterning: 'documentation/sardinopedia/patterning.md'
+        - Patterns: 'documentation/sardinopedia/patterning.md'
         - Language: 'documentation/sardinopedia/pattern_language.md'
         - SuperCollider: 'documentation/sardinopedia/supercollider.md'
       - Examples:

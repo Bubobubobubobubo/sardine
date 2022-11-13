@@ -112,7 +112,7 @@ class Clock:
         self._accel: float = 0.0
         self._nudge: float = 0.0
         self._midi_nudge: float = 0.0
-        self._superdirt_nudge: float = 0.0
+        self._superdirt_nudge: float = 0.3
         self._bpm: float = bpm
         self._ppqn: int = ppqn
         self.beat_per_bar: int = beats_per_bar
@@ -762,15 +762,13 @@ class Clock:
             if self._link:
                 await asyncio.sleep(0.0)
                 self._midi._process_events()
+                self._increment_clock(temporal_information=self._capture_link_info())
             else:
                 await asyncio.sleep(duration)
                 self._midi.send_clock()
+                self._increment_clock(temporal_information=None)
                 self._midi._process_events()
             self._osc._send_clock_information(self)
-
-            self._increment_clock(
-                temporal_information=(self._capture_link_info() if self._link else None)
-            )
 
             elapsed = time.perf_counter() - begin
             if self._link:

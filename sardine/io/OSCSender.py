@@ -3,7 +3,6 @@ import asyncio
 import pprint
 import functools
 from typing import TYPE_CHECKING, Union
-from ..io import dirt
 from ..sequences import ListParser
 from math import floor
 from .SenderLogic import pattern_element, compose_parametric_patterns

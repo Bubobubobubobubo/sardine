@@ -4,12 +4,30 @@ site_author: Raphaël Forment
 nav:
   - Home: index.md
   - Showcase: showcase.md
-  - Install: installation.md
-  - Configuration: configuration.md
-  - Troubleshot: troubleshot.md
-  - Tutorial: tutorial.md
-  - Reference: reference.md
-  - Sardinopedia: sardinopedia.md
+  - Installation / Configuration: 
+    - Installing Sardine: 'technical/installation.md'
+    - Configuration tools: 'technical/configuration.md'
+    - Troubleshooting: 'technical/troubleshot.md'
+  - Documentation:
+    - Sardinopedia:
+      - Introduction: 'documentation/sardinopedia/introduction.md'
+      - Learning:
+        - Swimming: 'documentation/sardinopedia/basic_swimming_lessons.md'
+        - Senders: 'documentation/sardinopedia/senders.md'
+        - Patterns: 'documentation/sardinopedia/patterning.md'
+        - Language: 'documentation/sardinopedia/pattern_language.md'
+        - SuperDirt: 'documentation/sardinopedia/supercollider.md'
+        - Clock: 'documentation/sardinopedia/clock.md'
+      - Examples:
+        - Rhythm: 'documentation/sardinopedia/rhythm.md'
+        - Sampling: 'documentation/sardinopedia/sampling.md'
+        - Melody: 'documentation/sardinopedia/melody.md'
+      - Demos:
+        - Zorba in Belleville : 'documentation/demos/zorba_in_belleville.md'
+        - Dumpster Dive: 'documentation/demos/dumpster_dive.md'
+        - Tribute to Jules Cipher: 'documentation/demos/PMA5.md'
+    - Tutorial: 'documentation/tutorial.md'
+    - Reference: 'documentation/reference.md'
   - About: about.md
 theme:
   palette:
@@ -17,7 +35,7 @@ theme:
     accent: orange
   font:
     code: Roboto Mono
-    text: Roboto Mono
+    text: Karla
   name: material
   icon:
     repo: fontawesome/brands/git-alt
@@ -25,10 +43,14 @@ theme:
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.sections
+    - navigation.prune
+    - navigation.top
   logo: images/sardine_logo_single.svg
   custom_dir: docs/overrides
 extra:
   generator: false
+extra_css:
+  - stylesheets/extra.css
 plugins:
   - search
 docs_dir: docs

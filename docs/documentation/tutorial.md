@@ -1,8 +1,3 @@
----
-hide:
-    - navigation
----
-
 !!! danger "The tutorial is not up to date"
 
     Sardine was updated quite a lot recently. The tutorial has not been fully updated to reflect changes. Please rely on the *Sardinopedia* for now, until I fix this long-form article :)

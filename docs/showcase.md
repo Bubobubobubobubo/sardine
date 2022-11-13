@@ -8,6 +8,10 @@ hide:
 
 <iframe width="1424" height="600" src="https://www.youtube.com/embed/_aj_GdIibdQ" title="Live Coding on Python (Sardine)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+## Found sound symphony
+
+<iframe width="1424" height="600" src="https://www.youtube.com/embed/ZcdXgeqJI2E" title="dumpsterDive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Soundchecking Sardine
 
 <iframe width="1424" height="600" src="https://www.youtube.com/embed/COliLppntCc" title="Sardine - Algorave at Hydrophone (Soundcheck)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -390,6 +390,7 @@ if (
     for (key, value) in __quickstep_patterns._patterns.items():
         globals()[key] = value
     c.schedule_func(__quickstep_patterns._global_runner)
+    surf = __quickstep_patterns
     play, play_midi, play_osc = Player.play, Player.play_midi, Player.play_osc
 
     def hush(*args):

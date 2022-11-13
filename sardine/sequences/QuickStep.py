@@ -33,15 +33,29 @@ class Player:
 
     def __init__(
         self,
+        clock,
         name: str,
         content: Union[None, dict] = {},
-        div: int = 8,
         rate: Union[int, float] = 1,
     ):
+        self._clock = clock
         self._name = name
         self._content = content
         self._rate = rate
-        self._div = div
+        self._dur = 1
+        self._div = int(
+            self._conversion_function(low=1, high=self._clock.ppqn * 8, value=self._dur)
+        )
+
+    def _conversion_function(
+        self, low: Union[int, float], high: Union[int, float], value: Union[int, float]
+    ) -> int:
+        """Internal function performing the conversion"""
+
+        def remap(x, in_min, in_max, out_min, out_max):
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
+        return remap(value, 0, 4, 1, 127)
 
     @classmethod
     def play(cls, *args, **kwargs):
@@ -80,12 +94,34 @@ class Player:
         self._rate = value
 
     @property
-    def div(self):
-        return self._div
+    def dur(self):
+        return self._dur
 
-    @div.setter
-    def div(self, value: int) -> None:
-        self._div = int(value)
+    @dur.setter
+    def dur(self, value: int) -> None:
+        """
+        Div for surfboards does not have the same behavior it has in regular swimming
+        functions. It would be counter-intuitive. In that mode, the div should be in-
+        terpreted as a speed, with speed=0.01 being the absolute lowest speed a surf-
+        board can go. It means that the lowest value is some arbitrary cap we choose
+        to follow such as self._clock.ppqn * 4 for instance.
+
+        The high limit should feel like we are going insanely fast but still yield to
+        something like div=1 internally.
+
+        Args:
+            value (int): the new 'speed' factor
+        """
+        slow_limit = self._clock.ppqn * 8
+        fast_limit = 1
+
+        new_div = int(self._conversion_function(slow_limit, fast_limit, value))
+        # Dumb corrections
+        new_div = 1 if new_div == 0 else new_div
+        new_div = slow_limit if new_div > slow_limit else new_div
+
+        self._dur = value
+        self._div = new_div
 
     def __repr__(self) -> str:
         return f"[Player {self._name}]: {self._content}, div: {self._div}, rate: {self._rate}"
@@ -114,8 +150,20 @@ class PatternHolder:
         self._oscsender = OSCSender
         self._superdirtsender = SuperDirtSender
         self._clock = clock
+        self._speed = 1
         self._patterns = {}
         self._init_internal_dictionary()
+
+    def __repr__(self) -> str:
+        return f"Surfboard || speed: {self._speed}"
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, value):
+        self._speed = float(value)
 
     def reset(self):
         """
@@ -134,13 +182,14 @@ class PatternHolder:
             globals()[k] = v
         """
         names = ["P" + l for l in ascii_uppercase + ascii_lowercase]
-        self._patterns = {k: Player(name=k) for k in names}
+        self._patterns = {k: Player(clock=self._clock, name=k) for k in names}
 
-    def _global_runner(self, d=0.5, i=0):
+    def _global_runner(self, d=1, i=0):
         """
         This is a template for a global swimming function that can hold all
         the player/senders together for scheduling.
         """
+        d = self._speed / (self._clock.ppqn / 2)
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
         for player in patterns:
             try:
@@ -159,19 +208,5 @@ class PatternHolder:
                         *player._content["args"], **player._content["kwargs"]
                     ).out(i=i, div=player._div, rate=player._rate)
             except Exception as e:
-                print(
-                    Panel.fit(
-                        "[red]/!\\\\[/red] [yellow]Error in QuickStep pattern[/yellow]"
-                    )
-                )
                 continue
         self._clock.schedule_func(self._global_runner, d=d, i=i + 1)
-
-    # def __legacy_init(self):
-    #     names = list(product(*([ascii_uppercase] * 2)))
-    #     names = ["".join(s) for s in names]
-    #     self._patterns = {k: Player() for k in names}
-    #     more_names = ["Sound" + y for y in ascii_uppercase]
-    #     self._patterns |= {k: SoundPlayer() for k in more_names}
-    #     for (k, v) in self._patterns.items():
-    #         globals()[k] = v

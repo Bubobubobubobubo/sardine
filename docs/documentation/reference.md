@@ -1,7 +1,3 @@
----
-hide:
-    - navigation
----
 <style>
 th, td {
     border: 2px solid var(--md-typeset-table-color);

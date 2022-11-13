@@ -183,8 +183,11 @@ class Client:
     def send_timed_message(self, message, clock):
         """Build and send OSC bundles"""
         message = message + [
-            'cps', (clock.bpm / 60 / clock.beat_per_bar),
-            'delta', (clock._get_tick_duration() * 100)]
+            "cps",
+            (clock.bpm / 60 / clock.beat_per_bar),
+            "delta",
+            (clock._get_tick_duration() * 100),
+        ]
         msg = oscbuildparse.OSCMessage("/dirt/play", None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]
@@ -200,8 +203,7 @@ class Client:
 client = Client()
 
 
-def dirt(message, clock):
+def dirt(message, clock, ahead_amount: Union[int, float] = 0.03):
     """Sending messages to SuperDirt/SuperCollider"""
-    client.send_timed_message(
-            message=message, 
-            clock=clock)
+    client.ahead_amount = ahead_amount
+    client.send_timed_message(message=message, clock=clock)

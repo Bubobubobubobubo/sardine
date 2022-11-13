@@ -1,8 +1,3 @@
----
-hide:
-    - navigation
----
-
 # Troubleshot
 
 This page will guide you along if you need to debug **Sardine**. It can be anything ranging from problems while installing it to problems encountered during performance. If you encounter an issue that is currently not documented here, please forward it by using the issue tracker on GitHub or by directly sending a mail out to me :)

@@ -24,6 +24,7 @@ nav:
       - Demos:
         - Zorba in Belleville : 'documentation/demos/zorba_in_belleville.md'
         - Dumpster Dive: 'documentation/demos/dumpster_dive.md'
+        - Tribute to Jules Cipher: 'documentation/demos/PMA5.md'
     - Tutorial: 'documentation/tutorial.md'
     - Reference: 'documentation/reference.md'
   - About: about.md

@@ -43,12 +43,18 @@ class Player:
         self._content = content
         self._rate = rate
         self._dur = 1
-        self._div = int(self._conversion_function(low=1, high=self._clock.ppqn * 8, value=self._dur))
+        self._div = int(
+            self._conversion_function(low=1, high=self._clock.ppqn * 8, value=self._dur)
+        )
 
-    def _conversion_function(self, low: Union[int, float], high: Union[int, float], value: Union[int,float]) -> int:
+    def _conversion_function(
+        self, low: Union[int, float], high: Union[int, float], value: Union[int, float]
+    ) -> int:
         """Internal function performing the conversion"""
+
         def remap(x, in_min, in_max, out_min, out_max):
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
         return remap(value, 0, 4, 1, 127)
 
     @classmethod
@@ -91,7 +97,6 @@ class Player:
     def dur(self):
         return self._dur
 
-
     @dur.setter
     def dur(self, value: int) -> None:
         """
@@ -110,7 +115,7 @@ class Player:
         slow_limit = self._clock.ppqn * 8
         fast_limit = 1
 
-        new_div = int(self._conversion_function(slow_limit,fast_limit, value))
+        new_div = int(self._conversion_function(slow_limit, fast_limit, value))
         # Dumb corrections
         new_div = 1 if new_div == 0 else new_div
         new_div = slow_limit if new_div > slow_limit else new_div
@@ -184,16 +189,14 @@ class PatternHolder:
         This is a template for a global swimming function that can hold all
         the player/senders together for scheduling.
         """
-        d = self._speed / (self._clock.ppqn/2)
+        d = self._speed / (self._clock.ppqn / 2)
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
         for player in patterns:
             try:
                 if player._content["type"] == "MIDI":
                     self._midisender(
-                        note=player._content['args'][0],
-                        **player._content["kwargs"]).out(
-                        i=i, div=player._div, rate=player._rate
-                    )
+                        note=player._content["args"][0], **player._content["kwargs"]
+                    ).out(i=i, div=player._div, rate=player._rate)
                 elif player._content["type"] == "OSC":
                     self._oscsender(
                         *player._content["args"], **player._content["kwargs"]

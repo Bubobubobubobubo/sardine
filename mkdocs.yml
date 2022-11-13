@@ -16,7 +16,8 @@ nav:
         - Senders: 'documentation/sardinopedia/senders.md'
         - Patterns: 'documentation/sardinopedia/patterning.md'
         - Language: 'documentation/sardinopedia/pattern_language.md'
-        - SuperCollider: 'documentation/sardinopedia/supercollider.md'
+        - SuperDirt: 'documentation/sardinopedia/supercollider.md'
+        - Clock: 'documentation/sardinopedia/clock.md'
       - Examples:
         - Rhythm: 'documentation/sardinopedia/rhythm.md'
         - Sampling: 'documentation/sardinopedia/sampling.md'

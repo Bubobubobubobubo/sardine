@@ -22,7 +22,7 @@ If you have installed **Sardine** alongside **SuperCollider** and **SuperDirt**,
 
 If you choose to boot **SuperCollider** and **SuperDirt** alongside **Sardine** in your `sardine-config`, everything should fall in place. You have one main **Python** process handling everything for you so you don't have to start things manually. If you don't, you can always start **SuperCollider** yourself and manage two separate applications that will happily collaborate through the network.
 
-### A) Interesting tools
+### A) Interesting goodies
 
 Let's assume that **SuperDirt** has started, and that you received the message saying that the audio engine is ready. You can now interact with the `SC()` object that represents your SC subprocess. Let's open up a VUMeter of our session:
 

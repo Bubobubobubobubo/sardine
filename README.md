@@ -10,8 +10,8 @@
 <p align="center">
   <a href="https://discord.gg/aPgV7mSFZh">Discord</a> |
   <a href="https://sardine.raphaelforment.fr/">Website</a> |
-  <a href="https://sardine.raphaelforment.fr/sardinopedia">Examples</a> |
-  <a href="https://sardine.raphaelforment.fr/installation">Installation</a> |
+  <a href="https://sardine.raphaelforment.fr/documentation/sardinopedia/introduction/">Examples</a> |
+  <a href="https://sardine.raphaelforment.fr/technical/installation/">Installation</a> |
   <a href="https://raphaelforment.fr/">Author</a>  |
   <a href="https://toplap.org/">About Live Coding</a>
   <br><br>

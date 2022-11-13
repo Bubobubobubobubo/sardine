@@ -2,12 +2,12 @@
 
 ## Description
 
-dumpsterDive is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a 
+**dumpsterDive** is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a 
 hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The Sardine function uses the stacked samples model, where each sample line can be played alone or together with others. 
 
 - Audio equipment: **Tascam DR-100**, **Rode shotgun mic: NTG4**. 
 - Software: **Sardine**
-- The dumpster samples are available via the sardine-sounds repo and can be used for any purpose. 
+- Dumpster samples are available via the [sardine-sounds](https://github.com/Bubobubobubobubo/sardine-sounds) repository. 
 
 ## Performance: composed quasi live-coding
 

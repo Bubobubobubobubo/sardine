@@ -195,8 +195,10 @@ class PatternHolder:
             try:
                 if player._content["type"] == "MIDI":
                     self._midisender(
-                        note=player._content["args"][0], **player._content["kwargs"]
-                    ).out(i=i, div=player._div, rate=player._rate)
+                        note=player._content['args'][0],
+                        **player._content["kwargs"]).out(
+                        i=i, div=player._div, rate=player._rate
+                    )
                 elif player._content["type"] == "OSC":
                     self._oscsender(
                         *player._content["args"], **player._content["kwargs"]

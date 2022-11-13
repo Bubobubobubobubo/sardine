@@ -538,7 +538,7 @@ Similarly, you can define the step value between each value by providing a list 
 I want to explore how far you can go by introducing functional concepts to handle linear sequences. So far, only functions are available. The next step will be to introduce high-order functions and to build a small set of functional operations to pattern functions themselves. Only then will I be happy. I will base myself on that work to write a decent and complex function library.
 
 
-### Sinus, Cosinus, Tangent
+### A) Sinus, Cosinus, Tangent
 
 * `sin(x)`: **sinus of input** (single tokens or lists). Classic mathematical sinus function.
 
@@ -546,7 +546,7 @@ I want to explore how far you can go by introducing functional concepts to handl
 
 * `tan(x)`: **tangent of input** (single tokens or lists). Classic mathematical tangent function.
 
-### Scaling, measuring
+### B) Scaling, measuring
 
 * `abs(x)`: Absolute value.
 * `max(x)`: Maximum value of list or token itself.
@@ -555,14 +555,14 @@ I want to explore how far you can go by introducing functional concepts to handl
 * `scale(z, x, y, x', y')`: Bring a value `z` from range `x-y` to range `x'-y'`.
 * `clamp(x, y, z)`: Clamp function, limit a value `x` to the minimum `y` to the maximum `z`.
 
-### Reversal, shuffling
+### C) Reversal, shuffling
 
 * `rev(x)`: Reverse a list.
 * `shuf(x)`: Shuffle a list.
 * `pal(x)`: palindrome of list.
 * `apal(x)`: palindrome of list without repetition of last value.
 
-### Musical functions
+### D) Musical functions
 
 * `disco(x)`: Disco function. Every pair note down an octave.
 * `adisco(x)`: Anti-disco function. Every pair note up an octave. 
@@ -570,24 +570,24 @@ I want to explore how far you can go by introducing functional concepts to handl
 * `sopr(x)`: The last note of list is up an octave (not very useful).
 * `quant(x, y)`: The last note of list is up an octave (not very useful).
 
-### Voice Leading 
+### E) Voice Leading 
 
 These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
 
 * `voice(x)`: four-note voice leading algorithm. Naive implementation.
 * `dmitri(x)`: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
 
-### Probabilities 
+### F) Probabilities 
 
 * `vanish(x, y)`: Takes a list `x`, output only `y`% of values from it.
 
-### Booleans
+### G) Booleans
 
 * `euclid(a, b, c, d)`: Euclidian rhythm function applied to patterns. Takes a pattern `a`, a number of pulses `b`, a number of steps `c` and a rotation amount `d`. Outputs a pattern where the absence of a pulse is a silence and where pulses are values from the pattern.
 
 * `mask(x, y)`: Generalisation of the euclidian rhythm algorithm. Works for any pattern and list of booleans.
 
-### Insertion and rotation
+### H) Insertion and rotation
 
 To be documented:
 
@@ -596,7 +596,7 @@ To be documented:
 * `inrot(x, y)`:
 * `inprot(x, y)`:
 
-### Filtering
+### I) Filtering
 
 * `filt(x, y)`:
 

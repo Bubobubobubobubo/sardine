@@ -19,6 +19,7 @@ except ImportError:
     print("[yellow]UVLoop is not installed. Not supported on Windows![/yellow]")
     print("[yellow]Rhythm accuracy may be impacted[/yellow]")
 else:
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
 from random import random, randint, choice

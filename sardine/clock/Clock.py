@@ -753,7 +753,10 @@ class Clock:
         return float(integer_part + floating_part)
 
     async def run_active(self):
-        """Main runner for the active mode (master)"""
+        """
+        Main runner for the active mode (master). Currently unstable depending 
+        on CPU load. It needs to be further refined.
+        """
         self._current_tick, self._delta = 0, 0.0
 
         while self.running:

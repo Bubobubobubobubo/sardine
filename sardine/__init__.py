@@ -384,15 +384,19 @@ if (
     i, v = c.iterators, c.variables
     P = Pat
 
-    # Quickstep functionality (similar to FoxDot)
-    __quickstep_patterns = PatternHolder(
+    # Surfing functionality (similar to FoxDot)
+    __surfing_patterns = PatternHolder(
         clock=c, MIDISender=M, SuperDirtSender=S, OSCSender=O
     )
-    for (key, value) in __quickstep_patterns._patterns.items():
+    for (key, value) in __surfing_patterns._patterns.items():
         globals()[key] = value
-    c.schedule_func(__quickstep_patterns._global_runner)
-    surf = __quickstep_patterns
-    play, play_midi, play_osc = Player.play, Player.play_midi, Player.play_osc
+    c.schedule_func(__surfing_patterns._global_runner)
+    surf = __surfing_patterns
+    play, play_midi, play_osc, run = (
+            Player.play, 
+            Player.play_midi, 
+            Player.play_osc,
+            Player.run)
 
     def hush(*args):
         """
@@ -400,7 +404,7 @@ if (
         from being called again. Will silence all functions by default. You can
         also specify one or more functions to be stopped, keeping the others alive.
 
-        This function has been updated to take into account the new Quickstep patterns.
+        This function has been updated to take into account the new Surfing patterns.
         """
         try:
             if len(args) >= 1:
@@ -411,4 +415,4 @@ if (
                     if name != "_global_runner":
                         runner.stop()
         finally:
-            __quickstep_patterns.reset()
+            __surfing_patterns.reset()

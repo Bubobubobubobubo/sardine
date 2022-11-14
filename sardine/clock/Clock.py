@@ -13,6 +13,7 @@ from collections import deque
 from rich import print
 
 from . import AsyncRunner
+from .Logging import Logs
 from ..sequences import ListParser
 from ..sequences.Iterators import Iterator
 from ..sequences.Variables import Variables
@@ -152,6 +153,9 @@ class Clock:
             iterators=self.iterators,
             debug=self._parser_debug,
         )
+
+        # Logging and benchmarking tools
+        self._log = Logs(self)
 
     def __repr__(self):
         shift = self.tick_shift

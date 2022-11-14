@@ -1,7 +1,6 @@
-# QuickStep mode ###############################################################
+# Surfing mode ###############################################################
 #
-# Quickstep is another dance similar to FoxTrot. All in all, this is as bad pun
-# to name this feature: an emulation of FoxDot (https://foxdot.org/) patterning
+# Surfing mode is an emulation of the FoxDot (https://foxdot.org/) patterning
 # system. It works in a rather similar way, at least for the public interface.
 # The rest is just carefully attributing senders to a _global_runner function
 # that behaves just like any other swimming function.
@@ -10,7 +9,7 @@
 # ming functions for more delicate operations :)
 ################################################################################
 from string import ascii_uppercase, ascii_lowercase
-from typing import Union, TYPE_CHECKING
+from typing import Union, TYPE_CHECKING, Callable
 from rich import print
 from rich.panel import Panel
 
@@ -26,7 +25,7 @@ __all__ = ("Player", "PatternHolder")
 class Player:
 
     """
-    A Player is a lone Sender that will be activated by a central QuickStep
+    A Player is a lone Sender that will be activated by a central surfing 
     swimming function. It contains the sender and basic information about
     div, rate, etc...
     """
@@ -56,6 +55,14 @@ class Player:
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
         return remap(value, 0, 4, 1, 127)
+
+
+    @classmethod
+    def run(cls, func: Callable):
+        """
+        The play method will call a SuperDirtSender
+        """
+        return {"type": "function", "func": func}
 
     @classmethod
     def play(cls, *args, **kwargs):
@@ -193,6 +200,8 @@ class PatternHolder:
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
         for player in patterns:
             try:
+                if player._content["type"] == "function":
+                    player._content["func"]()
                 if player._content["type"] == "MIDI":
                     self._midisender(
                         note=player._content['args'][0],

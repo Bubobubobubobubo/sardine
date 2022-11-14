@@ -376,7 +376,7 @@ Just like with numbers, names and addresses, you can extend a list by calling th
 ```python
 @swim 
 def test_extend_repeat(d=0.5, i=0):
-    S('pluck:19', legato=0.2, midinote='[60,62]!2').out(i)
+    S('pluck:19', legato=0.2, midinote='[60,62,63]!!3').out(i) #note the repetition of values within the list
     a(test_extend_repeat, d=0.125, i=i+1)
 ```
 The variant `!!` now makes sense. It allows you to repeat each individual value in a list `x` times.

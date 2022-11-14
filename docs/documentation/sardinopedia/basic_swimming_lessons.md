@@ -168,12 +168,17 @@ The `play_midi()` function is the good old `M()` **Sender**. The `note=` paramet
 
 ### How to stop surfing
 
-**Surfing** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` or `panic()` function just like for other *swimming functions*.
+**Surfing** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` or `panic()` function just like for other *swimming functions*. You can also use direct the Player value to "None" (PB >> None). This will stop the output for that player - which is useful if you have multiple Players. To start again, just load the PB >> play() line again. 
 ```python
 PA >> play('bd, ., hhh, .')
 PA.rate = 1
 
-hush()
+PB >> play('cp')
+PB >> dur = 0.5
+
+PB >> None # stops only the PB Player
+
+hush() # stops all Players
 ```
 
 

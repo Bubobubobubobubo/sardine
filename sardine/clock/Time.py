@@ -1,11 +1,10 @@
 class Time:
     def __init__(
-        self, 
-        phase: float=0.0,
-        beat: float=0.0,
-        bar: int=0
+        self, phase: float=0.0, beat: float=0.0, bar: int=0,
+        beats_per_bar: int = 4
     ):
         self._phase, self._beat, self._bar = phase, beat, bar
+        self._beats_per_bar = 4
 
     @property
     def phase(self) -> float:

@@ -21,7 +21,16 @@ from .Handlers import (
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 
+from .io.UserConfig import (
+    read_user_configuration,
+    pretty_print_configuration_file)
+
 #| INITIALISATION |#
+
+# Reading user configuration
+config = read_user_configuration()
+print_config = pretty_print_configuration_file
+
 env = FishBowl(
     time=Time(
         phase=float(0.0),
@@ -38,4 +47,4 @@ env.add_handler(OSCHandler())
 env.add_handler(SuperColliderHandler())
 
 # Start clock
-env.clock.run()
+env.clock.start()

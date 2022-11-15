@@ -18,6 +18,7 @@ class Clock(BaseClock):
             tempo (float, optional): Beats per minute (tempo). Defaults to 120.
             bpb (int, optional): Number of beats per bar. Defaults to 4.
         """
+        self._running = True
         self._env = env
         self._time = time
         self._time_grain = 0.01
@@ -94,7 +95,7 @@ class Clock(BaseClock):
             raise ValueError("bpm must be within 1 and 800")
         self._tempo = tempo
 
-    ## MAIN LOOP  ############################################################## 
+    ## METHODS  ############################################################## 
     
     def start(self):
         """
@@ -103,10 +104,24 @@ class Clock(BaseClock):
         """
         asyncio.create_task(self.run())
 
+    def pause(self):
+        """
+        Pause the internal clock
+        """
+        self._running = not self._running
+
+    def stop(self):
+        """
+        Pause the internal clock
+        """
+        self._running = False
+        self._time.reset()
+
+
     async def run(self):
         """Main loop for the internal clock"""
         drift = 0.0
-        while True:
+        while self._running:
             begin = perf_counter()
             await asyncio.sleep(self._time_grain - drift)
             self._time._elapsed_time += self._time_grain

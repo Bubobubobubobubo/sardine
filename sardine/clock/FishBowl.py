@@ -6,13 +6,19 @@ if TYPE_CHECKING:
     from ..Components.BaseClock import BaseClock
     from ..Components.BaseParser import BaseParser
 
-class Environment:
-    clock_state: Time
-    clock: BaseClock
-    handlers: list[BaseHandler]
-    parser: BaseParser
+class FishBowl:
+    def __init__(
+        self,
+        time: 'Time', 
+        clock: 'BaseClock',
+        parser: 'BaseParser'
+    ):
+        self._time = time
+        self._clock = clock
+        self._parser = parser
+        self._handlers: list[BaseHandler] = []
 
-    def add_handler(self, handler: BaseHandler):
+    def add_handler(self, handler: 'BaseHandler'):
         handler.setup(self)
         self.handlers.append(handler)
 

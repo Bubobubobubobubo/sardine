@@ -26,12 +26,21 @@ class FishBowl:
             iterators=self._iterators
         )
 
-    def add_clock(self, clock: 'BaseClock'):
-        """Hot-swap Clock"""
-        self._clock = clock(env=self)
+    def add_clock(self, clock: 'BaseClock', **kwargs):
+        """Hot-swap current clock for a different clock.
+
+        Args:
+            clock (BaseClock): Target clock
+            **kwargs: argument for the new clock
+        """
+        self._clock = clock(env=self, time=self._time, **kwargs)
         
     def add_parser(self, parser: 'BaseParser'):
-        """Hot-swap Parser"""
+        """Hot-swap current parser for a different parser.
+
+        Args:
+            parser (BaseParser): New Parser
+        """
         self._parser = parser(
             clock=self._clock,
             iterators=self._iterators,
@@ -39,7 +48,13 @@ class FishBowl:
         )
 
     def add_handler(self, handler: 'BaseHandler'):
-        """Add a new Handler (Sender)"""
+        """Adding a new handler to the environment. This handler will 
+        receive all messages currently dispatched in the environment
+        and react accordingly.
+
+        Args:
+            handler (BaseHandler): Sender
+        """
         handler.setup(self)
         self._handlers.append(handler)
 

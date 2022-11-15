@@ -13,3 +13,11 @@ class BaseClock(ABC):
         while True:
             # update the clock state, then:
             self.env.dispatch('tick')
+
+    @abstractmethod
+    def pause(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass

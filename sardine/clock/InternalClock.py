@@ -30,7 +30,6 @@ class Clock(BaseClock):
         el = self._time._elapsed_time
         return f"{el:1f} -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}]"
 
-
     #### GETTERS  ############################################################ 
 
     @property

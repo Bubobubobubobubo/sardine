@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .BaseHandler import BaseHandler
+    from .Time import Time
+    from .BaseClock import BaseClock
 
 class Environment:
-    clock_state: ClockState
+    clock_state: Time
     clock: BaseClock
     handlers: list[BaseHandler]
     parser: BaseParser

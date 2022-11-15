@@ -10,7 +10,7 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
-from .clock.FishBowl import FishBowl
+from .FishBowl import FishBowl
 from .clock.Time import Time
 from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock

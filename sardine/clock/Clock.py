@@ -12,7 +12,7 @@ from sardine.io.Osc import Client
 from collections import deque
 from rich import print
 
-from . import AsyncRunner
+from ..scheduler import AsyncRunner
 from ..sequences import ListParser
 from ..sequences.Iterators import Iterator
 from ..sequences.Variables import Variables

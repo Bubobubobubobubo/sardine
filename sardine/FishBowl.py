@@ -1,12 +1,12 @@
 from typing import TYPE_CHECKING
-from ..sequences.LexerParser.ListParser import ListParser
-from ..sequences.Iterators import Iterator
-from ..sequences.Variables import Variables
-from ..clock.InternalClock import Clock
+from .sequences.LexerParser.ListParser import ListParser
+from .sequences.Iterators import Iterator
+from .sequences.Variables import Variables
+from .clock.InternalClock import Clock
 
 if TYPE_CHECKING:
     from ..Components.BaseHandler import BaseHandler
-    from .Time import Time
+    from .clock.Time import Time
     from ..Components.BaseClock import BaseClock
     from ..Components.BaseParser import BaseParser
 
@@ -16,7 +16,7 @@ class FishBowl:
         time: 'Time', 
     ):
         self._time = time
-        self._clock = Clock(env=self, time=self._time, tempo=120, bpb=4)
+        self._clock = Clock(env=self, tempo=120, bpb=4)
         self._iterators = Iterator()
         self._variable = Variables() 
         self._handlers: list[BaseHandler] = []

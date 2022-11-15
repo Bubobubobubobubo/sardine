@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
-from ..Components.BaseHandler import BaseHandler
+from ..base.BaseHandler import BaseHandler
 from ..io.MidiIo import MIDIIo
 
 if TYPE_CHECKING:
-    from ..clock.FishBowl import FishBowl
+    from ..FishBowl import FishBowl
 
 class MidiHandler(BaseHandler):
     def __init__(self):

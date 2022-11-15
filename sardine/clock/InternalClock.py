@@ -1,15 +1,15 @@
-from ..Components.BaseClock import BaseClock
+from ..base.BaseClock import BaseClock
 from typing import TYPE_CHECKING
 from time import perf_counter
 import asyncio
 
 if TYPE_CHECKING:
-    from .FishBowl import FishBowl
+    from ..FishBowl import FishBowl
     from .Time import Time
 
 class Clock(BaseClock):
 
-    def __init__(self, env: 'FishBowl', time: 'Time', tempo: float = 120, bpb: int = 4):
+    def __init__(self, env: 'FishBowl', tempo: float = 120, bpb: int = 4):
         """Basic internal clock
 
         Args:
@@ -20,18 +20,23 @@ class Clock(BaseClock):
         """
         self._running = True
         self._env = env
-        self._time = time
+        self._time = env._time
         self._time_grain = 0.01
         self._tempo = tempo
         self._beats_per_bar = bpb
+        self._drift = 0.0
 
     ## REPR AND STR ############################################################ 
 
     def __repr__(self) -> str:
         el = self._time._elapsed_time
-        return f"{el:1f} -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}]"
+        return f"{el:1f} -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
 
     #### GETTERS  ############################################################ 
+
+    @property
+    def drift(self) -> float:
+        return self._drift
 
     @property
     def beat(self) -> int:
@@ -113,7 +118,6 @@ class Clock(BaseClock):
         else:
             self._running = True
             
-
     def stop(self):
         """
         Stop the internal clock
@@ -121,16 +125,15 @@ class Clock(BaseClock):
         self._running = False
         self._time.reset()
 
-
     async def run(self):
         """Main loop for the internal clock"""
-        drift = 0.0
+        self._drift = 0.0
         while True:
             if self._running:
                 begin = perf_counter()
-                await asyncio.sleep(self._time_grain - drift)
+                await asyncio.sleep(self._time_grain - self._drift)
                 self._time._elapsed_time += self._time_grain
                 self._env.dispatch('tick')
-                drift = perf_counter() - begin
+                self._drift = perf_counter() - begin
             else:
                 await asyncio.sleep(0.0)

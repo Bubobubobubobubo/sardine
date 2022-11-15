@@ -1,4 +1,4 @@
-from ..Components.BaseClock import BaseClock
+from ..base.BaseClock import BaseClock
 
 class LinkClock(BaseClock):
 

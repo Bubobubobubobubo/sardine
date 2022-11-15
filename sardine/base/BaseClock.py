@@ -17,7 +17,23 @@ class BaseClock(ABC):
     @abstractmethod
     def pause(self):
         pass
+    
+    @abstractmethod
+    def resume(self):
+        pass
+
+    @abstractmethod
+    def start(self):
+        pass
 
     @abstractmethod
     def stop(self):
+        pass
+
+    @abstractmethod
+    def is_running(self):
+        pass
+
+    @abstractmethod
+    def is_paused(self):
         pass

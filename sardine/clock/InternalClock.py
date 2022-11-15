@@ -18,7 +18,9 @@ class Clock(BaseClock):
             tempo (float, optional): Beats per minute (tempo). Defaults to 120.
             bpb (int, optional): Number of beats per bar. Defaults to 4.
         """
-        self._running = True
+        self._alive = asyncio.Event()
+        self._resumed = asyncio.Event()
+        self._resumed.set()
         self._env = env
         self._time = env._time
         self._time_grain = 0.01
@@ -70,6 +72,8 @@ class Clock(BaseClock):
     def beats_per_bar(self) -> int:
         return self._beats_per_bar
 
+
+
     #### SETTERS ############################################################ 
 
     @bpm.setter
@@ -101,39 +105,48 @@ class Clock(BaseClock):
         self._tempo = tempo
 
     ## METHODS  ############################################################## 
+
+    def is_running(self) -> int:
+        return self._alive.is_set()
+
+    def is_paused(self) -> int:
+        return False if self._resumed.is_set() else True
     
     def start(self):
         """
         Method needed to started ticking the clock without using async 
         syntax and hoops.
         """
+        self._alive.set()
         asyncio.create_task(self.run())
 
     def pause(self):
         """
         Pause the internal clock
         """
-        if self._running:
-            self._running = False
-        else:
-            self._running = True
+        if self._resumed.is_set():
+            self._resumed.clear()
+
+    def resume(self):
+        if not self._resumed.is_set():
+            self._resumed.set()
             
     def stop(self):
         """
         Stop the internal clock
         """
-        self._running = False
-        self._time.reset()
+        self._alive.clear()
 
     async def run(self):
         """Main loop for the internal clock"""
         self._drift = 0.0
         while True:
-            if self._running:
+            await self._resumed.wait()
+            if self._alive.is_set():
                 begin = perf_counter()
                 await asyncio.sleep(self._time_grain - self._drift)
                 self._time._elapsed_time += self._time_grain
                 self._env.dispatch('tick')
                 self._drift = perf_counter() - begin
             else:
-                await asyncio.sleep(0.0)
+                return

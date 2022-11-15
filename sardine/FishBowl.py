@@ -5,10 +5,10 @@ from .sequences.Variables import Variables
 from .clock.InternalClock import Clock
 
 if TYPE_CHECKING:
-    from ..Components.BaseHandler import BaseHandler
+    from ..base.BaseHandler import BaseHandler
     from .clock.Time import Time
-    from ..Components.BaseClock import BaseClock
-    from ..Components.BaseParser import BaseParser
+    from ..base.BaseClock import BaseClock
+    from ..base.BaseParser import BaseParser
 
 class FishBowl:
     def __init__(
@@ -20,11 +20,7 @@ class FishBowl:
         self._iterators = Iterator()
         self._variable = Variables() 
         self._handlers: list[BaseHandler] = []
-        self._parser = ListParser(
-            clock=self._clock,
-            variables=self._variable,
-            iterators=self._iterators
-        )
+        self._parser = ListParser(env=self)
 
     def add_clock(self, clock: 'BaseClock', **kwargs):
         """Hot-swap current clock for a different clock.
@@ -33,7 +29,7 @@ class FishBowl:
             clock (BaseClock): Target clock
             **kwargs: argument for the new clock
         """
-        self._clock = clock(env=self, time=self._time, **kwargs)
+        self._clock = clock(env=self, **kwargs)
         
     def add_parser(self, parser: 'BaseParser'):
         """Hot-swap current parser for a different parser.
@@ -41,11 +37,7 @@ class FishBowl:
         Args:
             parser (BaseParser): New Parser
         """
-        self._parser = parser(
-            clock=self._clock,
-            iterators=self._iterators,
-            variables=self._variable
-        )
+        self._parser = parser(env=self)
 
     def add_handler(self, handler: 'BaseHandler'):
         """Adding a new handler to the environment. This handler will 
@@ -65,3 +57,7 @@ class FishBowl:
     @property
     def clock(self):
         return self._clock
+
+    @property
+    def parser(self):
+        return self._parser

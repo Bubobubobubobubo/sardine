@@ -24,9 +24,7 @@ grammar = grammar_path / "grammars/proto.lark"
 class ListParser:
     def __init__(
         self,
-        clock,
-        iterators,
-        variables,
+        env,
         parser_type: str = "proto",
         debug: bool = False,
     ):
@@ -42,10 +40,10 @@ class ListParser:
             parser_type (str, optional): Type of parser. Defaults to "number".
         """
         # Reference to clock for the "t" grammar token
-        self.clock = clock
+        self.clock = env._clock
         self.debug = debug
-        self.iterators = iterators
-        self.variables = variables
+        self.iterators = env._iterators
+        self.variables = env._variable
 
         parsers = {
             "proto": {

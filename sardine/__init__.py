@@ -13,6 +13,7 @@ else:
 from .clock.FishBowl import FishBowl
 from .clock.Time import Time
 from .clock.InternalClock import Clock
+from .clock.LinkClock import LinkClock
 from .sequences.LexerParser.ListParser import ListParser
 from .Handlers import (
     SuperColliderHandler, 
@@ -26,9 +27,9 @@ from .sequences.Variables import Variables
 # Environment
 env = FishBowl(
     time=Time(
-        phase=0,
-        beat=0,
-        bar=0
+        phase=float(0.0),
+        beat=float(0.0),
+        bar=int(0)
     ), 
     clock=Clock())
 

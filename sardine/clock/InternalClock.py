@@ -108,11 +108,15 @@ class Clock(BaseClock):
         """
         Pause the internal clock
         """
-        self._running = not self._running
+        if self._running:
+            self._running = False
+        else:
+            self._running = True
+            
 
     def stop(self):
         """
-        Pause the internal clock
+        Stop the internal clock
         """
         self._running = False
         self._time.reset()
@@ -121,9 +125,12 @@ class Clock(BaseClock):
     async def run(self):
         """Main loop for the internal clock"""
         drift = 0.0
-        while self._running:
-            begin = perf_counter()
-            await asyncio.sleep(self._time_grain - drift)
-            self._time._elapsed_time += self._time_grain
-            self._env.dispatch('tick')
-            drift = perf_counter() - begin
+        while True:
+            if self._running:
+                begin = perf_counter()
+                await asyncio.sleep(self._time_grain - drift)
+                self._time._elapsed_time += self._time_grain
+                self._env.dispatch('tick')
+                drift = perf_counter() - begin
+            else:
+                await asyncio.sleep(0.0)

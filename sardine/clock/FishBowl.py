@@ -46,3 +46,7 @@ class FishBowl:
     def dispatch(self, event: str, *args, **kwargs):
         for handler in self._handlers:
             handler.hook(event, *args, **kwargs)
+
+    @property
+    def clock(self):
+        return self._clock

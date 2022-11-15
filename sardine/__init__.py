@@ -21,10 +21,7 @@ from .Handlers import (
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 
-
 #| INITIALISATION |#
-
-# Environment
 env = FishBowl(
     time=Time(
         phase=float(0.0),
@@ -39,3 +36,6 @@ env.add_parser(ListParser)
 env.add_handler(MidiHandler())
 env.add_handler(OSCHandler())
 env.add_handler(SuperColliderHandler())
+
+# Start clock
+env.clock.run()

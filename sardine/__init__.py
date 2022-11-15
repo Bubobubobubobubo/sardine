@@ -31,12 +31,9 @@ from .io.UserConfig import (
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
-env = FishBowl(
-    time=Time(
-        phase=float(0.0),
-        beat=float(0.0),
-        bar=int(0))
-)
+env = FishBowl(time=Time())
+time = env._time # passage of time
+clock = env._clock # clock information
 
 # Adding a parser
 env.add_parser(ListParser)

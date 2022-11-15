@@ -16,7 +16,7 @@ class FishBowl:
         time: 'Time', 
     ):
         self._time = time
-        self._clock = Clock(env=self, time=self._time)
+        self._clock = Clock(env=self, time=self._time, tempo=120, bpb=4)
         self._iterators = Iterator()
         self._variable = Variables() 
         self._handlers: list[BaseHandler] = []

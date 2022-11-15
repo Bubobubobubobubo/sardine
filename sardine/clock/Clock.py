@@ -224,31 +224,6 @@ class Clock:
         self._superdirt_nudge = value
 
     @property
-    def accel(self) -> int:
-        return self._accel
-
-    @accel.setter
-    def accel(self, value: int):
-        """
-        Accel stands for acceleration. In active MIDI mode, accel acts as a way
-        to nudge the clock to run faster or slower (from 0 to 100%). It can be
-        quite useful when dealing with a musician that can't really use any
-        synchronisation protocol. Beware, you will have to manually reset the
-        accel amount after setting it if you want to stop and not fasten the
-        clock.
-
-        Args:
-            value (int): a nudge factor from 0 to 100%
-
-        Raises:
-            ValueError: if 'value' exceeds 100%
-        """
-        if value >= 100:
-            raise ValueError("Cannot set acceleration above 100%.")
-        self._accel = value
-        self._reload_runners()
-
-    @property
     def deferred_scheduling(self):
         return self._deferred_scheduling
 
@@ -284,27 +259,6 @@ class Clock:
         self._shift_handles(change)
         self._reload_runners()
         self._update_handles()
-
-    @property
-    def bpm(self) -> int:
-        return self._bpm
-
-    @bpm.setter
-    def bpm(self, new_bpm: int):
-        """Beats per minute. Tempo for the Sardine Clock.
-
-        Args:
-            new_bpm (int): new tempo value
-
-        Raises:
-            ValueError: if tempo < 20 or tempo > 999 (non-musical values)
-        """
-        if not 20 < new_bpm < 999:
-            raise ValueError("bpm must be within 1 and 800")
-        self._bpm = new_bpm
-        if self._link:
-            pass
-        self._reload_runners()
 
     @property
     def ppqn(self) -> int:

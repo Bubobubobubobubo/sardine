@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .Environment import Environment
+    from ..clock.Environment import Environment
 
 class BaseClock(ABC):
     env: Environment

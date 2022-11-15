@@ -1,9 +1,3 @@
-# SARDINE: this is the main entry point for Sardine. __init__.py will attempt
-# to load everything needed for an interactive session directly from here.
-# Linters might complain about the fact some objects are not accessed. Sure,
-# they are not accessed right now but will later in time when the user will
-# start interacting with the system.
-
 from random import random, randint, choice
 from math import floor
 from rich import print
@@ -211,39 +205,6 @@ def sleep(n_beats: Union[int, float]):
 
 # Debugging parser: pure Sardine pattern syntax parser. Used for debugging when
 # developping Sardine. Will print the AST and result of a given operation.
-
-
-def parser(pattern: str):
-    """Parse a single expression and get result"""
-    parser = ListParser()
-    print(parser.parse(pattern))
-
-
-def parser_repl(parser_type: str) -> None:
-    """Parse a single expression and get result"""
-    parser = ListParser(
-        clock=c, iterators=c.iterators, variables=c.variables, parser_type=parser_type
-    )
-
-    def _exit_case(string):
-        if string.lower() == "exit":
-            return True
-
-    try:
-        while True:
-            user_input = input("> ")
-            if _exit_case(user_input):
-                break
-            else:
-                p = parser._parse_debug(pattern=user_input)
-    except KeyboardInterrupt:
-        pass
-
-
-def lang_debug() -> None:
-    """Debug mode for language dev"""
-    return parser_repl(parser_type="proto")
-
 
 # Interface to the patterning system
 def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:

@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .BaseHandler import BaseHandler
+    from ..Components.BaseHandler import BaseHandler
     from .Time import Time
-    from .BaseClock import BaseClock
+    from ..Components.BaseClock import BaseClock
+    from ..Components.BaseParser import BaseParser
 
 class Environment:
     clock_state: Time

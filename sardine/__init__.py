@@ -29,9 +29,8 @@ env = FishBowl(
     time=Time(
         phase=float(0.0),
         beat=float(0.0),
-        bar=int(0)
-    ), 
-    clock=Clock())
+        bar=int(0))
+)
 
 # Adding a parser
 env.add_parser(ListParser)

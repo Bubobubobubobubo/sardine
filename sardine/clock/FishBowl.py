@@ -1,4 +1,7 @@
 from typing import TYPE_CHECKING
+from ..sequences.LexerParser.ListParser import ListParser
+from ..sequences.Iterators import Iterator
+from ..sequences.Variables import Variables
 
 if TYPE_CHECKING:
     from ..Components.BaseHandler import BaseHandler
@@ -11,17 +14,29 @@ class FishBowl:
         self,
         time: 'Time', 
         clock: 'BaseClock',
-        parser: 'BaseParser'
     ):
         self._time = time
         self._clock = clock
-        self._parser = parser
+        self._iterators = Iterator()
+        self._variable = Variables() 
         self._handlers: list[BaseHandler] = []
+        self._parser = ListParser(
+            clock=self._clock,
+            variables=self._variable,
+            iterators=self._iterators
+        )
+        
+    def add_parser(self, parser: 'BaseParser'):
+        self._parser = parser(
+            clock=self._clock,
+            iterators=self._iterators,
+            variables=self._variable
+        )
 
     def add_handler(self, handler: 'BaseHandler'):
         handler.setup(self)
-        self.handlers.append(handler)
+        self._handlers.append(handler)
 
     def dispatch(self, event: str, *args, **kwargs):
-        for handler in self.handlers:
+        for handler in self._handlers:
             handler.hook(event, *args, **kwargs)

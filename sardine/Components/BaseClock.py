@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..clock.FishBowl import Environment
+    from ..clock.FishBowl import FishBowl
 
 class BaseClock(ABC):
-    env: Environment
+    env: 'FishBowl'
 
     @abstractmethod
     def run(self):

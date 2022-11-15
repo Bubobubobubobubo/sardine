@@ -1,5 +1,6 @@
 from ..Components.BaseClock import BaseClock
 from typing import TYPE_CHECKING
+from time import perf_counter
 import asyncio
 
 if TYPE_CHECKING:
@@ -130,8 +131,10 @@ class Clock(BaseClock):
 
     async def run(self):
         """Main loop for the internal clock"""
+        drift = 0.0
         while True:
-            # Update clock state, and then:
-            await asyncio.sleep(self._time_grain)
+            begin = perf_counter()
+            await asyncio.sleep(self._time_grain - drift)
             self._time._elapsed_time += self._time_grain
             self._env.dispatch('tick')
+            drift = perf_counter() - begin

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Union, Optional
 from ..sequences import ListParser
 from math import floor
 from .SenderLogic import pattern_element, compose_parametric_patterns
-from ..sequences.LexerParser.Chords import Chord
+from ..sequences.SardineParser.Chords import Chord
 
 if TYPE_CHECKING:
     from ..legacy import Clock

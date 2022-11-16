@@ -1,4 +1,4 @@
 from .Sequence import *
 from .Chance import *
-from .LexerParser.ListParser import *
+from .SardineParser.ListParser import *
 from .Surfing import *

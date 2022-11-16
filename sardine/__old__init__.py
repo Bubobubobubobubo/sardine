@@ -37,7 +37,7 @@ from .sequences import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .sequences.Sequence import E, euclid, mod, imod, pick, text_eater
-from .sequences.LexerParser.FuncLibrary import qualifiers
+from .sequences.SardineParser.FuncLibrary import qualifiers
 from .sequences import Player, PatternHolder
 from .sequences import *
 

@@ -1,5 +1,5 @@
 import unittest
-from sardine.sequences.LexerParser.ListParser import ListParser
+from sardine.sequences.SardineParser.ListParser import ListParser
 from typing import Union
 from unittest import mock
 

@@ -1,5 +1,5 @@
 from typing import List, Tuple, Any
-from ..sequences.LexerParser.Chords import Chord
+from ..sequences.SardineParser.Chords import Chord
 from math import floor
 
 

@@ -5,7 +5,7 @@ import functools
 from typing import TYPE_CHECKING, Union
 from ..io import dirt
 from ..sequences import ListParser
-from ..sequences.LexerParser.Chords import Chord
+from ..sequences.SardineParser.Chords import Chord
 from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:

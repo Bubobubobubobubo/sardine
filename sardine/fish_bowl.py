@@ -1,7 +1,7 @@
 import collections
 from typing import TYPE_CHECKING, Hashable, Protocol
 
-from .sequences.LexerParser.ListParser import ListParser
+from .sequences.SardineParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .clock.InternalClock import Clock

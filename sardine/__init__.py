@@ -19,7 +19,7 @@ from .fish_bowl import FishBowl
 from .clock.Time import Time
 from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
-from .sequences.LexerParser.ListParser import ListParser
+from .sequences.SardineParser.ListParser import ListParser
 from .handlers import (
     SuperColliderHandler,
     MidiHandler, OSCHandler)

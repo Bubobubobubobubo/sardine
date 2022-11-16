@@ -90,7 +90,7 @@ class FishBowl:
         # given that `register_hook()` is idempotent, it's probably
         # fine to call `BaseHandler.setup()` again
 
-        handler.env = self
+        handler._env = self  # pylint: disable=protected-access
         handler.setup()
         self.handlers.add(handler)
 
@@ -109,7 +109,7 @@ class FishBowl:
             return
 
         handler.teardown()
-        handler.env = None
+        handler._env = None  # pylint: disable=protected-access
         self.handlers.remove(handler)
 
         event_set = self.hook_events.get(handler)

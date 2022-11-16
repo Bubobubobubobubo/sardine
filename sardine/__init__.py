@@ -1,7 +1,11 @@
 from rich import print
 from rich.panel import Panel
 
+
 import asyncio
+import sys
+import importlib
+from pathlib import Path
 import os
 try:
     import uvloop
@@ -80,6 +84,18 @@ if (
             print("[red]SuperCollider could not be found![/red]")
     else:
         print("[green]Booting without SuperCollider![/green]")
+
+    # Load user config
+    if Path(f"{config.user_config_path}").is_file():
+        spec = importlib.util.spec_from_file_location(
+            "user_configuration", config.user_config_path
+        )
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        from user_configuration import *
+    else:
+        print(f"[red]No user provided configuration file found...")
 
 
     bowl = FishBowl(time=Time())

@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class OSCHandler(BaseHandler):
     def __init__(self):
-        pass
+        self.env = None
 
     def setup(self, env: 'FishBowl'):
         pass

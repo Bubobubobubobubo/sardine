@@ -87,8 +87,9 @@ class FishBowl:
         # It may be possible that the user set `env` to None, but
         # given that `register_hook()` is idempotent, it's probably
         # fine to call `BaseHandler.setup()` again
-        handler.env = self
-        handler.setup()
+
+        # handler.env = self # redundant with setup method?
+        handler.setup(env=self)
         self.handlers.add(handler)
 
     def remove_handler(self, handler: "BaseHandler"):

@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 class SuperColliderHandler(BaseHandler):
     def __init__(self):
-        pass
+        self.env = None
 
     def setup(self, env: 'FishBowl'):
         pass

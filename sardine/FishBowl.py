@@ -25,16 +25,16 @@ class FishBowl:
         self.handlers: list[BaseHandler] = []
         self.parser = ListParser(env=self)
 
-    def add_clock(self, clock: "BaseClock", **kwargs):
+    def swap_clock(self, clock: "BaseClock", **kwargs):
         """Hot-swap current clock for a different clock.
 
         Args:
             clock (BaseClock): Target clock
             **kwargs: argument for the new clock
         """
-        self.clock = clock(env=self, **kwargs)
+        self.clock = clock(self, **kwargs)
 
-    def add_parser(self, parser: "BaseParser"):
+    def swap_parser(self, parser: "BaseParser"):
         """Hot-swap current parser for a different parser.
 
         Args:

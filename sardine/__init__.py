@@ -24,6 +24,7 @@ from .sequences.Variables import Variables
 from .io.UserConfig import (
     read_user_configuration,
     pretty_print_configuration_file)
+config = read_user_configuration()
 
 #| INITIALISATION |#
 
@@ -31,17 +32,18 @@ from .io.UserConfig import (
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
-env = FishBowl(time=Time())
-time = env.time # passage of time
-clock = env.clock # clock information
+bowl = FishBowl(time=Time())
+time = bowl.time # passage of time
+clock = bowl.clock # clock information
+# clock.tempo, clock._beats_per_bar = config.bpm, config.beats
 
 # Adding a parser
-env.add_parser(ListParser)
+bowl.swap_parser(ListParser)
 
 # Adding Senders
-env.add_handler(MidiHandler())
-env.add_handler(OSCHandler())
-env.add_handler(SuperColliderHandler())
+bowl.add_handler(MidiHandler())
+bowl.add_handler(OSCHandler())
+bowl.add_handler(SuperColliderHandler())
 
 # Start clock
-env.clock.start()
+bowl.clock.start()

@@ -83,6 +83,18 @@ class LinkClock(BaseClock):
     def linktime(self, new_time: dict) -> None:
         self._linktime = self._get_new_linktime(new_time)
 
+    @tempo.setter
+    def tempo(self, new_tempo: float) -> None:
+        session = self._link.captureSessionState()
+        session.setTempo(new_tempo, self._beats_per_bar)
+        self._link.commitSessionState(session)
+
+    @bpm.setter
+    def tempo(self, new_tempo: float) -> None:
+        session = self._link.captureSessionState()
+        session.setTempo(new_tempo, self._beats_per_bar)
+        self._link.commitSessionState(session)
+
     ## METHODS  ############################################################## 
 
     def _capture_link_info(self) -> dict:

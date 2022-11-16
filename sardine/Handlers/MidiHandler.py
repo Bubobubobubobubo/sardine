@@ -1,32 +1,58 @@
 from typing import TYPE_CHECKING
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
-from mido import Message
+import threading
+import mido
+import sys
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-class MidiHandler(BaseHandler):
+class MidiHandler(BaseHandler, threading.Thread):
 
     """
     MidiHandler: a class capable of reacting to most MIDI Messages.
     """
-    def __init__(self):
+
+    def __init__(self, port_name: str = "Sardine"):
+        threading.Thread.__init__(self)
         self.env = None
+        self._available_ports = mido.get_output_names()
+        self._port_name = port_name
+        self._midi = None
         self.events = {
-            'start': lambda args: Message('start'),
-            'continue': lambda args: Message('continue'),
-            'stop': lambda args: Message('stop'),
-            'reset': lambda args: Message('reset'),
-            'clock': lambda args: Message('clock'),
-            'note_on': lambda args: Message('note_on', *args),
-            'note_off': lambda args: Message('note_off', *args),
-            'aftertouch': lambda args: Message('aftertouch', *args),
-            'control_change': lambda args: Message('control_change', *args),
-            'program_change': lambda args: Message('program_change', *args),
-            'sysex': lambda args: Message('sysex', *args),
-            'pitch_wheel': lambda args: Message('pitchwheel', *args),
+            'start': lambda: mido.Message('start'),
+            'continue': lambda: mido.Message('continue'),
+            'stop': lambda: mido.Message('stop'),
+            'reset': lambda: mido.Message('reset'),
+            'clock': lambda: mido.Message('clock'),
+            'note_on': lambda args: mido.Message('note_on', *args),
+            'note_off': lambda args: mido.Message('note_off', *args),
+            'aftertouch': lambda args: mido.Message('aftertouch', *args),
+            'control_change': lambda args: mido.Message('control_change', *args),
+            'program_change': lambda args: mido.Message('program_change', *args),
+            'sysex': lambda args: mido.Message('sysex', *args),
+            'pitch_wheel': lambda args: mido.Message('pitchwheel', *args),
         }
+
+        # For MacOS/Linux
+        if sys.platform not in "win32":
+            if self._port_name in ["Sardine", "internal"]:
+                self._midi = mido.open_output("Sardine", virtual=True)
+            else:
+                self._midi = mido.open_output(self._available_ports[0], virtual=True)
+                self._port_name = str(self._available_ports[0])
+        # For W10/W11
+        else:
+            try:
+                self._midi = mido.open_output(self._available_ports[0])
+                self._port_name = str(self._available_ports[0])
+            except Exception as err:
+                print(f"[red]Failed to open a MIDI Connexion: {err}")
+
+    def __repr__(self) -> str:
+        return f"{self._port_name}: MIDI Handler"
+
 
     def setup(self, env: 'FishBowl'):
         self.env = env

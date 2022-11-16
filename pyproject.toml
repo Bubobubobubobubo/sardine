@@ -30,7 +30,7 @@ dependencies = [
     "easing-functions>=1.0.4",
     "mido>=1.2",
     "osc4py3>=1.0.8",
-    "uvloop>=0.16",
+    "uvloop>=0.16; sys_platform != 'win32'",
     "appdirs>=1.4",
     "psutil>=5.9",
     "rich>=12.5",

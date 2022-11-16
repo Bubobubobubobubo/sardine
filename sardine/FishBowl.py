@@ -32,7 +32,12 @@ class FishBowl:
             clock (BaseClock): Target clock
             **kwargs: argument for the new clock
         """
-        self.clock = clock(self, **kwargs)
+        self.clock.stop()
+        self.clock = Clock(
+            env=self, 
+            tempo=self.clock.tempo, 
+            bpb= self.clock._beats_per_bar)
+        self.clock.start()
 
     def swap_parser(self, parser: "BaseParser"):
         """Hot-swap current parser for a different parser.

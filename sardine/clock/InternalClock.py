@@ -37,6 +37,7 @@ class Clock(BaseClock):
             tempo (float, optional): Beats per minute (tempo). Defaults to 120.
             bpb (int, optional): Number of beats per bar. Defaults to 4.
         """
+        self._type = "InternalClock"
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
         self._resumed.set()
@@ -51,7 +52,7 @@ class Clock(BaseClock):
 
     def __repr__(self) -> str:
         el = self._time._elapsed_time
-        return f"{el:1f} -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
+        return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
 
     #### GETTERS  ############################################################ 
 

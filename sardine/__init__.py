@@ -34,8 +34,7 @@ print_config = pretty_print_configuration_file
 
 bowl = FishBowl(time=Time())
 time = bowl.time # passage of time
-clock = bowl.clock # clock information
-# clock.tempo, clock._beats_per_bar = config.bpm, config.beats
+bowl.clock.tempo, bowl.clock._beats_per_bar = config.bpm, config.beats
 
 # Adding a parser
 bowl.swap_parser(ListParser)

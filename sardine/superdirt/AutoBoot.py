@@ -13,10 +13,10 @@ from rich.console import Console
 from rich.panel import Panel
 from rich import print
 
-__all__ = ("SuperColliderProcess",)
+__all__ = ("SuperDirtProcess",)
 
 
-class SuperColliderProcess:
+class SuperDirtProcess:
     def __init__(
         self, startup_file: Union[str, None] = None, preemptive=True, verbose=False
     ):

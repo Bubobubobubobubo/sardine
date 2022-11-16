@@ -22,10 +22,9 @@ from .clock.LinkClock import LinkClock
 from .sequences.SardineParser.ListParser import ListParser
 from .handlers import (
     SuperColliderHandler,
-    MidiHandler, OSCHandler)
-from .sequences.Iterators import Iterator
-from .sequences.Variables import Variables
-from .superdirt.AutoBoot import SuperColliderProcess
+    SuperDirtHandler,
+    MidiHandler, 
+    OSCHandler)
 from .utils.Messages import (sardine_intro, config_line_printer)
 
 from .io.UserConfig import (
@@ -48,18 +47,6 @@ if (
 ):
     print(sardine_intro)
     print(config_line_printer(config))
-
-    # Boot SuperCollider
-    if config.boot_superdirt is True:
-        try:
-            SC = SuperColliderProcess(
-                startup_file=config.superdirt_config_path,  # config file
-                verbose=config.verbose_superdirt,  # verbosity for SC output
-            )
-        except OSError as error:
-            print("[red]SuperCollider could not be found![/red]")
-    else:
-        print("[green]Booting without SuperCollider![/green]")
 
     # Load user config
     if Path(f"{config.user_config_path}").is_file():
@@ -85,7 +72,8 @@ if (
     # Adding Senders
     bowl.add_handler(MidiHandler())
     bowl.add_handler(OSCHandler())
-    bowl.add_handler(SuperColliderHandler())
+    bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
+    bowl.add_handler(SuperDirtHandler())
 
     # Start clock
     bowl.clock.start()

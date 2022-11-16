@@ -52,7 +52,9 @@ class BaseHandler(ABC, Hashable):
         After teardown finishes, the fish bowl will remove any hooks
         and set the `env` attribute to None.
         """
+        pass
 
     @abstractmethod
     def hook(self, event: str, *args):
         """Dispatched by the fish bowl for the handler's registered events."""
+        pass

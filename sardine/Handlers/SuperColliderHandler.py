@@ -7,9 +7,12 @@ if TYPE_CHECKING:
 class SuperColliderHandler(BaseHandler):
     def __init__(self):
         self.env = None
+        self.events = {
+            'play': lambda: print('Playing something')
+        }
 
     def setup(self, env: 'FishBowl'):
-        pass
+        self.env = env
 
     def hook(self, event: str, *args, **kwargs):
         pass

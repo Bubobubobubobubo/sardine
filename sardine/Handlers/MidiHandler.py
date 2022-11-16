@@ -29,7 +29,7 @@ class MidiHandler(BaseHandler):
         }
 
     def setup(self, env: 'FishBowl'):
-        pass
+        self.env = env
 
     def hook(self, event: str, *args, **kwargs):
         pass

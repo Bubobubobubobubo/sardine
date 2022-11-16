@@ -181,6 +181,10 @@ class SuperDirtProcess:
         """Open SuperCollider frequency scope"""
         self._write_stdin("s.scope()")
 
+    def freqscope(self) -> None:
+        """Open SuperCollider frequency scope"""
+        self._write_stdin("s.freqscope()")
+
     def meterscope(self) -> None:
         """Open SuperCollider frequency scope + VUmeter"""
         self._write_stdin("s.scope(); s.meter()")

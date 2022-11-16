@@ -62,15 +62,15 @@ if (
     and os.getenv("SARDINE_INIT_SESSION") == "YES"
 ):
     def _ticked(condition: bool):
-        """Print an ASCII Art [X] if True or [ ] if false"""
-        return "[X]" if condition else "[ ]"
+        """Print an ASCII Art [X] if True or [ ] if false"""
+        return "[X]" if condition else "[ ]"
     print(Panel.fit(f"[red]{sardine_intro}[/red]"))
     print(
         f" [yellow]BPM: [red]{config.bpm}[/red],",
         f"[yellow]BEATS: [red]{config.beats}[/red]",
-        f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
+        f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
         f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
-        f"[yellow]MIDI: [red]{config.midi}[/red]",
+        f"[yellow]MIDI: [red]{config.midi}[/red]",
     )
 
     # Boot SuperCollider

@@ -18,7 +18,7 @@ class DummyHandler(BaseHandler):
 
     def setup(self):
         for event in self._events:
-            self.env.register_hook(event, self)
+            self.register(event)
 
     def hook(self, event: str, *args):
         func = self._events[event]

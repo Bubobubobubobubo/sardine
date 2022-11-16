@@ -61,7 +61,7 @@ class MidiHandler(BaseHandler, threading.Thread):
 
     def setup(self):
         for event in self._events:
-            self.env.register_hook(event, self)
+            self.register(event)
 
     def hook(self, event: str, *args):
         func = self._events[event]
@@ -78,7 +78,7 @@ class MidiHandler(BaseHandler, threading.Thread):
 
     def _reset(self, *args) -> None:
         self._midi.send(mido.Message("reset"))
-    
+
     def _clock(self, *args) -> None:
         self._midi.send(mido.Message("clock"))
 

@@ -13,13 +13,13 @@ class BaseHandler(ABC, Hashable):
 
     Unlike the fish bowl's concept of "hooks", handlers can apply themselves
     to multiple events at once and have access to the fish bowl via
-    the `env` attribute.
+    the `env` property.
 
     Handlers can only be tied to one fish bowl at a time.
     """
 
     def __init__(self):
-        self.env: "Optional[FishBowl]" = None
+        self._env: "Optional[FishBowl]" = None
 
     def __hash__(self):  # pylint: disable=useless-parent-delegation
                          #         Hashable expects this to be implemented
@@ -29,11 +29,28 @@ class BaseHandler(ABC, Hashable):
         """Calls the handler's `hook()` method."""
         self.hook(*args, **kwargs)
 
+    @property
+    def env(self) -> "Optional[FishBowl]":
+        """The fish bowl (a.k.a. environment) that this handler is added to."""
+        return self._env
+
+    def register(self, event: Optional[str]):
+        """Registers the handler's `hook()` for the given event.
+
+        This is a shorthand for doing `self.env.register_hook(event, self)`.
+        """
+        if self.env is None:
+            raise ValueError(
+                'handler cannot register hooks until it is added to a FishBowl'
+            )
+
+        self.env.register_hook(event, self)
+
     def setup(self):
         """Called when the handler is added to a fish bowl.
 
         This method can be used to register itself on specific
-        (or all) events with `FishBowl.register_hook(event, self)`.
+        (or all) events with `self.register(event)`.
 
         The fish bowl will assign itself to the handler's `env` attribute
         beforehand.
@@ -52,9 +69,7 @@ class BaseHandler(ABC, Hashable):
         After teardown finishes, the fish bowl will remove any hooks
         and set the `env` attribute to None.
         """
-        pass
 
     @abstractmethod
     def hook(self, event: str, *args):
         """Dispatched by the fish bowl for the handler's registered events."""
-        pass

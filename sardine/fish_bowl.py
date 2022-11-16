@@ -69,7 +69,7 @@ class FishBowl:
         in the environment and react accordingly.
 
         This method is idempotent; adding the handler more than once
-        will cause nothing to happen. However, handler objects cannot 
+        will cause nothing to happen. However, handler objects cannot
         be shared across different fish bowls.
 
         Args:
@@ -88,8 +88,8 @@ class FishBowl:
         # given that `register_hook()` is idempotent, it's probably
         # fine to call `BaseHandler.setup()` again
 
-        # handler.env = self # redundant with setup method?
-        handler.setup(env=self)
+        handler.env = self
+        handler.setup()
         self.handlers.add(handler)
 
     def remove_handler(self, handler: "BaseHandler"):

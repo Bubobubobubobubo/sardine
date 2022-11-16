@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 class SuperDirtHandler(BaseHandler):
     def __init__(self, ip: str = "127.0.0.1", port: int =  57120, name: str = 'SuperDirt'):
+        super().__init__()
         self._ip, self._port, self._name = (ip, port, name)
 
         # Opening the OSC Client
@@ -30,9 +31,6 @@ class SuperDirtHandler(BaseHandler):
 
     def __repr__(self) -> str:
         return f"SuperDirt: {self._ip}:{self._port}"
-
-    def setup(self, env: 'FishBowl'):
-        self.env = env
 
     def hook(self, event: str, *args, **kwargs):
         pass

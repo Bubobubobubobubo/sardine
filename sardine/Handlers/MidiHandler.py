@@ -15,7 +15,9 @@ class MidiHandler(BaseHandler, threading.Thread):
     """
 
     def __init__(self, port_name: str = "Sardine"):
+        # Not exactly a pleasing solution for multiple inheritance
         threading.Thread.__init__(self)
+        BaseHandler.__init__(self)
 
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()

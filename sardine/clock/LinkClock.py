@@ -1,11 +1,11 @@
-from ..base.BaseClock import BaseClock
+from ..base.clock import BaseClock
 from typing import TYPE_CHECKING
 from time import perf_counter
 import asyncio
 import link
 
 if TYPE_CHECKING:
-    from ..FishBowl import FishBowl
+    from ..fish_bowl import FishBowl
 
 class LinkClock(BaseClock):
 
@@ -27,7 +27,7 @@ class LinkClock(BaseClock):
             "phase": 0
         }
 
-    ## REPR AND STR ############################################################ 
+    ## REPR AND STR ############################################################
 
     def __repr__(self) -> str:
         el = self._time._elapsed_time
@@ -78,7 +78,7 @@ class LinkClock(BaseClock):
         """Return current Link clock time"""
         return self._linktime
 
-    ## SETTERS  ############################################################## 
+    ## SETTERS  ##############################################################
 
     @linktime.setter
     def linktime(self, new_time: dict) -> None:
@@ -96,12 +96,12 @@ class LinkClock(BaseClock):
         session.setTempo(new_tempo, self._beats_per_bar)
         self._link.commitSessionState(session)
 
-    ## METHODS  ############################################################## 
+    ## METHODS  ##############################################################
 
     def _capture_link_info(self) -> dict:
-        """Capture information about the current state of the Link session. 
+        """Capture information about the current state of the Link session.
         Returns:
-            dict: a dictionnary containing temporal information 
+            dict: a dictionnary containing temporal information
             about the Link session.
         """
         if self._link:
@@ -133,7 +133,7 @@ class LinkClock(BaseClock):
             bool: paused?
         """
         return False if self._resumed.is_set() else True
-    
+
     def start(self):
         """This method is used to enter the clock run() main loop."""
         self._link.enabled = True
@@ -149,7 +149,7 @@ class LinkClock(BaseClock):
         """Resuming the internal clock. Use pause() for the opposite."""
         if not self._resumed.is_set():
             self._resumed.set()
-            
+
     def stop(self):
         """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()

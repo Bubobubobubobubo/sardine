@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
-from ..base.BaseHandler import BaseHandler
+from ..base.handler import BaseHandler
 
 if TYPE_CHECKING:
-    from ..FishBowl import FishBowl
+    from ..fish_bowl import FishBowl
 
 
 class OSCHandler(BaseHandler):

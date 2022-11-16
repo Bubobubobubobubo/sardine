@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Hashable, Optional
 
 if TYPE_CHECKING:
-    from ..FishBowl import FishBowl
+    from ..fish_bowl import FishBowl
 
 
 class BaseHandler(ABC, Hashable):

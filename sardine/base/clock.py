@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod, abstractproperty
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..FishBowl import FishBowl
+    from ..fish_bowl import FishBowl
 
 class BaseClock(ABC):
     env: 'FishBowl'
@@ -41,7 +41,7 @@ class BaseClock(ABC):
     @abstractmethod
     def pause(self):
         pass
-    
+
     @abstractmethod
     def resume(self):
         pass

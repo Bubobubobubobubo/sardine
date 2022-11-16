@@ -8,10 +8,10 @@ from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
 
 if TYPE_CHECKING:
-    from .base.BaseHandler import BaseHandler
+    from .base.handler import BaseHandler
     from .clock.Time import Time
-    from .base.BaseClock import BaseClock
-    from .base.BaseParser import BaseParser
+    from .base.clock import BaseClock
+    from .base.parser import BaseParser
 
 
 class HookProtocol(Hashable, Protocol):

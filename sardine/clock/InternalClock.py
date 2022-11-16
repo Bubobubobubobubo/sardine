@@ -1,10 +1,10 @@
-from ..base.BaseClock import BaseClock
+from ..base.clock import BaseClock
 from typing import TYPE_CHECKING
 from time import perf_counter
 import asyncio
 
 if TYPE_CHECKING:
-    from ..FishBowl import FishBowl
+    from ..fish_bowl import FishBowl
     from .Time import Time
 
 class Clock(BaseClock):
@@ -22,7 +22,7 @@ class Clock(BaseClock):
     - resume(): unpause.
 
     You can set the tempo and the number of beats per bar by tweaking the respective
-    attributes: 
+    attributes:
 
     clock.bpm / clock.tempo = 124
     clock.beats_per_bar = 8
@@ -48,13 +48,13 @@ class Clock(BaseClock):
         self._beats_per_bar = bpb
         self._drift = 0.0
 
-    ## REPR AND STR ############################################################ 
+    ## REPR AND STR ############################################################
 
     def __repr__(self) -> str:
         el = self._time._elapsed_time
         return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
 
-    #### GETTERS  ############################################################ 
+    #### GETTERS  ############################################################
 
     @property
     def time_grain(self):
@@ -126,7 +126,7 @@ class Clock(BaseClock):
         """
         return self._beats_per_bar
 
-    #### SETTERS ############################################################ 
+    #### SETTERS ############################################################
 
     @bpm.setter
     def bpm(self, bpm: float):
@@ -156,7 +156,7 @@ class Clock(BaseClock):
             raise ValueError("bpm must be within 1 and 800")
         self._tempo = tempo
 
-    ## METHODS  ############################################################## 
+    ## METHODS  ##############################################################
 
     def is_running(self) -> bool:
         """Return a boolean indicating if the clock is currently running.
@@ -173,7 +173,7 @@ class Clock(BaseClock):
             bool: paused?
         """
         return False if self._resumed.is_set() else True
-    
+
     def start(self):
         """This method is used to enter the clock run() main loop."""
         self._alive.set()
@@ -188,7 +188,7 @@ class Clock(BaseClock):
         """Resuming the internal clock. Use pause() for the opposite."""
         if not self._resumed.is_set():
             self._resumed.set()
-            
+
     def stop(self):
         """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()

@@ -47,8 +47,8 @@ pretty.install()
 
 
 def _ticked(condition: bool):
-    """Print an ASCII Art [X] if True or [ ] if false"""
-    return "[X]" if condition else "[ ]"
+    """Print an ASCII Art [X] if True or [ ] if false"""
+    return "[X]" if condition else "[ ]"
 
 
 # Reading / Creating / Updating the configuration file

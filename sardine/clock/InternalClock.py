@@ -9,6 +9,25 @@ if TYPE_CHECKING:
 
 class Clock(BaseClock):
 
+    """
+    Basic Internal Clock. This clock is the default Clock Sardine will try to use.
+    It is preferably used when playing alone, as it is not capable of synchronising
+    to anything. For MIDI synchronisation, schedule a MIDI Clock message.
+
+    The clock is exposing a few methods to the users:
+
+    - start(): start the internal clock loop.
+    - stop(): stop the internal clock loop.
+    - pause(): pause.
+    - resume(): unpause.
+
+    You can set the tempo and the number of beats per bar by tweaking the respective
+    attributes: 
+
+    clock.bpm / clock.tempo = 124
+    clock.beats_per_bar = 8
+    """
+
     def __init__(self, env: 'FishBowl', tempo: float = 120, bpb: int = 4):
         """Basic internal clock
 
@@ -38,10 +57,20 @@ class Clock(BaseClock):
 
     @property
     def drift(self) -> float:
+        """Drift compensation for the waiting mechanism
+
+        Returns:
+            float: drift amount on last cycle
+        """
         return self._drift
 
     @property
     def beat(self) -> int:
+        """Actual beat on the clock.
+
+        Returns:
+            int: Beat
+        """
         return self._time._elapsed_time / self.beat_duration
 
     @property
@@ -58,21 +87,39 @@ class Clock(BaseClock):
 
     @property
     def phase(self) -> float:
+        """Actual time between beginning of bar and next bar
+
+        Returns:
+            float: phase
+        """
         return self._time._elapsed_time % self._beats_per_bar
 
     @property
     def bpm(self) -> float:
+        """Current beats per minute
+
+        Returns:
+            float: bpm
+        """
         return self._tempo
 
     @property
     def tempo(self) -> float:
+        """Current tempo
+
+        Returns:
+            float: tempo
+        """
         return self._tempo
 
     @property
     def beats_per_bar(self) -> int:
+        """Number of beats per bar
+
+        Returns:
+            int: beats per bar
+        """
         return self._beats_per_bar
-
-
 
     #### SETTERS ############################################################ 
 
@@ -106,35 +153,39 @@ class Clock(BaseClock):
 
     ## METHODS  ############################################################## 
 
-    def is_running(self) -> int:
+    def is_running(self) -> bool:
+        """Return a boolean indicating if the clock is currently running.
+
+        Returns:
+            bool: running
+        """
         return self._alive.is_set()
 
-    def is_paused(self) -> int:
+    def is_paused(self) -> bool:
+        """Return a boolean indicating is the clock is currently paused or not.
+
+        Returns:
+            bool: paused?
+        """
         return False if self._resumed.is_set() else True
     
     def start(self):
-        """
-        Method needed to started ticking the clock without using async 
-        syntax and hoops.
-        """
+        """This method is used to enter the clock run() main loop."""
         self._alive.set()
         asyncio.create_task(self.run())
 
     def pause(self):
-        """
-        Pause the internal clock
-        """
+        """Pausing the internal clock. Use resume() to continue."""
         if self._resumed.is_set():
             self._resumed.clear()
 
     def resume(self):
+        """Resuming the internal clock. Use pause() for the opposite."""
         if not self._resumed.is_set():
             self._resumed.set()
             
     def stop(self):
-        """
-        Stop the internal clock
-        """
+        """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()
 
     async def run(self):

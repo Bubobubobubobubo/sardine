@@ -1,17 +1,18 @@
-from typing import Any, TYPE_CHECKING, Union
-from dataclasses import dataclass, field
-from collections import deque
-from rich.panel import Panel
-from rich import print
-import traceback
-import functools
 import asyncio
+import functools
 import inspect
+import traceback
+from collections import deque
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any, Union
 
-from ..legacy import Clock
+from rich import print
+from rich.panel import Panel
+
+from ..base import BaseClock
+from .tick_handle import TickHandle
 
 if TYPE_CHECKING:
-    from ..clock import TickHandle
     from ..legacy.Clock import MaybeCoroFunc
 
 __all__ = ("AsyncRunner", "FunctionState")
@@ -107,8 +108,8 @@ class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
 
-    This class should only be used through a Clock instance via
-    the `Clock.schedule_func()` method.
+    This class should only be used through a BaseClock instance via
+    the `BaseClock.schedule_func()` method.
 
     The `deferred` parameter is used to control whether AsyncRunner
     runs with an implicit tick shift when calling its function or not.
@@ -125,7 +126,7 @@ class AsyncRunner:
 
     """
 
-    clock: "Clock"
+    clock: BaseClock
     deferred: bool = field(default=True)
     states: list[FunctionState] = field(
         default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES)

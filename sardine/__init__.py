@@ -21,6 +21,7 @@ from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
 from .sequences.SardineParser.ListParser import ListParser
 from .handlers import (
+    DummyHandler,
     SuperColliderHandler,
     SuperDirtHandler,
     MidiHandler, 

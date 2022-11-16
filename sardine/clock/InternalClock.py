@@ -41,7 +41,7 @@ class Clock(BaseClock):
         self._resumed = asyncio.Event()
         self._resumed.set()
         self._env = env
-        self._time = env._time
+        self._time = env.time
         self._time_grain = 0.01
         self._tempo = tempo
         self._beats_per_bar = bpb

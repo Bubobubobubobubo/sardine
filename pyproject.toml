@@ -35,6 +35,7 @@ dependencies = [
     "psutil>=5.9",
     "rich>=12.5",
     "lark>=1.1",
+    "exceptiongroup>=1.0.4",
 ]
 
 [tool.setuptools]

@@ -1,5 +1,7 @@
 import collections
-from typing import TYPE_CHECKING, Hashable, Protocol
+from typing import TYPE_CHECKING, Hashable, Iterable, Optional, Protocol
+
+from exceptiongroup import BaseExceptionGroup
 
 from .sequences.SardineParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
@@ -32,9 +34,9 @@ class FishBowl:
         self.handlers: "set[BaseHandler]" = set()
         self.parser = ListParser(env=self)
 
-        self.event_hooks: dict[str, set[HookProtocol]] = collections.defaultdict(set)
+        self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
-        self.hook_events: dict[HookProtocol, set[str]] = collections.defaultdict(set)
+        self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
     # Hot-swap methods (may be removed in favour of manual replacement)
 
@@ -117,14 +119,24 @@ class FishBowl:
 
     # Hook management
 
-    def register_hook(self, event: str, hook: HookProtocol):
+    def register_hook(self, event: Optional[str], hook: HookProtocol):
         """Registers a hook for a given event.
+
+        Whenever the fish bowl dispatches an event, the hooks associated
+        with that event will be called in an arbitrary order.
+
+        Global hooks can also be registered by passing `None` as the event.
+        These hooks will be called on every event that is dispatched.
+        If a hook is registered both globally and for a specific event,
+        the hook will always be called once regardless.
 
         This method is idempotent; registering the same hook for
         the same event will cause nothing to happen.
 
         Args:
-            event (str): The event name under which the hook will be registered.
+            event (Optional[str]):
+                The event name under which the hook will be registered.
+                If set to `None`, this will be a global hook.
             hook (HookProtocol):
                 The hook to call whenever the event is triggered.
         """
@@ -135,14 +147,16 @@ class FishBowl:
         hook_set.add(hook)
         self.hook_events[hook].add(event)
 
-    def unregister_hook(self, event: str, hook: HookProtocol):
+    def unregister_hook(self, event: Optional[str], hook: HookProtocol):
         """Unregisters a hook for a specific event.
+
+        Global hooks can be removed by passing `None` as the event.
 
         This method is idempotent; unregistering a hook that does not
         exist for a given event will cause nothing to happen.
 
         Args:
-            event (str): The event to remove the hook from.
+            event (Optional[str]): The event to remove the hook from.
             hook (HookProtocol): The hook being removed.
         """
         hook_set = self.event_hooks.get(event)
@@ -157,6 +171,26 @@ class FishBowl:
             if not event_set:
                 del self.hook_events[hook]
 
+    def _run_hooks(self, hooks: Iterable[HookProtocol], event: str, *args):
+        exceptions: list[BaseException] = []
+        for func in hooks:
+            try:
+                func(event, *args)
+            # pylint: disable=invalid-name,broad-except
+            except Exception as e:
+                exceptions.append(e)
+            except BaseException as e:
+                exceptions.append(e)
+                break
+            # pylint: enable=invalid-name,broad-except
+
+        if exceptions:
+            raise BaseExceptionGroup(
+                f'Errors raised while running hooks for {event}',
+                exceptions
+            )
+
+
     def dispatch(self, event: str, *args):
         """Dispatches an event to it associated hooks with the given arguments.
 
@@ -164,9 +198,9 @@ class FishBowl:
             event (str): The name of the event being dispatched.
             *args: The arguments to pass to the event.
         """
-        hook_set = self.event_hooks.get(event)
-        if hook_set is None:
-            return
+        empty_set: set[HookProtocol] = set()
+        local_hooks = self.event_hooks.get(event, empty_set)
+        global_hooks = self.event_hooks.get(None, empty_set)
 
-        for hook in hook_set:
-            hook(event, *args)
+        all_hooks = local_hooks | global_hooks
+        self._run_hooks(all_hooks, event, *args)

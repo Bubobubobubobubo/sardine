@@ -56,6 +56,10 @@ class Clock(BaseClock):
     #### GETTERS  ############################################################ 
 
     @property
+    def time_grain(self):
+        return self._time_grain
+
+    @property
     def drift(self) -> float:
         """Drift compensation for the waiting mechanism
 

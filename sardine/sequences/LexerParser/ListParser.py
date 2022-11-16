@@ -40,10 +40,10 @@ class ListParser:
             parser_type (str, optional): Type of parser. Defaults to "number".
         """
         # Reference to clock for the "t" grammar token
-        self.clock = env._clock
+        self.clock = env.clock
         self.debug = debug
-        self.iterators = env._iterators
-        self.variables = env._variable
+        self.iterators = env.iterators
+        self.variables = env.variables
 
         parsers = {
             "proto": {

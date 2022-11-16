@@ -3,6 +3,7 @@ from .sequences.LexerParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .clock.InternalClock import Clock
+from .clock.LinkClock import LinkClock
 
 if TYPE_CHECKING:
     from .base.BaseHandler import BaseHandler
@@ -17,7 +18,8 @@ class FishBowl:
         time: "Time",
     ):
         self.time = time
-        self.clock = Clock(env=self, tempo=120, bpb=4)
+        # self.clock = Clock(env=self, tempo=120, bpb=4)
+        self.clock = LinkClock(env=self, tempo=120, bpb=4)
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: list[BaseHandler] = []

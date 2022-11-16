@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractproperty
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -13,6 +13,30 @@ class BaseClock(ABC):
         while True:
             # update the clock state, then:
             self.env.dispatch('tick')
+
+    @abstractproperty
+    def drift():
+        pass
+
+    @abstractproperty
+    def time_grain():
+        pass
+
+    @abstractproperty
+    def phase():
+        pass
+
+    @abstractproperty
+    def beat():
+        pass
+
+    @abstractproperty
+    def tempo():
+        pass
+
+    @abstractproperty
+    def bpm():
+        pass
 
     @abstractmethod
     def pause(self):

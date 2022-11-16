@@ -12,7 +12,7 @@ class SuperColliderHandler(BaseHandler):
         self.env = None
 
     def __repr__(self) -> str:
-        return f"SCHandler: {self._name}[{self._ip}:{self._port}]"
+        return f"SCHandler: '{self._name}': [{self._ip}:{self._port}]"
 
     def setup(self, env: 'FishBowl'):
         self.env = env

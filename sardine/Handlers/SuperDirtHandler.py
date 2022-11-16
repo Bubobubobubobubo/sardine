@@ -29,7 +29,7 @@ class SuperDirtHandler(BaseHandler):
         }
 
     def __repr__(self) -> str:
-        return f"SCHandler: {self._ip}:{self._port}"
+        return f"SuperDirt: {self._ip}:{self._port}"
 
     def setup(self, env: 'FishBowl'):
         self.env = env

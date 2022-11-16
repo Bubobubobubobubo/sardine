@@ -85,6 +85,9 @@ class FishBowl:
                 return
             raise ValueError(f'{handler!r} is already being used by {handler.env!r}')
 
+        # It may be possible that the user set `env` to None, but
+        # given that `register_hook()` is idempotent, it's probably
+        # fine to call `BaseHandler.setup()` again
         handler.env = self
         handler.setup()
         self.handlers.add(handler)
@@ -105,13 +108,12 @@ class FishBowl:
 
         handler.teardown()
         handler.env = None
+        self.handlers.remove(handler)
 
         event_set = self.hook_events.get(handler)
-        if event_set is None:
-            return
-
-        for event in event_set:
-            self.unregister_hook(event, handler)
+        if event_set is not None:
+            for event in event_set:
+                self.unregister_hook(event, handler)
 
     # Hook management
 
@@ -126,8 +128,8 @@ class FishBowl:
             hook (HookProtocol):
                 The hook to call whenever the event is triggered.
         """
-        hook_set = self.event_hooks.get(event)
-        if hook_set is None or hook in hook_set:
+        hook_set = self.event_hooks[event]
+        if hook in hook_set:
             return
 
         hook_set.add(hook)
@@ -144,20 +146,16 @@ class FishBowl:
             hook (HookProtocol): The hook being removed.
         """
         hook_set = self.event_hooks.get(event)
-        if hook_set is None or hook not in hook_set:
-            return
-
-        hook_set.discard(hook)
-        if not hook_set:
-            del self.event_hooks[event]
+        if hook_set is not None:
+            hook_set.discard(hook)
+            if not hook_set:
+                del self.event_hooks[event]
 
         event_set = self.hook_events.get(hook)
-        if event_set is None:
-            return
-
-        event_set.discard(event)
-        if not event_set:
-            del self.hook_events[hook]
+        if event_set is not None:
+            event_set.discard(event)
+            if not event_set:
+                del self.hook_events[hook]
 
     def dispatch(self, event: str, *args):
         """Dispatches an event to it associated hooks with the given arguments.

@@ -44,6 +44,7 @@ py-modules = []
 dev = [
     "black>=22.8",
     "pylint>=2.15",
+    "pytest>= 7.2.0",
 ]
 
 [project.urls]

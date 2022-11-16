@@ -18,7 +18,7 @@ from osc4py3.oscmethod import *  # does OSCARG_XXX
 from rich import print
 
 if TYPE_CHECKING:
-    from ..clock import Clock
+    from ..legacy import Clock
 
 __all__ = ("Receiver", "Client", "client", "dirt")
 

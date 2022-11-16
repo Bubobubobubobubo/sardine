@@ -6,4 +6,4 @@ from .SuperDirtSender import *
 from .OSCSender import *
 from .MIDISender import *
 from .SenderLogic import *
-from .MarkdownReader import *
+from ..legacy.MarkdownReader import *

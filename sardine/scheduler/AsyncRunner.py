@@ -8,9 +8,11 @@ import functools
 import asyncio
 import inspect
 
+from ..legacy import Clock
+
 if TYPE_CHECKING:
-    from ..clock import Clock, TickHandle
-    from ..clock.Clock import MaybeCoroFunc
+    from ..clock import TickHandle
+    from ..legacy.Clock import MaybeCoroFunc
 
 __all__ = ("AsyncRunner", "FunctionState")
 

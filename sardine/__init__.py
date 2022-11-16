@@ -1,9 +1,8 @@
 from rich import print
 from rich.panel import Panel
-
-
 import asyncio
 import sys
+from sys import argv
 import importlib
 from pathlib import Path
 import os
@@ -21,12 +20,13 @@ from .clock.Time import Time
 from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
 from .sequences.LexerParser.ListParser import ListParser
-from .Handlers import (
+from .handlers import (
     SuperColliderHandler,
     MidiHandler, OSCHandler)
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .superdirt.AutoBoot import SuperColliderProcess
+from .utils.Messages import (sardine_intro, config_line_printer)
 
 from .io.UserConfig import (
     read_user_configuration,
@@ -37,22 +37,7 @@ config = read_user_configuration()
 
 # Reading user configuration
 config = read_user_configuration()
-print_config = pretty_print_configuration_file
-sardine_intro = """
-░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
-██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
-╚█████╗░███████║██████╔╝██║░░██║██║██╔██╗██║█████╗░░
-░╚═══██╗██╔══██║██╔══██╗██║░░██║██║██║╚████║██╔══╝░░
-██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
-╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-Sardine is a MIDI/OSC sequencer made for live-coding
-Play music, read the docs, contribute, and have fun!
-WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
-GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
-"""
-
-from sys import argv
 hook_path = argv[0]
 if "__main__.py" in hook_path:
     os.environ["SARDINE_INIT_SESSION"] = "YES"
@@ -61,17 +46,8 @@ if (
     os.getenv("SARDINE_INIT_SESSION") is not None
     and os.getenv("SARDINE_INIT_SESSION") == "YES"
 ):
-    def _ticked(condition: bool):
-        """Print an ASCII Art [X] if True or [ ] if false"""
-        return "[X]" if condition else "[ ]"
-    print(Panel.fit(f"[red]{sardine_intro}[/red]"))
-    print(
-        f" [yellow]BPM: [red]{config.bpm}[/red],",
-        f"[yellow]BEATS: [red]{config.beats}[/red]",
-        f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
-        f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
-        f"[yellow]MIDI: [red]{config.midi}[/red]",
-    )
+    print(sardine_intro)
+    print(config_line_printer(config))
 
     # Boot SuperCollider
     if config.boot_superdirt is True:
@@ -98,6 +74,7 @@ if (
         print(f"[red]No user provided configuration file found...")
 
 
+    # Real initialisation takes place here ############################
     bowl = FishBowl(time=Time())
     time = bowl.time # passage of time
     bowl.clock.tempo, bowl.clock._beats_per_bar = config.bpm, config.beats

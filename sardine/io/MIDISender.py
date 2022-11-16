@@ -10,7 +10,7 @@ from .SenderLogic import pattern_element, compose_parametric_patterns
 from ..sequences.LexerParser.Chords import Chord
 
 if TYPE_CHECKING:
-    from ..clock import Clock
+    from ..legacy import Clock
     from ..io import MIDIIo
 
 

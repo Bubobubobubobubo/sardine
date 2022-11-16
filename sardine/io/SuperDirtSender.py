@@ -9,7 +9,7 @@ from ..sequences.LexerParser.Chords import Chord
 from .SenderLogic import pattern_element, compose_parametric_patterns
 
 if TYPE_CHECKING:
-    from ..clock import Clock
+    from ..legacy import Clock
 
 
 class SuperDirtSender:

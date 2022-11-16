@@ -7,7 +7,7 @@ import mido
 import sys
 
 if TYPE_CHECKING:
-    from ..clock import Clock
+    from ..legacy import Clock
 
 __all__ = ("MIDIIo",)
 

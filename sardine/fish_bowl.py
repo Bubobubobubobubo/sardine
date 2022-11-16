@@ -26,8 +26,7 @@ class FishBowl:
         time: "Time",
     ):
         self.time = time
-        # self.clock = Clock(env=self, tempo=120, bpb=4)
-        self.clock = LinkClock(env=self, tempo=120, bpb=4)
+        self.clock = Clock(env=self, tempo=120, bpb=4)
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: "set[BaseHandler]" = set()
@@ -70,8 +69,8 @@ class FishBowl:
         in the environment and react accordingly.
 
         This method is idempotent; adding the handler more than once
-        will cause nothing to happen. However, handler objects cannot be
-        shared across different fish bowls.
+        will cause nothing to happen. However, handler objects cannot 
+        be shared across different fish bowls.
 
         Args:
             handler (BaseHandler): Sender

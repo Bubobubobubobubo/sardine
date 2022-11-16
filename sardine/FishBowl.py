@@ -10,36 +10,37 @@ if TYPE_CHECKING:
     from .base.BaseClock import BaseClock
     from .base.BaseParser import BaseParser
 
+
 class FishBowl:
     def __init__(
         self,
-        time: 'Time',
+        time: "Time",
     ):
-        self._time = time
-        self._clock = Clock(env=self, tempo=120, bpb=4)
-        self._iterators = Iterator()
-        self._variable = Variables()
-        self._handlers: list[BaseHandler] = []
-        self._parser = ListParser(env=self)
+        self.time = time
+        self.clock = Clock(env=self, tempo=120, bpb=4)
+        self.iterators = Iterator()
+        self.variables = Variables()
+        self.handlers: list[BaseHandler] = []
+        self.parser = ListParser(env=self)
 
-    def add_clock(self, clock: 'BaseClock', **kwargs):
+    def add_clock(self, clock: "BaseClock", **kwargs):
         """Hot-swap current clock for a different clock.
 
         Args:
             clock (BaseClock): Target clock
             **kwargs: argument for the new clock
         """
-        self._clock = clock(env=self, **kwargs)
+        self.clock = clock(env=self, **kwargs)
 
-    def add_parser(self, parser: 'BaseParser'):
+    def add_parser(self, parser: "BaseParser"):
         """Hot-swap current parser for a different parser.
 
         Args:
             parser (BaseParser): New Parser
         """
-        self._parser = parser(env=self)
+        self.parser = parser(env=self)
 
-    def add_handler(self, handler: 'BaseHandler'):
+    def add_handler(self, handler: "BaseHandler"):
         """Adding a new handler to the environment. This handler will
         receive all messages currently dispatched in the environment
         and react accordingly.
@@ -48,16 +49,8 @@ class FishBowl:
             handler (BaseHandler): Sender
         """
         handler.setup(self)
-        self._handlers.append(handler)
+        self.handlers.append(handler)
 
     def dispatch(self, event: str, *args, **kwargs):
-        for handler in self._handlers:
+        for handler in self.handlers:
             handler.hook(event, *args, **kwargs)
-
-    @property
-    def clock(self):
-        return self._clock
-
-    @property
-    def parser(self):
-        return self._parser

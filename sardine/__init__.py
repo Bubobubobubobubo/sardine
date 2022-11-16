@@ -16,7 +16,7 @@ from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
 from .sequences.LexerParser.ListParser import ListParser
 from .Handlers import (
-    SuperColliderHandler, 
+    SuperColliderHandler,
     MidiHandler, OSCHandler)
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
@@ -32,8 +32,8 @@ config = read_user_configuration()
 print_config = pretty_print_configuration_file
 
 env = FishBowl(time=Time())
-time = env._time # passage of time
-clock = env._clock # clock information
+time = env.time # passage of time
+clock = env.clock # clock information
 
 # Adding a parser
 env.add_parser(ListParser)

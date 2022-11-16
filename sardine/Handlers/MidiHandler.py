@@ -63,81 +63,51 @@ class MidiHandler(BaseHandler, threading.Thread):
         for event in self._events:
             self.env.register_hook(event, self)
 
-    def hook(self, event: str, *args, **kwargs):
+    def hook(self, event: str, *args):
         func = self._events[event]
-        func(*args, **kwargs)
+        func(*args)
 
-    def _start(self, *args, **kwargs):
+    def _start(self, *args) -> None:
         self._midi.send(mido.Message("start"))
 
-    def _continue(self, *args, **kwargs):
+    def _continue(self, *args) -> None:
         self._midi.send(mido.Message("continue"))
 
-    def _stop(self, *args, **kwargs):
+    def _stop(self, *args) -> None:
         self._midi.send(mido.Message("stop"))
 
-    def _reset(self, *args, **kwargs):
+    def _reset(self, *args) -> None:
         self._midi.send(mido.Message("reset"))
     
-    def _clock(self, *args, **kwargs):
+    def _clock(self, *args) -> None:
         self._midi.send(mido.Message("clock"))
 
-    def _note_on(self, *args, **kwargs):
+    def _note_on(self, channel: int, note: int, velocity: int) -> None:
         self._midi.send(mido.Message(
-            'note_on',
-            channel=int(kwargs['channel']),
-            note=int(kwargs['note']),
-            velocity=int(kwargs['velocity']),
-        ))
+            'note_on', channel=channel, note=note, velocity=velocity))
 
-    def _polytouch(self, *args, **kwargs):
+    def _note_off(self, channel: int, note: int, velocity: int) -> None:
         self._midi.send(mido.Message(
-            'polytouch',
-            channel=int(kwargs['channel']),
-            note=int(kwargs['note']),
-            value=int(kwargs['value']),
-        ))
+            'note_off', channel=channel, note=note, velocity=velocity))
 
-    def _note_off(self, *args, **kwargs):
+    def _polytouch(self, channel: int, note: int, value: int) -> None:
         self._midi.send(mido.Message(
-            'note_off',
-            channel=int(kwargs['channel']),
-            note=int(kwargs['note']),
-            velocity=int(kwargs['velocity']),
-        ))
+            'polytouch', channel=channel, note=note, value=value))
 
-    def _aftertouch(self, *args, **kwargs):
+    def _aftertouch(self, channel: int, value: int) -> None:
         self._midi.send(mido.Message(
-            'aftertouch',
-            channel=int(kwargs['channel']),
-            value=int(kwargs['value']),
-        ))
+            'aftertouch', channel=channel, value=value))
 
-    def _control_change(self, *args, **kwargs) -> None:
+    def _control_change(self, channel: int, control: int, value: int) -> None:
         self._midi.send(mido.Message(
-            'control_change',
-            channel=int(kwargs['channel']),
-            control=int(kwargs['control']),
-            value=int(kwargs['value']),
-        ))
+            'control_change', channel=channel, control=control, value=value))
 
-    def _program_change(self, *args, **kwargs) -> None:
+    def _program_change(self, program: int, channel: int) -> None:
         self._midi.send(mido.Message(
-            'program_change',
-            program=int(kwargs['program']),
-            channel=int(kwargs['channel']),
-        ))
+            'program_change', program=program, channel=channel))
 
-    def _sysex(self, *args, **kwargs) -> None:
-        self._midi.send(mido.Message(
-            "sysex", 
-            data=bytearray(kwargs['data']), 
-            time=int(0))
-        )
+    def _sysex(self, data: bytearray, time: int = 0) -> None:
+        self._midi.send(mido.Message("sysex", data=data, time=time))
 
-    def _pitch_wheel(self, *args, **kwargs) -> None:
-        self._midi.send(mido.Message(
-            "pitchweel", 
-            pitch=int(kwargs['pitch']), 
-            channel=int(kwargs['channel'])
-        )
+    def _pitch_wheel(self, pitch: int, channel: int) -> None:
+        self._midi.send(mido.Message( "pitchweel", pitch=pitch, channel=channel))

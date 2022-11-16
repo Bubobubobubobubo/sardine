@@ -20,12 +20,12 @@ class DummyHandler(BaseHandler):
         for event in self._events:
             self.env.register_hook(event, self)
 
-    def hook(self, event: str, *args, **kwargs):
-        func = self.events[event]
-        func(*args, **kwargs)
+    def hook(self, event: str, *args):
+        func = self._events[event]
+        func(*args)
 
-    def _bleep(self, *args, **kwargs):
-        print(f'bleep: {args}, {kwargs}')
+    def _bleep(self, *args) -> None:
+        print(f'bleep: {args}')
 
-    def _bloop(self, *args, **kwargs):
-        print(f'bloop: {args}, {kwargs}')
+    def _bloop(self, *args) -> None:
+        print(f'bloop: {args}')

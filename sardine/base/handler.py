@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, Hashable, Optional
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
+__all__ = ("BaseHandler",)
+
 
 class BaseHandler(ABC, Hashable):
     """Handles particular events that are dispatched by a fish bowl.

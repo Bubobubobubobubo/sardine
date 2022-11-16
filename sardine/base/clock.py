@@ -1,41 +1,48 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
+__all__ = ("BaseClock",)
+
+
+# TODO: document BaseClock and its methods
 class BaseClock(ABC):
     env: 'FishBowl'
 
     @abstractmethod
     def run(self):
         """Starts the clock, updating the environment's clock state."""
-        while True:
-            # update the clock state, then:
-            self.env.dispatch('tick')
 
-    @abstractproperty
-    def drift():
+    @property
+    @abstractmethod
+    def drift(self):
         pass
 
-    @abstractproperty
-    def time_grain():
+    @property
+    @abstractmethod
+    def time_grain(self):
         pass
 
-    @abstractproperty
-    def phase():
+    @property
+    @abstractmethod
+    def phase(self):
         pass
 
-    @abstractproperty
-    def beat():
+    @property
+    @abstractmethod
+    def beat(self):
         pass
 
-    @abstractproperty
-    def tempo():
+    @property
+    @abstractmethod
+    def tempo(self):
         pass
 
-    @abstractproperty
-    def bpm():
+    @property
+    @abstractmethod
+    def bpm(self):
         pass
 
     @abstractmethod

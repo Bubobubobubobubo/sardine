@@ -1,6 +1,8 @@
 from rich import print
+from rich.panel import Panel
 
 import asyncio
+import os
 try:
     import uvloop
 except ImportError:
@@ -20,6 +22,7 @@ from .Handlers import (
     MidiHandler, OSCHandler)
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
+from .superdirt.AutoBoot import SuperColliderProcess
 
 from .io.UserConfig import (
     read_user_configuration,
@@ -31,18 +34,65 @@ config = read_user_configuration()
 # Reading user configuration
 config = read_user_configuration()
 print_config = pretty_print_configuration_file
+sardine_intro = """
+░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
+██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
+╚█████╗░███████║██████╔╝██║░░██║██║██╔██╗██║█████╗░░
+░╚═══██╗██╔══██║██╔══██╗██║░░██║██║██║╚████║██╔══╝░░
+██████╔╝██║░░██║██║░░██║██████╔╝██║██║░╚███║███████╗
+╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░╚═╝╚═╝░░╚══╝╚══════╝
 
-bowl = FishBowl(time=Time())
-time = bowl.time # passage of time
-bowl.clock.tempo, bowl.clock._beats_per_bar = config.bpm, config.beats
+Sardine is a MIDI/OSC sequencer made for live-coding
+Play music, read the docs, contribute, and have fun!
+WEBSITE: [yellow]https://sardine.raphaelforment.fr[/yellow]
+GITHUB: [yellow]https://github.com/Bubobubobubobubo/sardine[/yellow]
+"""
 
-# Adding a parser
-bowl.swap_parser(ListParser)
+from sys import argv
+hook_path = argv[0]
+if "__main__.py" in hook_path:
+    os.environ["SARDINE_INIT_SESSION"] = "YES"
 
-# Adding Senders
-bowl.add_handler(MidiHandler())
-bowl.add_handler(OSCHandler())
-bowl.add_handler(SuperColliderHandler())
+if (
+    os.getenv("SARDINE_INIT_SESSION") is not None
+    and os.getenv("SARDINE_INIT_SESSION") == "YES"
+):
+    def _ticked(condition: bool):
+        """Print an ASCII Art [X] if True or [ ] if false"""
+        return "[X]" if condition else "[ ]"
+    print(Panel.fit(f"[red]{sardine_intro}[/red]"))
+    print(
+        f" [yellow]BPM: [red]{config.bpm}[/red],",
+        f"[yellow]BEATS: [red]{config.beats}[/red]",
+        f"[yellow]SC: [red]{_ticked(config.boot_superdirt)}[/red],",
+        f"[yellow]DEFER: [red]{_ticked(config.deferred_scheduling)}[/red]",
+        f"[yellow]MIDI: [red]{config.midi}[/red]",
+    )
 
-# Start clock
-bowl.clock.start()
+    # Boot SuperCollider
+    if config.boot_superdirt is True:
+        try:
+            SC = SuperColliderProcess(
+                startup_file=config.superdirt_config_path,  # config file
+                verbose=config.verbose_superdirt,  # verbosity for SC output
+            )
+        except OSError as error:
+            print("[red]SuperCollider could not be found![/red]")
+    else:
+        print("[green]Booting without SuperCollider![/green]")
+
+
+    bowl = FishBowl(time=Time())
+    time = bowl.time # passage of time
+    bowl.clock.tempo, bowl.clock._beats_per_bar = config.bpm, config.beats
+
+    # Adding a parser
+    bowl.swap_parser(ListParser)
+
+    # Adding Senders
+    bowl.add_handler(MidiHandler())
+    bowl.add_handler(OSCHandler())
+    bowl.add_handler(SuperColliderHandler())
+
+    # Start clock
+    bowl.clock.start()

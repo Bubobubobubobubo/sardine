@@ -21,6 +21,10 @@ class BaseHandler(ABC, Hashable):
     def __init__(self):
         self.env: "Optional[FishBowl]" = None
 
+    def __hash__(self):  # pylint: disable=useless-parent-delegation
+                         #         Hashable expects this to be implemented
+        return super().__hash__()
+
     def __call__(self, *args, **kwargs):
         """Calls the handler's `hook()` method."""
         self.hook(*args, **kwargs)

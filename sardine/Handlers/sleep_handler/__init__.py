@@ -1,7 +1,10 @@
 import asyncio
 from typing import Union
 
-from ..base import BaseHandler
+from ...base import BaseHandler
+from .time_handle import *
+
+__all__ = ("SleepHandler", "TimeHandle")
 
 
 class SleepHandler(BaseHandler):
@@ -10,13 +13,9 @@ class SleepHandler(BaseHandler):
         super().__init__()
         self._interrupt_event = asyncio.Event()
         self._wake_event = asyncio.Event()
+        self._time_handles: list[TimeHandle] = []
 
     # Public methods
-
-    async def _sleep(self, duration: Union[float, int]):
-        clock = self.env.clock
-        deadline = clock.time + duration
-        # TODO _sleep
 
     async def sleep(self, duration: Union[float, int]):
         # TODO sleep docstring
@@ -49,6 +48,11 @@ class SleepHandler(BaseHandler):
         # This might be called after teardown, in which case `env` is None
         if self.env is None or not self.env.is_running():
             asyncio.current_task().cancel()
+
+    async def _sleep(self, duration: Union[float, int]):
+        clock = self.env.clock
+        deadline = clock.time + duration
+        # TODO _sleep
 
     # Handler hooks
 

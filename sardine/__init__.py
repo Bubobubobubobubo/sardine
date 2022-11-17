@@ -16,9 +16,9 @@ else:
     uvloop.install()
 
 from .fish_bowl import FishBowl
-from .clock.Time import Time
-from .clock.InternalClock import Clock
-from .clock.LinkClock import LinkClock
+from .clock.time import Time
+from .clock.internal_clock import InternalClock
+from .clock.link_clock import LinkClock
 from .sequences.SardineParser.ListParser import ListParser
 from .handlers import (
     DummyHandler,
@@ -63,15 +63,12 @@ if (
         print(f"[red]No user provided configuration file found...")
 
     # Real initialisation takes place here ############################
-    bowl = FishBowl()
-    bowl.add_handler(Clock(
-        env=bowl,
-        time=0.0,
-        time_shift=0.0,
-        tempo=config.bpm,
-        bpb=config.beats
-    ))
-    time = bowl.time
+    bowl = FishBowl(
+        clock=InternalClock(
+            tempo=config.bpm,
+            bpb=config.beats
+        ),
+    )
 
     # Adding a parser
     # bowl.swap_parser(ListParser)

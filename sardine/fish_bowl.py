@@ -1,28 +1,15 @@
+import asyncio
 import collections
-from asyncio import Event
-from typing import (
-    TYPE_CHECKING,
-    Hashable,
-    Iterable,
-    Optional,
-    Protocol,
-    Union)
+from typing import Hashable, Iterable, Optional, Protocol, Union
 
 from exceptiongroup import BaseExceptionGroup
 
+from .base import BaseClock, BaseHandler, BaseParser
+from .clock import Time, InternalClock
 from .sequences.SardineParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
-from .clock.InternalClock import Clock
-from .clock.LinkClock import LinkClock
-from .clock.Time import Time
 from .Handlers.SleepHandler import SleepHandler
-
-if TYPE_CHECKING:
-    from .base.handler import BaseHandler
-    from .clock.Time import Time
-    from .base.clock import BaseClock
-    from .base.parser import BaseParser
 
 
 class HookProtocol(Hashable, Protocol):
@@ -32,28 +19,33 @@ class HookProtocol(Hashable, Protocol):
 
 class FishBowl:
     """Contains all the components necessary to run the Sardine system."""
-    def __init__(self):
-        self.time = Time(self)
-        self._alive = Event()
-        self._resumed = Event()
-        self.iterators = Iterator()
-        self.variables = Variables()
-        self.handlers: "set[BaseHandler]" = set()
-        self.parser = None
+    def __init__(
+        self,
+        clock: BaseClock = None,
+        iterator: Optional[Iterator] = None,
+        parser: Optional[BaseParser] = None,
+        sleeper: Optional[SleepHandler] = None,
+        time: Optional[Time] = None,
+        variables: Optional[Variables] = None,
+    ):
+        self.clock = clock or InternalClock()
+        self.iterators = iterator or Iterator()
+        self.parser = parser  # TODO default parser
+        self.sleeper = sleeper or SleepHandler()
+        self.time = time or Time()
+        self.variables = variables or Variables()
+
+        self._handlers: set[BaseHandler] = set()
+        self._alive = asyncio.Event()
+        self._resumed = asyncio.Event()
 
         self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
         self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
-        # Core handlers
-        self.clock = Clock()
-        self.sleeper = SleepHandler()
-
         self.add_handler(self.clock)
         self.add_handler(self.sleeper)
-
-        # Send a start() signal so that time can start now
-        self.dispatch('start')
+        self.add_handler(self.time)
 
     ## TRANSPORT ######################################################################
 
@@ -92,22 +84,22 @@ class FishBowl:
 
     # Hot-swap methods ############################################################
 
-    def swap_parser(self, parser: "BaseParser"):
-        """Hot-swap current parser for a different parser.
+    def swap_clock(self, clock: "BaseClock"):
+        """Hot-swap the current clock for a different clock.
 
-        Args:
-            parser (BaseParser): New Parser
+        This method will perform the following procedure:
+            1. Pause the fish bowl
+            2. Remove the old clock's handler
+            3. Replace with the current clock and add as handler
+            4. Resume fish bowl
+            5. Trigger a `clock_swap` event with one argument, the new clock instance
         """
-        self.parser = parser(env=self)
-
-    def swap_clock(self, clock: 'BaseClock'):
-        """Hot-swap current clock for a different clock"""
-        # 1) pause the fish bowl
-        # 2) remove the old clock's handler
-        # 3) replace with the current clock and add as handler
-        # 4) resume fish bowl
-        # 5) Trigger a clock_swap event with one argument, the new BaseClock object
-        pass
+        self.pause()
+        self.remove_handler(self.clock)
+        self.clock = clock
+        self.add_handler(clock)
+        self.resume()
+        self.dispatch('clock_swap', clock)
 
     ## HANDLERS ############################################################
 
@@ -122,7 +114,7 @@ class FishBowl:
         be shared across different fish bowls.
 
         Args:
-            handler (BaseHandler): Sender
+            handler (BaseHandler): The handler being added.
 
         Raises:
             ValueError:
@@ -139,7 +131,7 @@ class FishBowl:
 
         handler._env = self  # pylint: disable=protected-access
         handler.setup()
-        self.handlers.add(handler)
+        self._handlers.add(handler)
 
     def remove_handler(self, handler: "BaseHandler"):
         """Removes an existing handler from the fish bowl.
@@ -152,12 +144,12 @@ class FishBowl:
         Args:
             handler (BaseHandler): The handler to remove from the fish bowl.
         """
-        if handler not in self.handlers:
+        if handler not in self._handlers:
             return
 
         handler.teardown()
         handler._env = None  # pylint: disable=protected-access
-        self.handlers.remove(handler)
+        self._handlers.remove(handler)
 
         event_set = self.hook_events.get(handler)
         if event_set is not None:
@@ -219,6 +211,7 @@ class FishBowl:
                 del self.hook_events[hook]
 
     def _run_hooks(self, hooks: Iterable[HookProtocol], event: str, *args):
+        # TODO add hook ratelimiting
         exceptions: list[BaseException] = []
         for func in hooks:
             try:

@@ -49,7 +49,7 @@ class FishBowl:
         self.handlers.add(SleepHandler(env=self))
 
         # Send a start() signal so that time can start now
-
+        self.dispatch('start')
 
     ## TRANSPORT ######################################################################
 

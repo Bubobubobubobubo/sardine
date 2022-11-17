@@ -1,37 +1,24 @@
 from time import monotonic_ns
-from typing import TYPE_CHECKING, Union
+from typing import Union
 import asyncio
 from ..base.handler import BaseHandler
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
-
 NUMBER = Union[int, float]
+
 
 class Clock(BaseHandler):
 
     def __init__(
         self,
         tempo: NUMBER = 120,
-        bpb: int = 4
+        bpb: int = 4,
     ):
         super().__init__()
         self._type = "InternalClock"
-        self._alive = asyncio.Event()
-        self._resumed = asyncio.Event()
 
         # Time related attributes
         self._tempo = tempo
         self._beats_per_bar = bpb
-        self.origin = monotonic_ns()
-
-        # Possible event types
-        self._events = {
-            'start': self._start,
-            'stop': self._stop,
-            'pause': self._pause,
-            'resume': self._resume,
-        }
 
     ## REPR AND STR ############################################################
 
@@ -129,59 +116,12 @@ class Clock(BaseHandler):
 
     ## METHODS  ##############################################################
 
-    def setup(self):
-        for event in self._events:
-            self.register(event)
-
-    def hook(self, event: str, *args):
-        func = self._events[event]
-        func(*args)
-
     def time(self) -> int:
         """
         Get current time in monotonic nanoseconds (best possible resolution)
         without approximation due to float conversion.
         """
         return (monotonic_ns() - self.origin) / 1_000_000_000
-
-    def is_running(self) -> bool:
-        """Return a boolean indicating if the clock is currently running.
-
-        Returns:
-            bool: running
-        """
-        return self._alive.is_set()
-
-    def is_paused(self) -> bool:
-        """Return a boolean indicating is the clock is currently paused or not.
-
-        Returns:
-            bool: paused?
-        """
-        return False if self._resumed.is_set() else True
-
-    def _start(self):
-        """This method is used to enter the clock run() main loop."""
-        self._alive.set()
-        asyncio.create_task(self.run())
-
-    def _pause(self):
-        """Pausing the internal clock. Use resume() to continue."""
-        if self._resumed.is_set():
-            self._resumed.clear()
-
-    def _resume(self):
-        """Resuming the internal clock. Use pause() for the opposite."""
-        if not self._resumed.is_set():
-            self._resumed.set()
-
-    def _stop(self):
-        """Stop the internal clock. End the internal run() main loop."""
-        self._alive.clear()
-
-
-    async def time_shift(self):
-        pass
 
     async def run(self):
         """

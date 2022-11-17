@@ -1,35 +1,26 @@
 from ..base.handler import BaseHandler
-from typing import TYPE_CHECKING, Union
-from time import monotonic_ns, perf_counter
+from typing import Union
+from time import perf_counter
 import asyncio
 import link
 
 NUMBER = Union[int, float]
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
 
 class LinkClock(BaseHandler):
 
     def __init__(
-        self, env: 'FishBowl',
-        time: NUMBER,
-        time_shift: NUMBER,
+        self,
         tempo: NUMBER = 120,
-        bpb: int = 4):
+        bpb: int = 4,
+    ):
+        super().__init__()
         self._type = "LinkClock"
-        self._alive = asyncio.Event()
-        self._resumed = asyncio.Event()
-        self._resumed.set()
-        self._env = env
 
         # Time related attributes
         self._drift = 0.0
-        self.time = time
-        self.time_shift = time_shift
         self._tempo = tempo
         self._beats_per_bar = bpb
-        self.origin = monotonic_ns()
 
         # Link related attributes
         self._link = link.Link(self._tempo)
@@ -37,14 +28,6 @@ class LinkClock(BaseHandler):
             "tempo": 0,
             "beat": 0,
             "phase": 0
-        }
-
-        # Possible event types
-        self._events = {
-            'start': self._start,
-            'stop': self._stop,
-            'pause': self._pause,
-            'resume': self._resume,
         }
 
     ## REPR AND STR ############################################################
@@ -132,42 +115,6 @@ class LinkClock(BaseHandler):
                 "playing": playing_str,
                 "phase": phase,
             }
-
-    def is_running(self) -> bool:
-        """Return a boolean indicating if the clock is currently running.
-
-        Returns:
-            bool: running
-        """
-        return self._alive.is_set()
-
-    def is_paused(self) -> bool:
-        """Return a boolean indicating is the clock is currently paused or not.
-
-        Returns:
-            bool: paused?
-        """
-        return False if self._resumed.is_set() else True
-
-    def _start(self):
-        """This method is used to enter the clock run() main loop."""
-        self._link.enabled = True
-        self._alive.set()
-        asyncio.create_task(self.run())
-
-    def _pause(self):
-        """Pausing the internal clock. Use resume() to continue."""
-        if self._resumed.is_set():
-            self._resumed.clear()
-
-    def _resume(self):
-        """Resuming the internal clock. Use pause() for the opposite."""
-        if not self._resumed.is_set():
-            self._resumed.set()
-
-    def _stop(self):
-        """Stop the internal clock. End the internal run() main loop."""
-        self._alive.clear()
 
     async def run(self):
         """Main loop for the LinkClock"""

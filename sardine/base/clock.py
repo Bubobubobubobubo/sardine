@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import Optional
+from typing import Optional, Union
 
 from .handler import BaseHandler
 
@@ -12,6 +12,11 @@ class BaseClock(BaseHandler, ABC):
 
     This interface expects clocks to manage its own source of time
     and provide the `phase`, `beat`, and `tempo` properties.
+
+    In addition, an optional `async sleep()` method can be defined
+    to provide a mechanism for sleeping a specified duration.
+    If this method is not defined, the `FishBowl.sleeper` instance
+    will use a built-in polling mechanism for sleeping.
 
     Attributes:
         internal_origin:
@@ -103,9 +108,27 @@ class BaseClock(BaseHandler, ABC):
 
         return i_time - i_origin + self.env.time.origin + self.env.time.shift
 
+    # Public methods
+
+    def can_sleep(self) -> bool:
+        """Checks if the clock supports sleeping."""
+        return getattr(self, 'sleep', None) is not BaseClock.sleep
+
     def is_running(self) -> bool:
         """Indicates if an asyncio task is currently executing `run()`."""
         return self._run_task is not None and not self._run_task.done()
+
+    async def sleep(self, duration: Union[float, int]) -> None:
+        """Sleeps for the given duration.
+
+        This method can be optionally overridden by subclasses.
+        If it is not overridden, it is assumed that the class
+        does not support sleeping.
+
+        Any implementations of this sleep must be able to handle
+        `asyncio.CancelledError` on any asynchronous statements.
+        """
+        raise NotImplementedError
 
     # Handler hooks
 

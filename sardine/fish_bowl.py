@@ -1,5 +1,11 @@
 import collections
-from typing import TYPE_CHECKING, Hashable, Iterable, Optional, Protocol
+from typing import (
+    TYPE_CHECKING,
+    Hashable, 
+    Iterable, 
+    Optional, 
+    Protocol,
+    Union)
 
 from exceptiongroup import BaseExceptionGroup
 
@@ -42,6 +48,12 @@ class FishBowl:
         self.handlers.append(SleepHandler())
         
         # Send a start() signal so that time can start now
+
+
+    ## SLEEPING MANAGEMENT ############################################################ 
+    async def sleep(self, duration: Union[int, float]):
+        """Sleep method for the SleepHandler"""
+        # ???
 
     # Hot-swap methods (may be removed in favour of manual replacement)
 

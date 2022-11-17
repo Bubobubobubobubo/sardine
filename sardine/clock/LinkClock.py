@@ -1,13 +1,18 @@
-from ..base.handler import BaseHandler
-from typing import Union
-from time import perf_counter
 import asyncio
+import threading
+import time
+from typing import Optional, Union
+
 import link
+
+from ..base import BaseClock
 
 NUMBER = Union[int, float]
 
 
-class LinkClock(BaseHandler):
+class LinkClock(BaseClock):
+
+    POLL_INTERVAL = 0.001
 
     def __init__(
         self,
@@ -18,69 +23,47 @@ class LinkClock(BaseHandler):
         self._type = "LinkClock"
 
         # Time related attributes
-        self._drift = 0.0
         self._tempo = tempo
         self._beats_per_bar = bpb
 
         # Link related attributes
-        self._link = link.Link(self._tempo)
-        self._linktime = {
-            "tempo": 0,
-            "beat": 0,
-            "phase": 0
-        }
+        self._link: Optional[link.Link] = None
+        self._tempo: int = 0
+        self._beat: int = 0
+        self._phase: int = 0
+        self._playing: bool = False
+
+        # Thread control
+        self._run_thread: Optional[threading.Thread] = None
+        self._completed_event = asyncio.Event()
 
     ## REPR AND STR ############################################################
 
     def __repr__(self) -> str:
-        el = self._time._elapsed_time
-        return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
+        return (
+            "({0._type} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
+            "{0.phase}/{0._beats_per_bar}]"
+        ).format(self)
 
     ## GETTERS  ################################################
 
     @property
-    def drift(self) -> float:
-        """Drift compensation for the waiting mechanism
-
-        Returns:
-            float: drift amount on last cycle
-        """
-        return self._drift
-
-    @property
     def bar(self) -> int:
-        return self.beat / self._beats_per_bar
+        return self.beat // self._beats_per_bar
 
     @property
     def phase(self) -> int:
-        """The phase of the current beat in ticks."""
-        return self._linktime['phase']
+        return self._phase
 
     @property
     def beat(self) -> int:
-        """Current beat"""
-        return self._linktime['beat']
+        return self._beat
 
     @property
     def tempo(self) -> int:
-        """The phase of the current beat in ticks."""
-        return self._linktime['tempo']
-
-    @property
-    def bpm(self) -> int:
-        """The phase of the current beat in ticks."""
-        return self._linktime['tempo']
-
-    @property
-    def linktime(self) -> dict:
-        """Return current Link clock time"""
-        return self._linktime
+        return self._tempo
 
     ## SETTERS  ##############################################################
-
-    @linktime.setter
-    def linktime(self, new_time: dict) -> None:
-        self._linktime = self._get_new_linktime(new_time)
 
     @tempo.setter
     def tempo(self, new_tempo: float) -> None:
@@ -88,43 +71,45 @@ class LinkClock(BaseHandler):
         session.setTempo(new_tempo, self._beats_per_bar)
         self._link.commitSessionState(session)
 
-    @bpm.setter
-    def tempo(self, new_tempo: float) -> None:
-        session = self._link.captureSessionState()
-        session.setTempo(new_tempo, self._beats_per_bar)
-        self._link.commitSessionState(session)
-
     ## METHODS  ##############################################################
 
-    def _capture_link_info(self) -> dict:
-        """Capture information about the current state of the Link session.
-        Returns:
-            dict: a dictionnary containing temporal information
-            about the Link session.
-        """
-        if self._link:
-            s = self._link.captureSessionState()
-            link_time = self._link.clock().micros()
-            tempo_str = s.tempo()
-            beats_str = s.beatAtTime(link_time, self._beats_per_bar)
-            playing_str = str(s.isPlaying())
-            phase = s.phaseAtTime(link_time, self._beats_per_bar)
-            return {
-                "tempo": tempo_str,
-                "beat": beats_str,
-                "playing": playing_str,
-                "phase": phase,
-            }
+    def _capture_link_info(self):
+        s: link.SessionState = self._link.captureSessionState()
+        link_time: int = self._link.clock().micros()
+        beat: float    = s.beatAtTime(link_time, self._beats_per_bar)
+        phase: float   = s.phaseAtTime(link_time, self._beats_per_bar)
+        playing: bool  = s.isPlaying()
+        tempo: float   = s.tempo()
+
+        self.internal_time = link_time / 1_000_000
+        self._beat = int(beat)
+        self._phase = int(phase)
+        self._playing = playing
+        self._tempo = int(tempo)
+
+    def _run(self):
+        try:
+            self._link = link.Link(self._tempo)
+
+            # Set the origin at the start
+            self._capture_link_info()
+            self.internal_origin = self.internal_time
+
+            # Poll continuously to get the latest time
+            while not self._completed_event.is_set():
+                self._capture_link_info()
+                time.sleep(self.POLL_INTERVAL)
+        finally:
+            self._link = None
+            self._completed_event.set()
 
     async def run(self):
         """Main loop for the LinkClock"""
-        self._drift = 0.0
-        while True:
-            await self._resumed.wait()
-            if self._alive.is_set():
-                begin = perf_counter()
-                await asyncio.sleep(0.0)
-                self._linktime = self._capture_link_info()
-                self._drift = perf_counter() - begin
-            else:
-                return
+        self._completed_event.clear()
+        self._run_thread = threading.Thread(target=self._run)
+        self._run_thread.start()
+
+        try:
+            await self._completed_event.wait()
+        finally:
+            self._completed_event.set()

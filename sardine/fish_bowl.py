@@ -46,7 +46,7 @@ class FishBowl:
         self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
         # Add the base SleepHandler
-        self.handlers.add(SleepHandler())
+        self.handlers.add(SleepHandler(env=self))
 
         # Send a start() signal so that time can start now
 

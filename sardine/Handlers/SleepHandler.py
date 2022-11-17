@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 class SleepHandler(BaseHandler):
     def __init__(self, env: 'FishBowl'):
-        self.env = env
+        self._env = env
         self._events = {
             '???': None
         }

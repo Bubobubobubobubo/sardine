@@ -36,6 +36,12 @@ class BaseHandler(ABC, Hashable):
         """The fish bowl (a.k.a. environment) that this handler is added to."""
         return self._env
 
+    @env.setter
+    def env(self, env: 'FishBowl') -> "Optional[FishBowl]":
+        """The fish bowl (a.k.a. environment) that this handler is added to."""
+        self._env = env
+
+
     def register(self, event: Optional[str]):
         """Registers the handler's `hook()` for the given event.
 

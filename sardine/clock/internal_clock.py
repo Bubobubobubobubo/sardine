@@ -22,7 +22,7 @@ class InternalClock(BaseClock):
         # Time related attributes
         self.beat_duration: float = 0.0
         self.tempo = tempo
-        self.beats_per_bar = bpb
+        self._beats_per_bar = bpb
 
     ## REPR AND STR ############################################################
 
@@ -47,6 +47,10 @@ class InternalClock(BaseClock):
         return self.time // self.beat_duration
 
     @property
+    def beats_per_bar(self) -> int:
+        return self._beats_per_bar
+
+    @property
     def phase(self) -> float:
         return self.time % self.beat_duration
 
@@ -55,6 +59,10 @@ class InternalClock(BaseClock):
         return self._tempo
 
     #### SETTERS ############################################################
+
+    @beats_per_bar.setter
+    def beats_per_bar(self, bpb: int):
+        self._beats_per_bar = bpb
 
     @tempo.setter
     def tempo(self, new_tempo: int):

@@ -128,6 +128,49 @@ class BaseClock(BaseHandler, ABC):
         """Checks if the clock supports sleeping."""
         return getattr(self, 'sleep', None) is not BaseClock.sleep
 
+    def get_beat_time(self, n_beats: Union[int, float], *, sync: bool = True) -> float:
+        """Determines the amount of time to wait for N beats to pass.
+
+        Args:
+            n_beats (Union[int, float]): The number of beats to wait for.
+            sync (bool):
+                If True, the clock's current phase is subtracted from
+                the initial duration to synchronize with the clock beat.
+                If False, no synchronization is done.
+
+        Returns:
+            float: The amount of time to wait in seconds.
+        """
+        interval = self.beat_duration * n_beats
+        if interval <= 0.0:
+            return 0.0
+        elif not sync:
+            return interval
+
+        return interval - self.phase
+
+    def get_bar_time(self, n_bars: Union[int, float], *, sync: bool = True) -> float:
+        """Determines the amount of time to wait for N bars to pass.
+
+        Args:
+            n_bars (Union[int, float]): The number of bars to wait for.
+            sync (bool):
+                If True, the clock's current phase is subtracted from
+                the initial duration to synchronize with the clock beat.
+                If False, no synchronization is done.
+
+        Returns:
+            float: The amount of time to wait in seconds.
+
+        """
+        interval = self.beat_duration * self.beats_per_bar * n_bars
+        if interval <= 0.0:
+            return 0.0
+        elif not sync:
+            return interval
+
+        return interval - self.phase
+
     def is_running(self) -> bool:
         """Indicates if an asyncio task is currently executing `run()`."""
         return self._run_task is not None and not self._run_task.done()

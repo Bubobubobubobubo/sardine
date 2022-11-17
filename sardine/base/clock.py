@@ -95,10 +95,16 @@ class BaseClock(BaseHandler, ABC):
         will return `Time.origin` until the fish bowl resumes or starts again.
 
         If either the `internal_time` or `internal_origin` attributes
-        are not available (i.e. they are set to `None`), this will default
-        to the `Time.origin`. This should ideally be minimized so the clock
-        can run as soon as possible.
+        are not available, i.e. been set to `None`, this will default
+        to the `Time.origin` (still including time shift). This should
+        ideally be avoided when the clock starts running so time can
+        flow as soon as possible.
         """
+        return self.true_time + self.env.time.shift
+
+    @property
+    def true_time(self) -> float:
+        """A variant of `time` except that no time shift is applied."""
         if self.env.is_paused() or not self.env.is_running():
             return self.env.time.origin
 
@@ -106,7 +112,7 @@ class BaseClock(BaseHandler, ABC):
         if i_time is None or i_origin is None:
             return self.env.time.origin
 
-        return i_time - i_origin + self.env.time.origin + self.env.time.shift
+        return i_time - i_origin + self.env.time.origin
 
     # Public methods
 

@@ -44,28 +44,36 @@ class LinkClock(BaseClock):
     def __repr__(self) -> str:
         return (
             "({0._type} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
-            "{0.phase}/{0._beats_per_bar}]"
+            "{0.phase}/{0.beats_per_bar}]"
         ).format(self)
 
     ## GETTERS  ################################################
 
     @property
     def bar(self) -> int:
-        return self.beat // self._beats_per_bar
-
-    @property
-    def phase(self) -> int:
-        return self._phase
+        return self.beat // self.beats_per_bar
 
     @property
     def beat(self) -> int:
         return self._beat
 
     @property
+    def beats_per_bar(self) -> int:
+        return self._beats_per_bar
+
+    @property
+    def phase(self) -> int:
+        return self._phase
+
+    @property
     def tempo(self) -> int:
         return self._tempo
 
     ## SETTERS  ##############################################################
+
+    @beats_per_bar.setter
+    def beats_per_bar(self, bpb: int):
+        self._beats_per_bar = bpb
 
     @tempo.setter
     def tempo(self, new_tempo: float) -> None:

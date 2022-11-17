@@ -79,8 +79,11 @@ class FishBowl:
     ## SLEEPING MANAGEMENT ############################################################
 
     async def sleep(self, duration: Union[int, float]):
-        """Sleep method for the SleepHandler"""
-        # ???
+        """Sleeps for the given duration.
+
+        This method is simply a shorthand for `self.sleeper.sleep(duration)`.
+        """
+        return await self.sleeper.sleep(duration)
 
     # Hot-swap methods ############################################################
 

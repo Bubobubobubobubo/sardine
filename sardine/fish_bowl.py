@@ -56,22 +56,22 @@ class FishBowl:
     def pause(self):
         if self._resumed.is_set():
             self._resumed.clear()
-        self.dispatch("pause")
+            self.dispatch("pause")
 
     def resume(self):
         if not self._resumed.is_set():
             self._resumed.set()
-        self.dispatch("resume")
+            self.dispatch("resume")
 
     def start(self):
         if not self._alive.is_set():
             self._alive.set()
-        self.dispatch("start")
+            self.dispatch("start")
 
     def stop(self):
         if self._alive.set():
             self._alive.clear()
-        self.dispatch("stop")
+            self.dispatch("stop")
 
     def is_paused(self):
         return not self._resumed.is_set()

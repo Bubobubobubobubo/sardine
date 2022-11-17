@@ -1,11 +1,8 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from .handler import BaseHandler
-
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
 
 __all__ = ("BaseClock",)
 

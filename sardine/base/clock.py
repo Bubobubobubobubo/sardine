@@ -115,7 +115,7 @@ class BaseClock(BaseHandler, ABC):
                 self._run_task = asyncio.create_task(self.run())
 
             # Setting internal origin here is only useful for the resume event;
-            # the run task will have to it manually regardless
+            # the run task must manually do this regardless
             self.internal_origin = self.time
         elif event == "pause":
             self.env.time.origin = self.time

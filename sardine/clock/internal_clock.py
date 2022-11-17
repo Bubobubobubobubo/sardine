@@ -17,20 +17,11 @@ class InternalClock(BaseClock):
         bpb: int = 4,
     ):
         super().__init__()
-        self._type = "InternalClock"
 
         # Time related attributes
         self.beat_duration: float = 0.0
         self.tempo = tempo
         self._beats_per_bar = bpb
-
-    ## REPR AND STR ############################################################
-
-    def __repr__(self) -> str:
-        return (
-            "({0._type} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
-            "{0.phase}/{0.beats_per_bar}]"
-        ).format(self)
 
     #### GETTERS  ############################################################
 

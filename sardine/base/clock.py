@@ -34,6 +34,12 @@ class BaseClock(BaseHandler, ABC):
         self.internal_origin: Optional[float] = None
         self.internal_time: Optional[float] = None
 
+    def __repr__(self) -> str:
+        return (
+            "({name} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
+            "{0.phase}/{0.beats_per_bar}]"
+        ).format(self, name=type(self).__name__)
+
     # Abstract methods
 
     @abstractmethod

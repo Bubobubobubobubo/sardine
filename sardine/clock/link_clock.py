@@ -22,7 +22,6 @@ class LinkClock(BaseClock):
         bpb: int = 4,
     ):
         super().__init__()
-        self._type = "LinkClock"
 
         # Time related attributes
         self._tempo = tempo
@@ -38,14 +37,6 @@ class LinkClock(BaseClock):
         # Thread control
         self._run_thread: Optional[threading.Thread] = None
         self._completed_event = asyncio.Event()
-
-    ## REPR AND STR ############################################################
-
-    def __repr__(self) -> str:
-        return (
-            "({0._type} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
-            "{0.phase}/{0.beats_per_bar}]"
-        ).format(self)
 
     ## GETTERS  ################################################
 

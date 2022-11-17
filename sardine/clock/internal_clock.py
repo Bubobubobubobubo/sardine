@@ -65,6 +65,9 @@ class InternalClock(BaseClock):
 
     ## METHODS  ##############################################################
 
+    async def sleep(self, duration: Union[float, int]) -> None:
+        return await asyncio.sleep(duration)
+
     async def run(self):
         # The internal clock simply uses the system's time
         # so we don't need to do any polling loop here

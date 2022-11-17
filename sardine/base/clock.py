@@ -47,13 +47,18 @@ class BaseClock(BaseHandler, ABC):
 
     @property
     @abstractmethod
-    def phase(self) -> int:
-        """The phase of the clock's current beat."""
+    def bar(self) -> int:
+        """The bar of the clock's current time."""
 
     @property
     @abstractmethod
     def beat(self) -> int:
         """The beat of the clock's current time."""
+
+    @property
+    @abstractmethod
+    def phase(self) -> int:
+        """The phase of the clock's current beat."""
 
     @property
     @abstractmethod

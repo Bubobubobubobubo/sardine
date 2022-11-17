@@ -34,6 +34,7 @@ from .io.UserConfig import (
 config = read_user_configuration()
 
 #| INITIALISATION |#
+CRASH_TEST = False
 
 # Reading user configuration
 config = read_user_configuration()
@@ -80,3 +81,11 @@ if (
     # bowl.add_handler(OSCHandler())
     # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
     # bowl.add_handler(SuperDirtHandler())
+
+    if CRASH_TEST:
+        @swim
+        def dummy_swimming_function():
+            print('Hello there, I am swimming again!')
+            M('60').out()
+            S('bd').out()
+            O('/hello/', value=1, other=2, otherother=3).out()

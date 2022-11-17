@@ -54,22 +54,23 @@ class FishBowl:
     ## TRANSPORT ######################################################################
 
     def pause(self):
-        if self._resumed.is_set():
+        if self.is_running() and not self.is_paused():
             self._resumed.clear()
             self.dispatch("pause")
 
     def resume(self):
-        if not self._resumed.is_set():
+        if self.is_running() and self.is_paused():
             self._resumed.set()
             self.dispatch("resume")
 
     def start(self):
-        if not self._alive.is_set():
+        if not self.is_running():
             self._alive.set()
+            self._resumed.set()
             self.dispatch("start")
 
     def stop(self):
-        if self._alive.set():
+        if self.is_running():
             self._alive.clear()
             self.dispatch("stop")
 

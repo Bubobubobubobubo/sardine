@@ -31,7 +31,7 @@ class FishBowl:
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: "set[BaseHandler]" = set()
-        self.parser = ListParser(env=self)
+        self.parser = None 
 
         self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks

@@ -11,11 +11,12 @@ if TYPE_CHECKING:
 
 class LinkClock(BaseHandler):
 
-    def __init__(self, env: 'FishBowl',
-                 time: NUMBER,
-                 time_shift: NUMBER,
-                 tempo: NUMBER = 120,
-                 bpb: int = 4):
+    def __init__(
+        self, env: 'FishBowl',
+        time: NUMBER,
+        time_shift: NUMBER,
+        tempo: NUMBER = 120,
+        bpb: int = 4):
         self._type = "LinkClock"
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()

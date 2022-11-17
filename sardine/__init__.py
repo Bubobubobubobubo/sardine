@@ -70,15 +70,13 @@ if (
         tempo=config.bpm, 
         bpb=config.beats
     ))
+    time = bowl.time
 
     # Adding a parser
-    bowl.swap_parser(ListParser)
+    # bowl.swap_parser(ListParser)
 
     # Adding Senders
     # bowl.add_handler(MidiHandler())
     # bowl.add_handler(OSCHandler())
     # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
     # bowl.add_handler(SuperDirtHandler())
-
-    # Start clock
-    bowl.clock.start()

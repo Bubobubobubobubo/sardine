@@ -1,50 +1,39 @@
-from ..base.clock import BaseClock
+from time import monotonic_ns
 from typing import TYPE_CHECKING, Union
-from time import perf_counter, monotonic_ns
 import asyncio
+from ..base.handler import BaseHandler
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-class Clock(BaseClock):
+NUMBER = Union[int, float]
 
-    """
-    Basic Internal Clock. This clock is the default Clock Sardine will try to use.
-    It is preferably used when playing alone, as it is not capable of synchronising
-    to anything. For MIDI synchronisation, schedule a MIDI Clock message.
+class Clock(BaseHandler):
 
-    The clock is exposing a few methods to the users:
-
-    - start(): start the internal clock loop.
-    - stop(): stop the internal clock loop.
-    - pause(): pause.
-    - resume(): unpause.
-    - sleep(): ???.
-
-    You can set the tempo and the number of beats per bar by tweaking 
-    the respective attributes:
-
-    clock.bpm / clock.tempo = 124
-    clock.beats_per_bar = 8
-    """
-
-    def __init__(self, env: 'FishBowl', tempo: float = 120, bpb: int = 4):
-        """Basic internal clock
-
-        Args:
-            env (FishBowl): Environment for dispatching information
-            time (Time): Flow of time
-            tempo (float, optional): Beats per minute (tempo). Defaults to 120.
-            bpb (int, optional): Number of beats per bar. Defaults to 4.
-        """
+    def __init__(self, env: 'FishBowl',
+                 time: NUMBER,
+                 time_shift: NUMBER,
+                 tempo: NUMBER = 120,
+                 bpb: int = 4):
         self._type = "InternalClock"
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
-        self._resumed.set()
         self._env = env
+
+        # Time related attributes
+        self.time = time
+        self.time_shift = time_shift
         self._tempo = tempo
         self._beats_per_bar = bpb
-        self._origin = monotonic_ns()
+        self.origin = monotonic_ns()
+
+        # Possible event types
+        self._events = {
+            'start': self._start,
+            'stop': self._stop,
+            'pause': self._pause,
+            'resume': self._resume,
+        }
 
     ## REPR AND STR ############################################################
 
@@ -142,12 +131,20 @@ class Clock(BaseClock):
 
     ## METHODS  ##############################################################
 
+    def setup(self):
+        for event in self._events:
+            self.register(event)
+
+    def hook(self, event: str, *args):
+        func = self._events[event]
+        func(*args)
+
     def time(self) -> int:
         """
         Get current time in monotonic nanoseconds (best possible resolution)
         without approximation due to float conversion.
         """
-        return (monotonic_ns() - self._origin) / 1_000_000_000
+        return (monotonic_ns() - self.origin) / 1_000_000_000
 
     def is_running(self) -> bool:
         """Return a boolean indicating if the clock is currently running.
@@ -165,28 +162,25 @@ class Clock(BaseClock):
         """
         return False if self._resumed.is_set() else True
 
-    def start(self):
+    def _start(self):
         """This method is used to enter the clock run() main loop."""
         self._alive.set()
         asyncio.create_task(self.run())
 
-    def pause(self):
+    def _pause(self):
         """Pausing the internal clock. Use resume() to continue."""
         if self._resumed.is_set():
             self._resumed.clear()
 
-    def resume(self):
+    def _resume(self):
         """Resuming the internal clock. Use pause() for the opposite."""
         if not self._resumed.is_set():
             self._resumed.set()
 
-    def stop(self):
+    def _stop(self):
         """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()
 
-    async def sleep(self, duration: Union[int, float]):
-        """Sleep for a given time duration"""
-        await asyncio.sleep(duration)
 
     async def time_shift(self):
         pass

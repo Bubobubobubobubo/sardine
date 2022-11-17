@@ -1,30 +1,49 @@
-from ..base.clock import BaseClock
-from typing import TYPE_CHECKING
-from time import perf_counter
+from ..base.handler import BaseHandler
+from typing import TYPE_CHECKING, Union
+from time import monotonic_ns, perf_counter
 import asyncio
 import link
+
+NUMBER = Union[int, float]
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-class LinkClock(BaseClock):
+class LinkClock(BaseHandler):
 
-    def __init__(self, env: 'FishBowl', tempo: float = 120, bpb: int = 4):
+    def __init__(self, env: 'FishBowl',
+                 time: NUMBER,
+                 time_shift: NUMBER,
+                 tempo: NUMBER = 120,
+                 bpb: int = 4):
         self._type = "LinkClock"
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
         self._resumed.set()
         self._env = env
-        self._time = env.time
-        self._time_grain = 0.01
-        self._beats_per_bar = bpb
+
+        # Time related attributes
         self._drift = 0.0
+        self.time = time
+        self.time_shift = time_shift
         self._tempo = tempo
+        self._beats_per_bar = bpb
+        self.origin = monotonic_ns()
+
+        # Link related attributes
         self._link = link.Link(self._tempo)
         self._linktime = {
             "tempo": 0,
             "beat": 0,
             "phase": 0
+        }
+
+        # Possible event types
+        self._events = {
+            'start': self._start,
+            'stop': self._stop,
+            'pause': self._pause,
+            'resume': self._resume,
         }
 
     ## REPR AND STR ############################################################
@@ -47,11 +66,6 @@ class LinkClock(BaseClock):
     @property
     def bar(self) -> int:
         return self.beat / self._beats_per_bar
-
-    @property
-    def time_grain(self) -> int:
-        """Return the smallest unity of time used by the clock """
-        return self._time_grain
 
     @property
     def phase(self) -> int:
@@ -134,23 +148,23 @@ class LinkClock(BaseClock):
         """
         return False if self._resumed.is_set() else True
 
-    def start(self):
+    def _start(self):
         """This method is used to enter the clock run() main loop."""
         self._link.enabled = True
         self._alive.set()
         asyncio.create_task(self.run())
 
-    def pause(self):
+    def _pause(self):
         """Pausing the internal clock. Use resume() to continue."""
         if self._resumed.is_set():
             self._resumed.clear()
 
-    def resume(self):
+    def _resume(self):
         """Resuming the internal clock. Use pause() for the opposite."""
         if not self._resumed.is_set():
             self._resumed.set()
 
-    def stop(self):
+    def _stop(self):
         """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()
 
@@ -163,8 +177,6 @@ class LinkClock(BaseClock):
                 begin = perf_counter()
                 await asyncio.sleep(0.0)
                 self._linktime = self._capture_link_info()
-                self._time._elapsed_time += self._time_grain
-                self._env.dispatch('tick')
                 self._drift = perf_counter() - begin
             else:
                 return

@@ -61,11 +61,15 @@ if (
     else:
         print(f"[red]No user provided configuration file found...")
 
-
     # Real initialisation takes place here ############################
     bowl = FishBowl(time=Time())
-    time = bowl.time # passage of time
-    bowl.clock.tempo, bowl.clock._beats_per_bar = config.bpm, config.beats
+    bowl.add_handler(Clock(
+        env=bowl, 
+        time=0.0, 
+        time_shift=0.0, 
+        tempo=config.bpm, 
+        bpb=config.beats
+    ))
 
     # Adding a parser
     bowl.swap_parser(ListParser)

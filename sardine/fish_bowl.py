@@ -28,7 +28,6 @@ class FishBowl:
         time: "Time",
     ):
         self.time = time
-        self.clock = Clock(env=self, tempo=120, bpb=4)
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: "set[BaseHandler]" = set()
@@ -39,20 +38,6 @@ class FishBowl:
         self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
     # Hot-swap methods (may be removed in favour of manual replacement)
-
-    def swap_clock(self, clock: "BaseClock", **kwargs):
-        """Hot-swap current clock for a different clock.
-
-        Args:
-            clock (BaseClock): Target clock
-            **kwargs: argument for the new clock
-        """
-        self.clock.stop()
-        self.clock = Clock(
-            env=self,
-            tempo=self.clock.tempo,
-            bpb= self.clock._beats_per_bar)
-        self.clock.start()
 
     def swap_parser(self, parser: "BaseParser"):
         """Hot-swap current parser for a different parser.

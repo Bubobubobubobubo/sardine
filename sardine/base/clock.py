@@ -1,7 +1,6 @@
 from abc import (
     ABC, 
-    abstractmethod, 
-    abstractproperty)
+    abstractmethod)
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -12,6 +11,11 @@ __all__ = ("BaseClock",)
 
 # TODO: document BaseClock and its methods
 class BaseClock(ABC):
+
+    """
+    Template for all clocks
+    """
+
     env: 'FishBowl'
 
     @abstractmethod
@@ -22,7 +26,8 @@ class BaseClock(ABC):
     def run(self):
         """Starts the clock, updating the environment's clock state."""
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def time_shift(self):
         pass
 
@@ -73,8 +78,4 @@ class BaseClock(ABC):
 
     @abstractmethod
     def is_paused(self):
-        pass
-
-    @abstractmethod
-    def sleep(self, duration: float):
         pass

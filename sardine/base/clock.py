@@ -10,11 +10,10 @@ if TYPE_CHECKING:
 __all__ = ("BaseClock",)
 
 
-# TODO: document BaseClock and its methods
 class BaseClock(BaseHandler, ABC):
     """The base for all clocks to inherit from.
 
-    This interface expects clocks to manage its own source of time,
+    This interface expects clocks to manage its own source of time
     and provide the `phase`, `beat`, and `tempo` properties.
 
     Attributes:
@@ -41,24 +40,25 @@ class BaseClock(BaseHandler, ABC):
     async def run(self):
         """The main run loop of the clock.
 
-        This should setup any external time source and then continuously
-        provide values for `internal_time` and `internal_origin`.
+        This should setup any external time source, assign the current
+        time to `internal_origin`, and then continuously
+        update the `internal_time`.
         """
 
     @property
     @abstractmethod
     def phase(self):
-        pass
+        """The phase of the clock's current time."""
 
     @property
     @abstractmethod
     def beat(self):
-        pass
+        """The beat of the clock's current time."""
 
     @property
     @abstractmethod
     def tempo(self):
-        pass
+        """The clock's current tempo."""
 
     # Properties
 

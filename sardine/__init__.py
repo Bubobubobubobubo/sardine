@@ -24,7 +24,7 @@ from .handlers import (
     DummyHandler,
     SuperColliderHandler,
     SuperDirtHandler,
-    MidiHandler, 
+    MidiHandler,
     OSCHandler)
 from .utils.Messages import (sardine_intro, config_line_printer)
 
@@ -63,12 +63,12 @@ if (
         print(f"[red]No user provided configuration file found...")
 
     # Real initialisation takes place here ############################
-    bowl = FishBowl(time=Time())
+    bowl = FishBowl()
     bowl.add_handler(Clock(
-        env=bowl, 
-        time=0.0, 
-        time_shift=0.0, 
-        tempo=config.bpm, 
+        env=bowl,
+        time=0.0,
+        time_shift=0.0,
+        tempo=config.bpm,
         bpb=config.beats
     ))
     time = bowl.time

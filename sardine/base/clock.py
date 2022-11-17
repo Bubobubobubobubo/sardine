@@ -23,24 +23,19 @@ class BaseClock(BaseHandler, ABC):
             At the start of the `run()` method, this should be set as early
             as possible in order for the `time` property to compute the
             elapsed time.
+        internal_time:
+            The clock's internal time if available.
+            This attribute should be continuously updated when the
+            clock starts so the `time` property is able to move forward.
     """
 
     def __init__(self):
         super().__init__()
         self._run_task: Optional[asyncio.Task] = None
         self.internal_origin: Optional[float] = None
+        self.internal_time: Optional[float] = None
 
     # Abstract methods
-
-    @property
-    @abstractmethod
-    def internal_time(self) -> Optional[float]:
-        """Returns the clock's internal time if available.
-
-        At the start of the `run()` method, this should be set as early
-        as possible in order for the `time` property to compute the
-        elapsed time.
-        """
 
     @abstractmethod
     async def run(self):

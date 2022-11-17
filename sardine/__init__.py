@@ -89,3 +89,7 @@ if (
             M('60').out()
             S('bd').out()
             O('/hello/', value=1, other=2, otherother=3).out()
+
+        Pa >> play('bd')
+        Pb >> play_midi('60,67')
+        Pc >> play_osc('/hello/surf/', value=1, other=2, otherother=3)

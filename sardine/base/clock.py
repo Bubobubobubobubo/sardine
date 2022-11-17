@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import asyncio
 from typing import TYPE_CHECKING, Optional
 
 from .handler import BaseHandler
@@ -15,9 +16,19 @@ class BaseClock(BaseHandler, ABC):
 
     This interface expects clocks to manage its own source of time,
     and provide the `phase`, `beat`, and `tempo` properties.
+
+    Attributes:
+        internal_origin:
+            The clock's internal time origin if available.
+            At the start of the `run()` method, this should be set as early
+            as possible in order for the `time` property to compute the
+            elapsed time.
     """
 
-    env: "FishBowl"
+    def __init__(self):
+        super().__init__()
+        self._run_task: Optional[asyncio.Task] = None
+        self.internal_origin: Optional[float] = None
 
     # Abstract methods
 
@@ -31,19 +42,13 @@ class BaseClock(BaseHandler, ABC):
         elapsed time.
         """
 
-    @property
     @abstractmethod
-    def internal_origin(self) -> Optional[float]:
-        """Returns the clock's internal time origin if available.
+    async def run(self):
+        """The main run loop of the clock.
 
-        At the start of the `run()` method, this should be set as early
-        as possible in order for the `time` property to compute the
-        elapsed time.
+        This should setup any external time source and then continuously
+        provide values for `internal_time` and `internal_origin`.
         """
-
-    @abstractmethod
-    def run(self):
-        """Starts the clock, updating the environment's clock state."""
 
     @property
     @abstractmethod
@@ -66,24 +71,51 @@ class BaseClock(BaseHandler, ABC):
     def time(self) -> float:
         """Returns the current time of the fish bowl.
 
-        This uses the `internal_time` and `internal_origin` properties
+        This uses the `internal_time` and `internal_origin` attributes
         along with the fish bowl's `Time.origin` to calculate a monotonic
         time for the entire system.
 
         This number will also add any `Time.shift` that has been applied.
+
+        If the fish bowl has been paused or stopped, `Time.origin` will be set
+        to the latest value provided by `internal_time`, and this property
+        will return `Time.origin` until the fish bowl resumes or starts again.
+
+        If either the `internal_time` or `internal_origin` attributes
+        are not available (i.e. they are set to `None`), this will default
+        to the `Time.origin`. This should ideally be minimized so the clock
+        can run as soon as possible.
         """
-        time, origin = self.internal_time, self.internal_origin
-        if time is None or origin is None:
+        if self.env.is_paused() or not self.env.is_running():
             return self.env.time.origin
-        return time - origin + self.env.time.origin + self.env.time.shift
+
+        i_time, i_origin = self.internal_time, self.internal_origin
+        if i_time is None or i_origin is None:
+            return self.env.time.origin
+
+        return i_time - i_origin + self.env.time.origin + self.env.time.shift
+
+    def is_running(self) -> bool:
+        """Indicates if an asyncio task is currently executing `run()`."""
+        return self._run_task is not None and not self._run_task.done()
 
     # Handler hooks
 
     def setup(self):
-        pass  # TODO BaseClock setup()
+        for event in ("start", "pause", "resume", "stop"):
+            self.register(event)
 
     def teardown(self):
-        pass  # TODO BaseClock teardown()
+        if self.is_running():
+            self._run_task.cancel()
 
     def hook(self, event: str, *args):
-        pass  # TODO BaseClock hook()
+        if event == "start" and not self.is_running():
+            self._run_task = asyncio.create_task(self.run())
+        elif event == "pause":
+            self.env.time.origin = self.time
+        elif event == "resume":
+            self.internal_origin = self.time
+        elif event == "stop":
+            self.env.time.origin = self.time
+            self.teardown()

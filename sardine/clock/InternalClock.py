@@ -1,11 +1,10 @@
 from ..base.clock import BaseClock
-from typing import TYPE_CHECKING
-from time import perf_counter
+from typing import TYPE_CHECKING, Union
+from time import perf_counter, monotonic_ns
 import asyncio
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
-    from .Time import Time
 
 class Clock(BaseClock):
 
@@ -20,9 +19,10 @@ class Clock(BaseClock):
     - stop(): stop the internal clock loop.
     - pause(): pause.
     - resume(): unpause.
+    - sleep(): ???.
 
-    You can set the tempo and the number of beats per bar by tweaking the respective
-    attributes:
+    You can set the tempo and the number of beats per bar by tweaking 
+    the respective attributes:
 
     clock.bpm / clock.tempo = 124
     clock.beats_per_bar = 8
@@ -43,31 +43,16 @@ class Clock(BaseClock):
         self._resumed.set()
         self._env = env
         self._time = env.time
-        self._time_grain = 0.01
         self._tempo = tempo
         self._beats_per_bar = bpb
-        self._drift = 0.0
 
     ## REPR AND STR ############################################################
 
     def __repr__(self) -> str:
         el = self._time._elapsed_time
-        return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}] (Drift: {self.drift})"
+        return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}]"
 
     #### GETTERS  ############################################################
-
-    @property
-    def time_grain(self):
-        return self._time_grain
-
-    @property
-    def drift(self) -> float:
-        """Drift compensation for the waiting mechanism
-
-        Returns:
-            float: drift amount on last cycle
-        """
-        return self._drift
 
     @property
     def beat(self) -> int:
@@ -158,6 +143,13 @@ class Clock(BaseClock):
 
     ## METHODS  ##############################################################
 
+    def time(self) -> int:
+        """
+        Get current time in monotonic nanoseconds (best possible resolution)
+        without approximation due to float conversion.
+        """
+        return monotonic_ns()
+
     def is_running(self) -> bool:
         """Return a boolean indicating if the clock is currently running.
 
@@ -193,16 +185,18 @@ class Clock(BaseClock):
         """Stop the internal clock. End the internal run() main loop."""
         self._alive.clear()
 
+    async def sleep(self, duration: Union[int, float]):
+        """Sleep for a given time duration"""
+        await asyncio.sleep(duration)
+
+    async def time_shift(self):
+        pass
+
     async def run(self):
         """Main loop for the internal clock"""
-        self._drift = 0.0
         while True:
             await self._resumed.wait()
             if self._alive.is_set():
-                begin = perf_counter()
-                await asyncio.sleep(self._time_grain - self._drift)
-                self._time._elapsed_time += self._time_grain
-                self._env.dispatch('tick')
-                self._drift = perf_counter() - begin
+                await asyncio.sleep(0.0)
             else:
                 return

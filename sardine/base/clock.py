@@ -1,4 +1,7 @@
-from abc import ABC, abstractmethod
+from abc import (
+    ABC, 
+    abstractmethod, 
+    abstractproperty)
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -12,17 +15,20 @@ class BaseClock(ABC):
     env: 'FishBowl'
 
     @abstractmethod
+    def time(self):
+        """Get current time"""
+
+    @abstractmethod
     def run(self):
         """Starts the clock, updating the environment's clock state."""
 
-    @property
-    @abstractmethod
-    def drift(self):
+    @abstractproperty
+    def time_shift(self):
         pass
 
-    @property
+    @time_shift.setter
     @abstractmethod
-    def time_grain(self):
+    def time_shift(self, value):
         pass
 
     @property
@@ -67,4 +73,8 @@ class BaseClock(ABC):
 
     @abstractmethod
     def is_paused(self):
+        pass
+
+    @abstractmethod
+    def sleep(self, duration: float):
         pass

@@ -174,7 +174,7 @@ PA >> play('bd, ., hhh, .')
 PA.rate = 1
 
 PB >> play('cp')
-PB >> dur = 0.5
+PB.dur = 0.5
 
 PB >> None # stops only the PB Player
 

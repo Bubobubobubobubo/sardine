@@ -120,10 +120,10 @@ class Clock(BaseClock):
             bpm (float): new tempo value
 
         Raises:
-            ValueError: if tempo < 20 or tempo > 999 (non-musical values)
+            ValueError: if tempo < 1 or tempo > 999 (non-musical values)
         """
-        if not 20 < bpm < 999:
-            raise ValueError("bpm must be within 1 and 800")
+        if not 1 <= bpm <= 999:
+            raise ValueError("bpm must be within 1 and 999")
         self._tempo = bpm
 
     @tempo.setter
@@ -134,10 +134,10 @@ class Clock(BaseClock):
             tempo (float): new tempo value
 
         Raises:
-            ValueError: if tempo < 20 or tempo > 999 (non-musical values)
+            ValueError: if tempo < 1 or tempo > 999 (non-musical values)
         """
-        if not 20 < tempo < 999:
-            raise ValueError("bpm must be within 1 and 800")
+        if not 1 <= tempo <= 999:
+            raise ValueError("bpm must be within 1 and 999")
         self._tempo = tempo
 
     ## METHODS  ##############################################################

@@ -50,12 +50,28 @@ class FishBowl:
         # Send a start() signal so that time can start now
 
 
+    ## TRANSPORT ###################################################################### 
+
+    def pause(self):
+        pass
+
+    def resume(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+
     ## SLEEPING MANAGEMENT ############################################################ 
+
     async def sleep(self, duration: Union[int, float]):
         """Sleep method for the SleepHandler"""
         # ???
 
-    # Hot-swap methods (may be removed in favour of manual replacement)
+    # Hot-swap methods ############################################################
 
     def swap_parser(self, parser: "BaseParser"):
         """Hot-swap current parser for a different parser.
@@ -65,7 +81,15 @@ class FishBowl:
         """
         self.parser = parser(env=self)
 
-    # Handler management
+    def swap_clock(self, clock: 'BaseClock'):
+        """Hot-swap current clock for a different clock"""
+        # 1) pause the fish bowl
+        # 2) remove the old clock's handler
+        # 3) replace with the current clock and add as handler
+        # 4) resume fish bowl
+        # 5) Trigger a clock_swap event with one argument, the new BaseClock object
+
+    ## HANDLERS ############################################################
 
     def add_handler(self, handler: "BaseHandler"):
         """Adds a new handler to the fish bowl.

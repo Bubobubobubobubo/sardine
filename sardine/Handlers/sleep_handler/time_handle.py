@@ -40,8 +40,11 @@ class TimeHandle:
     def __await__(self):
         return self.fut.__await__()
 
-    def cancel(self):
+    def cancel(self) -> bool:
         return self.fut.cancel()
 
-    def cancelled(self):
+    def cancelled(self) -> bool:
         return self.fut.cancelled()
+
+    def done(self) -> bool:
+        return self.fut.done()

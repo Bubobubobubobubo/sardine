@@ -18,12 +18,12 @@ class BaseClock(BaseHandler, ABC):
 
     Attributes:
         internal_origin:
-            The clock's internal time origin if available.
+            The clock's internal time origin if available, measured in seconds.
             At the start of the `run()` method, this should be set as early
             as possible in order for the `time` property to compute the
             elapsed time.
         internal_time:
-            The clock's internal time if available.
+            The clock's internal time if available, measured in seconds.
             This attribute should be continuously updated when the
             clock starts so the `time` property is able to move forward.
     """
@@ -47,17 +47,17 @@ class BaseClock(BaseHandler, ABC):
 
     @property
     @abstractmethod
-    def phase(self):
-        """The phase of the clock's current time."""
+    def phase(self) -> int:
+        """The phase of the clock's current beat."""
 
     @property
     @abstractmethod
-    def beat(self):
+    def beat(self) -> int:
         """The beat of the clock's current time."""
 
     @property
     @abstractmethod
-    def tempo(self):
+    def tempo(self) -> int:
         """The clock's current tempo."""
 
     # Properties

@@ -11,20 +11,16 @@ NUMBER = Union[int, float]
 class Clock(BaseHandler):
 
     def __init__(
-        self, env: 'FishBowl',
-        time: NUMBER,
-        time_shift: NUMBER,
+        self,
         tempo: NUMBER = 120,
         bpb: int = 4
     ):
+        super().__init__()
         self._type = "InternalClock"
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
-        self._env = env
 
         # Time related attributes
-        self.time = time
-        self.time_shift = time_shift
         self._tempo = tempo
         self._beats_per_bar = bpb
         self.origin = monotonic_ns()
@@ -190,7 +186,7 @@ class Clock(BaseHandler):
     async def run(self):
         """
         Main loop for the internal clock. This method is just implemented in
-        compliance with the base clock. Strictly speaking, this method is 
+        compliance with the base clock. Strictly speaking, this method is
         doing nothing.
         """
         while True:

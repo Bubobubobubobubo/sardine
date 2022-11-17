@@ -23,16 +23,13 @@ class LinkClock(BaseClock):
     ):
         super().__init__()
 
-        # Time related attributes
-        self._tempo = tempo
-        self._beats_per_bar = bpb
-
-        # Link related attributes
         self._link: Optional[link.Link] = None
-        self._tempo: int = 0
         self._beat: int = 0
-        self._phase: int = 0
+        self._beat_duration: float = 0.0
+        self._beats_per_bar: int = bpb
+        self._phase: float = 0.0
         self._playing: bool = False
+        self._tempo: float = float(tempo)
 
         # Thread control
         self._run_thread: Optional[threading.Thread] = None
@@ -49,15 +46,19 @@ class LinkClock(BaseClock):
         return self._beat
 
     @property
+    def beat_duration(self) -> float:
+        return self._beat_duration
+
+    @property
     def beats_per_bar(self) -> int:
         return self._beats_per_bar
 
     @property
-    def phase(self) -> int:
+    def phase(self) -> float:
         return self._phase
 
     @property
-    def tempo(self) -> int:
+    def tempo(self) -> float:
         return self._tempo
 
     ## SETTERS  ##############################################################
@@ -68,25 +69,27 @@ class LinkClock(BaseClock):
 
     @tempo.setter
     def tempo(self, new_tempo: float) -> None:
-        session = self._link.captureSessionState()
-        session.setTempo(new_tempo, self._beats_per_bar)
-        self._link.commitSessionState(session)
+        if self._link is not None:
+            session = self._link.captureSessionState()
+            session.setTempo(new_tempo, self.beats_per_bar)
+            self._link.commitSessionState(session)
 
     ## METHODS  ##############################################################
 
     def _capture_link_info(self):
         s: link.SessionState = self._link.captureSessionState()
         link_time: int = self._link.clock().micros()
-        beat: float    = s.beatAtTime(link_time, self._beats_per_bar)
-        phase: float   = s.phaseAtTime(link_time, self._beats_per_bar)
+        beat: float    = s.beatAtTime(link_time, self.beats_per_bar)
+        phase: float   = s.phaseAtTime(link_time, self.beats_per_bar)
         playing: bool  = s.isPlaying()
         tempo: float   = s.tempo()
 
         self.internal_time = link_time / 1_000_000
         self._beat = int(beat)
-        self._phase = int(phase)
+        self._beat_duration = 60 / tempo
+        self._phase = phase / self.beats_per_bar
         self._playing = playing
-        self._tempo = int(tempo)
+        self._tempo = tempo
 
     def _run(self):
         try:

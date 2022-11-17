@@ -65,17 +65,25 @@ class BaseClock(BaseHandler, ABC):
 
     @property
     @abstractmethod
+    def beat_duration(self) -> float:
+        """The length of a single beat in seconds.
+
+        Typically this is represented as the function `60 / tempo`.
+        """
+
+    @property
+    @abstractmethod
     def beats_per_bar(self) -> int:
         """The number of beats in each bar."""
 
     @property
     @abstractmethod
-    def phase(self) -> int:
+    def phase(self) -> float:
         """The phase of the clock's current beat."""
 
     @property
     @abstractmethod
-    def tempo(self) -> int:
+    def tempo(self) -> float:
         """The clock's current tempo."""
 
     # Properties

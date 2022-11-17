@@ -19,9 +19,8 @@ class InternalClock(BaseClock):
         super().__init__()
 
         # Time related attributes
-        self.beat_duration: float = 0.0
         self.tempo = tempo
-        self._beats_per_bar = bpb
+        self.beats_per_bar = bpb
 
     #### GETTERS  ############################################################
 
@@ -35,7 +34,11 @@ class InternalClock(BaseClock):
 
     @property
     def beat(self) -> int:
-        return self.time // self.beat_duration
+        return int(self.time // self.beat_duration)
+
+    @property
+    def beat_duration(self) -> float:
+        return self._beat_duration
 
     @property
     def beats_per_bar(self) -> int:
@@ -46,7 +49,7 @@ class InternalClock(BaseClock):
         return self.time % self.beat_duration
 
     @property
-    def tempo(self) -> int:
+    def tempo(self) -> float:
         return self._tempo
 
     #### SETTERS ############################################################
@@ -56,12 +59,14 @@ class InternalClock(BaseClock):
         self._beats_per_bar = bpb
 
     @tempo.setter
-    def tempo(self, new_tempo: int):
+    def tempo(self, new_tempo: NUMBER):
+        new_tempo = float(new_tempo)
+
         if not 1 <= new_tempo <= 999:
             raise ValueError("new tempo must be within 1 and 999")
 
         self._tempo = new_tempo
-        self.beat_duration = 60 / new_tempo
+        self._beat_duration = 60 / new_tempo
 
     ## METHODS  ##############################################################
 

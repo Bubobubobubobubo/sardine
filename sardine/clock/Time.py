@@ -1,6 +1,8 @@
 import contextlib
 import contextvars
 
+from ..base import BaseHandler
+
 __all__ = ("Time",)
 
 shift = contextvars.ContextVar("shift", default=0.0)
@@ -12,7 +14,7 @@ undefined if time is shifted in the global context.
 """
 
 
-class Time:
+class Time(BaseHandler):
     """Contains the origin of a FishBowl's time.
 
     Any new clocks must continue from this origin when they are running,
@@ -20,10 +22,9 @@ class Time:
     """
     def __init__(
         self,
-        env: "FishBowl",
         origin: float = 0.0,
     ):
-        self.env = env
+        super().__init__()
         self._origin = origin
 
     def __repr__(self) -> str:
@@ -80,3 +81,8 @@ class Time:
     def reset(self):
         """Resets the time origin back to 0."""
         self._origin = 0.0
+
+    def hook(self, event: str, *args):
+        # This won't be registered for any events yet,
+        # but the base class requires this method to be defined
+        pass

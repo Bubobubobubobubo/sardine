@@ -42,15 +42,14 @@ class Clock(BaseClock):
         self._resumed = asyncio.Event()
         self._resumed.set()
         self._env = env
-        self._time = env.time
         self._tempo = tempo
         self._beats_per_bar = bpb
+        self._origin = monotonic_ns()
 
     ## REPR AND STR ############################################################
 
     def __repr__(self) -> str:
-        el = self._time._elapsed_time
-        return f"({self._type} {el:1f}) -> [{self.tempo}|{self.bar:1f}: {int(self.phase)}/{self._beats_per_bar}]"
+        return f"({self._type}, Tempo: {self._tempo}) -> Beat: {self.beat:1f}, Bar: {self.bar:1f}, Phase: {self.phase:1f}"
 
     #### GETTERS  ############################################################
 
@@ -61,7 +60,7 @@ class Clock(BaseClock):
         Returns:
             int: Beat
         """
-        return self._time._elapsed_time / self.beat_duration
+        return self.time() / self.beat_duration
 
     @property
     def current_beat(self) -> int:
@@ -82,7 +81,7 @@ class Clock(BaseClock):
         Returns:
             float: phase
         """
-        return self._time._elapsed_time % self._beats_per_bar
+        return self.time() % self._beats_per_bar
 
     @property
     def bpm(self) -> float:
@@ -148,7 +147,7 @@ class Clock(BaseClock):
         Get current time in monotonic nanoseconds (best possible resolution)
         without approximation due to float conversion.
         """
-        return monotonic_ns()
+        return (monotonic_ns() - self._origin) / 1_000_000_000
 
     def is_running(self) -> bool:
         """Return a boolean indicating if the clock is currently running.
@@ -193,7 +192,11 @@ class Clock(BaseClock):
         pass
 
     async def run(self):
-        """Main loop for the internal clock"""
+        """
+        Main loop for the internal clock. This method is just implemented in
+        compliance with the base clock. Strictly speaking, this method is 
+        doing nothing.
+        """
         while True:
             await self._resumed.wait()
             if self._alive.is_set():

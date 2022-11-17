@@ -8,6 +8,7 @@ from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
+from .handlers.SleepHandler import SleepHandler
 
 if TYPE_CHECKING:
     from .base.handler import BaseHandler
@@ -36,6 +37,11 @@ class FishBowl:
         self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
         self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
+
+        # Add the base SleepHandler
+        self.handlers.append(SleepHandler())
+        
+        # Send a start() signal so that time can start now
 
     # Hot-swap methods (may be removed in favour of manual replacement)
 

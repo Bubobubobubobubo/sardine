@@ -1,4 +1,5 @@
 import collections
+from asyncio import Event
 from typing import (
     TYPE_CHECKING,
     Hashable, 
@@ -35,6 +36,8 @@ class FishBowl:
         time: "Time",
     ):
         self.time = time
+        self._alive = Event()
+        self._resumed = Event()
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: "set[BaseHandler]" = set()
@@ -53,16 +56,20 @@ class FishBowl:
     ## TRANSPORT ###################################################################### 
 
     def pause(self):
-        pass
+        if self._resumed.is_set():
+            self._resumed.clear()
 
     def resume(self):
-        pass
+        if not self._resumed.is_set():
+            self._resumed.set()
 
     def start(self):
-        pass
+        if not self._alive.is_set():
+            self._alive.set()
 
     def stop(self):
-        pass
+        if self._alive.set():
+            self._alive.clear()
 
 
     ## SLEEPING MANAGEMENT ############################################################ 

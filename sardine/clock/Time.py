@@ -1,5 +1,9 @@
 import contextlib
 import contextvars
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..fish_bowl import FishBowl
 
 shift = contextvars.ContextVar("shift", default=0.0)
 """
@@ -18,9 +22,11 @@ class Time:
     """
     def __init__(
         self,
+        env: "FishBowl",
         origin: float = 0.0,
     ):
-        self.origin = origin
+        self.env = env
+        self._origin = origin
 
     def __repr__(self) -> str:
         return "{}({})".format(
@@ -31,9 +37,22 @@ class Time:
             ),
         )
 
-    def reset(self):
-        """Resets the time origin back to 0."""
-        self.origin = 0.0
+    @property
+    def origin(self) -> float:
+        """The origin of the fish bowl's time.
+
+        When this property is updated, an `origin_update` event
+        will be dispatched with two arguments, the old and the new
+        origin.
+        """
+        return self._origin
+
+    @origin.setter
+    def origin(self, new_origin: float):
+        old_origin = self._origin
+        self._origin = new_origin
+
+        self.env.dispatch("origin_update", old_origin, new_origin)
 
     @property
     def shift(self) -> float:
@@ -59,3 +78,7 @@ class Time:
             yield
         finally:
             shift.reset(token)
+
+    def reset(self):
+        """Resets the time origin back to 0."""
+        self._origin = 0.0

@@ -2,9 +2,9 @@ import collections
 from asyncio import Event
 from typing import (
     TYPE_CHECKING,
-    Hashable, 
-    Iterable, 
-    Optional, 
+    Hashable,
+    Iterable,
+    Optional,
     Protocol,
     Union)
 
@@ -15,6 +15,7 @@ from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .clock.InternalClock import Clock
 from .clock.LinkClock import LinkClock
+from .clock.Time import Time
 from .handlers.SleepHandler import SleepHandler
 
 if TYPE_CHECKING:
@@ -31,17 +32,14 @@ class HookProtocol(Hashable, Protocol):
 
 class FishBowl:
     """Contains all the components necessary to run the Sardine system."""
-    def __init__(
-        self,
-        time: "Time",
-    ):
-        self.time = time
+    def __init__(self):
+        self.time = Time(self)
         self._alive = Event()
         self._resumed = Event()
         self.iterators = Iterator()
         self.variables = Variables()
         self.handlers: "set[BaseHandler]" = set()
-        self.parser = None 
+        self.parser = None
 
         self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
@@ -49,11 +47,11 @@ class FishBowl:
 
         # Add the base SleepHandler
         self.handlers.add(SleepHandler())
-        
+
         # Send a start() signal so that time can start now
 
 
-    ## TRANSPORT ###################################################################### 
+    ## TRANSPORT ######################################################################
 
     def pause(self):
         if self._resumed.is_set():
@@ -71,7 +69,7 @@ class FishBowl:
         if self._alive.set():
             self._alive.clear()
 
-    ## SLEEPING MANAGEMENT ############################################################ 
+    ## SLEEPING MANAGEMENT ############################################################
 
     async def sleep(self, duration: Union[int, float]):
         """Sleep method for the SleepHandler"""

@@ -50,30 +50,57 @@ class FishBowl:
     ## TRANSPORT ######################################################################
 
     def pause(self):
+        """Pauses the fish bowl.
+
+        This will emit a `pause` event unless the fish bowl does
+        not need to be paused, e.g. being paused once already or not
+        having started.
+        """
         if self.is_running() and not self.is_paused():
             self._resumed.clear()
             self.dispatch("pause")
 
     def resume(self):
+        """Resumes the fish bowl.
+
+        This will emit a `resume` event unless the fish bowl does
+        not need to be resumed, e.g. if the clock is not running
+        or has not been paused.
+        """
         if self.is_running() and self.is_paused():
             self._resumed.set()
             self.dispatch("resume")
 
     def start(self):
+        """Starts the fish bowl.
+
+        This will emit a `start` event unless the fish bowl does
+        not need to be started, e.g. if the fish bowl has already started.
+
+        If the fish bowl is started, paused, stopped, and started again,
+        handlers should treat it as if the fish bowl is no longer paused.
+        """
         if not self.is_running():
             self._alive.set()
             self._resumed.set()
             self.dispatch("start")
 
     def stop(self):
+        """Stops the fish bowl.
+
+        This will emit a `stop` event unless the fish bowl does
+        not need to be stopped, e.g. if the clock is not running.
+        """
         if self.is_running():
             self._alive.clear()
             self.dispatch("stop")
 
     def is_paused(self):
+        """Checks if the fish bowl is paused."""
         return not self._resumed.is_set()
 
     def is_running(self):
+        """Checks if the fish bowl is running."""
         return self._alive.is_set()
 
     ## SLEEPING MANAGEMENT ############################################################

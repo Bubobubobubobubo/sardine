@@ -48,7 +48,7 @@ class FishBowl:
         self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
         # Add the base SleepHandler
-        self.handlers.append(SleepHandler())
+        self.handlers.add(SleepHandler())
         
         # Send a start() signal so that time can start now
 
@@ -70,7 +70,6 @@ class FishBowl:
     def stop(self):
         if self._alive.set():
             self._alive.clear()
-
 
     ## SLEEPING MANAGEMENT ############################################################ 
 
@@ -95,6 +94,7 @@ class FishBowl:
         # 3) replace with the current clock and add as handler
         # 4) resume fish bowl
         # 5) Trigger a clock_swap event with one argument, the new BaseClock object
+        pass
 
     ## HANDLERS ############################################################
 

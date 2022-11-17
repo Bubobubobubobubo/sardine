@@ -7,6 +7,8 @@ from ..base import BaseClock
 
 NUMBER = Union[int, float]
 
+__all__ = ("Clock",)
+
 
 class Clock(BaseClock):
     def __init__(

@@ -1,9 +1,7 @@
 import contextlib
 import contextvars
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
+__all__ = ("Time",)
 
 shift = contextvars.ContextVar("shift", default=0.0)
 """

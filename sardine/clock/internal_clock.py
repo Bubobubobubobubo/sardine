@@ -7,10 +7,10 @@ from ..base import BaseClock
 
 NUMBER = Union[int, float]
 
-__all__ = ("Clock",)
+__all__ = ("InternalClock",)
 
 
-class Clock(BaseClock):
+class InternalClock(BaseClock):
     def __init__(
         self,
         tempo: NUMBER = 120,

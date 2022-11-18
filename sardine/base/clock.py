@@ -216,7 +216,7 @@ class BaseClock(BaseHandler, ABC):
             # the clock has started
             self.internal_origin = self.internal_time
         elif event == "pause":
-            self.env.time.origin = self.time
+            self.env.time.origin = self.true_time
         elif event == "stop":
-            self.env.time.origin = self.time
+            self.env.time.origin = self.true_time
             self.teardown()

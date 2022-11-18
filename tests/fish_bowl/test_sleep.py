@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from sardine import FishBowl, InternalClock
+from sardine import FishBowl, MissileMode, InternalClock
 
 from . import Pauser, fish_bowl
 
@@ -16,6 +16,9 @@ async def test_sleep_internal_clock(fish_bowl: FishBowl):
 
     assert isinstance(fish_bowl.clock, InternalClock)
     assert fish_bowl.clock.can_sleep()
+
+    # fish_bowl.add_handler(MissileMode(burn_rate=0.014))
+
     pauser = Pauser(time.perf_counter, fish_bowl.sleep)
 
     fish_bowl.start()

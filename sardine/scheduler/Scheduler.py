@@ -17,6 +17,7 @@ class Scheduler(BaseHandler):
         super().__init__()
         self.runners: dict[str, AsyncRunner] = {}
         self.deferred = deferred_scheduling
+        self._events = {}
 
     # TODO: Scheduler.__repr__
 
@@ -82,3 +83,11 @@ class Scheduler(BaseHandler):
         for runner in self.runners.values():
             runner.stop()
         self.runners.clear()
+
+    def setup(self):
+        for event in self._events:
+            self.register(event)
+
+    def hook(self, event: str, *args):
+        func = self._events[event]
+        func(*args)

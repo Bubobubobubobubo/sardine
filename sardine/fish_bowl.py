@@ -4,6 +4,7 @@ from typing import Hashable, Iterable, Optional, Protocol, Union
 
 from exceptiongroup import BaseExceptionGroup
 
+from .scheduler import Scheduler
 from .base import BaseClock, BaseHandler, BaseParser
 from .clock import Time, InternalClock
 from .handlers import SleepHandler
@@ -39,6 +40,7 @@ class FishBowl:
         self.sleeper = sleeper or SleepHandler()
         self.time = time or Time()
         self.variables = variables or Variables()
+        self.scheduler = Scheduler()
 
         self._handlers: set[BaseHandler] = set()
         self._alive = asyncio.Event()
@@ -55,6 +57,7 @@ class FishBowl:
         self.add_handler(self.clock)
         self.add_handler(self.sleeper)
         self.add_handler(self.time)
+        self.add_handler(self.scheduler)
 
     ## REPR/STR #######################################################################
 

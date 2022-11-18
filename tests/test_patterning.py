@@ -28,7 +28,12 @@ class TestPatternParsing(unittest.TestCase):
         Test the choice (|) operator
         """
         parser = PARSER
-        patterns = ["1|2|3|4", "[1,2,3,4]|[., .]", "baba|dada", "(baba:2)|(dada:4)"]
+        patterns = [
+            "1|2|3|4",
+            "[1,2,3,4]|[., .]",
+            "baba|dada",
+            "(baba:2)|(dada:4)",
+        ]
         expected = [
             [[1], [2], [3], [4]],
             [[1, 2, 3, 4], [None, None]],
@@ -167,7 +172,11 @@ class TestPatternParsing(unittest.TestCase):
             "100~200",
         ]
 
-        expected = [list(range(0, 2)), list(range(0, 11)), list(range(100, 201))]
+        expected = [
+            list(range(0, 2)),
+            list(range(0, 11)),
+            list(range(100, 201)),
+        ]
 
         for i, pattern in enumerate(patterns):
             with self.subTest(i=i, pattern=pattern):

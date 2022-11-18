@@ -27,7 +27,9 @@ async def test_transports(fish_bowl: FishBowl):
     fish_bowl.stop()
 
     event_names = [e.event for e in logger.events]
+    # fmt: off
     assert event_names == [
         "start", "pause", "stop",
         "start", "pause", "stop",
     ]
+    # fmt: on

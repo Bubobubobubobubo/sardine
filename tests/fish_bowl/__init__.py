@@ -9,6 +9,7 @@ __all__ = ("EventLogEntry", "EventLogHandler", "fish_bowl")
 
 class EventLogEntry(NamedTuple):
     """An event entry for the `EventLoggingHandler`."""
+
     timestamp: float
     clock_time: float
     event: str
@@ -17,6 +18,7 @@ class EventLogEntry(NamedTuple):
 
 class EventLogHandler(BaseHandler):
     """Logs events with timestamps, and optionally according to a whitelist."""
+
     def __init__(self, *, whitelist: Optional[Collection[str]] = None):
         super().__init__()
         self.whitelist = whitelist
@@ -24,7 +26,9 @@ class EventLogHandler(BaseHandler):
 
     # Analysis methods
 
-    def filter(self, events: Union[str, Collection[str]]) -> Iterator[EventLogEntry]:
+    def filter(
+        self, events: Union[str, Collection[str]]
+    ) -> Iterator[EventLogEntry]:
         if isinstance(events, str):
             events = (events,)
 
@@ -45,12 +49,14 @@ class EventLogHandler(BaseHandler):
             self.register(None)
 
     def hook(self, event: str, *args):
-        self.events.append(EventLogEntry(
-            timestamp=self.time(),
-            clock_time=self.env.clock.time,
-            event=event,
-            args=args,
-        ))
+        self.events.append(
+            EventLogEntry(
+                timestamp=self.time(),
+                clock_time=self.env.clock.time,
+                event=event,
+                args=args,
+            )
+        )
 
 
 @pytest_asyncio.fixture

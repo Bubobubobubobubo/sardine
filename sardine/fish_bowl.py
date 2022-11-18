@@ -16,11 +16,14 @@ __all__ = ("FishBowl",)
 
 class HookProtocol(Hashable, Protocol):
     """A callable object that accepts an event and any number of arguments."""
-    def __call__(self, event: str, *args): ...
+
+    def __call__(self, event: str, *args):
+        ...
 
 
 class FishBowl:
     """Contains all the components necessary to run the Sardine system."""
+
     def __init__(
         self,
         clock: BaseClock = None,
@@ -41,9 +44,13 @@ class FishBowl:
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
 
-        self._event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
+        self._event_hooks: dict[
+            Optional[str], set[HookProtocol]
+        ] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
-        self._hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
+        self._hook_events: dict[
+            HookProtocol, set[Optional[str]]
+        ] = collections.defaultdict(set)
 
         self.add_handler(self.clock)
         self.add_handler(self.sleeper)
@@ -131,7 +138,7 @@ class FishBowl:
         self.clock = clock
         self.add_handler(clock)
         self.resume()
-        self.dispatch('clock_swap', clock)
+        self.dispatch("clock_swap", clock)
 
     ## HANDLERS ############################################################
 
@@ -155,7 +162,9 @@ class FishBowl:
         if handler.env is not None:
             if handler.env is self:
                 return
-            raise ValueError(f'{handler!r} is already being used by {handler.env!r}')
+            raise ValueError(
+                f"{handler!r} is already being used by {handler.env!r}"
+            )
 
         # It may be possible that the user set `env` to None, but
         # given that `register_hook()` is idempotent, it's probably
@@ -258,10 +267,8 @@ class FishBowl:
 
         if exceptions:
             raise BaseExceptionGroup(
-                f'Errors raised while running hooks for {event}',
-                exceptions
+                f"Errors raised while running hooks for {event}", exceptions
             )
-
 
     def dispatch(self, event: str, *args):
         """Dispatches an event to it associated hooks with the given arguments.

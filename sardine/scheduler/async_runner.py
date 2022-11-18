@@ -40,7 +40,9 @@ def _assert_function_signature(sig: inspect.Signature, args, kwargs):
         raise TypeError(message)
 
 
-def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
+def _discard_kwargs(
+    sig: inspect.Signature, kwargs: dict[str, Any]
+) -> dict[str, Any]:
     """Discards any kwargs not present in the given signature."""
     MISSING = object()
     pass_through = kwargs.copy()
@@ -155,7 +157,9 @@ class AsyncRunner:
     _swimming: bool = field(default=False, repr=False)
     _stop: bool = field(default=False, repr=False)
     _task: Union[asyncio.Task, None] = field(default=None, repr=False)
-    _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
+    _reload_event: asyncio.Event = field(
+        default_factory=asyncio.Event, repr=False
+    )
 
     _can_correct_delay: bool = field(default=False, repr=False)
     _delta: int = field(default=0, repr=False)
@@ -365,7 +369,9 @@ class AsyncRunner:
                 name = state.func.__name__
 
                 if state is not last_state:
-                    pushed = len(self.states) > 1 and self.states[-2] is last_state
+                    pushed = (
+                        len(self.states) > 1 and self.states[-2] is last_state
+                    )
                     if name != "_global_runner":
                         if pushed:
                             print_panel(f"[yellow][Updating [red]{name}[/red]]")
@@ -378,7 +384,9 @@ class AsyncRunner:
                 signature = inspect.signature(state.func)
 
                 try:
-                    _assert_function_signature(signature, state.args, state.kwargs)
+                    _assert_function_signature(
+                        signature, state.args, state.kwargs
+                    )
 
                     # Remove any kwargs not present in the new function
                     # (prevents TypeError when user reduces the signature)

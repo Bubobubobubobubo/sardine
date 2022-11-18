@@ -8,8 +8,8 @@ class DummyHandler(BaseHandler):
         self._ip, self._port = (ip, port)
         self.env = None
         self._events = {
-            'bleep': self._bleep,
-            'bloop': self._bloop,
+            "bleep": self._bleep,
+            "bloop": self._bloop,
         }
 
     def __repr__(self) -> str:
@@ -24,7 +24,7 @@ class DummyHandler(BaseHandler):
         func(*args)
 
     def _bleep(self, *args) -> None:
-        print(f'bleep: {args}')
+        print(f"bleep: {args}")
 
     def _bloop(self, *args) -> None:
-        print(f'bloop: {args}')
+        print(f"bloop: {args}")

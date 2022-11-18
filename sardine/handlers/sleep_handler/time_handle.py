@@ -7,6 +7,7 @@ __all__ = ("TimeHandle",)
 @functools.total_ordering
 class TimeHandle:
     """A handle that can wait for a specified time on the fish bowl's clock."""
+
     __slots__ = ("when", "fut")
 
     def __init__(self, deadline: int):

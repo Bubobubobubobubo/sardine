@@ -7,7 +7,7 @@ from . import fish_bowl
 
 
 class DummyHandler(BaseHandler):
-    EVENTS = ('foo', 'bar', 'foo')
+    EVENTS = ("foo", "bar", "foo")
 
     def __init__(self):
         super().__init__()
@@ -38,7 +38,7 @@ def dummy_handler() -> DummyHandler:
 
 
 def test_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
-    temp_event = 'baz'
+    temp_event = "baz"
 
     # Ensure test hooks aren't in use
     for event in dummy_handler.EVENTS + (temp_event,):

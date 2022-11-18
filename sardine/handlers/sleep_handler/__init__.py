@@ -18,6 +18,7 @@ class SleepHandler(BaseHandler):
             The polling interval to use when the current clock does not
             support its own method of sleep.
     """
+
     def __init__(self, poll_interval: float = 0.001):
         super().__init__()
 
@@ -47,7 +48,9 @@ class SleepHandler(BaseHandler):
             clock = self.env.clock
 
             if clock.can_sleep():
-                sleep_task = asyncio.create_task(clock.sleep(deadline - clock.time))
+                sleep_task = asyncio.create_task(
+                    clock.sleep(deadline - clock.time)
+                )
             else:
                 sleep_task = asyncio.create_task(self._sleep_until(deadline))
 
@@ -55,7 +58,9 @@ class SleepHandler(BaseHandler):
             tasks = (sleep_task, intrp_task)
 
             try:
-                done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+                done, pending = await asyncio.wait(
+                    tasks, return_when=asyncio.FIRST_COMPLETED
+                )
             finally:
                 for t in tasks:
                     t.cancel()

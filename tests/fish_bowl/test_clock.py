@@ -58,7 +58,9 @@ async def test_internal_clock(fish_bowl: FishBowl):
 
     assert len(logger.events) == 5
 
-    print('clock:', [e.clock_time for e in logger.events])
-    print('slept:', pauser.stamps)
+    print("clock:", [e.clock_time for e in logger.events])
+    print("slept:", pauser.stamps)
     for event, expected_time in zip(logger.events, pauser.stamps):
-        assert math.isclose(event.clock_time, expected_time, abs_tol=MAXIMUM_DEVIATION)
+        assert math.isclose(
+            event.clock_time, expected_time, abs_tol=MAXIMUM_DEVIATION
+        )

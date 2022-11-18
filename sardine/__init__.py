@@ -21,17 +21,19 @@ from .base import *
 from .clock import *
 from .fish_bowl import *
 from .handlers import *
-from .io.UserConfig import (pretty_print_configuration_file,
-                            read_user_configuration)
+from .io.UserConfig import (
+    pretty_print_configuration_file,
+    read_user_configuration,
+)
 from .sequences.SardineParser.ListParser import ListParser
 from .utils.Messages import config_line_printer, sardine_intro
 
 config = read_user_configuration()
 
-#| INITIALISATION |#
+# | INITIALISATION |#
 CRASH_TEST = False
 
-# Reading user configuration
+# Reading user configuration
 config = read_user_configuration()
 
 hook_path = argv[0]
@@ -57,22 +59,19 @@ if (
     else:
         print(f"[red]No user provided configuration file found...")
 
-    # Real initialisation takes place here ############################
+    # Real initialisation takes place here ############################
     bowl = FishBowl(
-        clock=InternalClock(
-            tempo=config.bpm,
-            bpb=config.beats
-        ),
+        clock=InternalClock(tempo=config.bpm, bpb=config.beats),
     )
 
-    # Adding a parser
+    # Adding a parser
     # bowl.swap_parser(ListParser)
 
-    # Adding Senders
-    # bowl.add_handler(MidiHandler())
-    # bowl.add_handler(OSCHandler())
-    # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
-    # bowl.add_handler(SuperDirtHandler())
+    # Adding Senders
+    # bowl.add_handler(MidiHandler())
+    # bowl.add_handler(OSCHandler())
+    # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
+    # bowl.add_handler(SuperDirtHandler())
 
     if CRASH_TEST:
         @swim

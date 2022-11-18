@@ -24,7 +24,7 @@ class BaseHandler(ABC, Hashable):
         self._env: "Optional[FishBowl]" = None
 
     def __hash__(self):  # pylint: disable=useless-parent-delegation
-                         #         Hashable expects this to be implemented
+        # Hashable expects this to be implemented
         return super().__hash__()
 
     def __call__(self, *args, **kwargs):
@@ -37,10 +37,9 @@ class BaseHandler(ABC, Hashable):
         return self._env
 
     @env.setter
-    def env(self, env: 'FishBowl') -> "Optional[FishBowl]":
+    def env(self, env: "FishBowl") -> "Optional[FishBowl]":
         """The fish bowl (a.k.a. environment) that this handler is added to."""
         self._env = env
-
 
     def register(self, event: Optional[str]):
         """Registers the handler for the given event.
@@ -49,7 +48,7 @@ class BaseHandler(ABC, Hashable):
         """
         if self.env is None:
             raise ValueError(
-                'handler cannot register hooks until it is added to a FishBowl'
+                "handler cannot register hooks until it is added to a FishBowl"
             )
 
         self.env.register_hook(event, self)
@@ -61,7 +60,7 @@ class BaseHandler(ABC, Hashable):
         """
         if self.env is None:
             raise ValueError(
-                'handler cannot unregister hooks until it is added to a FishBowl'
+                "handler cannot unregister hooks until it is added to a FishBowl"
             )
 
         self.env.unregister_hook(event, self)

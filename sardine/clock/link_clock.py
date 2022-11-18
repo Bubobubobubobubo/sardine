@@ -93,10 +93,10 @@ class LinkClock(BaseClock):
     def _capture_link_info(self):
         s: link.SessionState = self._link.captureSessionState()
         link_time: int = self._link.clock().micros()
-        beat: float    = s.beatAtTime(link_time, self.beats_per_bar)
-        phase: float   = s.phaseAtTime(link_time, self.beats_per_bar)
-        playing: bool  = s.isPlaying()
-        tempo: float   = s.tempo()
+        beat: float = s.beatAtTime(link_time, self.beats_per_bar)
+        phase: float = s.phaseAtTime(link_time, self.beats_per_bar)
+        playing: bool = s.isPlaying()
+        tempo: float = s.tempo()
 
         self._internal_time = link_time / 1_000_000
         self._beat = int(beat)

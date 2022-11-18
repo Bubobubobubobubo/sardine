@@ -1,8 +1,7 @@
-from typing import TYPE_CHECKING
 from ..base.handler import BaseHandler
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
+__all__ = ("DummyHandler",)
+
 
 class DummyHandler(BaseHandler):
     def __init__(self, ip: str = "127.0.0.1", port: int = 23456):

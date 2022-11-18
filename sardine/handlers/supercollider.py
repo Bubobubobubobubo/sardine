@@ -1,8 +1,6 @@
-from typing import TYPE_CHECKING
 from ..base.handler import BaseHandler
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
+__all__ = ("SuperColliderHandler",)
 
 
 class SuperColliderHandler(BaseHandler):

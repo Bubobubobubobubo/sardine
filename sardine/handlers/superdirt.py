@@ -1,19 +1,19 @@
-from typing import TYPE_CHECKING
-from ..base.handler import BaseHandler
-from ..superdirt.AutoBoot import SuperDirtProcess
-from ..io import read_user_configuration
-from osc4py3 import oscbuildparse
-from osc4py3.as_eventloop import (
-    osc_udp_client,
-    osc_send,
-    osc_process,
-)
 import time
 
+from osc4py3 import oscbuildparse
+from osc4py3.as_eventloop import osc_process, osc_send, osc_udp_client
+
+from ..base.handler import BaseHandler
+from ..io import read_user_configuration
+from ..superdirt.AutoBoot import SuperDirtProcess
+
+__all__ = ("SuperDirtHandler",)
+
+
 class SuperDirtHandler(BaseHandler):
-    def __init__(self, 
-                ip: str = "127.0.0.1", 
-                port: int =  57120, 
+    def __init__(self,
+                ip: str = "127.0.0.1",
+                port: int =  57120,
                 name: str = 'SuperDirt',
                 ahead_amount: float = 0.3,
         ):
@@ -53,17 +53,17 @@ class SuperDirtHandler(BaseHandler):
         return f"SuperDirt: {self._ip}:{self._port}"
 
     def setup(self):
-        for event in self._events:
+        for event in self._events:  # FIXME undefined superdirt _events
             self.register(event)
 
     def hook(self, event: str, *args):
-        func = self._events[event]
+        func = self._events[event]  # FIXME undefined superdirt _events
         func(*args)
 
     def __send(self, address: str, message: list) -> None:
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
-            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), 
+            oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
             [msg]
         )
         osc_send(bun, self._name)
@@ -76,7 +76,7 @@ class SuperDirtHandler(BaseHandler):
             "delta", 1]
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
-            oscbuildparse.unixtime2timetag(time() + self._ahead_amount), [msg]
+            oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount), [msg]
         )
         osc_send(bun, self._name)
         osc_process()
@@ -86,7 +86,7 @@ class SuperDirtHandler(BaseHandler):
 
     def _dirt_play(self, message: list):
         self.__send_timed_message(
-            address='/dirt/play',   
+            address='/dirt/play',
             message=message)
 
     def _dirt_panic(self):

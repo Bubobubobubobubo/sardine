@@ -1,12 +1,13 @@
-from typing import TYPE_CHECKING
+import sys
+import threading
+
+import mido
+
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
-import threading
-import mido
-import sys
 
-if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
+__all__ = ("MidiHandler",)
+
 
 class MidiHandler(BaseHandler, threading.Thread):
 

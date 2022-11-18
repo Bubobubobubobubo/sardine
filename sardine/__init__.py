@@ -64,6 +64,23 @@ if (
         clock=InternalClock(tempo=config.bpm, bpb=config.beats),
     )
 
+    def swim(fn):
+        """
+        Swimming decorator: push a function to the clock. The function will be
+        declared and followed by the clock system to recurse in time if needed.
+        """
+        bowl.scheduler.schedule_func(fn)
+        return fn
+
+
+    def die(fn):
+        """
+        Swimming decorator: remove a function from the clock. The function will not
+        be called again and will likely stop recursing in time.
+        """
+        bowl.scheduler.remove(fn)
+        return fn
+
     # Adding a parser
     # bowl.swap_parser(ListParser)
 

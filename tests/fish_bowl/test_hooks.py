@@ -54,7 +54,9 @@ def test_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
     for event in dummy_handler.EVENTS:
         assert dummy_handler in fish_bowl._event_hooks[event]
 
-    assert fish_bowl._hook_events[dummy_handler] == set(dummy_handler.EVENTS)
+    # NOTE: we are expecting insertion order
+    for event, expected_event in zip(dummy_handler.EVENTS, fish_bowl._hook_events[dummy_handler]):
+        assert event == expected_event
 
     # Test each hook
     for i, event in enumerate(dummy_handler.EVENTS):

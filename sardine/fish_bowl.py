@@ -6,10 +6,10 @@ from exceptiongroup import BaseExceptionGroup
 
 from .base import BaseClock, BaseHandler, BaseParser
 from .clock import Time, InternalClock
+from .handlers import SleepHandler
 from .sequences.SardineParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
-from .handlers.sleep_handler import SleepHandler
 
 __all__ = ("FishBowl",)
 

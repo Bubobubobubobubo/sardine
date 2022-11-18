@@ -17,6 +17,7 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
+from .base import *
 from .clock import *
 from .fish_bowl import *
 from .handlers import *

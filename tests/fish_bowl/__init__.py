@@ -102,7 +102,7 @@ class Pauser:
 
     def assert_equality(self, *, tolerance: float):
         self.print_table(tolerance)
-        for real, expected in zip(self.cumulative_real, self.cumulative_expected):
+        for real, expected in zip(self.real, self.expected):
             assert math.isclose(real, expected, abs_tol=tolerance)
 
     def print_table(self, tolerance: Optional[float] = None):
@@ -111,8 +111,9 @@ class Pauser:
             Column("Deviation", footer=f"<{tolerance}"),
             show_footer=tolerance is not None,
         )
-        for expected, real in zip(self.cumulative_expected, self.cumulative_real):
-            table.add_row(str(expected), str(real - expected))
+        rows = zip(self.cumulative_expected, self.real, self.expected)
+        for cumulative, real, expected in rows:
+            table.add_row(str(cumulative), str(real - expected))
 
         rich.print(table)
 

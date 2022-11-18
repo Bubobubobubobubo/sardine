@@ -9,9 +9,9 @@ from . import Pauser, fish_bowl
 
 @pytest.mark.asyncio
 async def test_sleep_internal_clock(fish_bowl: FishBowl):
-    PAUSE_DURATION = 0.2
-    ITERATIONS = 5
-    TOLERANCE = 0.005 + 0.006 * ITERATIONS
+    PAUSE_DURATION = 0.02
+    ITERATIONS = 10
+    TOLERANCE = 0.016
     ALWAYS_FAIL = False
 
     assert isinstance(fish_bowl.clock, InternalClock)

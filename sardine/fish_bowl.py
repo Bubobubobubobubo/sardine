@@ -56,6 +56,17 @@ class FishBowl:
         self.add_handler(self.sleeper)
         self.add_handler(self.time)
 
+    ## REPR/STR #######################################################################
+
+    def __repr__(self) -> str:
+
+        # Basic attributes
+        alv, set = self._alive.is_set(), self._resumed.is_set()
+        tp, bt = self.clock.tempo, self.clock.beat
+        hn = [type(handler).__name__ for handler in self._handlers]
+
+        return f"<Bowl alive={alv} playing={set} tempo={tp} beat={bt} handlers={hn}>"
+
     ## TRANSPORT ######################################################################
 
     def pause(self):

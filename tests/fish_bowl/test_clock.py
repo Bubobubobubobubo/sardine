@@ -3,6 +3,7 @@ import math
 from typing import Callable, Iterator
 
 import pytest
+
 from sardine import FishBowl, InternalClock
 
 from . import EventLogHandler, fish_bowl

@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
 import pytest
+
 from sardine import BaseHandler, FishBowl
 
 from . import fish_bowl
@@ -55,7 +56,9 @@ def test_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
         assert dummy_handler in fish_bowl._event_hooks[event]
 
     # NOTE: we are expecting insertion order
-    for event, expected_event in zip(dummy_handler.EVENTS, fish_bowl._hook_events[dummy_handler]):
+    for event, expected_event in zip(
+        dummy_handler.EVENTS, fish_bowl._hook_events[dummy_handler]
+    ):
         assert event == expected_event
 
     # Test each hook

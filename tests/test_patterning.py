@@ -1,8 +1,8 @@
 import unittest
-from sardine.sequences.SardineParser.ListParser import ListParser
 from typing import Union
 from unittest import mock
 
+from sardine.sequences.SardineParser.ListParser import ListParser
 
 PARSER = ListParser(None, None, None)
 

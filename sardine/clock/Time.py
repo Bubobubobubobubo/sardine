@@ -1,7 +1,11 @@
 import contextlib
 import contextvars
 
-time_shift = contextvars.ContextVar("time_shift", default=0.0)
+from ..base import BaseHandler
+
+__all__ = ("Time",)
+
+shift = contextvars.ContextVar("shift", default=0.0)
 """
 This specifies the amount of time to offset in the current context.
 Usually this is updated within the context of scheduled functions
@@ -9,46 +13,76 @@ to simulate sleeping without actually blocking the function. Behavior is
 undefined if time is shifted in the global context.
 """
 
-class Time:
+
+class Time(BaseHandler):
+    """Contains the origin of a FishBowl's time.
+
+    Any new clocks must continue from this origin when they are running,
+    and must update the origin when they are paused or stopped.
+    """
     def __init__(
         self,
-        elapsed_time: float=0.0,
+        origin: float = 0.0,
     ):
-        self._elapsed_time = elapsed_time
+        super().__init__()
+        self._origin = origin
 
     def __repr__(self) -> str:
-        return f"Started: {self._elapsed_time} seconds ago."
-
-    def reset(self):
-        """Reset elasped time"""
-        self._elapsed_time = 0.0
-
-    @property
-    def elapsed_time(self) -> float:
-        """The amount of time elapsed including the current time shift."""
-        return self._elapsed_time + self.time_shift
+        return "{}({})".format(
+            type(self).__name__,
+            " ".join(
+                f"{attr}={getattr(self, attr)}"
+                for attr in ("origin",)
+            ),
+        )
 
     @property
-    def time_shift(self) -> float:
+    def origin(self) -> float:
+        """The origin of the fish bowl's time.
+
+        When this property is updated, an `origin_update` event
+        will be dispatched with two arguments, the old and the new
+        origin.
+        """
+        return self._origin
+
+    @origin.setter
+    def origin(self, new_origin: float):
+        old_origin = self._origin
+        self._origin = new_origin
+
+        self.env.dispatch("origin_update", old_origin, new_origin)
+
+    @property
+    def shift(self) -> float:
         """The time shift in the current context.
 
         This is useful for simulating sleeps without blocking.
         """
-        return time_shift.get()
+        return shift.get()
 
-    @time_shift.setter
-    def time_shift(self, n_ticks: int):
-        time_shift.set(n_ticks)
+    @shift.setter
+    def shift(self, seconds: int):
+        shift.set(seconds)
 
     @contextlib.contextmanager
-    def scoped_time_shift(self, seconds: float):
+    def scoped_shift(self, seconds: float):
         """Returns a context manager that adds `seconds` to the clock.
 
         After the context manager is exited, the time shift is restored
         to its previous value.
         """
-        token = time_shift.set(time_shift.get() + seconds)
+        token = shift.set(shift.get() + seconds)
         try:
             yield
         finally:
-            time_shift.reset(token)
+            shift.reset(token)
+
+    def reset(self):
+        """Resets the time origin back to 0."""
+        self._origin = 0.0
+
+    def hook(self, event: str, *args):
+        # This won't be registered for any events yet,
+        # but the base class requires this method to be defined
+        pass

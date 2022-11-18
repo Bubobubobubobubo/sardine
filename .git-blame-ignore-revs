@@ -1,2 +1,4 @@
 # Replace no-break spaces with regular spaces
 a2f5b2be4ee060b4cb00f704c9abe1112b434f95
+# Run black formatter
+71693688c38cf08f561e5dbcab21814ed365186f

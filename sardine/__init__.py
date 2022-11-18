@@ -1,11 +1,13 @@
+import asyncio
+import importlib
+import os
+import sys
+from pathlib import Path
+from sys import argv
+
 from rich import print
 from rich.panel import Panel
-import asyncio
-import sys
-from sys import argv
-import importlib
-from pathlib import Path
-import os
+
 try:
     import uvloop
 except ImportError:
@@ -15,28 +17,23 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
-from .fish_bowl import FishBowl
-from .clock.Time import Time
-from .clock.InternalClock import Clock
-from .clock.LinkClock import LinkClock
-from .sequences.SardineParser.ListParser import ListParser
-from .handlers import (
-    DummyHandler,
-    SuperColliderHandler,
-    SuperDirtHandler,
-    MidiHandler, 
-    OSCHandler)
-from .utils.Messages import (sardine_intro, config_line_printer)
-
+from .base import *
+from .clock import *
+from .fish_bowl import *
+from .handlers import *
 from .io.UserConfig import (
+    pretty_print_configuration_file,
     read_user_configuration,
-    pretty_print_configuration_file)
+)
+from .sequences.SardineParser.ListParser import ListParser
+from .utils.Messages import config_line_printer, sardine_intro
+
 config = read_user_configuration()
 
-#| INITIALISATION |#
+# | INITIALISATION |#
 CRASH_TEST = False
 
-# Reading user configuration
+# Reading user configuration
 config = read_user_configuration()
 
 hook_path = argv[0]
@@ -62,25 +59,37 @@ if (
     else:
         print(f"[red]No user provided configuration file found...")
 
-    # Real initialisation takes place here ############################
-    bowl = FishBowl(time=Time())
-    bowl.add_handler(Clock(
-        env=bowl, 
-        time=0.0, 
-        time_shift=0.0, 
-        tempo=config.bpm, 
-        bpb=config.beats
-    ))
-    time = bowl.time
+    # Real initialisation takes place here ############################
+    bowl = FishBowl(
+        clock=InternalClock(tempo=config.bpm, bpb=config.beats),
+    )
+    sleep = bowl.sleep
 
-    # Adding a parser
+    def swim(fn):
+        """
+        Swimming decorator: push a function to the clock. The function will be
+        declared and followed by the clock system to recurse in time if needed.
+        """
+        bowl.scheduler.schedule_func(fn)
+        return fn
+
+
+    def die(fn):
+        """
+        Swimming decorator: remove a function from the clock. The function will not
+        be called again and will likely stop recursing in time.
+        """
+        bowl.scheduler.remove(fn)
+        return fn
+
+    # Adding a parser
     # bowl.swap_parser(ListParser)
 
-    # Adding Senders
-    # bowl.add_handler(MidiHandler())
-    # bowl.add_handler(OSCHandler())
-    # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
-    # bowl.add_handler(SuperDirtHandler())
+    # Adding Senders
+    # bowl.add_handler(MidiHandler())
+    # bowl.add_handler(OSCHandler())
+    # bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
+    # bowl.add_handler(SuperDirtHandler())
 
     if CRASH_TEST:
         @swim

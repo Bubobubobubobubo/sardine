@@ -71,6 +71,9 @@ class BaseClock(BaseHandler, ABC):
         At the start of the `run()` method, this should be set as early
         as possible in order for the `time` property to compute the
         elapsed time.
+
+        This **must** support a setter as the base clock will automatically
+        set this to the `internal_time` when the fish bowl is resumed.
         """
 
     @property

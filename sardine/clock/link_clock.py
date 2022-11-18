@@ -56,12 +56,12 @@ class LinkClock(BaseClock):
         return self._beats_per_bar
 
     @property
-    def internal_time(self) -> float:
-        return self._internal_time
-
-    @property
     def internal_origin(self) -> float:
         return self._internal_origin
+
+    @property
+    def internal_time(self) -> float:
+        return self._internal_time
 
     @property
     def phase(self) -> float:
@@ -76,6 +76,10 @@ class LinkClock(BaseClock):
     @beats_per_bar.setter
     def beats_per_bar(self, bpb: int):
         self._beats_per_bar = bpb
+
+    @internal_origin.setter
+    def internal_origin(self, origin: float):
+        self._internal_origin = origin
 
     @tempo.setter
     def tempo(self, new_tempo: float) -> None:

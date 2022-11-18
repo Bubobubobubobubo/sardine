@@ -135,7 +135,7 @@ class SleepHandler(BaseHandler):
     # Handler hooks
 
     def setup(self):
-        for event in ("pause", "resume", "stop"):
+        for event in ("start", "pause", "resume", "stop"):
             self.register(event)
 
     def teardown(self):
@@ -143,11 +143,11 @@ class SleepHandler(BaseHandler):
         self._wake_event.set()  # just in case
 
     def hook(self, event: str, *args):
+        if event in ("start", "resume"):
+            self._wake_event.set()
+            self._interrupt_event.clear()
         if event == "pause":
             self._interrupt_event.set()
             self._wake_event.clear()
-        elif event == "resume":
-            self._wake_event.set()
-            self._interrupt_event.clear()
         elif event == "stop":
             self.teardown()

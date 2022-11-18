@@ -10,10 +10,16 @@ from sardine import FishBowl, InternalClock
 
 from . import EventLogHandler, fish_bowl
 
-PAUSE_DURATION = 0.050
-EXPECTED_DEVIATION = 0.0125  # highly system-dependent
-EXPECTED_TOLERANCE = 0.0025
+PAUSE_DURATION = 0.1
+
+EXPECTED_DEVIATION = 0.0125
+# highly system-dependent, also exacerbated by PAUSE_DURATION
+
+EXPECTED_TOLERANCE = 0.010
 REAL_TOLERANCE = 0.0001
+# Calibrate above tolerances to acceptable levels
+
+ALWAYS_FAIL = False
 
 
 class Pauser:
@@ -93,3 +99,5 @@ async def test_internal_clock(fish_bowl: FishBowl):
     for event, (rt, et) in zip(logger.events, pauser.stamps_with_expected):
         assert math.isclose(event.clock_time, et, abs_tol=EXPECTED_TOLERANCE)
         assert math.isclose(event.clock_time, rt, abs_tol=REAL_TOLERANCE)
+
+    assert not ALWAYS_FAIL, 'ALWAYS_FAIL is enabled'

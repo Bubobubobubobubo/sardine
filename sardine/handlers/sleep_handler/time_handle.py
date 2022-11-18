@@ -12,7 +12,7 @@ class TimeHandle:
 
     def __init__(self, deadline: int):
         self.when = deadline
-        self.fut = asyncio.Future()
+        self.fut = asyncio.get_running_loop().create_future()
 
     def __repr__(self):
         return "<{} {} when={}>".format(

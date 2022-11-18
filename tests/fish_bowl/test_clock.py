@@ -17,9 +17,6 @@ class Pauser:
         self.origin = origin
         self.stamps: list[float] = []
 
-    def begin_with_origin(self):
-        self.stamps.append(self.origin)
-
     async def sleep(self, duration: float, *, accumulate=True) -> float:
         start = self.time()
         await asyncio.sleep(duration)
@@ -44,10 +41,7 @@ async def test_internal_clock(fish_bowl: FishBowl):
 
     pauser = Pauser(logger.time, origin=0.0)
 
-    # Clock should not notice this sleep
-    await asyncio.sleep(PAUSE_DURATION)
-
-    pauser.begin_with_origin()
+    await pauser.sleep(PAUSE_DURATION, accumulate=False)
     fish_bowl.start()
 
     await pauser.sleep(PAUSE_DURATION)

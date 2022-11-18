@@ -6,7 +6,9 @@ from . import EventLoggingHandler, fish_bowl
 
 @pytest.mark.asyncio
 async def test_transports(fish_bowl: FishBowl):
-    logger = EventLoggingHandler(("start", "stop", "pause", "resume"))
+    logger = EventLoggingHandler(
+        whitelist=("start", "stop", "pause", "resume"),
+    )
     fish_bowl.add_handler(logger)
 
     # No-ops

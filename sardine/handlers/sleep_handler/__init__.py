@@ -42,11 +42,13 @@ class SleepHandler(BaseHandler):
         The deadline is based on the fish bowl clock's time.
         """
         while True:
+            # Handle stop/pauses before proceeding
             await self._check_termination()
             await self._wake_event.wait()
 
             clock = self.env.clock
 
+            # Use clock sleep if available, else polling implementation
             if clock.can_sleep():
                 sleep_task = asyncio.create_task(
                     clock.sleep(deadline - clock.time)
@@ -54,6 +56,7 @@ class SleepHandler(BaseHandler):
             else:
                 sleep_task = asyncio.create_task(self._sleep_until(deadline))
 
+            # Wait until sleep completes or interruption
             intrp_task = asyncio.create_task(self._interrupt_event.wait())
             tasks = (sleep_task, intrp_task)
 

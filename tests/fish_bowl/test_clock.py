@@ -27,7 +27,7 @@ async def test_internal_clock(fish_bowl: FishBowl):
     logger = EventLogHandler(whitelist=event_order)
     fish_bowl.add_handler(logger)
 
-    pauser = Pauser(logger.time, asyncio.sleep, origin=0.0)
+    pauser = Pauser(logger.time, asyncio.sleep)
 
     await pauser.sleep(PAUSE_DURATION, accumulate=False)
     fish_bowl.start()
@@ -47,7 +47,7 @@ async def test_internal_clock(fish_bowl: FishBowl):
     assert len(logger.events) == 5
 
     table = Table("Clock", "Performance Deviation", "Expected Deviation")
-    rows = zip(logger.events, pauser.real, pauser.expected)
+    rows = zip(logger.events, pauser.cumulative_real, pauser.cumulative_expected)
     for event, real, expected in rows:
         clock = event.clock_time
         e_dev = clock - expected
@@ -57,7 +57,8 @@ async def test_internal_clock(fish_bowl: FishBowl):
     table.add_row("Tolerance", f"<{REAL_TOLERANCE}", f"<{EXPECTED_TOLERANCE}")
     rich.print(table)
 
-    for event, rt, et in zip(logger.events, pauser.real, pauser.expected):
+    rows = zip(logger.events, pauser.cumulative_real, pauser.cumulative_expected)
+    for event, rt, et in rows:
         assert math.isclose(event.clock_time, et, abs_tol=EXPECTED_TOLERANCE)
         assert math.isclose(event.clock_time, rt, abs_tol=REAL_TOLERANCE)
 

@@ -1,3 +1,4 @@
+import itertools
 import math
 import time
 from typing import (
@@ -84,19 +85,24 @@ class Pauser:
         self,
         time_func: Callable[[], float],
         sleep_func: Callable[[float], Awaitable[Any]],
-        *,
-        origin: float,
     ):
         self.time = time_func
         self._sleep = sleep_func
-        self.origin = origin
 
         self.real: list[float] = []
         self.expected: list[float] = []
 
+    @property
+    def cumulative_real(self) -> list[float]:
+        return list(itertools.accumulate(self.real))
+
+    @property
+    def cumulative_expected(self) -> list[float]:
+        return list(itertools.accumulate(self.expected))
+
     def assert_equality(self, *, tolerance: float):
         self.print_table(tolerance)
-        for real, expected in zip(self.real, self.expected):
+        for real, expected in zip(self.cumulative_real, self.cumulative_expected):
             assert math.isclose(real, expected, abs_tol=tolerance)
 
     def print_table(self, tolerance: Optional[float] = None):
@@ -105,25 +111,22 @@ class Pauser:
             Column("Deviation", footer=f"<{tolerance}"),
             show_footer=tolerance is not None,
         )
-        for expected, real in zip(self.expected, self.real):
+        for expected, real in zip(self.cumulative_expected, self.cumulative_real):
             table.add_row(str(expected), str(real - expected))
 
         rich.print(table)
 
     async def sleep(self, duration: float, *, accumulate=True) -> float:
-        last_stamp = _get_last(self.expected, self.origin)
-        add_stamp = duration if accumulate else 0.0
-        self.expected.append(last_stamp + add_stamp)
-
         start = self.time()
         await self._sleep(duration)
         elapsed = self.time() - start
 
         if accumulate:
-            elapsed += self.origin
-            self.origin = elapsed
-
-        self.real.append(self.origin)
+            self.real.append(elapsed)
+            self.expected.append(duration)
+        else:
+            self.real.append(0.0)
+            self.expected.append(0.0)
 
 
 @pytest_asyncio.fixture

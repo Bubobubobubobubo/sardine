@@ -16,7 +16,7 @@ async def test_sleep_internal_clock(fish_bowl: FishBowl):
 
     assert isinstance(fish_bowl.clock, InternalClock)
     assert fish_bowl.clock.can_sleep()
-    pauser = Pauser(time.perf_counter, fish_bowl.sleep, origin=0.0)
+    pauser = Pauser(time.perf_counter, fish_bowl.sleep)
 
     fish_bowl.start()
     for _ in range(ITERATIONS):

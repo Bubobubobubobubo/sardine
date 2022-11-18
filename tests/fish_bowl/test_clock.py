@@ -9,13 +9,13 @@ from sardine import FishBowl, InternalClock
 
 from . import EventLogHandler, Pauser, fish_bowl
 
-PAUSE_DURATION = 0.1
-ALWAYS_FAIL = False
 
 
 @pytest.mark.asyncio
 async def test_internal_clock(fish_bowl: FishBowl):
+    PAUSE_DURATION = 0.1
     EXPECTED_TOLERANCE = 0.024
+    ALWAYS_FAIL = False
     REAL_TOLERANCE = 0.00013
     # Calibrate above tolerances to acceptable levels
 

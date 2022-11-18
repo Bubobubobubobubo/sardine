@@ -3,6 +3,8 @@ import math
 from typing import Callable, Iterator
 
 import pytest
+import rich
+from rich.table import Table
 
 from sardine import FishBowl, InternalClock
 
@@ -23,6 +25,11 @@ class Pauser:
     @property
     def stamps_with_expected(self) -> Iterator[tuple[float, float]]:
         yield from zip(self.stamps, self.expected_stamps)
+
+    @property
+    def deviations(self) -> Iterator[float]:
+        for rt, et in self.stamps_with_expected:
+            yield rt - et
 
     async def sleep(self, duration: float, *, accumulate=True) -> float:
         start = self.time()
@@ -72,13 +79,15 @@ async def test_internal_clock(fish_bowl: FishBowl):
 
     assert len(logger.events) == 5
 
-    print("clock:", [e.clock_time for e in logger.events])
-    print("slept:", pauser.stamps)
-    print("expected:", pauser.expected_stamps)
-    for event, (real_time, expected_time) in zip(logger.events, pauser.stamps_with_expected):
+    table = Table("Step", "Clock", "Real", "Deviation")
+    rows = zip(logger.events, pauser.stamps, pauser.deviations)
+    for i, (event, real, dev) in enumerate(rows, start=1):
+        clock = event.clock_time
+        table.add_row(str(i), str(clock), str(real), str(dev))
+    rich.print(table)
+
+    for event, (rt, et) in zip(logger.events, pauser.stamps_with_expected):
         assert math.isclose(
-            event.clock_time, real_time, abs_tol=MAXIMUM_REAL_DEVIATION
+            event.clock_time, rt, abs_tol=MAXIMUM_REAL_DEVIATION
         )
-        assert math.isclose(
-            real_time, expected_time, abs_tol=MAXIMUM_EXPECTED_DEVIATION
-        )
+        assert math.isclose(rt, et, abs_tol=MAXIMUM_EXPECTED_DEVIATION)

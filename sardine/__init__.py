@@ -17,10 +17,8 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
-from .clock.internal_clock import InternalClock
-from .clock.link_clock import LinkClock
-from .clock.time import Time
-from .fish_bowl import FishBowl
+from .clock import *
+from .fish_bowl import *
 from .handlers import *
 from .io.UserConfig import (pretty_print_configuration_file,
                             read_user_configuration)

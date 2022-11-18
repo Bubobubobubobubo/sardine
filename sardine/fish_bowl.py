@@ -11,6 +11,8 @@ from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
 from .handlers.sleep_handler import SleepHandler
 
+__all__ = ("FishBowl",)
+
 
 class HookProtocol(Hashable, Protocol):
     """A callable object that accepts an event and any number of arguments."""

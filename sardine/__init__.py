@@ -1,11 +1,13 @@
+import asyncio
+import importlib
+import os
+import sys
+from pathlib import Path
+from sys import argv
+
 from rich import print
 from rich.panel import Panel
-import asyncio
-import sys
-from sys import argv
-import importlib
-from pathlib import Path
-import os
+
 try:
     import uvloop
 except ImportError:
@@ -15,22 +17,16 @@ else:
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     uvloop.install()
 
-from .fish_bowl import FishBowl
-from .clock.time import Time
 from .clock.internal_clock import InternalClock
 from .clock.link_clock import LinkClock
+from .clock.time import Time
+from .fish_bowl import FishBowl
+from .handlers import *
+from .io.UserConfig import (pretty_print_configuration_file,
+                            read_user_configuration)
 from .sequences.SardineParser.ListParser import ListParser
-from .handlers import (
-    DummyHandler,
-    SuperColliderHandler,
-    SuperDirtHandler,
-    MidiHandler,
-    OSCHandler)
-from .utils.Messages import (sardine_intro, config_line_printer)
+from .utils.Messages import config_line_printer, sardine_intro
 
-from .io.UserConfig import (
-    read_user_configuration,
-    pretty_print_configuration_file)
 config = read_user_configuration()
 
 #| INITIALISATION |#

@@ -15,6 +15,8 @@ class PerfCounterMixin:
 if hasattr(asyncio, "ProactorEventLoop"):
     class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop):
         ...
+else:
+    PrecisionProactorEventLoop = None
 
 
 class PrecisionEventLoopPolicy(asyncio.DefaultEventLoopPolicy):

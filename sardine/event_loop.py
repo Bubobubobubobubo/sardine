@@ -12,8 +12,9 @@ class PerfCounterMixin:
         return time.perf_counter()
 
 
-class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop):
-    ...
+if hasattr(asyncio, "ProactorEventLoop"):
+    class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop):
+        ...
 
 
 class PrecisionEventLoopPolicy(asyncio.DefaultEventLoopPolicy):

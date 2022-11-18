@@ -1,13 +1,9 @@
 from typing import Collection, Optional
 
 import pytest
-import pytest_asyncio
 from sardine import BaseHandler, FishBowl
 
-
-@pytest_asyncio.fixture
-def fish_bowl():
-    return FishBowl()
+from . import fish_bowl
 
 
 class EventLoggingHandler(BaseHandler):

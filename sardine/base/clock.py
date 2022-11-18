@@ -17,24 +17,11 @@ class BaseClock(BaseHandler, ABC):
     to provide a mechanism for sleeping a specified duration.
     If this method is not defined, the `FishBowl.sleeper` instance
     will use a built-in polling mechanism for sleeping.
-
-    Attributes:
-        internal_origin:
-            The clock's internal time origin if available, measured in seconds.
-            At the start of the `run()` method, this should be set as early
-            as possible in order for the `time` property to compute the
-            elapsed time.
-        internal_time:
-            The clock's internal time if available, measured in seconds.
-            This attribute should be continuously updated when the
-            clock starts so the `time` property is able to move forward.
     """
 
     def __init__(self):
         super().__init__()
         self._run_task: Optional[asyncio.Task] = None
-        self.internal_origin: Optional[float] = None
-        self.internal_time: Optional[float] = None
 
     def __repr__(self) -> str:
         return (
@@ -75,6 +62,25 @@ class BaseClock(BaseHandler, ABC):
     @abstractmethod
     def beats_per_bar(self) -> int:
         """The number of beats in each bar."""
+
+    @property
+    @abstractmethod
+    def internal_origin(self) -> Optional[float]:
+        """The clock's internal time origin if available, measured in seconds.
+
+        At the start of the `run()` method, this should be set as early
+        as possible in order for the `time` property to compute the
+        elapsed time.
+        """
+
+    @property
+    @abstractmethod
+    def internal_time(self) -> Optional[float]:
+        """The clock's internal time if available, measured in seconds.
+
+        This attribute should be continuously updated when the
+        clock starts so the `time` property is able to move forward.
+        """
 
     @property
     @abstractmethod

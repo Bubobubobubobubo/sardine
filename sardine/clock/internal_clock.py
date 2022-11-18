@@ -17,16 +17,11 @@ class InternalClock(BaseClock):
         bpb: int = 4,
     ):
         super().__init__()
-
-        # Time related attributes
         self.tempo = tempo
         self.beats_per_bar = bpb
+        self._internal_origin = 0.0
 
     #### GETTERS  ############################################################
-
-    @property
-    def internal_time(self) -> float:
-        return time.monotonic()
 
     @property
     def bar(self) -> int:
@@ -43,6 +38,14 @@ class InternalClock(BaseClock):
     @property
     def beats_per_bar(self) -> int:
         return self._beats_per_bar
+
+    @property
+    def internal_time(self) -> float:
+        return time.monotonic()
+
+    @property
+    def internal_origin(self) -> float:
+        return self._internal_origin
 
     @property
     def phase(self) -> float:
@@ -76,5 +79,5 @@ class InternalClock(BaseClock):
     async def run(self):
         # The internal clock simply uses the system's time
         # so we don't need to do any polling loop here
-        self.internal_origin = self.internal_time
+        self._internal_origin = self.internal_time
         await asyncio.sleep(math.inf)

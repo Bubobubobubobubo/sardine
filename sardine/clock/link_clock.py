@@ -27,6 +27,8 @@ class LinkClock(BaseClock):
         self._beat: int = 0
         self._beat_duration: float = 0.0
         self._beats_per_bar: int = bpb
+        self._internal_origin: float = 0.0
+        self._internal_time: float = 0.0
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
@@ -52,6 +54,14 @@ class LinkClock(BaseClock):
     @property
     def beats_per_bar(self) -> int:
         return self._beats_per_bar
+
+    @property
+    def internal_time(self) -> float:
+        return self._internal_time
+
+    @property
+    def internal_origin(self) -> float:
+        return self._internal_origin
 
     @property
     def phase(self) -> float:
@@ -84,7 +94,7 @@ class LinkClock(BaseClock):
         playing: bool  = s.isPlaying()
         tempo: float   = s.tempo()
 
-        self.internal_time = link_time / 1_000_000
+        self._internal_time = link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
         self._phase = phase / self.beats_per_bar
@@ -97,7 +107,7 @@ class LinkClock(BaseClock):
 
             # Set the origin at the start
             self._capture_link_info()
-            self.internal_origin = self.internal_time
+            self._internal_origin = self.internal_time
 
             # Poll continuously to get the latest time
             while not self._completed_event.is_set():

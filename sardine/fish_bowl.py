@@ -185,7 +185,7 @@ class FishBowl:
 
         event_set = self._hook_events.get(handler)
         if event_set is not None:
-            for event in event_set:
+            for event in tuple(event_set):
                 self.unregister_hook(event, handler)
 
     # Hook management

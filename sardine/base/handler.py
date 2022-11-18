@@ -43,7 +43,7 @@ class BaseHandler(ABC, Hashable):
 
 
     def register(self, event: Optional[str]):
-        """Registers the handler's `hook()` for the given event.
+        """Registers the handler for the given event.
 
         This is a shorthand for doing `self.env.register_hook(event, self)`.
         """
@@ -53,6 +53,18 @@ class BaseHandler(ABC, Hashable):
             )
 
         self.env.register_hook(event, self)
+
+    def unregister(self, event: Optional[str]):
+        """Unregisters the handler for the given event.
+
+        This is a shorthand for doing `self.env.unregister_hook(event, self)`.
+        """
+        if self.env is None:
+            raise ValueError(
+                'handler cannot unregister hooks until it is added to a FishBowl'
+            )
+
+        self.env.unregister_hook(event, self)
 
     def setup(self):
         """Called when the handler is added to a fish bowl.

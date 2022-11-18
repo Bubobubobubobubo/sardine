@@ -1,3 +1,4 @@
+import math
 import time
 from typing import (
     Any,
@@ -12,6 +13,8 @@ from typing import (
     Union,
 )
 
+import rich
+from rich.table import Column, Table
 import pytest_asyncio
 from sardine import BaseHandler, FishBowl
 
@@ -90,6 +93,22 @@ class Pauser:
 
         self.real: list[float] = []
         self.expected: list[float] = []
+
+    def assert_equality(self, *, tolerance: float):
+        self.print_table(tolerance)
+        for real, expected in zip(self.real, self.expected):
+            assert math.isclose(real, expected, abs_tol=tolerance)
+
+    def print_table(self, tolerance: Optional[float] = None):
+        table = Table(
+            Column("Expected", footer="Tolerance"),
+            Column("Deviation", footer=f"<{tolerance}"),
+            show_footer=tolerance is not None,
+        )
+        for expected, real in zip(self.expected, self.real):
+            table.add_row(str(expected), str(real - expected))
+
+        rich.print(table)
 
     async def sleep(self, duration: float, *, accumulate=True) -> float:
         last_stamp = _get_last(self.expected, self.origin)

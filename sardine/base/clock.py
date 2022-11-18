@@ -177,13 +177,7 @@ class BaseClock(BaseHandler, ABC):
             float: The amount of time to wait in seconds.
 
         """
-        interval = self.beat_duration * self.beats_per_bar * n_bars
-        if interval <= 0.0:
-            return 0.0
-        elif not sync:
-            return interval
-
-        return interval - self.phase
+        return self.get_beat_time(n_bars * self.beats_per_bar, sync=sync)
 
     def is_running(self) -> bool:
         """Indicates if an asyncio task is currently executing `run()`."""

@@ -41,9 +41,9 @@ class FishBowl:
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
 
-        self.event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
+        self._event_hooks: dict[Optional[str], set[HookProtocol]] = collections.defaultdict(set)
         # Reverse mapping for easier removal of hooks
-        self.hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
+        self._hook_events: dict[HookProtocol, set[Optional[str]]] = collections.defaultdict(set)
 
         self.add_handler(self.clock)
         self.add_handler(self.sleeper)
@@ -183,7 +183,7 @@ class FishBowl:
         handler._env = None  # pylint: disable=protected-access
         self._handlers.remove(handler)
 
-        event_set = self.hook_events.get(handler)
+        event_set = self._hook_events.get(handler)
         if event_set is not None:
             for event in event_set:
                 self.unregister_hook(event, handler)
@@ -211,12 +211,12 @@ class FishBowl:
             hook (HookProtocol):
                 The hook to call whenever the event is triggered.
         """
-        hook_set = self.event_hooks[event]
+        hook_set = self._event_hooks[event]
         if hook in hook_set:
             return
 
         hook_set.add(hook)
-        self.hook_events[hook].add(event)
+        self._hook_events[hook].add(event)
 
     def unregister_hook(self, event: Optional[str], hook: HookProtocol):
         """Unregisters a hook for a specific event.
@@ -230,17 +230,17 @@ class FishBowl:
             event (Optional[str]): The event to remove the hook from.
             hook (HookProtocol): The hook being removed.
         """
-        hook_set = self.event_hooks.get(event)
+        hook_set = self._event_hooks.get(event)
         if hook_set is not None:
             hook_set.discard(hook)
             if not hook_set:
-                del self.event_hooks[event]
+                del self._event_hooks[event]
 
-        event_set = self.hook_events.get(hook)
+        event_set = self._hook_events.get(hook)
         if event_set is not None:
             event_set.discard(event)
             if not event_set:
-                del self.hook_events[hook]
+                del self._hook_events[hook]
 
     def _run_hooks(self, hooks: Iterable[HookProtocol], event: str, *args):
         # TODO add hook ratelimiting
@@ -271,8 +271,8 @@ class FishBowl:
             *args: The arguments to pass to the event.
         """
         empty_set: set[HookProtocol] = set()
-        local_hooks = self.event_hooks.get(event, empty_set)
-        global_hooks = self.event_hooks.get(None, empty_set)
+        local_hooks = self._event_hooks.get(event, empty_set)
+        global_hooks = self._event_hooks.get(None, empty_set)
 
         all_hooks = local_hooks | global_hooks
         self._run_hooks(all_hooks, event, *args)

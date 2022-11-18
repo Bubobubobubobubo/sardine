@@ -17,7 +17,7 @@ async def test_sleep_internal_clock(fish_bowl: FishBowl):
     assert isinstance(fish_bowl.clock, InternalClock)
     assert fish_bowl.clock.can_sleep()
 
-    # fish_bowl.add_handler(MissileMode(burn_rate=0.014))
+    # fish_bowl.add_handler(MissileMode(burn_rate=71.428))
 
     pauser = Pauser(time.perf_counter, fish_bowl.sleep)
 

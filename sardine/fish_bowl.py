@@ -9,7 +9,7 @@ from .clock import Time, InternalClock
 from .sequences.SardineParser.ListParser import ListParser
 from .sequences.Iterators import Iterator
 from .sequences.Variables import Variables
-from .Handlers.sleep_handler import SleepHandler
+from .handlers.sleep_handler import SleepHandler
 
 
 class HookProtocol(Hashable, Protocol):

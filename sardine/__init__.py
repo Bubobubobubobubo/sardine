@@ -57,6 +57,10 @@ if (
     bowl = FishBowl(
         clock=InternalClock(tempo=config.bpm, bpb=config.beats),
     )
+
+    # Starting the clock
+    bowl.start()
+
     sleep = bowl.sleep
 
     def swim(fn):
@@ -75,6 +79,7 @@ if (
         """
         bowl.scheduler.remove(fn)
         return fn
+    again = bowl.scheduler.schedule_func
 
     # Adding a parser
     # bowl.swap_parser(ListParser)

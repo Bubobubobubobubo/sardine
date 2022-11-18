@@ -11,8 +11,9 @@ from sardine import FishBowl, InternalClock
 from . import EventLogHandler, fish_bowl
 
 PAUSE_DURATION = 0.050
-MAXIMUM_REAL_DEVIATION = 1e-9
-MAXIMUM_EXPECTED_DEVIATION = 1e-5
+EXPECTED_DEVIATION = 0.0125  # highly system-dependent
+EXPECTED_TOLERANCE = 0.0025
+REAL_TOLERANCE = 0.0001
 
 
 class Pauser:
@@ -26,11 +27,6 @@ class Pauser:
     def stamps_with_expected(self) -> Iterator[tuple[float, float]]:
         yield from zip(self.stamps, self.expected_stamps)
 
-    @property
-    def deviations(self) -> Iterator[float]:
-        for rt, et in self.stamps_with_expected:
-            yield rt - et
-
     async def sleep(self, duration: float, *, accumulate=True) -> float:
         start = self.time()
         await asyncio.sleep(duration)
@@ -41,7 +37,11 @@ class Pauser:
             self.origin = elapsed
 
             if self.expected_stamps:
-                self.expected_stamps.append(self.expected_stamps[-1] + duration)
+                self.expected_stamps.append(
+                    self.expected_stamps[-1]
+                    + duration
+                    + EXPECTED_DEVIATION
+                )
         elif self.expected_stamps:
             self.expected_stamps.append(self.expected_stamps[-1])
         else:
@@ -79,15 +79,17 @@ async def test_internal_clock(fish_bowl: FishBowl):
 
     assert len(logger.events) == 5
 
-    table = Table("Step", "Clock", "Real", "Deviation")
-    rows = zip(logger.events, pauser.stamps, pauser.deviations)
-    for i, (event, real, dev) in enumerate(rows, start=1):
+    table = Table("Clock", "Performance Deviation", "Expected Deviation")
+    rows = zip(logger.events, pauser.stamps_with_expected)
+    for event, (real, expected) in rows:
         clock = event.clock_time
-        table.add_row(str(i), str(clock), str(real), str(dev))
+        e_dev = clock - expected
+        r_dev = clock - real
+        table.add_row(str(clock), str(r_dev), str(e_dev))
+    table.add_section()
+    table.add_row("Tolerance", f"<{REAL_TOLERANCE}", f"<{EXPECTED_TOLERANCE}")
     rich.print(table)
 
     for event, (rt, et) in zip(logger.events, pauser.stamps_with_expected):
-        assert math.isclose(
-            event.clock_time, rt, abs_tol=MAXIMUM_REAL_DEVIATION
-        )
-        assert math.isclose(rt, et, abs_tol=MAXIMUM_EXPECTED_DEVIATION)
+        assert math.isclose(event.clock_time, et, abs_tol=EXPECTED_TOLERANCE)
+        assert math.isclose(event.clock_time, rt, abs_tol=REAL_TOLERANCE)

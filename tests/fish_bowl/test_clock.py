@@ -7,7 +7,7 @@ from sardine import FishBowl, InternalClock
 
 from . import EventLogHandler, fish_bowl
 
-PAUSE_DURATION = 1
+PAUSE_DURATION = 0.050
 MAXIMUM_REAL_DEVIATION = 1e-9
 MAXIMUM_EXPECTED_DEVIATION = 1e-5
 

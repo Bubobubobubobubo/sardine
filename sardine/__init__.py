@@ -8,15 +8,7 @@ from sys import argv
 from rich import print
 from rich.panel import Panel
 
-try:
-    import uvloop
-except ImportError:
-    print("[yellow]UVLoop is not installed. Not supported on Windows![/yellow]")
-    print("[yellow]Rhythm accuracy may be impacted[/yellow]")
-else:
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    uvloop.install()
-
+from . import event_loop
 from .base import *
 from .clock import *
 from .fish_bowl import *
@@ -27,6 +19,8 @@ from .io.UserConfig import (
 )
 from .sequences.SardineParser.ListParser import ListParser
 from .utils.Messages import config_line_printer, sardine_intro
+
+event_loop.inject_policy()
 
 config = read_user_configuration()
 

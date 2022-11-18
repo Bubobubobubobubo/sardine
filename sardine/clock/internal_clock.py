@@ -45,7 +45,7 @@ class InternalClock(BaseClock):
 
     @property
     def internal_time(self) -> float:
-        return time.monotonic()
+        return time.perf_counter()
 
     @property
     def phase(self) -> float:

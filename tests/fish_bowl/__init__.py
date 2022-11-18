@@ -37,7 +37,7 @@ class EventLogHandler(BaseHandler):
                 yield e
 
     def time(self) -> float:
-        return time.monotonic()
+        return time.perf_counter()
 
     # Handler methods
 

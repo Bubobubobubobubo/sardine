@@ -1,26 +1,7 @@
-from typing import Collection, Optional
-
 import pytest
-from sardine import BaseHandler, FishBowl
+from sardine import FishBowl
 
-from . import fish_bowl
-
-
-class EventLoggingHandler(BaseHandler):
-    def __init__(self, whitelist: Optional[Collection[str]] = None):
-        super().__init__()
-        self.whitelist = whitelist
-        self.events = []
-
-    def setup(self):
-        if self.whitelist is not None:
-            for event in self.whitelist:
-                self.register(event)
-        else:
-            self.register(None)
-
-    def hook(self, event: str, *args):
-        self.events.append((event, args))
+from . import EventLoggingHandler, fish_bowl
 
 
 @pytest.mark.asyncio
@@ -43,9 +24,8 @@ async def test_transports(fish_bowl: FishBowl):
     fish_bowl.pause()
     fish_bowl.stop()
 
-    assert logger.events == [
-        (event, ()) for event in (
-            "start", "pause", "stop",
-            "start", "pause", "stop",
-        )
+    event_names = [e.event for e in logger.events]
+    assert event_names == [
+        "start", "pause", "stop",
+        "start", "pause", "stop",
     ]

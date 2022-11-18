@@ -63,6 +63,7 @@ if (
     bowl = FishBowl(
         clock=InternalClock(tempo=config.bpm, bpb=config.beats),
     )
+    sleep = bowl.sleep
 
     def swim(fn):
         """

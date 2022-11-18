@@ -37,11 +37,17 @@ def dummy_handler() -> DummyHandler:
     return DummyHandler()
 
 
-def test_adding_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
+def test_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
     temp_event = 'baz'
-    fish_bowl.add_handler(dummy_handler)
 
+    # Ensure test hooks aren't in use
+    for event in dummy_handler.EVENTS + (temp_event,):
+        assert fish_bowl._event_hooks.get(event) is None
+
+    # Add handler and check for setup call
+    fish_bowl.add_handler(dummy_handler)
     assert dummy_handler.has_setup
+
     assert dummy_handler.env is fish_bowl
 
     # Verify installation of hooks
@@ -60,10 +66,9 @@ def test_adding_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
     dummy_handler.register(None)
 
     fish_bowl.dispatch(temp_event)
-    assert temp_event not in fish_bowl._event_hooks
     assert dummy_handler.last_event == (temp_event, ())
 
-    # Make sure hook isn't called twice with existing events
+    # Make sure hooks aren't called twice with existing events
     existing_event = dummy_handler.EVENTS[0]
     fish_bowl.dispatch(existing_event)
     assert dummy_handler.last_event == (existing_event, ())
@@ -71,7 +76,6 @@ def test_adding_handler(fish_bowl: FishBowl, dummy_handler: DummyHandler):
 
     # Verify removal of hooks
     fish_bowl.remove_handler(dummy_handler)
-
     assert dummy_handler.has_teared_down
 
     for event in dummy_handler.EVENTS:

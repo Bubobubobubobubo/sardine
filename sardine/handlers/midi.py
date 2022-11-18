@@ -56,7 +56,7 @@ class MidiHandler(BaseHandler, threading.Thread):
             "control_change": self._control_change,
             "program_change": self._program_change,
             "sysex": self._sysex,
-            "pitch_wheel": self._pitchwheel,
+            "pitchwheel": self._pitch_wheel,
         }
 
     def __repr__(self) -> str:

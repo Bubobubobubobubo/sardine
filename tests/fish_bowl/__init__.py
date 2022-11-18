@@ -92,6 +92,10 @@ class Pauser:
         self.expected: list[float] = []
 
     async def sleep(self, duration: float, *, accumulate=True) -> float:
+        last_stamp = _get_last(self.expected, self.origin)
+        add_stamp = duration if accumulate else 0.0
+        self.expected.append(last_stamp + add_stamp)
+
         start = self.time()
         await self._sleep(duration)
         elapsed = self.time() - start
@@ -101,10 +105,6 @@ class Pauser:
             self.origin = elapsed
 
         self.real.append(self.origin)
-
-        last_stamp = _get_last(self.expected, self.origin)
-        add_stamp = duration if accumulate else 0.0
-        self.expected.append(last_stamp + add_stamp)
 
 
 @pytest_asyncio.fixture

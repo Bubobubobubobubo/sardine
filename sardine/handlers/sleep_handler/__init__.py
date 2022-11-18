@@ -41,9 +41,15 @@ class SleepHandler(BaseHandler):
 
         The deadline is based on the fish bowl clock's time.
         """
+        if self.env is None:
+            raise ValueError("SleepHandler must be added to a fish bowl")
+        elif not self.env.is_running():
+            raise RuntimeError("cannot use sleep until fish bowl has started")
+
         while True:
             # Handle stop/pauses before proceeding
-            await self._check_termination()
+            if self._is_terminated():
+                asyncio.current_task().cancel()
             await self._wake_event.wait()
 
             clock = self.env.clock
@@ -79,11 +85,6 @@ class SleepHandler(BaseHandler):
         elif not self._time_handles and self._is_polling():
             self._poll_task.cancel()
 
-    async def _check_termination(self):
-        # This might be called after teardown, in which case `env` is None
-        if self.env is None or not self.env.is_running():
-            asyncio.current_task().cancel()
-
     def _create_handle(self, deadline: NUMBER) -> TimeHandle:
         handle = TimeHandle(deadline)
 
@@ -96,6 +97,10 @@ class SleepHandler(BaseHandler):
             self._check_running()
 
         return handle
+
+    def _is_terminated(self) -> bool:
+        # This might be called after teardown, in which case `env` is None
+        return self.env is None or not self.env.is_running()
 
     def _is_polling(self) -> bool:
         return self._poll_task is not None and not self._poll_task.done()

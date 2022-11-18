@@ -1,32 +1,28 @@
-import asyncio
-import math
 import time
 
 import pytest
-import rich
-from rich.table import Table
 
 from sardine import FishBowl, InternalClock
 
 from . import Pauser, fish_bowl
 
-PAUSE_DURATION = 0.1
-ALWAYS_FAIL = True
-
 
 @pytest.mark.asyncio
-async def test_internal_clock(fish_bowl: FishBowl):
-    TOLERANCE = 0.001
+async def test_sleep_internal_clock(fish_bowl: FishBowl):
+    PAUSE_DURATION = 0.2
+    ITERATIONS = 5
+    TOLERANCE = 0.005 + 0.006 * ITERATIONS
+    ALWAYS_FAIL = True
 
     assert isinstance(fish_bowl.clock, InternalClock)
+    assert fish_bowl.clock.can_sleep()
     pauser = Pauser(time.perf_counter, fish_bowl.sleep, origin=0.0)
 
     fish_bowl.start()
-    for _ in range(5):
+    for _ in range(ITERATIONS):
         await pauser.sleep(PAUSE_DURATION)
     fish_bowl.stop()
 
-    for real, expected in zip(pauser.real, pauser.expected):
-        assert math.isclose(real, expected, abs_tol=TOLERANCE)
+    pauser.assert_equality(tolerance=TOLERANCE)
 
     assert not ALWAYS_FAIL, "ALWAYS_FAIL is enabled"

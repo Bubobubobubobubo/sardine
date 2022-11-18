@@ -22,6 +22,7 @@ class BaseClock(BaseHandler, ABC):
     def __init__(self):
         super().__init__()
         self._run_task: Optional[asyncio.Task] = None
+        self._true_time_is_origin: bool = True
 
     def __repr__(self) -> str:
         return (
@@ -122,7 +123,7 @@ class BaseClock(BaseHandler, ABC):
     @property
     def true_time(self) -> float:
         """A variant of `time` except that no time shift is applied."""
-        if self.env.is_paused() or not self.env.is_running():
+        if self._true_time_is_origin:
             return self.env.time.origin
 
         i_time, i_origin = self.internal_time, self.internal_origin
@@ -215,8 +216,13 @@ class BaseClock(BaseHandler, ABC):
             # unless the clock is able to provide an internal time before
             # the clock has started
             self.internal_origin = self.internal_time
+            self._true_time_is_origin = False
         elif event == "pause":
             self.env.time.origin = self.true_time
+            self._true_time_is_origin = True
         elif event == "stop":
             self.env.time.origin = self.true_time
+            self._true_time_is_origin = True
             self.teardown()
+        # print(f"{event=} {self.env.time.origin=} {self.true_time=} "
+        #       f"{self.env.is_paused()=} {self.env.is_running()=}")

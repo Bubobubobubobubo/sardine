@@ -448,7 +448,7 @@ class AsyncRunner:
         finally:
             # Remove from clock if necessary
             print_panel(f"[yellow][Stopped [red]{name}[/red]][/yellow]")
-            self.clock.runners.pop(name, None)
+            self.scheduler.runners.pop(name, None)
 
     async def _call_func(self, delta: int, func, args, kwargs):
         """Calls the given function and may apply a time shift when the

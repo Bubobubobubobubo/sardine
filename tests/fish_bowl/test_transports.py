@@ -1,12 +1,12 @@
 import pytest
 from sardine import FishBowl
 
-from . import EventLoggingHandler, fish_bowl
+from . import EventLogHandler, fish_bowl
 
 
 @pytest.mark.asyncio
 async def test_transports(fish_bowl: FishBowl):
-    logger = EventLoggingHandler(
+    logger = EventLogHandler(
         whitelist=("start", "stop", "pause", "resume"),
     )
     fish_bowl.add_handler(logger)

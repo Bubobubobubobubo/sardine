@@ -4,10 +4,10 @@ from typing import Any, Collection, Iterator, NamedTuple, Optional, Union
 import pytest_asyncio
 from sardine import BaseHandler, FishBowl
 
-__all__ = ("EventLog", "EventLoggingHandler", "fish_bowl")
+__all__ = ("EventLogEntry", "EventLogHandler", "fish_bowl")
 
 
-class EventLog(NamedTuple):
+class EventLogEntry(NamedTuple):
     """An event entry for the `EventLoggingHandler`."""
     timestamp: float
     clock_time: float
@@ -15,16 +15,16 @@ class EventLog(NamedTuple):
     args: tuple[Any, ...]
 
 
-class EventLoggingHandler(BaseHandler):
+class EventLogHandler(BaseHandler):
     """Logs events with timestamps, and optionally according to a whitelist."""
     def __init__(self, *, whitelist: Optional[Collection[str]] = None):
         super().__init__()
         self.whitelist = whitelist
-        self.events: list[EventLog] = []
+        self.events: list[EventLogEntry] = []
 
     # Analysis methods
 
-    def filter(self, events: Union[str, Collection[str]]) -> Iterator[EventLog]:
+    def filter(self, events: Union[str, Collection[str]]) -> Iterator[EventLogEntry]:
         if isinstance(events, str):
             events = (events,)
 
@@ -45,7 +45,7 @@ class EventLoggingHandler(BaseHandler):
             self.register(None)
 
     def hook(self, event: str, *args):
-        self.events.append(EventLog(
+        self.events.append(EventLogEntry(
             timestamp=self.time(),
             clock_time=self.env.clock.time,
             event=event,

@@ -5,7 +5,7 @@ from typing import Callable
 import pytest
 from sardine import FishBowl, InternalClock
 
-from . import EventLoggingHandler, fish_bowl
+from . import EventLogHandler, fish_bowl
 
 PAUSE_DURATION = 0.010
 MAXIMUM_DEVIATION = 1e-9
@@ -39,7 +39,7 @@ async def test_internal_clock(fish_bowl: FishBowl):
     end_event = "test_internal_clock"
     event_order = ("start", "pause", "resume", "stop", end_event)
 
-    logger = EventLoggingHandler(whitelist=event_order)
+    logger = EventLogHandler(whitelist=event_order)
     fish_bowl.add_handler(logger)
 
     pauser = Pauser(logger.time, origin=0.0)

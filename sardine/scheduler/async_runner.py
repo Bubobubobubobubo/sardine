@@ -15,7 +15,7 @@ from .constants import MaybeCoroFunc
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
-    from .Scheduler import Scheduler
+    from .scheduler import Scheduler
 
 __all__ = ("AsyncRunner", "FunctionState")
 

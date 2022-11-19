@@ -1,4 +1,6 @@
 # Replace no-break spaces with regular spaces
 a2f5b2be4ee060b4cb00f704c9abe1112b434f95
-# Run black formatter
+# (rewrite-clock) Run black formatter
 71693688c38cf08f561e5dbcab21814ed365186f
+# (rewrite) Use black's default line length of 88 and format
+9728a977e61741a65cd36c18154f8eab7d5aaf56

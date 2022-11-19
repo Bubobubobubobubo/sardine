@@ -89,7 +89,7 @@ class BaseClock(BaseHandler, ABC):
     @property
     @abstractmethod
     def phase(self) -> float:
-        """The phase of the clock's current beat."""
+        """The phase of the current beat in the range `[0, beat_duration)`."""
 
     @property
     @abstractmethod

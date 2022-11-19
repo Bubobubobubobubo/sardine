@@ -19,6 +19,7 @@ from asyncio import futures
 from pathlib import Path
 from rich import print as pretty_print
 from rich.panel import Panel
+import sardine
 
 system = platform.system()
 
@@ -105,7 +106,7 @@ class REPLThread(threading.Thread):
             banner = ()
             console.push("""import os""")
             console.push("""os.environ['SARDINE_INIT_SESSION'] = 'YES'""")
-            console.push("""from sardine import *""")
+            console.push("""from sardine.run import *""")
             console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
         finally:
             warnings.filterwarnings(
@@ -118,6 +119,7 @@ class REPLThread(threading.Thread):
 
 
 if __name__ == "__main__":
+    sardine.event_loop.inject_policy()
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 

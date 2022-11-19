@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import time
 
 import rich
@@ -40,8 +39,10 @@ class PrecisionSelectorEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
 
 
 def _inject_precision_proactor() -> bool:
-    if sys.platform != "win32":
-        rich.print("[yellow]Skipping precision event loop on non-Windows system")
+    if PrecisionProactorEventLoop is None:
+        rich.print(
+            "[yellow]Skipping precision event loop on non-Windows system"
+        )
         return False
 
     asyncio.set_event_loop_policy(PrecisionProactorEventLoopPolicy())

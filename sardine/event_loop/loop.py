@@ -1,7 +1,7 @@
 import asyncio
 
 from .mixin import PerfCounterMixin
-from.sansio import SansIOEventLoop
+from .sansio import SansIOEventLoop
 
 __all__ = (
     "PrecisionProactorEventLoop",

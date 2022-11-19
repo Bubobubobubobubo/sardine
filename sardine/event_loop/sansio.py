@@ -26,6 +26,7 @@ class SansIOEventLoop(asyncio.BaseEventLoop):
     replacing it with `time.sleep()`. Any native I/O APIs will **not** work
     when using this implementation.
     """
+
     def __init__(self) -> None:
         super().__init__()
         self._wake_cond = wake_cond = threading.Condition()

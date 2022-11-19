@@ -162,8 +162,8 @@ class AsyncRunner:
     )
 
     _can_correct_delay: bool = field(default=False, repr=False)
-    _delta: int = field(default=0, repr=False)
-    _expected_interval: int = field(default=0, repr=False)
+    _delta: float = field(default=0.0, repr=False)
+    _expected_interval: float = field(default=0.0, repr=False)
     _last_delay: Union[float, int] = field(default=0.0, repr=False)
 
     # Helper properties
@@ -291,7 +291,7 @@ class AsyncRunner:
         delay: Union[float, int],
         *,
         delta_correction: bool = False,
-        offset: float = 0,
+        offset: float = 0.0,
     ) -> float:
         """Returns the amount of time until the next `delay` interval,
         offsetted by the `offset` argument.
@@ -314,7 +314,7 @@ class AsyncRunner:
             float: The amount of time until the next interval is reached.
 
         """
-        delta = self._delta if delta_correction else 0
+        delta = self._delta if delta_correction else 0.0
         with self.time.scoped_shift(self.interval_shift - delta - offset):
             return self.clock.get_beat_time(delay) - delta
 
@@ -409,7 +409,7 @@ class AsyncRunner:
 
                 # start = self.clock.time
 
-                duration = self._get_corrected_interval(delay, offset=-1)
+                duration = self._get_corrected_interval(delay)
                 deadline = self.clock.time + duration
 
                 wait_task = asyncio.create_task(self.env.sleep(duration))
@@ -450,7 +450,7 @@ class AsyncRunner:
             print_panel(f"[yellow][Stopped [red]{name}[/red]][/yellow]")
             self.scheduler.runners.pop(name, None)
 
-    async def _call_func(self, delta: int, func, args, kwargs):
+    async def _call_func(self, delta: float, func, args, kwargs):
         """Calls the given function and may apply a time shift when the
         `deferred` attribute is set to True.
         """

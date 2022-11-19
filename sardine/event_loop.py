@@ -2,7 +2,7 @@ import asyncio
 import sys
 import time
 
-from rich import print
+import rich
 
 __all__ = ("inject_policy",)
 
@@ -37,17 +37,17 @@ class PrecisionSelectorEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
 
 def _inject_precision_proactor() -> bool:
     if sys.platform != "win32":
-        print("[yellow]Skipping precision event loop on non-Windows system")
+        rich.print("[yellow]Skipping precision event loop on non-Windows system")
         return False
 
     asyncio.set_event_loop_policy(PrecisionProactorEventLoopPolicy())
-    print("[yellow]Injected precision proactor event loop")
+    rich.print("[yellow]Injected precision proactor event loop")
     return True
 
 
 def _inject_precision_selector() -> bool:
     asyncio.set_event_loop_policy(PrecisionSelectorEventLoopPolicy())
-    print("[yellow]Injected precision selector event loop")
+    rich.print("[yellow]Injected precision selector event loop")
     return True
 
 
@@ -55,11 +55,11 @@ def _inject_uvloop() -> bool:
     try:
         import uvloop
     except ImportError:
-        print("[green]uvloop[/green] [yellow]is not installed")
+        rich.print("[green]uvloop[/green] [yellow]is not installed")
         return False
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    print("[yellow]Injected uvloop event loop")
+    rich.print("[yellow]Injected uvloop event loop")
     return True
 
 
@@ -76,4 +76,4 @@ def inject_policy():
             break
 
     if not successful:
-        print("[yellow]Rhythm accuracy may be impacted")
+        rich.print("[yellow]Rhythm accuracy may be impacted")

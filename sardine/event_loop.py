@@ -4,7 +4,7 @@ from typing import Optional
 
 import rich
 
-__all__ = ("inject_policy",)
+__all__ = ("install_policy",)
 
 
 class PerfCounterMixin:
@@ -69,32 +69,32 @@ class PrecisionSansIOEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
 class PrecisionSelectorEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
     _loop_factory = PrecisionSelectorEventLoop
 
-# Injectors
+# installors
 
-def _inject_precision_proactor() -> bool:
+def _install_precision_proactor() -> bool:
     if PrecisionProactorEventLoop is None:
         rich.print("[yellow]Skipping precision event loop on non-Windows system")
         return False
 
     asyncio.set_event_loop_policy(PrecisionProactorEventLoopPolicy())
-    rich.print("[yellow]Injected precision proactor event loop")
+    rich.print("[yellow]Installed precision proactor event loop")
     return True
 
 
-def _inject_precision_sansio() -> bool:
+def _install_precision_sansio() -> bool:
     asyncio.set_event_loop_policy(PrecisionSansIOEventLoopPolicy())
-    rich.print("[yellow]Injected precision Sans I/O event loop")
+    rich.print("[yellow]installed precision Sans I/O event loop")
     rich.print("[bold red]WARNING: event loop does not networking/subprocesses")
     return True
 
 
-def _inject_precision_selector() -> bool:
+def _install_precision_selector() -> bool:
     asyncio.set_event_loop_policy(PrecisionSelectorEventLoopPolicy())
-    rich.print("[yellow]Injected precision selector event loop")
+    rich.print("[yellow]Installed precision selector event loop")
     return True
 
 
-def _inject_uvloop() -> bool:
+def _install_uvloop() -> bool:
     try:
         import uvloop
     except ImportError:
@@ -102,16 +102,21 @@ def _inject_uvloop() -> bool:
         return False
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    rich.print("[yellow]Injected uvloop event loop")
+    rich.print("[yellow]Installed uvloop event loop")
     return True
 
 
-def inject_policy():
+def install_policy():
+    """Installs the best-available event loop policy into asyncio.
+
+    This method must be called before any event loop is created, otherwise
+    it will not affect those event loops.
+    """
     methods = (
-        # _inject_precision_sansio,
-        _inject_uvloop,
-        _inject_precision_proactor,
-        _inject_precision_selector,
+        # _install_precision_sansio,
+        _install_uvloop,
+        _install_precision_proactor,
+        _install_precision_selector,
     )
     successful = False
     for func in methods:

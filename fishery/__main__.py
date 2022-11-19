@@ -119,7 +119,7 @@ class REPLThread(threading.Thread):
 
 
 if __name__ == "__main__":
-    sardine.event_loop.inject_policy()
+    sardine.event_loop.install_policy()
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 

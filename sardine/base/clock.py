@@ -159,7 +159,7 @@ class BaseClock(BaseHandler, ABC):
         elif not sync:
             return interval
 
-        return interval - self.phase
+        return interval - self.phase % interval
 
     def get_bar_time(
         self, n_bars: Union[int, float], *, sync: bool = True

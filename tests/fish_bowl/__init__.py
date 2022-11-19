@@ -43,9 +43,7 @@ class EventLogHandler(BaseHandler):
 
     # Analysis methods
 
-    def filter(
-        self, events: Union[str, Collection[str]]
-    ) -> Iterator[EventLogEntry]:
+    def filter(self, events: Union[str, Collection[str]]) -> Iterator[EventLogEntry]:
         if isinstance(events, str):
             events = (events,)
 

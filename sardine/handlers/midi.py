@@ -29,9 +29,7 @@ class MidiHandler(BaseHandler, threading.Thread):
             if self._port_name in ["Sardine", "internal"]:
                 self._midi = mido.open_output("Sardine", virtual=True)
             else:
-                self._midi = mido.open_output(
-                    self._available_ports[0], virtual=True
-                )
+                self._midi = mido.open_output(self._available_ports[0], virtual=True)
                 self._port_name = str(self._available_ports[0])
         # For W10/W11
         else:
@@ -87,16 +85,12 @@ class MidiHandler(BaseHandler, threading.Thread):
 
     def _note_on(self, channel: int, note: int, velocity: int) -> None:
         self._midi.send(
-            mido.Message(
-                "note_on", channel=channel, note=note, velocity=velocity
-            )
+            mido.Message("note_on", channel=channel, note=note, velocity=velocity)
         )
 
     def _note_off(self, channel: int, note: int, velocity: int) -> None:
         self._midi.send(
-            mido.Message(
-                "note_off", channel=channel, note=note, velocity=velocity
-            )
+            mido.Message("note_off", channel=channel, note=note, velocity=velocity)
         )
 
     def _polytouch(self, channel: int, note: int, value: int) -> None:
@@ -105,9 +99,7 @@ class MidiHandler(BaseHandler, threading.Thread):
         )
 
     def _aftertouch(self, channel: int, value: int) -> None:
-        self._midi.send(
-            mido.Message("aftertouch", channel=channel, value=value)
-        )
+        self._midi.send(mido.Message("aftertouch", channel=channel, value=value))
 
     def _control_change(self, channel: int, control: int, value: int) -> None:
         self._midi.send(

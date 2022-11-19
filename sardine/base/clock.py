@@ -138,9 +138,7 @@ class BaseClock(BaseHandler, ABC):
         """Checks if the clock supports sleeping."""
         return getattr(self, "sleep", None) is not BaseClock.sleep
 
-    def get_beat_time(
-        self, n_beats: Union[int, float], *, sync: bool = True
-    ) -> float:
+    def get_beat_time(self, n_beats: Union[int, float], *, sync: bool = True) -> float:
         """Determines the amount of time to wait for N beats to pass.
 
         Args:
@@ -161,9 +159,7 @@ class BaseClock(BaseHandler, ABC):
 
         return interval - self.phase % interval
 
-    def get_bar_time(
-        self, n_bars: Union[int, float], *, sync: bool = True
-    ) -> float:
+    def get_bar_time(self, n_bars: Union[int, float], *, sync: bool = True) -> float:
         """Determines the amount of time to wait for N bars to pass.
 
         Args:

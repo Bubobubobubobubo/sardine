@@ -10,7 +10,6 @@ from sardine import FishBowl, InternalClock
 from . import EventLogHandler, Pauser, fish_bowl
 
 
-
 @pytest.mark.asyncio
 async def test_internal_clock(fish_bowl: FishBowl):
     PAUSE_DURATION = 0.1

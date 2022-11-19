@@ -56,9 +56,7 @@ class SleepHandler(BaseHandler):
 
             # Use clock sleep if available, else polling implementation
             if clock.can_sleep():
-                sleep_task = asyncio.create_task(
-                    clock.sleep(deadline - clock.time)
-                )
+                sleep_task = asyncio.create_task(clock.sleep(deadline - clock.time))
             else:
                 sleep_task = asyncio.create_task(self._sleep_until(deadline))
 

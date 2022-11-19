@@ -23,9 +23,7 @@ class OSCHandler(BaseHandler):
         self._ip, self._port, self._name = (ip, port, name)
         self._ahead_amount = ahead_amount
         osc_process()
-        self.client = osc_udp_client(
-            address=self._ip, port=self._port, name=self._name
-        )
+        self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
 
         self._events = {"send": self._send}
 

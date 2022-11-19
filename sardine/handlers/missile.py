@@ -8,6 +8,7 @@ __all__ = ("MissileMode",)
 
 class MissileMode(BaseHandler):
     """Maximize the current thread's wake time with a CPU-intensive task."""
+
     def __init__(self, *, burn_rate: Union[float, int] = 1000):
         super().__init__()
         self.burn_interval = 1 / burn_rate

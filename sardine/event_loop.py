@@ -13,14 +13,42 @@ class PerfCounterMixin:
 
 
 if hasattr(asyncio, "ProactorEventLoop"):
-    class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop):
+
+    class PrecisionProactorEventLoop(
+        PerfCounterMixin, asyncio.ProactorEventLoop
+    ):
         ...
+
 else:
     PrecisionProactorEventLoop = None
 
 
-class PrecisionEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
+class PrecisionSelectorEventLoop(PerfCounterMixin, asyncio.SelectorEventLoop):
+    ...
+
+
+class PrecisionProactorEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
     _loop_factory = PrecisionProactorEventLoop
+
+
+class PrecisionSelectorEventLoopPolicy(asyncio.DefaultEventLoopPolicy):
+    _loop_factory = PrecisionSelectorEventLoop
+
+
+def _inject_precision_proactor() -> bool:
+    if sys.platform != "win32":
+        print("[yellow]Skipping precision event loop on non-Windows system")
+        return False
+
+    asyncio.set_event_loop_policy(PrecisionProactorEventLoopPolicy())
+    print("[yellow]Injected precision proactor event loop")
+    return True
+
+
+def _inject_precision_selector() -> bool:
+    asyncio.set_event_loop_policy(PrecisionSelectorEventLoopPolicy())
+    print("[yellow]Injected precision selector event loop")
+    return True
 
 
 def _inject_uvloop() -> bool:
@@ -35,18 +63,12 @@ def _inject_uvloop() -> bool:
     return True
 
 
-def _inject_precision() -> bool:
-    if sys.platform != "win32":
-        print("[yellow]Skipping precision event loop on non-Windows system")
-        return False
-
-    asyncio.set_event_loop_policy(PrecisionEventLoopPolicy())
-    print("[yellow]Injected precision event loop")
-    return True
-
-
 def inject_policy():
-    methods = (_inject_uvloop, _inject_precision)
+    methods = (
+        _inject_uvloop,
+        _inject_precision_proactor,
+        _inject_precision_selector,
+    )
     successful = False
     for func in methods:
         successful = func()

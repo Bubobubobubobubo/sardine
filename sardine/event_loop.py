@@ -126,3 +126,14 @@ def install_policy():
 
     if not successful:
         rich.print("[yellow]Rhythm accuracy may be impacted")
+
+
+def new_event_loop() -> asyncio.BaseEventLoop:
+    """Creates the best-available event loop without permanently installing
+    a new policy for asyncio.
+    """
+    last_policy = asyncio.get_event_loop_policy()
+    install_policy()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop_policy(last_policy)
+    return loop

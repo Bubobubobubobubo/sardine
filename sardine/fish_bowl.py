@@ -9,8 +9,8 @@ from .base import BaseClock, BaseHandler, BaseParser
 from .clock import Time, InternalClock
 from .handlers import SleepHandler
 from .sequences.SardineParser.ListParser import ListParser
-from .sequences.iterators import Iterator
-from .sequences.variables import Variables
+from .sequences.Iterators import Iterator
+from .sequences.Variables import Variables
 from .sequences.patterns import Pattern
 
 __all__ = ("FishBowl",)

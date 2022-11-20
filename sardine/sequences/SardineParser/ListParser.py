@@ -45,11 +45,8 @@ class ListParser(BaseHandler):
 
         self._events = {
             'parse': self.parse,
-            'parse_debug': lambda: print('to be implemented...')
+            'parse_debug': self._parse_debug
         }
-
-
-
 
     def setup(self):
         for event in self._events:
@@ -135,7 +132,7 @@ class ListParser(BaseHandler):
         """
         print(Tree.pretty(self._printing_parser.parse(expression)))
 
-    def parse(self, pattern: str):
+    def parse(self, *args):
         """Main method to parse a pattern. Parses 'pattern' and returns
         a flattened list to index on to extract individual values. Note
         that this function is temporary. Support for stacked values is
@@ -150,6 +147,7 @@ class ListParser(BaseHandler):
         Returns:
             list: The parsed pattern as a list of values
         """
+        pattern = args[0]
         final_pattern = []
         try:
             final_pattern = self._result_parser.parse(pattern)
@@ -158,6 +156,7 @@ class ListParser(BaseHandler):
 
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
+        print(final_pattern)
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):

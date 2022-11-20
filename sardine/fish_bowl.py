@@ -31,17 +31,18 @@ class FishBowl:
         clock: BaseClock = None,
         iterator: Optional[Iterator] = None,
         parser: Optional[BaseParser] = None,
+        scheduler: Optional[Scheduler] = None,
         sleeper: Optional[SleepHandler] = None,
         time: Optional[Time] = None,
         variables: Optional[Variables] = None,
     ):
         self.clock = clock or InternalClock()
         self.iterators = iterator or Iterator()
+        self.parser = parser or ListParser()
+        self.scheduler = scheduler or Scheduler()
         self.sleeper = sleeper or SleepHandler()
         self.time = time or Time()
         self.variables = variables or Variables()
-        self.scheduler = Scheduler()
-        self.parser = parser or ListParser()
 
         self._handlers: dict[BaseHandler, None] = {}
         self._alive = asyncio.Event()
@@ -56,10 +57,10 @@ class FishBowl:
         ] = collections.defaultdict(dict)
 
         self.add_handler(self.clock)
+        self.add_handler(self.parser)
+        self.add_handler(self.scheduler)
         self.add_handler(self.sleeper)
         self.add_handler(self.time)
-        self.add_handler(self.scheduler)
-        self.add_handler(self.parser)
 
     ## REPR/STR #######################################################################
 

@@ -125,7 +125,7 @@ def install_policy():
     it will not affect those event loops.
     """
     methods = (
-        # _install_precision_sansio,
+        _install_precision_sansio,
         _install_uvloop,
         _install_precision_proactor,
         _install_precision_selector,

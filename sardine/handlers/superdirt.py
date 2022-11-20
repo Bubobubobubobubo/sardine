@@ -13,13 +13,11 @@ __all__ = ("SuperDirtHandler",)
 class SuperDirtHandler(BaseHandler):
     def __init__(
         self,
-        ip: str = "127.0.0.1",
-        port: int = 57120,
         name: str = "SuperDirt",
         ahead_amount: float = 0.3,
     ):
         super().__init__()
-        self._ip, self._port, self._name = (ip, port, name)
+        self._name = name
 
         # Opening SuperColliderXSuperDirt subprocess
         try:
@@ -33,30 +31,29 @@ class SuperDirtHandler(BaseHandler):
 
         # Opening a new OSC Client to talk with it
         self._ahead_amount = ahead_amount
-        self._client = osc_udp_client(
-            address=self._ip, port=self._port, name=self._name
-        )
 
         # Setting up environment
         self.env = None
-        self.events = {
+        self._events = {
             "meter": self._superdirt_process.meter,
             "scope": self._superdirt_process.scope,
             "send": self._superdirt_process.send,
             "freqscope": self._superdirt_process.freqscope,
             "dirt_play": self._dirt_play,
             "panic": self._dirt_panic,
+            "boot": self._superdirt_process.boot,
+            "kill": self._superdirt_process.kill
         }
 
     def __repr__(self) -> str:
-        return f"SuperDirt: {self._ip}:{self._port}"
+        return f"SuperDirt: {self._name}"
 
     def setup(self):
-        for event in self._events:  # FIXME undefined superdirt _events
+        for event in self._events:
             self.register(event)
 
     def hook(self, event: str, *args):
-        func = self._events[event]  # FIXME undefined superdirt _events
+        func = self._events[event]
         func(*args)
 
     def __send(self, address: str, message: list) -> None:
@@ -72,7 +69,7 @@ class SuperDirtHandler(BaseHandler):
         """Build and send OSC bundles"""
         message = message + [
             "cps",
-            (self.env.clock.bpm / 60 / self.env.clock._beats_per_bar),
+            (self.env.clock.tempo / 60 / self.env.clock._beats_per_bar),
             "delta",
             1,
         ]

@@ -71,9 +71,10 @@ again = bowl.scheduler.schedule_func
 
 # Adding Senders
 bowl.add_handler(MidiHandler())
+dirt = SuperDirtHandler()
+bowl.add_handler(dirt)
+# bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
 # bowl.add_handler(OSCHandler())
-# bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
-# bowl.add_handler(SuperDirtHandler())
 
 if CRASH_TEST:
     @swim

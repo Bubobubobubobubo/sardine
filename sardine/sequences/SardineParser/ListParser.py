@@ -3,6 +3,7 @@ from pathlib import Path
 from .TreeCalc import CalculateTree
 from .Chords import Chord
 from rich import print
+from ...base.handler import BaseHandler
 
 # __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")
@@ -21,10 +22,9 @@ grammar_path = Path(__file__).parent
 grammar = grammar_path / "grammars/proto.lark"
 
 
-class ListParser:
+class ListParser(BaseHandler):
     def __init__(
         self,
-        env,
         parser_type: str = "proto",
         debug: bool = False,
     ):
@@ -39,11 +39,21 @@ class ListParser:
         Args:
             parser_type (str, optional): Type of parser. Defaults to "number".
         """
-        # Reference to clock for the "t" grammar token
-        self.clock = env.clock
+        BaseHandler.__init__(self)
         self.debug = debug
-        self.iterators = env.iterators
-        self.variables = env.variables
+        self.parser_type = parser_type
+
+        self._events = {
+            'parse': self.parse,
+            'parse_debug': lambda: print('to be implemented...')
+        }
+
+
+
+
+    def setup(self):
+        for event in self._events:
+            self.register(event)
 
         parsers = {
             "proto": {
@@ -63,17 +73,21 @@ class ListParser:
                     cache=True,
                     lexer="contextual",
                     transformer=CalculateTree(
-                        self.clock, self.iterators, self.variables
+                        self.env.clock, self.env.iterators, self.env.variables
                     ),
                 ),
             },
         }
 
         try:
-            self._result_parser = parsers[parser_type]["full"]
-            self._printing_parser = parsers[parser_type]["raw"]
+            self._result_parser = parsers[self.parser_type]["full"]
+            self._printing_parser = parsers[self.parser_type]["raw"]
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
+
+    def hook(self, event: str, *args):
+        func = self._events[event]
+        func(*args)
 
     def __flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will

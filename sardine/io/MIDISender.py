@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 import asyncio
-from email import parser
 import pprint
-import functools
-from typing import TYPE_CHECKING, Union, Optional
-from ..sequences import ListParser
-from math import floor
-from .SenderLogic import pattern_element, compose_parametric_patterns
-from ..sequences.SardineParser.Chords import Chord
+from typing import TYPE_CHECKING, Optional, Union
+
+from ..sequences import Chord
+from .SenderLogic import compose_parametric_patterns, pattern_element
 
 if TYPE_CHECKING:
-    from ..legacy import Clock
     from ..io import MIDIIo
+    from ..legacy import Clock
 
 
 class MIDISender:

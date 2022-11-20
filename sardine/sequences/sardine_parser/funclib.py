@@ -1,15 +1,17 @@
 import random
 import statistics
 from collections.abc import Iterable
-from .Utilities import zip_cycle, map_unary_function, map_binary_function
-from .Chords import Chord
-from itertools import cycle, islice, chain
-from math import cos, sin, tan
-from typing import Union, Callable, Optional
-from random import shuffle
 from functools import partial
-from ...sequences.sequence import euclid
-from easing_functions import BounceEaseIn, BounceEaseOut, BounceEaseInOut
+from itertools import chain, cycle, islice
+from math import cos, sin, tan
+from random import shuffle
+from typing import Callable, Optional, Union
+
+from easing_functions import BounceEaseIn, BounceEaseInOut, BounceEaseOut
+
+from ..sequence import euclid
+from .chord import Chord
+from .utils import map_binary_function, map_unary_function, zip_cycle
 
 qualifiers = {
     "dim": [0, 3, 6, 12],

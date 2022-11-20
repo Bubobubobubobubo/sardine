@@ -1,10 +1,11 @@
-from typing import Union, TYPE_CHECKING
+import asyncio
+import sys
+import threading
+from typing import TYPE_CHECKING, Union
+
+import mido
 from rich import print as rich_print
 from rich.console import Console
-import threading
-import asyncio
-import mido
-import sys
 
 if TYPE_CHECKING:
     from ..legacy import Clock

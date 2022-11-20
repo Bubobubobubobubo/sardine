@@ -1,6 +1,6 @@
-from itertools import islice, count, cycle
-from itertools import cycle, takewhile, dropwhile
-from .Chords import Chord
+from itertools import count, cycle, dropwhile, islice, takewhile
+
+from .chord import Chord
 
 
 def floating_point_range(start, end, step):

@@ -1,16 +1,18 @@
-from lark import Transformer, v_args
-from typing import Union
-from .Utilities import zip_cycle, map_unary_function, map_binary_function, CyclicalList
-from .Chords import Chord
-from . import FuncLibrary
-from lark.lexer import Token
-from typing import Any
-from itertools import cycle, takewhile, count
-from time import time
 import datetime
 import random
+from itertools import count, cycle, takewhile
+from time import time
+from typing import Any, Union
+
+from lark import Transformer, v_args
+from lark.lexer import Token
 from rich import print
 from rich.panel import Panel
+
+from . import funclib
+from .chord import Chord
+from .utils import (CyclicalList, map_binary_function, map_unary_function,
+                    zip_cycle)
 
 
 @v_args(inline=True)
@@ -158,11 +160,11 @@ class CalculateTree(Transformer):
 
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return FuncLibrary.chordify(*sum(args, start=[]))
+        return funclib.chordify(*sum(args, start=[]))
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""
-        return FuncLibrary.invert(notes, [int(inversion[0])])
+        return funclib.invert(notes, [int(inversion[0])])
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
@@ -196,7 +198,7 @@ class CalculateTree(Transformer):
         quali = "".join([str(x) for x in quali])
         try:
             return map_binary_function(
-                lambda x, y: x + y, note, FuncLibrary.qualifiers[str(quali)]
+                lambda x, y: x + y, note, funclib.qualifiers[str(quali)]
             )
         except KeyError:
             return note
@@ -417,42 +419,42 @@ class CalculateTree(Transformer):
     def function_call(self, func_name, *args):
         modifiers_list = {
             # Voice leading operations
-            "dmitri": FuncLibrary.dmitri,
-            "voice": FuncLibrary.find_voice_leading,
-            "sopr": FuncLibrary.soprano,
-            "quant": FuncLibrary.quantize,
-            "disco": FuncLibrary.disco,
-            "adisco": FuncLibrary.antidisco,
-            "bass": FuncLibrary.bassify,
-            "sopr": FuncLibrary.soprano,
-            "invert": FuncLibrary.invert,
-            "aspeed": FuncLibrary.anti_speed,
+            "dmitri": funclib.dmitri,
+            "voice": funclib.find_voice_leading,
+            "sopr": funclib.soprano,
+            "quant": funclib.quantize,
+            "disco": funclib.disco,
+            "adisco": funclib.antidisco,
+            "bass": funclib.bassify,
+            "sopr": funclib.soprano,
+            "invert": funclib.invert,
+            "aspeed": funclib.anti_speed,
             # Boolean mask operations
-            "euclid": FuncLibrary.euclidian_rhythm,
-            "mask": FuncLibrary.mask,
-            "vanish": FuncLibrary.remove_x,
-            "expand": FuncLibrary.expand,
-            "pal": FuncLibrary.palindrome,
-            "apal": FuncLibrary.alternative_palindrome,
-            "rev": FuncLibrary.reverse,
-            "leave": FuncLibrary.leave,
-            "inp": FuncLibrary.insert_pair,
-            "in": FuncLibrary.insert,
-            "inprot": FuncLibrary.insert_pair_rotate,
-            "inrot": FuncLibrary.insert_rotate,
-            "shuf": FuncLibrary.shuffle,
+            "euclid": funclib.euclidian_rhythm,
+            "mask": funclib.mask,
+            "vanish": funclib.remove_x,
+            "expand": funclib.expand,
+            "pal": funclib.palindrome,
+            "apal": funclib.alternative_palindrome,
+            "rev": funclib.reverse,
+            "leave": funclib.leave,
+            "inp": funclib.insert_pair,
+            "in": funclib.insert,
+            "inprot": funclib.insert_pair_rotate,
+            "inrot": funclib.insert_rotate,
+            "shuf": funclib.shuffle,
             # Math functions
-            "clamp": FuncLibrary.clamp,
-            "sin": FuncLibrary.sinus,
-            "cos": FuncLibrary.cosinus,
-            "tan": FuncLibrary.tangent,
-            "abs": FuncLibrary.absolute,
-            "max": FuncLibrary.maximum,
-            "min": FuncLibrary.minimum,
-            "mean": FuncLibrary.mean,
-            "scale": FuncLibrary.scale,
-            "filt": FuncLibrary.custom_filter,
-            "quant": FuncLibrary.quantize,
+            "clamp": funclib.clamp,
+            "sin": funclib.sinus,
+            "cos": funclib.cosinus,
+            "tan": funclib.tangent,
+            "abs": funclib.absolute,
+            "max": funclib.maximum,
+            "min": funclib.minimum,
+            "mean": funclib.mean,
+            "scale": funclib.scale,
+            "filt": funclib.custom_filter,
+            "quant": funclib.quantize,
         }
         try:
             return modifiers_list[func_name](*args)

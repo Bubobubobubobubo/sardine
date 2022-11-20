@@ -1,5 +1,5 @@
-from random import randint, random
 from random import choices as randomChoices
+from random import randint, random
 
 # ==============================================================================#
 

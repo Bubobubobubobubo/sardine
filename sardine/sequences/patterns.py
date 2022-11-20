@@ -1,5 +1,8 @@
 from typing import Union
 
+__all__ = ("Pattern",)
+
+
 class Pattern:
 
     def __init__(self):

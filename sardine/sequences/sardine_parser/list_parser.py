@@ -1,9 +1,11 @@
-from lark import Lark, Tree
 from pathlib import Path
-from .TreeCalc import CalculateTree
-from .Chords import Chord
+
+from lark import Lark, Tree
 from rich import print
+
 from ...base.handler import BaseHandler
+from .chord import Chord
+from .tree_calc import CalculateTree
 
 # __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")

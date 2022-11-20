@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import asyncio
-import pprint
 import functools
+import pprint
 from typing import TYPE_CHECKING, Union
+
 from ..io import dirt
-from ..sequences import ListParser
-from ..sequences.SardineParser.Chords import Chord
-from .SenderLogic import pattern_element, compose_parametric_patterns
+from ..sequences import Chord
+from .SenderLogic import compose_parametric_patterns, pattern_element
 
 if TYPE_CHECKING:
     from ..legacy import Clock

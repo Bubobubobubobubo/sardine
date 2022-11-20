@@ -1,10 +1,10 @@
-import mido
-from mido import Message, open_input, get_input_names, parse_string_stream
-from rich import print
-from typing import Optional, Union
 from collections import deque
 from dataclasses import dataclass
+from typing import Optional, Union
 
+import mido
+from mido import Message, get_input_names, open_input, parse_string_stream
+from rich import print
 
 __all__ = ("MidiListener", "ClockListener", "ControlTarget", "NoteTarget")
 

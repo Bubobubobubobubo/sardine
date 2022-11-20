@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 import asyncio
-import pprint
 import functools
+import pprint
 from typing import TYPE_CHECKING, Union
-from ..sequences import ListParser
-from math import floor
-from .SenderLogic import pattern_element, compose_parametric_patterns
+
+from .SenderLogic import compose_parametric_patterns, pattern_element
 
 if TYPE_CHECKING:
     from ..legacy import Clock

@@ -1,6 +1,8 @@
-from string import ascii_letters
 from itertools import count
+from string import ascii_letters
 from typing import Union
+
+__all__ = ("Variables",)
 
 
 class Variables(object):

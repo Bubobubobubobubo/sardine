@@ -1,6 +1,7 @@
-from typing import List, Tuple, Any
-from ..sequences.SardineParser.Chords import Chord
 from math import floor
+from typing import Any, List, Tuple
+
+from ..sequences import Chord
 
 
 def pattern_element(div: int, rate: int, iterator: int, pattern: list) -> int:

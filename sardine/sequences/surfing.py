@@ -8,16 +8,16 @@
 # It can be useful to quickly lay down some drumming materials while using swim-
 # ming functions for more delicate operations :)
 ################################################################################
-from string import ascii_uppercase, ascii_lowercase
-from typing import Union, TYPE_CHECKING, Callable
+from string import ascii_lowercase, ascii_uppercase
+from typing import TYPE_CHECKING, Callable, Union
+
 from rich import print
 from rich.panel import Panel
 
-
 if TYPE_CHECKING:
     from ..io.MIDISender import MIDISender
-    from ..io.SuperDirtSender import SuperDirtSender
     from ..io.OSCSender import OSCSender
+    from ..io.SuperDirtSender import SuperDirtSender
 
 __all__ = ("Player", "PatternHolder")
 
@@ -25,7 +25,7 @@ __all__ = ("Player", "PatternHolder")
 class Player:
 
     """
-    A Player is a lone Sender that will be activated by a central surfing 
+    A Player is a lone Sender that will be activated by a central surfing
     swimming function. It contains the sender and basic information about
     div, rate, etc...
     """

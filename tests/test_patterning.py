@@ -2,7 +2,7 @@ import unittest
 from typing import Union
 from unittest import mock
 
-from sardine.sequences.SardineParser.ListParser import ListParser
+from sardine.sequences import ListParser
 
 PARSER = ListParser(None, None, None)
 

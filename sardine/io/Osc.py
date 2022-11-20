@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 import asyncio
-from typing import Callable, Any
 from time import time
-from typing import Union, TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Any, Callable, Union
+
 from osc4py3 import oscbuildparse
-from functools import partial
 from osc4py3.as_eventloop import (
+    osc_method,
+    osc_process,
+    osc_send,
     osc_startup,
+    osc_terminate,
     osc_udp_client,
     osc_udp_server,
-    osc_method,
-    osc_send,
-    osc_process,
-    osc_terminate,
 )
 from osc4py3.oscmethod import *  # does OSCARG_XXX
 from rich import print

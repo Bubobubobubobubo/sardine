@@ -4,14 +4,11 @@ from typing import Hashable, Iterable, Optional, Protocol, Union
 
 from exceptiongroup import BaseExceptionGroup
 
-from .scheduler import Scheduler
 from .base import BaseClock, BaseHandler, BaseParser
-from .clock import Time, InternalClock
+from .clock import InternalClock, Time
 from .handlers import SleepHandler
-from .sequences.SardineParser.ListParser import ListParser
-from .sequences.Iterators import Iterator
-from .sequences.Variables import Variables
-from .sequences.patterns import Pattern
+from .scheduler import Scheduler
+from .sequences import Iterator, ListParser, Pattern, Variables
 
 __all__ = ("FishBowl",)
 

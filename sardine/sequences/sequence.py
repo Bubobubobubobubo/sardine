@@ -1,6 +1,6 @@
-from typing import Union
 import itertools
 import random
+from typing import Union
 
 
 def bin(sequence: Union[str, Union[int, float]], reverse: bool = False):

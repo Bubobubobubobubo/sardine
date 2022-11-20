@@ -39,9 +39,16 @@ else:
     print(f"[red]No user provided configuration file found...")
 
 # Real initialisation takes place here ############################
+clock = LinkClock if config.link_clock else InternalClock
+# clock = LinkClock if config.link_clock else InternalClock
 bowl = FishBowl(
-    clock=InternalClock(tempo=config.bpm, bpb=config.beats),
+    clock=clock(tempo=config.bpm, bpb=config.beats),
 )
+# Attaching handlers
+bowl.add_handler(MidiHandler())
+if config.superdirt_handler:
+    dirt = SuperDirtHandler()
+    bowl.add_handler(dirt)
 
 # Starting the clock
 bowl.start()
@@ -57,6 +64,20 @@ def swim(fn):
     return fn
 
 
+
+
+# Adding a parser
+# bowl.swap_parser(ListParser)
+
+
+def swim(fn):
+    """
+    Swimming decorator: push a function to the clock. The function will be
+    declared and followed by the clock system to recurse in time if needed.
+    """
+    bowl.scheduler.schedule_func(fn)
+    return fn
+
 def die(fn):
     """
     Swimming decorator: remove a function from the clock. The function will not
@@ -64,17 +85,8 @@ def die(fn):
     """
     bowl.scheduler.remove(fn)
     return fn
+
 again = bowl.scheduler.schedule_func
-
-# Adding a parser
-# bowl.swap_parser(ListParser)
-
-# Adding Senders
-bowl.add_handler(MidiHandler())
-dirt = SuperDirtHandler()
-bowl.add_handler(dirt)
-# bowl.add_handler(SuperColliderHandler(name="Custom SuperCollider Connexion"))
-# bowl.add_handler(OSCHandler())
 
 if CRASH_TEST:
     @swim

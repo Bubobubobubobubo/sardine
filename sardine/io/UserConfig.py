@@ -22,10 +22,9 @@ TEMPLATE_CONFIGURATION = {
         "bpm": 135,
         "beats": 4,
         "debug": False,
-        "ppqn": 24,
-        "boot_superdirt": False,
+        "superdirt_handler": False,
         "verbose_superdirt": False,
-        "active_clock": True,
+        "link_clock": False,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "deferred_scheduling": True,
@@ -47,14 +46,13 @@ def _recursive_update(dest: dict, src: dict):
 class Config:
     midi: Union[str, None]
     beats: int
-    ppqn: int
     bpm: int
     debug: bool
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
-    boot_superdirt: bool
-    active_clock: bool
+    superdirt_handler: bool
+    link_clock: bool
     deferred_scheduling: bool
 
     @classmethod
@@ -64,11 +62,10 @@ class Config:
             midi=config["midi"],
             beats=config["beats"],
             debug=config["debug"],
-            ppqn=config["ppqn"],
             bpm=config["bpm"],
-            boot_superdirt=config["boot_superdirt"],
+            superdirt_handler=config["superdirt_handler"],
             verbose_superdirt=config["verbose_superdirt"],
-            active_clock=config["active_clock"],
+            link_clock=config["link_clock"],
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
             deferred_scheduling=config["deferred_scheduling"],
@@ -80,12 +77,11 @@ class Config:
                 "midi": self.midi,
                 "beats": self.beats,
                 "debug": self.debug,
-                "ppqn": self.ppqn,
                 "bpm": self.bpm,
-                "boot_superdirt": self.boot_superdirt,
+                "superdirt_handler": self.superdirt_handler,
                 "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,
-                "active_clock": self.active_clock,
+                "link_clock": self.link_clock,
                 "user_config_path": self.user_config_path,
                 "deferred_scheduling": self.deferred_scheduling,
             }

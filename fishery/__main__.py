@@ -21,25 +21,24 @@ from rich import print as pretty_print
 from rich.panel import Panel
 import sardine
 
-system = platform.system()
-
-# Setting very high priority for this process (time-critical)
-warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
-\nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
-if system == "Windows":
-    try:
-        p = psutil.Process(os.getpid())
-        p.nice(psutil.HIGH_PRIORITY_CLASS)
-    except psutil.AccessDenied:
-        pretty_print(Panel.fit(warning_text))
-        pass
-else:
-    try:
-        p = psutil.Process(os.getpid())
-        p.nice(-20)
-    except psutil.AccessDenied:
-        pretty_print(Panel.fit(warning_text))
-        pass
+# system = platform.system()
+# # Setting very high priority for this process (time-critical)
+# warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
+# \nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
+# if system == "Windows":
+#     try:
+#         p = psutil.Process(os.getpid())
+#         p.nice(psutil.HIGH_PRIORITY_CLASS)
+#     except psutil.AccessDenied:
+#         pretty_print(Panel.fit(warning_text))
+#         pass
+# else:
+#     try:
+#         p = psutil.Process(os.getpid())
+#         p.nice(-20)
+#     except psutil.AccessDenied:
+#         pretty_print(Panel.fit(warning_text))
+#         pass
 
 
 # Appdirs boilerplate

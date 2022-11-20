@@ -13,6 +13,7 @@ from itertools import chain
 from InquirerPy import inquirer, prompt
 from InquirerPy.validator import EmptyInputValidator
 from InquirerPy.base.control import Choice
+from ..io.UserConfig import create_template_configuration_file
 
 FUNNY_TEXT = """
 ░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
@@ -24,28 +25,6 @@ FUNNY_TEXT = """
 
  This is the configuration tool for Sardine
 """
-
-
-# def str2bool(v):
-#     """Boolean validation method for argparse type checking"""
-#     if v.lower() in ("yes", "true", "t", "y", "1"):
-#         return True
-#     elif v.lower() in ("no", "false", "f", "n", "0"):
-#         return False
-#     else:
-#         raise argparse.ArgumentTypeError("Boolean value expected.")
-#
-#
-# def pairwise(iterable):
-#     """s -> (s0, s1), (s2, s3), (s4, s5), ..."""
-#     a = iter(iterable)
-#     return zip(a, a)
-
-
-# ============================================================================ #
-# A dead simple argparse configuration tool to edit values stored in config.json
-# Automatic type-checking / error raising for each value.
-# ============================================================================ #
 
 # Appdirs boilerplate code
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
@@ -65,56 +44,6 @@ def write_json_file(data: dict):
         json.dump(data, jsonFile, indent=4, sort_keys=True)
 
 
-# def old_main():
-#     """Entry method for the argparse parser"""
-#
-#     # Check if the configuration file exists, otherwise, warn user
-#     if not CONFIG_JSON.is_file():
-#         print(
-#             f"[red]The configuration file is missing.\
-#  Please boot Sardine first."
-#         )
-#         exit()
-#     data = read_json_file()
-#
-#     parser = argparse.ArgumentParser(description="Sardine configuration CLI")
-#     parser.add_argument("--midi", type=str, help="Default MIDI port")
-#     parser.add_argument("--bpm", type=float, help="Beats per minute")
-#     parser.add_argument("--beats", type=int, help="Beats per bar")
-#     parser.add_argument("--ppqn", type=float, help="ppqn")
-#     parser.add_argument("--boot_superdirt", type=str2bool, help="Boot SC && SuperDirt")
-#     parser.add_argument("--debug", type=str2bool, help="Parser debugging mode")
-#     parser.add_argument(
-#         "--verbose_superdirt", type=str2bool, help="Toggle SuperDirt textual output"
-#     )
-#     parser.add_argument(
-#         "--deferred_scheduling", type=str2bool, help="Turn on/off deferred scheduling"
-#     )
-#     parser.add_argument("--active_clock", type=str2bool, help="Active or passive Clock")
-#     parser.add_argument(
-#         "--SCconfig", type=str2bool, help="SuperDirt Configuration Path"
-#     )
-#     parser.add_argument(
-#         "--User Config Path", type=bool, help="Python User Configuration file"
-#     )
-#
-#     if len(sys.argv) < 2:
-#         print(f"[red]{FUNNY_TEXT}")
-#         print(f"Your configuration file is located at: {USER_DIR}")
-#         parser.print_help()
-#         exit()
-#
-#     # Grabing arguments from parser.parse_args()
-#     args = parser.parse_args()
-#     to_update = list(chain.from_iterable([x for x in args._get_kwargs()]))
-#
-#     # Iterating over the collected kwargs and write to file if needed
-#     for name, value in pairwise(to_update):
-#         if value is not None:
-#             data["config"][name] = value
-#     write_json_file(data)
-#
-#
 def _edit_configuration(file_name: str):
     configuration_file = USER_DIR / file_name
     # If the file already exists, we will read it first before opening editor
@@ -198,19 +127,19 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
             (
                 f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
                 + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
-                + f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]"
+                + f"[red]Link: [green]{config_file['link_clock']}[/green][/red]"
             )
         )
     )
-    active_clock = inquirer.select(
-        message="Should the Clock be active or passive?",
+    link_clock = inquirer.select(
+        message="Should Sardine default to the LinkClock?",
         choices=[
-            Choice(value=True, enabled=True, name="Active (default)"),
-            Choice(value=False, name="Passive (for MIDI In)"),
+            Choice(value=False, enabled=True, name="No (internal clock)"),
+            Choice(value=True, name="Yes (external clock)"),
         ],
         default=None,
     ).execute()
-    config_file["active_clock"] = active_clock
+    config_file["link_clock"] = link_clock
     tempo = inquirer.number(
         message="Input a new default tempo (BPM):",
         min_allowed=20,
@@ -225,20 +154,12 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
         max_allowed=999,
     ).execute()
     config_file["beats"] = int(beats)
-    ppqn = inquirer.number(
-        message="Select a new number of ppqn (Pulses per Quarter Note):",
-        min_allowed=1,
-        max_allowed=999,
-        default=48,
-        float_allowed=False,
-    ).execute()
-    config_file["ppqn"] = int(ppqn)
     print(
         Panel.fit(
             (
                 f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
                 + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
-                + f"[red]PPQN: [green]{config_file['ppqn']}[/green][/red]"
+                + f"[red]Link: [green]{config_file['link_clock']}[/green][/red]"
             )
         )
     )
@@ -250,20 +171,20 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     print(
         Panel.fit(
             (
-                f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | "
+                f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
         )
     )
     boot = inquirer.select(
-        message="Boot SuperCollider along with Sardine?",
+        message="Add SuperDirt instance to Sardine?",
         choices=[
             Choice(value=True, enabled=True, name="Yes"),
             Choice(value=False, name="No"),
         ],
         default=None,
     ).execute()
-    config_file["boot_superdirt"] = boot
+    config_file["superdirt_handler"] = boot
     verbose_superdirt = inquirer.select(
         message="Turn on verbose output for SuperCollider?",
         choices=[
@@ -283,7 +204,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     print(
         Panel.fit(
             (
-                f"[red]Boot SuperCollider: [green]{config_file['boot_superdirt']}[/red][/green] | "
+                f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
         )
@@ -337,7 +258,7 @@ def main():
     Just like before, we are building a monolothic configuration dict that we
     inject into the current config.json file. Not fancy but cool nonetheless!
     """
-    MENU_CHOICES = ["Show Config", "MIDI", "Clock", "SuperCollider", "More", "Exit"]
+    MENU_CHOICES = ["Show Config", "Reset", "MIDI", "Clock", "SuperCollider", "More", "Exit"]
     try:
         USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
@@ -364,6 +285,9 @@ def main():
                 exit()
             else:
                 continue
+        elif menu_select == "Reset":
+            create_template_configuration_file(CONFIG_JSON)
+            USER_CONFIG = read_json_file()['config']
         elif menu_select == "Show Config":
             print(USER_CONFIG)
         elif menu_select == "MIDI":

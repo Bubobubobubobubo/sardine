@@ -56,9 +56,9 @@ repository = "https://github.com/Bubobubobubobubo/sardine"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]
-sardine-config-python = 'cli.main:edit_python_configuration'
-sardine-config-superdirt = 'cli.main:edit_superdirt_configuration'
-sardine-config = 'cli.main:main'
+sardine-config-python = 'sardine.cli.main:edit_python_configuration'
+sardine-config-superdirt = 'sardine.cli.main:edit_superdirt_configuration'
+sardine-config = 'sardine.cli.main:main'
 
 [tool.black]
 target_version = ['py311']

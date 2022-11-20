@@ -1,4 +1,4 @@
-from .Sequence import *
-from .Chance import *
+from .sequence import *
+from .chance import *
 from .SardineParser.ListParser import *
-from .Surfing import *
+from .surfing import *

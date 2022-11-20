@@ -50,10 +50,12 @@ if config.superdirt_handler:
     dirt = SuperDirtHandler()
     bowl.add_handler(dirt)
 
+# Adding a parser (I guess?)
+# bowl.swap_parser(ListParser)
+
 # Starting the clock
 bowl.start()
 
-sleep = bowl.sleep
 
 def swim(fn):
     """
@@ -63,11 +65,6 @@ def swim(fn):
     bowl.scheduler.schedule_func(fn)
     return fn
 
-
-
-
-# Adding a parser
-# bowl.swap_parser(ListParser)
 
 
 def swim(fn):
@@ -86,15 +83,19 @@ def die(fn):
     bowl.scheduler.remove(fn)
     return fn
 
+# Aliases!
+
 again = bowl.scheduler.schedule_func
+sleep = bowl.sleep
 
 if CRASH_TEST:
+
+    # Re-establishing Sardine Syntax to the V1 counterpart, making it better when possible
     @swim
-    def dummy_swimming_function():
-        print('Hello there, I am swimming again!')
-        M('60').out()
-        S('bd').out()
-        O('/hello/', value=1, other=2, otherother=3).out()
+    def dummy_swimming_function(d=0.5, i=0):
+        D('bd')( 1,1,1)
+        a(dummy_swimming_function, d=0.5, i=i+1)
+
 
     Pa >> play('bd')
     Pb >> play_midi('60,67')

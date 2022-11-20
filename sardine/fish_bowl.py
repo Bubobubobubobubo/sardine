@@ -9,8 +9,9 @@ from .base import BaseClock, BaseHandler, BaseParser
 from .clock import Time, InternalClock
 from .handlers import SleepHandler
 from .sequences.SardineParser.ListParser import ListParser
-from .sequences.Iterators import Iterator
-from .sequences.Variables import Variables
+from .sequences.iterators import Iterator
+from .sequences.variables import Variables
+from .sequences.patterns import Pattern
 
 __all__ = ("FishBowl",)
 
@@ -297,3 +298,6 @@ class FishBowl:
 
         all_hooks = local_hooks | global_hooks
         self._run_hooks(all_hooks, event, *args)
+
+    def __call__(self, sender_type: str = 'midi', *args, **kwargs) -> Pattern:
+        return Pattern()

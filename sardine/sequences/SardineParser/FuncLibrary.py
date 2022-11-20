@@ -8,7 +8,7 @@ from math import cos, sin, tan
 from typing import Union, Callable, Optional
 from random import shuffle
 from functools import partial
-from ...sequences.Sequence import euclid
+from ...sequences.sequence import euclid
 from easing_functions import BounceEaseIn, BounceEaseOut, BounceEaseInOut
 
 qualifiers = {

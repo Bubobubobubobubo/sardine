@@ -13,7 +13,7 @@ from .io.UserConfig import (
     pretty_print_configuration_file,
     read_user_configuration,
 )
-from .utils.Messages import config_line_printer, sardine_intro
+from .utils import config_line_printer, sardine_intro
 
 config = read_user_configuration()
 

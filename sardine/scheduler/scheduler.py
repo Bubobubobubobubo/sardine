@@ -3,6 +3,7 @@ import inspect
 from rich import print
 
 from ..base import BaseHandler
+from ..utils import plural
 from .async_runner import AsyncRunner
 from .constants import MaybeCoroFunc
 
@@ -19,26 +20,14 @@ class Scheduler(BaseHandler):
         self.deferred = deferred_scheduling
         self._events = {}
 
-    # TODO: Scheduler.__repr__
-
-    # ---------------------------------------------------------------------- #
-    # Clock properties
-
-    # @property
-    # def nudge(self) -> int:
-    #     return self._nudge
-
-    # @nudge.setter
-    # def nudge(self, value: int):
-    #     """
-    #     Nudge the clock to align on another peer. Very similar to accel
-    #     but temporary. Nudge will reset every time the clock loops around.
-
-    #     Args:
-    #         value (int): nudge factor
-    #     """
-    #     self._nudge = value
-    #     self._reload_runners()
+    def __repr__(self):
+        n_runners = len(self.runners)
+        return "<{} ({} {}) deferred={}>".format(
+            type(self).__name__,
+            n_runners,
+            plural(n_runners, "runner"),
+            self.deferred,
+        )
 
     # NOTE: on any change to the beat interval (accel, nudge, etc.), reload runners
 

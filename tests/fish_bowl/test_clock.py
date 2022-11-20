@@ -15,7 +15,7 @@ async def test_internal_clock(fish_bowl: FishBowl):
     PAUSE_DURATION = 0.1
     EXPECTED_TOLERANCE = 0.024
     ALWAYS_FAIL = False
-    REAL_TOLERANCE = 0.00013
+    REAL_TOLERANCE = 0.00025
     # Calibrate above tolerances to acceptable levels
 
     assert isinstance(fish_bowl.clock, InternalClock)

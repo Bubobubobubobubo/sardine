@@ -158,7 +158,6 @@ class ListParser(BaseHandler):
 
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
-        print(final_pattern)
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):

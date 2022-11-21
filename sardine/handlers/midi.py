@@ -5,8 +5,9 @@ import mido
 
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
-from typing import Union, Optional
+from typing import Union, Optional, TYPE_CHECKING
 from itertools import cycle
+from ..sequences import Chord
 
 __all__ = ("MidiHandler",)
 
@@ -185,6 +186,7 @@ class MidiHandler(BaseHandler, threading.Thread):
             )
 
         def chords_in_pattern(pattern: dict) -> bool:
+            """This function does not work properly because of nesting..."""
             return any(isinstance(x, Chord) for x in pattern.values())
 
         def longest_list_in_pattern(pattern: dict) -> int:
@@ -201,7 +203,7 @@ class MidiHandler(BaseHandler, threading.Thread):
                 'rate': rate
             }.items()
         }
-        if iterator % divisor[iterator] if isinstance(divisor, list) else divisor != 0:
+        if iterator % (divisor[iterator] if isinstance(divisor, list) else divisor) != 0:
             return
 
         # 2) Composing a message (caring for monophonic and/or polyphonic messages)
@@ -210,10 +212,12 @@ class MidiHandler(BaseHandler, threading.Thread):
         if chords_in_pattern(patterns):
             message_list = []
             longest_message = longest_list_in_pattern(patterns)
-            patterns = {k:cycle(v if isinstance(v, list) else cycle([v])) for k, v in patterns}
-            print(patterns)
             for _ in range(longest_message):
-                print('bip')
+                message_list.append({key:value[_] if isinstance(
+                    value, list) else value for key, value in patterns})
+
+            for messages in message_list:
+                print(messages)
 
         # Dealing with monophonic messages
         else:
@@ -223,5 +227,6 @@ class MidiHandler(BaseHandler, threading.Thread):
                 velocity= velocity[divisor] if isinstance(velocity, list) else velocity,
                 duration= duration[divisor] if isinstance(duration, list) else duration,
             )
+
 
         # 3) Dispatching

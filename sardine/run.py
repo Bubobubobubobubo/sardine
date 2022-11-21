@@ -89,6 +89,8 @@ def die(fn):
 again = bowl.scheduler.schedule_func
 sleep = bowl.sleep
 
+M(note='<C@maj7>', duration='[1,2,3]', velocity='[20:100,5]')
+
 if CRASH_TEST:
 
     # Re-establishing Sardine Syntax to the V1 counterpart, making it better when possible

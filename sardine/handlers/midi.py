@@ -186,10 +186,16 @@ class MidiHandler(BaseHandler, threading.Thread):
             )
 
         def chords_in_pattern(pattern: dict) -> bool:
-            """This function does not work properly because of nesting..."""
+            """Check for the presence of chords in any given pattern"""
             patterns = pattern.values()
-            for _ in patterns:
-                return True if [isinstance(e, Chord) for e in _]
+            for pattern in patterns:
+                for element in pattern:
+                    if isinstance(element, Chord):
+                        return True
+                    else:
+                        pass
+            return False
+
             #return any(isinstance(x, Chord) for x in pattern.values())
 
         def longest_list_in_pattern(pattern: dict) -> int:
@@ -213,6 +219,7 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         # Dealing with polyphonic messages
         if chords_in_pattern(patterns):
+            print('Entering chord logic')
             message_list = []
             longest_message = longest_list_in_pattern(patterns)
             for _ in range(longest_message):

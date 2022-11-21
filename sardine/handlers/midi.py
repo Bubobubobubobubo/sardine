@@ -219,12 +219,15 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         # Dealing with polyphonic messages
         if chords_in_pattern(patterns):
-            print('Entering chord logic')
             message_list = []
             longest_message = longest_list_in_pattern(patterns)
+            for key in patterns.keys():
+                if isinstance(patterns[key], int):
+                    patterns[key] = cycle([patterns[key]])
+                elif isinstance(patterns[key], list):
+                    patterns[key] = cycle(patterns[key])
             for _ in range(longest_message):
-                message_list.append({key:value[_] if isinstance(
-                    value, list) else value for key, value in patterns})
+                message_list.append({k:next(v) for k, v in patterns.items()})
 
             for messages in message_list:
                 print(messages)

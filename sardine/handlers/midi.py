@@ -127,6 +127,19 @@ class MidiHandler(BaseHandler, threading.Thread):
         self.push("note_off", note, channel)
         self.active_notes.pop((note, channel), None)
 
+    def _clamp(n: int, minimum: int, maximum: int): 
+        """Simple clamping function"""
+        return max(minimum, min(n, maximum))
+
+    def send_control(
+        self, 
+        channel: Union[str, int],
+        control: Union[str, int],
+        value: Union[str, int],
+        i: Optional[Union[str, int]] = 1,
+        d: Optional[Union[str, int]] = 1,
+        r: Optional[Union[str, int]] = 1) -> None:
+
     def send(
         self,
         note: Union[str, int] = 60,
@@ -151,6 +164,9 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         # 1) Parsing potential patterns
         for k, v in patterns.items(): 
+            # Will this override the chord type? Need to find another clamping method
+            # MIDI Values should always be in 0-127 range
+            patterns[k] = list(map(lambda x: self._clamp(x, 0, 127)))
             if isinstance(v, str):
                 patterns[k] = parse(v)
 

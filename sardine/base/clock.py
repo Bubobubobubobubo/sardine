@@ -25,10 +25,26 @@ class BaseClock(BaseHandler, ABC):
         self._true_time_is_origin: bool = True
 
     def __repr__(self) -> str:
+        status = "running" if self.is_running() else "stopped"
         return (
-            "({name} {0.time:1f}) -> [{0.tempo}|{0.bar:1f}: "
-            "{0.phase}/{0.beats_per_bar}]"
-        ).format(self, name=type(self).__name__)
+            "<{name} {status} time={0.time:.1f}"
+            " tempo={0.tempo:.2g} beats_per_bar={0.beats_per_bar}>"
+        ).format(
+            self,
+            name=type(self).__name__,
+            status=status,
+        )
+
+    def __str__(self) -> str:
+        return (
+            "({name} {0.time:.1f}s) -> [{0.tempo:.2g}|{beat}/{bar} {phase:.0%}]"
+        ).format(
+            self,
+            name=type(self).__name__,
+            beat=self.beat % self.beats_per_bar + 1,
+            bar=self.beats_per_bar,
+            phase=self.phase / self.beat_duration,
+        )
 
     # Abstract methods
 

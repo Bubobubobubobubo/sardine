@@ -62,13 +62,21 @@ class FishBowl:
     ## REPR/STR #######################################################################
 
     def __repr__(self) -> str:
+        running = self.is_running()
+        paused = self.is_paused()
+        status = (
+            "playing"
+            if running and not paused
+            else "paused"
+            if running and paused
+            else "stopped"
+        )
 
-        # Basic attributes
-        alv, set = self._alive.is_set(), self._resumed.is_set()
-        tp, bt = self.clock.tempo, self.clock.beat
-        hn = [type(handler).__name__ for handler in self._handlers]
-
-        return f"<Bowl alive={alv} playing={set} tempo={tp} beat={bt} handlers={hn}>"
+        return "<{} {} clock={!r}>".format(
+            type(self).__name__,
+            status,
+            self.clock,
+        )
 
     ## TRANSPORT ######################################################################
 

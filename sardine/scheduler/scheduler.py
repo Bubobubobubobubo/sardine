@@ -20,7 +20,7 @@ class Scheduler(BaseHandler):
         self.deferred = deferred_scheduling
         self._events = {}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         n_runners = len(self.runners)
         return "<{} ({} {}) deferred={}>".format(
             type(self).__name__,

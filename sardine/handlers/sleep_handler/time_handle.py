@@ -15,13 +15,17 @@ class TimeHandle:
         self.fut = asyncio.get_running_loop().create_future()
 
     def __repr__(self):
-        return "<{} {} when={}>".format(
-            type(self).__name__,
+        status = (
             "pending"
             if not self.fut.done()
             else "done"
             if not self.fut.cancelled()
-            else "cancelled",
+            else "cancelled"
+        )
+
+        return "<{} {} when={}>".format(
+            type(self).__name__,
+            status,
             self.when,
         )
 

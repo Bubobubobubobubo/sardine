@@ -139,6 +139,16 @@ class MidiHandler(BaseHandler, threading.Thread):
         i: Optional[Union[str, int]] = 1,
         d: Optional[Union[str, int]] = 1,
         r: Optional[Union[str, int]] = 1) -> None:
+        """Out function for CC Messages"""
+        iterator, divisor, rate = (i, d, r)
+        patterns = {
+            'channel': channel,
+            'control': control,
+            'value': value,
+            'iterator': iterator,
+            'divisor': divisor,
+            'rate': rate
+        }
 
     def send(
         self,
@@ -150,25 +160,20 @@ class MidiHandler(BaseHandler, threading.Thread):
         i: Optional[Union[str, int]] = 1,
         d: Optional[Union[str, int]] = 1,
         r: Optional[Union[str, int]] = 1) -> None:
-        """Out function for the MIDI Handler"""
+        """Out function for MIDI Notes"""
+        parse = self.env.parser.parse
 
         # 0) Gathering arguments
         iterator, divisor, rate = (i, d, r)
         patterns = {
-            'note': note, 'velocity': velocity,
-            'channel': channel, 'duration': duration,
-            'iterator': iterator, 'divisor': divisor,
-            'rate': rate
+            k:parse(v) if isinstance(v, str) else v for k, v in 
+            {
+                'note': note, 'velocity': velocity,
+                'channel': channel, 'duration': duration,
+                'iterator': iterator, 'divisor': divisor,
+                'rate': rate
+            }.items()
         }
-        parse = self.env.parser.parse
-
-        # 1) Parsing potential patterns
-        for k, v in patterns.items(): 
-            # Will this override the chord type? Need to find another clamping method
-            # MIDI Values should always be in 0-127 range
-            patterns[k] = list(map(lambda x: self._clamp(x, 0, 127)))
-            if isinstance(v, str):
-                patterns[k] = parse(v)
 
         # 2) Composing a message (caring for monophonic and/or polyphonic messages)
 

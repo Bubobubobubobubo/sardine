@@ -224,13 +224,22 @@ class MidiHandler(BaseHandler, threading.Thread):
             for key in patterns.keys():
                 if isinstance(patterns[key], int):
                     patterns[key] = cycle([patterns[key]])
-                elif isinstance(patterns[key], list):
-                    patterns[key] = cycle(patterns[key])
+                elif isinstance(patterns[key], (list)):
+                    if isinstance(patterns[key][0], Chord):
+                        patterns[key] = cycle(list(patterns[key][0]))
+                    else:
+                        patterns[key] = cycle(patterns[key])
             for _ in range(longest_message):
                 message_list.append({k:next(v) for k, v in patterns.items()})
 
+            # The logic is broken as hell...
             for messages in message_list:
-                print(messages)
+                send_midi_note(
+                    note= messages['note'][divisor] if isinstance(note, list) else note,
+                    channel= messages['channel'][divisor] if isinstance(channel, list) else channel,
+                    velocity= messages['velocity'][divisor] if isinstance(velocity, list) else velocity,
+                    duration= messages['duration'][divisor] if isinstance(duration, list) else duration,
+                )
 
         # Dealing with monophonic messages
         else:

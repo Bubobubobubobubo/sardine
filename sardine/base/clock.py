@@ -6,6 +6,10 @@ from .handler import BaseHandler
 
 __all__ = ("BaseClock",)
 
+def _round_float(n: float, prec: int = 3):
+    s = format(n, f".{prec}f")
+    return s.rstrip("0").rstrip(".")
+
 
 class BaseClock(BaseHandler, ABC):
     """The base for all clocks to inherit from.
@@ -28,19 +32,21 @@ class BaseClock(BaseHandler, ABC):
         status = "running" if self.is_running() else "stopped"
         return (
             "<{name} {status} time={0.time:.1f}"
-            " tempo={0.tempo:.2g} beats_per_bar={0.beats_per_bar}>"
+            " tempo={tempo} beats_per_bar={0.beats_per_bar}>"
         ).format(
             self,
             name=type(self).__name__,
             status=status,
+            tempo=_round_float(self.tempo),
         )
 
     def __str__(self) -> str:
         return (
-            "({name} {0.time:.1f}s) -> [{0.tempo:.2g}|{beat}/{bar} {phase:.0%}]"
+            "({name} {0.time:.1f}s) -> [{tempo}|{beat}/{bar} {phase:.0%}]"
         ).format(
             self,
             name=type(self).__name__,
+            tempo=_round_float(self.tempo, 3),
             beat=self.beat % self.beats_per_bar + 1,
             bar=self.beats_per_bar,
             phase=self.phase / self.beat_duration,

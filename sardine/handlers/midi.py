@@ -6,6 +6,7 @@ import mido
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
 from typing import Union, Optional
+from itertools import cycle
 
 __all__ = ("MidiHandler",)
 
@@ -162,42 +163,8 @@ class MidiHandler(BaseHandler, threading.Thread):
         r: Optional[Union[str, int]] = 1,
         i: int = 1) -> None:
         """Out function for MIDI Notes"""
-
-        def chords_in_pattern(pattern: dict) -> bool:
-            return any(isinstance(x, Chord) for x in pattern.values())
-
-        def longest_list_in_pattern(pattern: dict) -> int:
-            return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in pattern.values())
-
         parse = self.env.parser.parse
 
-        # 0) Gathering arguments
-        iterator, divisor, rate = (i, d, r)
-        patterns = {
-            k:parse(v) if isinstance(v, str) else v for k, v in 
-            {
-                'note': note, 'velocity': velocity,
-                'channel': channel, 'duration': duration,
-                'iterator': iterator, 'divisor': divisor,
-                'rate': rate
-            }.items()
-        }
-        if iterator % divisor[iterator] if isinstance(divisor, list) else divisor != 0:
-            return
-
-        # 2) Composing a message (caring for monophonic and/or polyphonic messages)
-        if chords_in_pattern(patterns):
-            message_list = []
-            longest_message = longest_list_in_pattern(patterns)
-        else:
-            send_midi_note(
-                note= note[divisor] if isinstance(note, list) else note,
-                channel= channel[divisor] if isinstance(channel, list) else channel,
-                velocity= velocity[divisor] if isinstance(velocity, list) else velocity,
-                duration= duration[divisor] if isinstance(duration, list) else duration,
-            )
-
-        # 3) Dispatching
         def send_midi_note(
             note: int, 
             channel: int,
@@ -216,3 +183,45 @@ class MidiHandler(BaseHandler, threading.Thread):
             self.active_notes[key] = asyncio.create_task(
                 self.send_off(duration, note, channel, velocity)
             )
+
+        def chords_in_pattern(pattern: dict) -> bool:
+            return any(isinstance(x, Chord) for x in pattern.values())
+
+        def longest_list_in_pattern(pattern: dict) -> int:
+            return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in pattern.values())
+
+        # 0) Gathering arguments
+        iterator, divisor, rate = (i, d, r)
+        patterns = {
+            k:parse(v) if isinstance(v, str) else v for k, v in 
+            {
+                'note': note, 'velocity': velocity,
+                'channel': channel, 'duration': duration,
+                'iterator': iterator, 'divisor': divisor,
+                'rate': rate
+            }.items()
+        }
+        if iterator % divisor[iterator] if isinstance(divisor, list) else divisor != 0:
+            return
+
+        # 2) Composing a message (caring for monophonic and/or polyphonic messages)
+
+        # Dealing with polyphonic messages
+        if chords_in_pattern(patterns):
+            message_list = []
+            longest_message = longest_list_in_pattern(patterns)
+            patterns = {k:cycle(v if isinstance(v, list) else cycle([v])) for k, v in patterns}
+            print(patterns)
+            for _ in range(longest_message):
+                print('bip')
+
+        # Dealing with monophonic messages
+        else:
+            send_midi_note(
+                note= note[divisor] if isinstance(note, list) else note,
+                channel= channel[divisor] if isinstance(channel, list) else channel,
+                velocity= velocity[divisor] if isinstance(velocity, list) else velocity,
+                duration= duration[divisor] if isinstance(duration, list) else duration,
+            )
+
+        # 3) Dispatching

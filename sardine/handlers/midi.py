@@ -187,7 +187,10 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         def chords_in_pattern(pattern: dict) -> bool:
             """This function does not work properly because of nesting..."""
-            return any(isinstance(x, Chord) for x in pattern.values())
+            patterns = pattern.values()
+            for _ in patterns:
+                return True if [isinstance(e, Chord) for e in _]
+            #return any(isinstance(x, Chord) for x in pattern.values())
 
         def longest_list_in_pattern(pattern: dict) -> int:
             return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in pattern.values())

@@ -21,13 +21,13 @@ class ParserError(Exception):
 # build an abstract syntax tree and get the combination rules for each token.
 
 grammar_path = Path(__file__).parent
-grammar = grammar_path / "grammars/proto.lark"
+grammar = grammar_path / "sardine.lark"
 
 
 class ListParser(BaseHandler):
     def __init__(
         self,
-        parser_type: str = "proto",
+        parser_type: str = "sardine",
         debug: bool = False,
     ):
         """ListParser is the main interface for the pattern syntax. It can be
@@ -55,7 +55,7 @@ class ListParser(BaseHandler):
             self.register(event)
 
         parsers = {
-            "proto": {
+            "sardine": {
                 "raw": Lark.open(
                     grammar,
                     rel_to=__file__,
@@ -188,6 +188,6 @@ def Pat(pattern: str, i: int = 0):
     Returns:
         int: The ith element from the resulting pattern
     """
-    parser = ListParser(clock=c, parser_type="proto")
+    parser = ListParser(clock=c, parser_type="sardine")
     result = parser.parse(pattern)
     return result[i % len(result)]

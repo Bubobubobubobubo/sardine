@@ -5,6 +5,7 @@ import mido
 
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
+from typing import Union, Optional
 
 __all__ = ("MidiHandler",)
 
@@ -19,6 +20,8 @@ class MidiHandler(BaseHandler, threading.Thread):
         # Not exactly a pleasing solution for multiple inheritance
         threading.Thread.__init__(self)
         BaseHandler.__init__(self)
+        self.active_notes: dict[tuple[int, int], asyncio.Task] = {}
+
 
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
@@ -118,3 +121,56 @@ class MidiHandler(BaseHandler, threading.Thread):
 
     def _pitch_wheel(self, pitch: int, channel: int) -> None:
         self._midi.send(mido.Message("pitchweel", pitch=pitch, channel=channel))
+
+    async def send_off(self, delay: float, note: int, channel: int):
+        await self.env.sleep(delay)
+        self.push("note_off", note, channel)
+        self.active_notes.pop((note, channel), None)
+
+    def send(
+        self,
+        note: Union[str, int] = 60,
+        velocity: Union[str, int] = 100,
+        channel: Union[str, int] = 0,
+        duration: Union[str, int] = 1,
+        iterator: Optional[Union[str, int]] = 1,
+        i: Optional[Union[str, int]] = 1,
+        d: Optional[Union[str, int]] = 1,
+        r: Optional[Union[str, int]] = 1) -> None:
+        """Out function for the MIDI Handler"""
+
+        # 0) Gathering arguments
+        iterator, divisor, rate = (i, d, r)
+        patterns = {
+            'note': note, 'velocity': velocity,
+            'channel': channel, 'duration': duration,
+            'iterator': iterator, 'divisor': divisor,
+            'rate': rate
+        }
+        parse = self.env.parser.parse
+
+        # 1) Parsing potential patterns
+        for k, v in patterns.items(): 
+            if isinstance(v, str):
+                patterns[k] = parse(v)
+
+        # 2) Composing a message (caring for monophonic and/or polyphonic messages)
+
+        # 3) Dispatching
+        def send_midi_note(
+            note: int, 
+            channel: int,
+            duration: float, 
+        ) -> None:
+            """Template function for MIDI Note sending (in a threading context)"""
+            key = (note, channel)
+
+            note_task = self.active_notes.get(key)
+            if note_task is not None:
+                note_task.cancel()
+            else:
+                self.push("note_on", note, channel, ...)
+
+            self.active_notes[key] = asyncio.create_task(
+                self.send_off(delay, note, channel)
+            )

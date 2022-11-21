@@ -45,13 +45,14 @@ bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
 )
 # Attaching handlers
-bowl.add_handler(MidiHandler())
+midi = MidiHandler()
+bowl.add_handler(midi)
+M = midi.send
+
 if config.superdirt_handler:
     dirt = SuperDirtHandler()
+    D = dirt.send
     bowl.add_handler(dirt)
-
-# Adding a parser (I guess?)
-# bowl.swap_parser(ListParser)
 
 # Starting the clock
 bowl.start()

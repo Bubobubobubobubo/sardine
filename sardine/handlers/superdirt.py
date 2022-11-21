@@ -89,3 +89,7 @@ class SuperDirtHandler(BaseHandler):
 
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
+
+    def send(self, *args, **kwargs):
+        """Placeholder"""
+        pass

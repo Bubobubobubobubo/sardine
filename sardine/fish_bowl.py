@@ -59,7 +59,10 @@ class FishBowl:
         self.add_handler(self.sleeper)
         self.add_handler(self.time)
 
-    ## REPR/STR #######################################################################
+    ## DUNDER #################################################################
+
+    def __del__(self):
+        self.stop()
 
     def __repr__(self) -> str:
         running = self.is_running()
@@ -78,7 +81,7 @@ class FishBowl:
             self.clock,
         )
 
-    ## TRANSPORT ######################################################################
+    ## TRANSPORT ##############################################################
 
     def pause(self):
         """Pauses the fish bowl.

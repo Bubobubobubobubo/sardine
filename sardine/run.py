@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 from sys import argv
+from typing import Union
 
 from rich import print
 from rich.panel import Panel
@@ -67,14 +68,62 @@ def swim(fn):
     return fn
 
 
+def sleep(n_beats: Union[int, float]):
+    """Artificially sleep in the current function for `n_beats`.
 
-def swim(fn):
+    Example usage: ::
+
+        @swim
+        def func(delay=4):
+            sleep(3)
+            for _ in range(3):
+                S('909').out()
+                sleep(1/2)
+            again(func)
+
+    This should *only* be called inside swimming functions.
+    Unusual behaviour may occur if sleeping is done globally.
+
+    Using in asynchronous functions
+    -------------------------------
+
+    This can be used in `async def` functions and does *not* need to be awaited.
+
+    Sounds scheduled in asynchronous functions will be influenced by
+    real time passing. For example, if you sleep for 500ms (based on tempo)
+    and await a function that takes 100ms to complete, any sounds sent
+    afterwards will occur 600ms from when the function was called.
+
+    ::
+
+        @swim
+        async def func(delay=4):
+            print(bowl.clock.time)  # 0.0s
+
+            sleep(1)     # virtual +500ms (assuming bowl.clock.tempo = 120)
+            await abc()  # real +100ms
+
+            S('bd').out()           # occurs 500ms from now
+            print(bowl.clock.time)  # 0.6s
+            again(func)
+
+    Technical Details
+    -----------------
+
+    Unlike `time.sleep(n)`, this function does not actually block
+    the function from running. Instead, it temporarily affects the
+    value of `BaseClock.time` and extends the perceived time of methods
+    using that property, like `SleepHandler.wait_after()`
+    and `BaseClock.get_beat_time()`.
+
+    In essence, this maintains the precision of sound scheduling
+    without requiring the use of declarative syntax like
+    `S('909', at=1/2).out()`.
+
     """
-    Swimming decorator: push a function to the clock. The function will be
-    declared and followed by the clock system to recurse in time if needed.
-    """
-    bowl.scheduler.schedule_func(fn)
-    return fn
+    duration = bowl.clock.get_beat_time(n_beats, sync=False)
+    bowl.time.shift += duration
+
 
 def die(fn):
     """
@@ -87,7 +136,6 @@ def die(fn):
 # Aliases!
 
 again = bowl.scheduler.schedule_func
-sleep = bowl.sleep
 
 M(note='<C@maj7>', duration='[1,2,3]', velocity='[20:100,5]')
 

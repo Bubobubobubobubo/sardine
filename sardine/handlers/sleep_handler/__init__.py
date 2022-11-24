@@ -33,7 +33,7 @@ class SleepHandler(BaseHandler):
 
     async def sleep(self, duration: NUMBER):
         """Sleeps for the specified duration."""
-        deadline = self.env.clock.time + duration
+        deadline = self.env.clock.true_time + duration
         return await self.sleep_until(deadline)
 
     async def sleep_until(self, deadline: NUMBER):

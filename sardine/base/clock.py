@@ -66,12 +66,18 @@ class BaseClock(BaseHandler, ABC):
     @property
     @abstractmethod
     def bar(self) -> int:
-        """The bar of the clock's current time."""
+        """The bar of the clock's current time.
+
+        This property should account for time shift.
+        """
 
     @property
     @abstractmethod
     def beat(self) -> int:
-        """The beat of the clock's current time."""
+        """The beat of the clock's current time.
+
+        This property should account for time shift.
+        """
 
     @property
     @abstractmethod
@@ -111,7 +117,10 @@ class BaseClock(BaseHandler, ABC):
     @property
     @abstractmethod
     def phase(self) -> float:
-        """The phase of the current beat in the range `[0, beat_duration)`."""
+        """The phase of the current beat in the range `[0, beat_duration)`.
+
+        This property should account for time shift.
+        """
 
     @property
     @abstractmethod
@@ -119,6 +128,15 @@ class BaseClock(BaseHandler, ABC):
         """The clock's current tempo."""
 
     # Properties
+
+    @property
+    def shifted_time(self) -> float:
+        """A shorthand for the current time with `Time.shift` added.
+
+        Only the clock is expected to use this property when calculating
+        the current phase/beat/bar.
+        """
+        return self.time + self.env.time.shift
 
     @property
     def time(self) -> float:
@@ -140,11 +158,6 @@ class BaseClock(BaseHandler, ABC):
         ideally be avoided when the clock starts running so time can
         flow as soon as possible.
         """
-        return self.true_time + self.env.time.shift
-
-    @property
-    def true_time(self) -> float:
-        """A variant of `time` except that no time shift is applied."""
         if self._true_time_is_origin:
             return self.env.time.origin
 
@@ -234,10 +247,10 @@ class BaseClock(BaseHandler, ABC):
             self.internal_origin = self.internal_time
             self._true_time_is_origin = False
         elif event == "pause":
-            self.env.time.origin = self.true_time
+            self.env.time.origin = self.time
             self._true_time_is_origin = True
         elif event == "stop":
-            self.env.time.origin = self.true_time
+            self.env.time.origin = self.time
             self._true_time_is_origin = True
             self.teardown()
         # print(f"{event=} {self.env.time.origin=} {self.true_time=} "

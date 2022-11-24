@@ -29,7 +29,7 @@ class InternalClock(BaseClock):
 
     @property
     def beat(self) -> int:
-        return int(self.time // self.beat_duration)
+        return int(self.shifted_time // self.beat_duration)
 
     @property
     def beat_duration(self) -> float:
@@ -49,7 +49,7 @@ class InternalClock(BaseClock):
 
     @property
     def phase(self) -> float:
-        return self.time % self.beat_duration
+        return self.shifted_time % self.beat_duration
 
     @property
     def tempo(self) -> float:

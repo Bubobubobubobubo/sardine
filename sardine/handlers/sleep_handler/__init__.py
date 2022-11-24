@@ -33,7 +33,7 @@ class SleepHandler(BaseHandler):
 
     async def sleep(self, duration: NUMBER):
         """Sleeps for the specified duration."""
-        deadline = self.env.clock.true_time + duration
+        deadline = self.env.clock.time + duration
         return await self.sleep_until(deadline)
 
     async def sleep_until(self, deadline: NUMBER):
@@ -56,9 +56,7 @@ class SleepHandler(BaseHandler):
 
             # Use clock sleep if available, else polling implementation
             if clock.can_sleep():
-                sleep_task = asyncio.create_task(
-                    clock.sleep(deadline - clock.true_time)
-                )
+                sleep_task = asyncio.create_task(clock.sleep(deadline - clock.time))
             else:
                 sleep_task = asyncio.create_task(self._sleep_until(deadline))
 
@@ -90,7 +88,7 @@ class SleepHandler(BaseHandler):
 
         # `true_time` is used here with the presumption that the deadline
         # already has been time shifted
-        if self.env.clock.true_time >= deadline:
+        if self.env.clock.time >= deadline:
             handle.fut.set_result(None)
         else:
             heapq.heappush(self._time_handles, handle)
@@ -121,7 +119,7 @@ class SleepHandler(BaseHandler):
                 handle = self._time_handles[0]
                 if handle.cancelled():
                     heapq.heappop(self._time_handles)
-                elif self.env.clock.true_time >= handle.when:
+                elif self.env.clock.time >= handle.when:
                     handle.fut.set_result(None)
                     heapq.heappop(self._time_handles)
                 else:

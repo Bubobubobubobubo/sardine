@@ -274,7 +274,7 @@ class AsyncRunner:
 
         """
         if self._can_correct_delay and delay != self._last_delay:
-            self._delta = self.clock.time - self._expected_interval
+            self._delta = self.clock.true_time - self._expected_interval
             with self.time.scoped_shift(-self._delta):
                 self.interval_shift = self.clock.get_beat_time(delay)
 
@@ -395,14 +395,14 @@ class AsyncRunner:
 
                 self._correct_interval(delay)
                 self._expected_interval = (
-                    self.clock.time
+                    self.clock.true_time
                     + self._get_corrected_interval(delay, delta_correction=True)
                 )
 
                 # start = self.clock.time
 
                 duration = self._get_corrected_interval(delay)
-                deadline = self.clock.time + duration
+                deadline = self.clock.true_time + duration
 
                 wait_task = asyncio.create_task(self.env.sleep(duration))
                 reload_task = asyncio.create_task(self._reload_event.wait())
@@ -411,7 +411,7 @@ class AsyncRunner:
                     return_when=asyncio.FIRST_COMPLETED,
                 )
 
-                sleep_drift = self.clock.time - deadline
+                sleep_drift = self.clock.true_time - deadline
 
                 # print(
                 #     f"{self.clock} AR [green]"

@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 from sys import argv
-from typing import Union
+from typing import Union, Callable, Awaitable
 
 from rich import print
 from rich.panel import Panel
@@ -132,6 +132,15 @@ def die(fn):
     """
     bowl.scheduler.remove(fn)
     return fn
+
+def silence(*args) -> None:
+    """Silence a function of every function currently running"""
+    if len(args) == 0:
+        bowl.scheduler.reset()
+        return
+    else:
+        for arg in args:
+            bowl.scheduler.remove(arg)
 
 # Aliases!
 

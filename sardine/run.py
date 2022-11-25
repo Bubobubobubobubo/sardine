@@ -135,8 +135,8 @@ def die(fn):
 
 def silence(*args) -> None:
     """Silence a function of every function currently running"""
-    midi.all_notes_off()
     if len(args) == 0:
+        midi.all_notes_off()
         bowl.scheduler.reset()
         return
     else:

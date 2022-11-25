@@ -141,14 +141,17 @@ class MidiHandler(BaseHandler, threading.Thread):
         """
         for note in range(0,128):
             for channel in range(0,16):
-                print(f"Note: {note}, Channel: {channel}")
                 self._midi.send(mido.Message(
-                    'note_off', 
+                    'note_off',
                     note=note,velocity=0,
                     channel=channel))
 
-    def send_midi_note(self, note: int, channel: int, velocity: int, 
-            duration: float) -> None:
+    def send_midi_note(self,
+            note: int,
+            channel: int,
+            velocity: int,
+            duration: float
+    ) -> None:
         """Template function for MIDI Note sending"""
 
         key = (note, channel)
@@ -160,7 +163,7 @@ class MidiHandler(BaseHandler, threading.Thread):
                 'note_on', note=int(note), channel=int(channel),
                 velocity=int(velocity)))
         self.active_notes[key] = asyncio.create_task(
-            self.send_off(note=note, delay=duration, 
+            self.send_off(note=note, delay=duration-0.02,
                 velocity=velocity, channel=channel))
 
 

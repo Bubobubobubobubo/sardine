@@ -102,13 +102,17 @@ class LinkClock(BaseClock):
         self._internal_time = link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
-        self._phase = phase / self.beats_per_bar
+        # Sardine phase is typically defined from 0.0 to 1.0. Some conversion is 
+        # needed for the phase coming from the LinkClock.
+        self._phase = phase % 1 * self.beat_duration
         self._playing = playing
         self._tempo = tempo
 
     def _run(self):
         try:
             self._link = link.Link(self._tempo)
+            self._link.enabled = True
+            self._link.startStopSyncEnabled = True
 
             # Set the origin at the start
             self._capture_link_info()

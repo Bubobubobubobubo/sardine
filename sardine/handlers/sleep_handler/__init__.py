@@ -2,6 +2,8 @@ import asyncio
 import heapq
 from typing import Optional, Union
 
+from exceptiongroup import BaseExceptionGroup
+
 from ...base import BaseHandler
 from .time_handle import *
 
@@ -65,13 +67,19 @@ class SleepHandler(BaseHandler):
             intrp_task = asyncio.create_task(self._interrupt_event.wait())
             tasks = (sleep_task, intrp_task)
 
-            try:
-                done, pending = await asyncio.wait(
-                    tasks, return_when=asyncio.FIRST_COMPLETED
+            done, pending = await asyncio.wait(
+                tasks, return_when=asyncio.FIRST_COMPLETED
+            )
+
+            for t in pending:
+                t.cancel()
+
+            exceptions = (t.exception() for t in done)
+            exceptions = [exc for exc in exceptions if exc is not None]
+            if exceptions:
+                raise BaseExceptionGroup(
+                    f"Error occurred while sleeping until {deadline = }", exceptions
                 )
-            finally:
-                for t in tasks:
-                    t.cancel()
 
             if sleep_task in done:
                 return

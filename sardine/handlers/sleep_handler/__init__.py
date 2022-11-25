@@ -41,6 +41,7 @@ class SleepHandler(BaseHandler):
 
         The deadline is based on the fish bowl clock's time.
         """
+        # TODO SleepHandler drift compensation
         if self.env is None:
             raise ValueError("SleepHandler must be added to a fish bowl")
         elif not self.env.is_running():

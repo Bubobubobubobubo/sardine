@@ -39,7 +39,7 @@ class LinkClock(BaseClock):
 
     ## GETTERS  ################################################
 
-    # TODO: LinkClock unaffected by time shifting
+    # FIXME: LinkClock unaffected by time shifting
     @property
     def bar(self) -> int:
         return self.beat // self.beats_per_bar

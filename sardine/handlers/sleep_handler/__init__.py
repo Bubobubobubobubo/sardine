@@ -24,7 +24,7 @@ class SleepHandler(BaseHandler):
 
         self.poll_interval = poll_interval
 
-        self._poll_task: Optional[asyncio.Event] = None
+        self._poll_task: Optional[asyncio.Task] = None
         self._interrupt_event = asyncio.Event()
         self._wake_event = asyncio.Event()
         self._time_handles: list[TimeHandle] = []

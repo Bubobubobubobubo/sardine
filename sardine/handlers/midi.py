@@ -239,16 +239,18 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
-                self.send_midi_note(
-                        note=message['note'], 
-                        channel=message['channel'], 
-                        velocity=message['velocity'], 
-                        duration=message['duration']
-                )
+                if not isinstance(message['note'], type(None)):
+                    self.send_midi_note(
+                            note=message['note'], 
+                            channel=message['channel'], 
+                            velocity=message['velocity'], 
+                            duration=message['duration']
+                    )
         else:
-            self.send_midi_note(
-                    note=pattern['note'],
-                    channel=pattern['channel'],
-                    velocity=pattern['velocity'],
-                    duration=pattern['duration']
-            )
+            if not isinstance(pattern['note'], type(None)):
+                self.send_midi_note(
+                        note=pattern['note'],
+                        channel=pattern['channel'],
+                        velocity=pattern['velocity'],
+                        duration=pattern['duration']
+                )

@@ -12,7 +12,7 @@ async def test_sleep_internal_clock(fish_bowl: FishBowl):
     PAUSE_DURATION = 0.02
     ITERATIONS = 10
     TOLERANCE = 0.016
-    ALWAYS_FAIL = False
+    ALWAYS_FAIL = True
 
     assert isinstance(fish_bowl.clock, InternalClock)
     assert fish_bowl.clock.can_sleep()

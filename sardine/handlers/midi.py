@@ -1,4 +1,6 @@
 import sys
+import time
+import asyncio
 import threading
 
 import mido
@@ -6,7 +8,10 @@ import mido
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
 from typing import Union, Optional, TYPE_CHECKING
-from itertools import cycle
+from itertools import cycle, islice, chain
+from rich import print
+from math import floor
+from queue import Queue, Full
 from ..sequences import Chord
 
 __all__ = ("MidiHandler",)
@@ -61,7 +66,7 @@ class MidiHandler(BaseHandler, threading.Thread):
             "sysex": self._sysex,
             "pitchwheel": self._pitch_wheel,
         }
-
+ 
     def __repr__(self) -> str:
         return f"{self._port_name}: MIDI Handler"
 
@@ -124,131 +129,126 @@ class MidiHandler(BaseHandler, threading.Thread):
     def _pitch_wheel(self, pitch: int, channel: int) -> None:
         self._midi.send(mido.Message("pitchweel", pitch=pitch, channel=channel))
 
-    async def send_off(self, delay: float, note: int, channel: int):
+    async def send_off(self, note: int, channel: int, velocity: int, delay: Union[int, float]):
         await self.env.sleep(delay)
-        self.push("note_off", note, channel)
+        self._midi.send(mido.Message("note_off", note=note, 
+            channel=channel, velocity=velocity))
         self.active_notes.pop((note, channel), None)
 
-    def _clamp(n: int, minimum: int, maximum: int): 
-        """Simple clamping function"""
-        return max(minimum, min(n, maximum))
+    def send_midi_note(self, note: int, channel: int, velocity: int, 
+            duration: float) -> None:
+        """Template function for MIDI Note sending"""
 
-    def send_control(
-        self, 
-        channel: Union[str, int],
-        control: Union[str, int],
-        value: Union[str, int],
-        d: Optional[Union[str, int]] = 1,
-        r: Optional[Union[str, int]] = 1,
-        i: int = 1) -> None:
-        """Out function for CC Messages"""
+        key = (note, channel)
+        note_task = self.active_notes.get(key)
+        if note_task is not None:
+            note_task.cancel()
+        else:
+            self._midi.send(mido.Message(
+                'note_on', note=int(note), channel=int(channel),
+                velocity=int(velocity)))
+        self.active_notes[key] = asyncio.create_task(
+            self.send_off(note=note, delay=duration, 
+                velocity=velocity, channel=channel))
 
-        # 0) Gathering arguments
-        iterator, divisor, rate = (i, d, r)
-        patterns = {
-            k:parse(v) if isinstance(v, str) else v for k, v in 
-            {
-                'channel': channel, 'control': control, 'value': value,
-                'iterator': iterator, 'divisor': divisor, 'rate': rate
-            }.items()
+
+    def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:
+        """Joseph Enguehard's algorithm for solving iteration speed"""
+        return floor(iterator * rate / div) % len(pattern)
+
+    VALUES = Union[int, float, list, str]
+    PATTERN = dict[str, list[float | int | list | str]]
+    REDUCED_PATTERN = dict[str, list[float | int]]
+
+    def pattern_reduce(self, 
+            pattern: PATTERN, 
+            iterator: int, 
+            divisor: int, 
+            rate: float,
+            break_polyphony=False,
+    ) -> dict:
+        pattern = {
+                k: self.env.parser.parse(v) if isinstance(
+            v, str) else v for k, v in pattern.items()
         }
+        pattern = {
+                k:v[self.pattern_element(
+                    div=divisor, 
+                    rate=rate, 
+                    iterator=iterator,
+                    pattern=v)] if hasattr(
+                        v, "__getitem__") else v for k, v in pattern.items()
+        }
+        return pattern
+
+    def reduce_polyphonic_message(
+            self,
+            pattern: PATTERN) -> list[dict]:
+        """
+        Reduce a polyphonic message to a list of messages represented as 
+        dictionaries holding values to be sent through the MIDI Port
+        """
+        message_list: list = []
+        length = [x for x in filter(
+            lambda x: hasattr(x, '__getitem__'), pattern.values())
+        ]
+        length = max([len(i) for i in length])
+
+        # Break the chords into lists
+        pattern = {k:list(value) if isinstance(
+            value, Chord) else value for k, value in pattern.items()}
+
+        for _ in range(length):
+            message_list.append({k:v[_%len(v)] if isinstance(
+                v, (Chord, list)) else v for k, v in pattern.items()}
+            )
+        return message_list
+
 
     def send(
         self,
-        note: Union[str, int] = 60,
-        velocity: Union[str, int] = 100,
-        channel: Union[str, int] = 0,
-        duration: Union[str, int] = 1,
-        iterator: Optional[Union[str, int]] = 1,
-        d: Optional[Union[str, int]] = 1,
-        r: Optional[Union[str, int]] = 1,
-        i: int = 1) -> None:
-        """Out function for MIDI Notes"""
-        parse = self.env.parser.parse
+        note: VALUES = 60, 
+        velocity: VALUES = 100,
+        channel: VALUES = 0, 
+        duration: VALUES = 1,
+        iterator: int = 0, 
+        divisor: int = 1,
+        rate: float = 1
+    ) -> None:
+        """
+        This method takes the role of the old .out method used in Sardine V1
+        """
 
-        def send_midi_note(
-            note: int, 
-            channel: int,
-            velocity: int,
-            duration: float, 
-        ) -> None:
-            """Template function for MIDI Note sending (in a threading context)"""
-            key = (note, channel)
-
-            note_task = self.active_notes.get(key)
-            if note_task is not None:
-                note_task.cancel()
-            else:
-                self.push("note_on", note, channel, velocity, ...)
-
-            self.active_notes[key] = asyncio.create_task(
-                self.send_off(duration, note, channel, velocity)
-            )
-
-        def chords_in_pattern(pattern: dict) -> bool:
-            """Check for the presence of chords in any given pattern"""
-            patterns = pattern.values()
-            for pattern in patterns:
-                for element in pattern:
-                    if isinstance(element, Chord):
-                        return True
-                    else:
-                        pass
-            return False
-
-            #return any(isinstance(x, Chord) for x in pattern.values())
-
-        def longest_list_in_pattern(pattern: dict) -> int:
-            return max(len(x) if isinstance(x, (Chord, list)) else 1 for x in pattern.values())
-
-        # 0) Gathering arguments
-        iterator, divisor, rate = (i, d, r)
-        patterns = {
-            k:parse(v) if isinstance(v, str) else v for k, v in 
-            {
-                'note': note, 'velocity': velocity,
-                'channel': channel, 'duration': duration,
-                'iterator': iterator, 'divisor': divisor,
-                'rate': rate
-            }.items()
-        }
-        if iterator % (divisor[iterator] if isinstance(divisor, list) else divisor) != 0:
+        if iterator % divisor!= 0: 
             return
 
-        # 2) Composing a message (caring for monophonic and/or polyphonic messages)
+        pattern = self.pattern_reduce(
+                break_polyphony=False,
+                pattern={
+                    'note': note,
+                    'velocity': velocity, 
+                    'channel': channel, 
+                    'duration': duration
+                },
+                iterator=iterator, 
+                divisor=divisor, 
+                rate=rate 
+        )
 
-        # Dealing with polyphonic messages
-        if chords_in_pattern(patterns):
-            message_list = []
-            longest_message = longest_list_in_pattern(patterns)
-            for key in patterns.keys():
-                if isinstance(patterns[key], int):
-                    patterns[key] = cycle([patterns[key]])
-                elif isinstance(patterns[key], (list)):
-                    if isinstance(patterns[key][0], Chord):
-                        patterns[key] = cycle(list(patterns[key][0]))
-                    else:
-                        patterns[key] = cycle(patterns[key])
-            for _ in range(longest_message):
-                message_list.append({k:next(v) for k, v in patterns.items()})
+        is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
 
-            # The logic is broken as hell...
-            for messages in message_list:
-                send_midi_note(
-                    note= messages['note'][divisor] if isinstance(note, list) else note,
-                    channel= messages['channel'][divisor] if isinstance(channel, list) else channel,
-                    velocity= messages['velocity'][divisor] if isinstance(velocity, list) else velocity,
-                    duration= messages['duration'][divisor] if isinstance(duration, list) else duration,
+        if is_polyphonic:
+            for message in self.reduce_polyphonic_message(pattern):
+                self.send_midi_note(
+                        note=message['note'], 
+                        channel=message['channel'], 
+                        velocity=message['velocity'], 
+                        duration=message['duration']
                 )
-
-        # Dealing with monophonic messages
         else:
-            send_midi_note(
-                note= note[divisor] if isinstance(note, list) else note,
-                channel= channel[divisor] if isinstance(channel, list) else channel,
-                velocity= velocity[divisor] if isinstance(velocity, list) else velocity,
-                duration= duration[divisor] if isinstance(duration, list) else duration,
+            self.send_midi_note(
+                    note=pattern['note'],
+                    channel=pattern['channel'],
+                    velocity=pattern['velocity'],
+                    duration=pattern['duration']
             )
-
-
-        # 3) Dispatching

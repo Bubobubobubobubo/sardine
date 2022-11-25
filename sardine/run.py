@@ -136,18 +136,4 @@ def die(fn):
 # Aliases!
 
 again = bowl.scheduler.schedule_func
-
-M(note='<C@maj7>', duration='[1,2,3]', velocity='[20:100,5]')
-
-if CRASH_TEST:
-
-    # Re-establishing Sardine Syntax to the V1 counterpart, making it better when possible
-    @swim
-    def dummy_swimming_function(d=0.5, i=0):
-        D('bd')( 1,1,1)
-        a(dummy_swimming_function, d=0.5, i=i+1)
-
-
-    Pa >> play('bd')
-    Pb >> play_midi('60,67')
-    Pc >> play_osc('/hello/surf/', value=1, other=2, otherother=3)
+sleep = bowl.sleep

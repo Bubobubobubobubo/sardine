@@ -95,8 +95,6 @@ class SleepHandler(BaseHandler):
     def _create_handle(self, deadline: NUMBER) -> TimeHandle:
         handle = TimeHandle(deadline)
 
-        # `true_time` is used here with the presumption that the deadline
-        # already has been time shifted
         if self.env.clock.time >= deadline:
             handle.fut.set_result(None)
         else:

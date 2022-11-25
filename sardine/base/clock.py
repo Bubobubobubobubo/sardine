@@ -26,7 +26,7 @@ class BaseClock(BaseHandler, ABC):
     def __init__(self):
         super().__init__()
         self._run_task: Optional[asyncio.Task] = None
-        self._true_time_is_origin: bool = True
+        self._time_is_origin: bool = True
 
     def __repr__(self) -> str:
         status = "running" if self.is_running() else "stopped"
@@ -158,7 +158,7 @@ class BaseClock(BaseHandler, ABC):
         ideally be avoided when the clock starts running so time can
         flow as soon as possible.
         """
-        if self._true_time_is_origin:
+        if self._time_is_origin:
             return self.env.time.origin
 
         i_time, i_origin = self.internal_time, self.internal_origin
@@ -249,13 +249,13 @@ class BaseClock(BaseHandler, ABC):
             # unless the clock is able to provide an internal time before
             # the clock has started
             self.internal_origin = self.internal_time
-            self._true_time_is_origin = False
+            self._time_is_origin = False
         elif event == "pause":
             self.env.time.origin = self.time
-            self._true_time_is_origin = True
+            self._time_is_origin = True
         elif event == "stop":
             self.env.time.origin = self.time
-            self._true_time_is_origin = True
+            self._time_is_origin = True
             self.teardown()
-        # print(f"{event=} {self.env.time.origin=} {self.true_time=} "
+        # print(f"{event=} {self.env.time.origin=} {self.time=} "
         #       f"{self.env.is_paused()=} {self.env.is_running()=}")

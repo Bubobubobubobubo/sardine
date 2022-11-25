@@ -171,7 +171,11 @@ class BaseClock(BaseHandler, ABC):
 
     def can_sleep(self) -> bool:
         """Checks if the clock supports sleeping."""
-        return getattr(self, "sleep", None) is not BaseClock.sleep
+        # Get the sleep attribute and if it is a bound method, unwrap it
+        # for the actual function
+        method = getattr(self, "sleep", None)
+        method = getattr(method, "__func__", method)
+        return method is not BaseClock.sleep
 
     def get_beat_time(self, n_beats: Union[int, float], *, sync: bool = True) -> float:
         """Determines the amount of time to wait for N beats to pass.

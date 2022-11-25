@@ -135,6 +135,18 @@ class MidiHandler(BaseHandler, threading.Thread):
             channel=channel, velocity=velocity))
         self.active_notes.pop((note, channel), None)
 
+    def all_notes_off(self):
+        """
+        Panic button for MIDI notes on every channel. Is there a message for this?
+        """
+        for note in range(0,128):
+            for channel in range(0,16):
+                print(f"Note: {note}, Channel: {channel}")
+                self._midi.send(mido.Message(
+                    'note_off', 
+                    note=note,velocity=0,
+                    channel=channel))
+
     def send_midi_note(self, note: int, channel: int, velocity: int, 
             duration: float) -> None:
         """Template function for MIDI Note sending"""

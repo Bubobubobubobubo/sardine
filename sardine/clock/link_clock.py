@@ -39,18 +39,22 @@ class LinkClock(BaseClock):
 
     ## GETTERS  ################################################
 
-    # FIXME: LinkClock unaffected by time shifting
     @property
     def bar(self) -> int:
         return self.beat // self.beats_per_bar
 
     @property
     def beat(self) -> int:
-        return self._beat
+        return self._beat + self.beat_shift
 
     @property
     def beat_duration(self) -> float:
         return self._beat_duration
+
+    @property
+    def beat_shift(self) -> float:
+        """A shorthand for time shift expressed in number of beats."""
+        return self.env.time.shift / self.beat_duration
 
     @property
     def beats_per_bar(self) -> int:
@@ -66,7 +70,7 @@ class LinkClock(BaseClock):
 
     @property
     def phase(self) -> float:
-        return self._phase
+        return (self._phase + self.beat_shift) % self.beat_duration
 
     @property
     def tempo(self) -> float:

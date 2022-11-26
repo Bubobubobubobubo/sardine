@@ -45,6 +45,8 @@ class SuperDirtHandler(BaseHandler):
         self._events = {
             "meter": self._superdirt_process.meter,
             "scope": self._superdirt_process.scope,
+            "trace": self._superdirt_process.trace(True),
+            "untrace": self._superdirt_process.trace(False),
             "send": self._superdirt_process.send,
             "freqscope": self._superdirt_process.freqscope,
             "dirt_play": self._dirt_play,
@@ -54,7 +56,7 @@ class SuperDirtHandler(BaseHandler):
         }
 
     def __repr__(self) -> str:
-        return f"SuperDirt: {self._name}"
+        return f"<SuperDirt: {self._name} nudge: {self._ahead_amount}>"
 
     def setup(self):
         for event in self._events:

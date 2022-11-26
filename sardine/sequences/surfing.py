@@ -9,15 +9,13 @@
 # ming functions for more delicate operations :)
 ################################################################################
 from string import ascii_lowercase, ascii_uppercase
-from typing import TYPE_CHECKING, Callable, Union
+from typing import TYPE_CHECKING, Callable, Union, Optional
 
 from rich import print
 from rich.panel import Panel
 
 if TYPE_CHECKING:
-    from ..io.MIDISender import MIDISender
-    from ..io.OSCSender import OSCSender
-    from ..io.SuperDirtSender import SuperDirtSender
+    from ..handlers import MidiHandler, OSCHandler, SuperDirtHandler
 
 __all__ = ("Player", "PatternHolder")
 
@@ -42,20 +40,7 @@ class Player:
         self._content = content
         self._rate = rate
         self._dur = 1
-        self._div = int(
-            self._conversion_function(low=1, high=self._clock.ppqn * 8, value=self._dur)
-        )
-
-    def _conversion_function(
-        self, low: Union[int, float], high: Union[int, float], value: Union[int, float]
-    ) -> int:
-        """Internal function performing the conversion"""
-
-        def remap(x, in_min, in_max, out_min, out_max):
-            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
-        return remap(value, 0, 4, 1, 127)
-
+        self._div = 1
 
     @classmethod
     def run(cls, func: Callable):
@@ -74,7 +59,7 @@ class Player:
     @classmethod
     def play_midi(cls, *args, **kwargs):
         """
-        The play MIDI method will call a MIDISender
+        The play MIDI method will call the Note Send Handler
         """
         return {"type": "MIDI", "args": args, "kwargs": kwargs}
 
@@ -106,29 +91,7 @@ class Player:
 
     @dur.setter
     def dur(self, value: int) -> None:
-        """
-        Div for surfboards does not have the same behavior it has in regular swimming
-        functions. It would be counter-intuitive. In that mode, the div should be in-
-        terpreted as a speed, with speed=0.01 being the absolute lowest speed a surf-
-        board can go. It means that the lowest value is some arbitrary cap we choose
-        to follow such as self._clock.ppqn * 4 for instance.
-
-        The high limit should feel like we are going insanely fast but still yield to
-        something like div=1 internally.
-
-        Args:
-            value (int): the new 'speed' factor
-        """
-        slow_limit = self._clock.ppqn * 8
-        fast_limit = 1
-
-        new_div = int(self._conversion_function(slow_limit, fast_limit, value))
-        # Dumb corrections
-        new_div = 1 if new_div == 0 else new_div
-        new_div = slow_limit if new_div > slow_limit else new_div
-
-        self._dur = value
-        self._div = new_div
+        pass
 
     def __repr__(self) -> str:
         return f"[Player {self._name}]: {self._content}, div: {self._div}, rate: {self._rate}"
@@ -148,18 +111,24 @@ class PatternHolder:
 
     def __init__(
         self,
-        MIDISender: "MIDISender",
-        OSCSender: "OSCSender",
-        SuperDirtSender: "SuperDirtSender",
+        MIDISender: "MidiHandler",
+        OSCSender: "OSCHandler",
+        SuperDirtSender: Optional["SuperDirtHandler"],
         clock,
     ):
-        self._midisender = MIDISender
-        self._oscsender = OSCSender
-        self._superdirtsender = SuperDirtSender
-        self._clock = clock
-        self._speed = 1
-        self._patterns = {}
-        self._init_internal_dictionary()
+        # Grabbing a reference to environment through the MIDIHandler
+        try:
+            self._env = MIDISender.env
+            self._midisender = MIDISender
+            self._again = self._env.scheduler.schedule_func
+            self._oscsender = OSCSender
+            self._superdirtsender = SuperDirtSender
+            self._clock = clock
+            self._speed = 1
+            self._patterns = {}
+            self._init_internal_dictionary()
+        except Exception as e:
+            print(f'Error during surfing mode init: {e}')
 
     def __repr__(self) -> str:
         return f"Surfboard || speed: {self._speed}"
@@ -196,26 +165,15 @@ class PatternHolder:
         This is a template for a global swimming function that can hold all
         the player/senders together for scheduling.
         """
-        d = self._speed / (self._clock.ppqn / 2)
+
+        # The delay should be updated dynamically for each loop
+        d = self._env.clock.beat_duration / 4
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
+
         for player in patterns:
+            #TODO: rewrite surfing mode function
             try:
-                if player._content["type"] == "function":
-                    player._content["func"]()
-                if player._content["type"] == "MIDI":
-                    self._midisender(
-                        note=player._content['args'][0],
-                        **player._content["kwargs"]).out(
-                        i=i, div=player._div, rate=player._rate
-                    )
-                elif player._content["type"] == "OSC":
-                    self._oscsender(
-                        *player._content["args"], **player._content["kwargs"]
-                    ).out(i=i, div=player._div, rate=player._rate)
-                elif player._content["type"] == "sound":
-                    self._superdirtsender(
-                        *player._content["args"], **player._content["kwargs"]
-                    ).out(i=i, div=player._div, rate=player._rate)
+                pass
             except Exception as e:
                 continue
-        self._clock.schedule_func(self._global_runner, d=d, i=i + 1)
+        self._again(self._global_runner, d=d, i=i + 1)

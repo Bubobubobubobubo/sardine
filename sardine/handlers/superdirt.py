@@ -6,9 +6,17 @@ from osc4py3.as_eventloop import osc_process, osc_send, osc_udp_client
 from ..base.handler import BaseHandler
 from ..io import read_user_configuration
 from ..superdirt.AutoBoot import SuperDirtProcess
+from ..sequences import Chord
+from typing import Union
+from itertools import chain
+from math import floor
 
 __all__ = ("SuperDirtHandler",)
 
+
+VALUES = Union[int, float, list, str]
+PATTERN = dict[str, list[float | int | list | str]]
+REDUCED_PATTERN = dict[str, list[float | int]]
 
 class SuperDirtHandler(BaseHandler):
     def __init__(
@@ -67,12 +75,6 @@ class SuperDirtHandler(BaseHandler):
 
     def __send_timed_message(self, address: str, message: list):
         """Build and send OSC bundles"""
-        message = message + [
-            "cps",
-            (self.env.clock.tempo / 60 / self.env.clock._beats_per_bar),
-            "delta",
-            1,
-        ]
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
@@ -90,6 +92,90 @@ class SuperDirtHandler(BaseHandler):
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
 
-    def send(self, *args, **kwargs):
-        """Placeholder"""
-        pass
+    def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:
+        """Joseph Enguehard's algorithm for solving iteration speed"""
+        return floor(iterator * rate / div) % len(pattern)
+
+    def pattern_reduce(self, 
+            pattern: PATTERN, 
+            iterator: int, 
+            divisor: int, 
+            rate: float,
+    ) -> dict:
+        pattern = {
+                k: self.env.parser.parse(v) if isinstance(
+            v, str) else v for k, v in pattern.items()
+        }
+        pattern = {
+                k:v[self.pattern_element(
+                    div=divisor, 
+                    rate=rate, 
+                    iterator=iterator,
+                    pattern=v)] if hasattr(
+                        v, "__getitem__") else v for k, v in pattern.items()
+        }
+        return pattern
+
+    def reduce_polyphonic_message(
+            self,
+            pattern: PATTERN) -> list[dict]:
+        """
+        Reduce a polyphonic message to a list of messages represented as 
+        dictionaries holding values to be sent through the MIDI Port
+        """
+        message_list: list = []
+        length = [x for x in filter(
+            lambda x: hasattr(x, '__getitem__'), pattern.values())
+        ]
+        length = max([len(i) for i in length])
+
+        # Break the chords into lists
+        pattern = {k:list(value) if isinstance(
+            value, Chord) else value for k, value in pattern.items()}
+
+        for _ in range(length):
+            message_list.append({k:v[_%len(v)] if isinstance(
+                v, (Chord, list)) else v for k, v in pattern.items()}
+            )
+        return message_list
+
+
+    def send(
+            self, 
+            sound: str,
+            orbit: int=0,
+            iterator: int = 0, 
+            divisor: int = 1,
+            rate: float = 1,
+            **kwargs):
+
+        if iterator % divisor!= 0: 
+            return
+
+        pattern = kwargs
+        pattern['sound'] = sound
+        pattern['orbit'] = 0
+        pattern['cps'] = round(self.env.clock.phase, 4)
+        pattern['cycle'] = ((self.env.clock.bar 
+            * self.env.clock.beats_per_bar) + self.env.clock.beat)
+
+        pattern = self.pattern_reduce(
+                pattern=pattern,
+                iterator=iterator, 
+                divisor=divisor, 
+                rate=rate 
+        )
+
+        is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
+
+        if is_polyphonic:
+            for message in self.reduce_polyphonic_message(pattern):
+                final_message = list(chain(*sorted(message.items())))
+                print(final_message)
+                if not isinstance(message['sound'], type(None)):
+                    self._dirt_play(final_message)
+        else:
+            if not isinstance(pattern['sound'], type(None)):
+                final_message = list(chain(*sorted(pattern.items())))
+                print(final_message)
+                self._dirt_play(final_message)

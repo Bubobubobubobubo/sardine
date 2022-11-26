@@ -16,6 +16,7 @@ from .io.UserConfig import (
     read_user_configuration,
 )
 from .utils import config_line_printer, sardine_intro
+from .sequences import PatternHolder, Player
 
 config = read_user_configuration()
 
@@ -162,11 +163,63 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
 
     return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
 
+class Delay:
+    """
+    with delay(0.5):
+        do_stuff()
+    """
+
+    def __init__(self, duration: Union[int, float] = 1, delayFirst: bool = True):
+        """
+        This compound statements needs to know two things, already provided
+        by some default values:
+        duration: for how long do we wait before or after the block?
+        delayFirst: are we waiting before or after the block?
+        """
+        self.duration = duration
+        self.delayFirst = delayFirst
+
+    def __call__(self, duration=1, delayFirst=False):
+        self.duration = duration
+        self.delayFirst = delayFirst
+        return self
+
+    def __enter__(self):
+        if self.delayFirst:
+            sleep(self.duration)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if not self.delayFirst:
+            sleep(self.duration)
+
+__surfing_patterns = PatternHolder(
+    clock=bowl.clock, 
+    MIDISender=midi, 
+    SuperDirtSender=dirt if config.superdirt_handler else None,
+    OSCSender=None #TODO: reimplement
+)
+
+for (key, value) in __surfing_patterns._patterns.items():
+    globals()[key] = value
+swim(__surfing_patterns._global_runner)
+surf = __surfing_patterns
+play, play_midi, play_osc, run = (
+        Player.play, 
+        Player.play_midi, 
+        Player.play_osc,
+        Player.run
+)
+
+
+
 # Aliases!
 
 again = bowl.scheduler.schedule_func
 sleep = bowl.sleep
+I, V = bowl.iterators, bowl.variables
 P = Pat
 M = midi.send
+# CC = midi.send_control
 if config.superdirt_handler:
+    SC = dirt._superdirt_process
     D = dirt.send

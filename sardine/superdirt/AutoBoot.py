@@ -173,6 +173,10 @@ class SuperDirtProcess:
         """User friendly alias for write_stdin"""
         self._write_stdin(message)
 
+    def trace(self, value: bool=True) -> None:
+        """User friendly alias for write_stdin"""
+        self._write_stdin(f"OSCFunc.trace({'true' if value else 'false'});")
+
     def meter(self) -> None:
         """Open SuperCollider VUmeter"""
         self._write_stdin("s.meter()")

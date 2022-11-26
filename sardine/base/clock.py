@@ -183,9 +183,10 @@ class BaseClock(BaseHandler, ABC):
         Args:
             n_beats (Union[int, float]): The number of beats to wait for.
             sync (bool):
-                If True, the clock's current phase is subtracted from
-                the initial duration to synchronize with the clock beat.
-                If False, no synchronization is done.
+                If True, the duration will be synchronized to an interval
+                accounting for the current time (and influenced by time shift).
+                If False, no synchronization is done, meaning the duration
+                for a given beat and tempo will always be the same.
 
         Returns:
             float: The amount of time to wait in seconds.
@@ -196,7 +197,7 @@ class BaseClock(BaseHandler, ABC):
         elif not sync:
             return interval
 
-        return interval - self.phase % interval
+        return interval - self.shifted_time % interval
 
     def get_bar_time(self, n_bars: Union[int, float], *, sync: bool = True) -> float:
         """Determines the amount of time to wait for N bars to pass.
@@ -204,9 +205,10 @@ class BaseClock(BaseHandler, ABC):
         Args:
             n_bars (Union[int, float]): The number of bars to wait for.
             sync (bool):
-                If True, the clock's current phase is subtracted from
-                the initial duration to synchronize with the clock beat.
-                If False, no synchronization is done.
+                If True, the duration will be synchronized to an interval
+                accounting for the current time (and influenced by time shift).
+                If False, no synchronization is done, meaning the duration
+                for a given bar and tempo will always be the same.
 
         Returns:
             float: The amount of time to wait in seconds.

@@ -227,7 +227,7 @@ class CalculateTree(Transformer):
 
     def get_time(self):
         """Return current clock time (tick) as integer"""
-        return [int(self.clock.tick)]
+        return [self.clock.time]
 
     def get_year(self):
         """Return current clock time (tick) as integer"""
@@ -259,11 +259,11 @@ class CalculateTree(Transformer):
 
     def get_measure(self):
         """Return current measure (bar) as integer"""
-        return [int(self.clock.bar)]
+        return [self.clock.bar]
 
     def get_phase(self):
         """Return current phase (phase) as integer"""
-        return [int(self.clock.phase)]
+        return [self.clock.phase]
 
     def get_unix_time(self):
         """Return current unix time as integer"""

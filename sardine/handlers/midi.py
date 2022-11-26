@@ -1,5 +1,4 @@
 import sys
-import time
 import asyncio
 import threading
 
@@ -8,14 +7,12 @@ import mido
 from ..base.handler import BaseHandler
 from ..io.MidiIo import MIDIIo
 from typing import Union, Optional, TYPE_CHECKING
-from itertools import cycle, islice, chain
+from itertools import cycle, islice
 from rich import print
 from math import floor
-from queue import Queue, Full
 from ..sequences import Chord
 
 __all__ = ("MidiHandler",)
-
 
 class MidiHandler(BaseHandler, threading.Thread):
 

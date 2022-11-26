@@ -4,7 +4,8 @@ import os
 import sys
 from pathlib import Path
 from sys import argv
-from typing import Union, Callable, Awaitable
+from typing import Union, Callable, Any
+from math import floor
 
 from rich import print
 from rich.panel import Panel
@@ -48,7 +49,6 @@ bowl = FishBowl(
 # Attaching handlers
 midi = MidiHandler()
 bowl.add_handler(midi)
-M = midi.send
 
 if config.superdirt_handler:
     dirt = SuperDirtHandler()
@@ -143,7 +143,30 @@ def silence(*args) -> None:
         for arg in args:
             bowl.scheduler.remove(arg)
 
+def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
+    """Generates a pattern
+
+    Args:
+        pattern (str): A pattern to be parsed
+        i (int, optional): Index for iterators. Defaults to 0.
+
+    Returns:
+        int: The ith element from the resulting pattern
+    """
+    parser = bowl.parser
+    result = parser.parse(pattern)
+
+    def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
+        """Joseph Enguehard's algorithm for solving iteration speed"""
+        return floor(iterator * rate / div) % len(pattern)
+
+    return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
+
 # Aliases!
 
 again = bowl.scheduler.schedule_func
 sleep = bowl.sleep
+P = Pat
+M = midi.send
+if config.superdirt_handler:
+    D = dirt.send

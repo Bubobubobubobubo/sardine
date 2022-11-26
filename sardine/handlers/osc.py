@@ -8,6 +8,7 @@ from functools import wraps
 from ..sequences import Chord
 from typing import Union
 from itertools import chain
+from math import floor
 
 __all__ = ("OSCHandler",)
 
@@ -51,6 +52,7 @@ class OSCHandler(BaseHandler):
             oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
             [msg],
         )
+        print(f"Sending osc message: {message}")
         osc_send(bun, self._name)
         osc_process()
 
@@ -146,24 +148,26 @@ class OSCHandler(BaseHandler):
                 rate=rate 
         )
 
+
         is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
 
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
                 if not isinstance(message['address'], type(None)):
                     # Removing the address key from the final list
-                    final_message = list(chain(*sorted({
-                        k:v for k, v in message.items() if k != 'pattern'})))
+                    del message['address']
+                    final_message = list(chain(*sorted(message.items())))
                     self._send(
-                            address=message['address'],
+                            address= "/" + message['address'],
                             message=final_message
                     )
         else:
+            address = pattern['address']
             if not isinstance(pattern['address'], type(None)):
                 # Removing the address key from the final list
-                final_message = list(chain(*sorted({
-                    k:v for k, v in pattern.items() if k != 'pattern'})))
+                del pattern['address']
+                final_message = list(chain(*sorted(pattern.items())))
                 self._send(
-                        address=pattern['address'], 
+                        address= "/" + address, 
                         message=final_message
                 )

@@ -227,7 +227,7 @@ CC = midi.send_control
 # Attaching a dummy OSC connexion for test purposes
 my_osc_connexion = OSCHandler(
         ip= "127.0.0.1",
-        port= 334455,
+        port= 12345,
         name= "Custom OSC Connexion",
         ahead_amount= 0.0)
 bowl.add_handler(my_osc_connexion)

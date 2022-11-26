@@ -219,10 +219,12 @@ play, play_midi, play_osc, run = (
 
 again = bowl.scheduler.schedule_func
 sleep = bowl.sleep
-I, V = bowl.iterators, bowl.variables
-P = Pat
-M = midi.send
-CC = midi.send_control
+
+I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
+P = Pat                                # Generic pattern interface
+N = midi.send                          # For sending MIDI Notes
+PC = midi.send_program                 # For MIDI Program changes
+CC = midi.send_control                 # For MIDI Control Change messages
 
 # Attaching a dummy OSC connexion for test purposes
 my_osc_connexion = OSCHandler(

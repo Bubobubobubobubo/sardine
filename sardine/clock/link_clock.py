@@ -106,8 +106,8 @@ class LinkClock(BaseClock):
         self._internal_time = link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
-        # Sardine phase is typically defined from 0.0 to 1.0. Some conversion is 
-        # needed for the phase coming from the LinkClock.
+        # Sardine phase is typically defined from 0.0 to the beat duration.
+        # Conversions are needed for the phase coming from the LinkClock.
         self._phase = phase % 1 * self.beat_duration
         self._playing = playing
         self._tempo = tempo

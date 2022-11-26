@@ -223,6 +223,16 @@ I, V = bowl.iterators, bowl.variables
 P = Pat
 M = midi.send
 CC = midi.send_control
+
+# Attaching a dummy OSC connexion for test purposes
+my_osc_connexion = OSCHandler(
+        ip= "127.0.0.1",
+        port= 334455,
+        name= "Custom OSC Connexion",
+        ahead_amount= 0.0)
+bowl.add_handler(my_osc_connexion)
+Ocustom = my_osc_connexion.send
+
 if config.superdirt_handler:
     SC = dirt._superdirt_process
     D = dirt.send

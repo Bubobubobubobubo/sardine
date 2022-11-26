@@ -10,6 +10,7 @@ from ..sequences import Chord
 from typing import Union
 from itertools import chain
 from math import floor
+from functools import wraps
 
 __all__ = ("SuperDirtHandler",)
 
@@ -141,7 +142,28 @@ class SuperDirtHandler(BaseHandler):
             )
         return message_list
 
+    @staticmethod
+    def _alias_param(name, alias):
+        """Alias a keyword parameter in a function. Throws a TypeError when a value is
+        given for both the original kwarg and the alias.
+        """
+        MISSING = object()
+    
+        def deco(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                alias_value = kwargs.pop(alias, MISSING)
+                if alias_value is not MISSING:
+                    if name in kwargs:
+                        raise TypeError(f'Cannot pass both {name!r} and {alias!r} in call')
+                    kwargs[name] = alias_value
+                return func(*args, **kwargs)
+            return wrapper
+        return deco
 
+    @_alias_param(name='iterator', alias='i')
+    @_alias_param(name='divisor', alias='d')
+    @_alias_param(name='rate', alias='r')
     def send(
             self, 
             sound: str,

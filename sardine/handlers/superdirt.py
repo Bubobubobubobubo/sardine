@@ -173,11 +173,9 @@ class SuperDirtHandler(BaseHandler):
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
                 final_message = list(chain(*sorted(message.items())))
-                print(final_message)
                 if not isinstance(message['sound'], type(None)):
                     self._dirt_play(final_message)
         else:
             if not isinstance(pattern['sound'], type(None)):
                 final_message = list(chain(*sorted(pattern.items())))
-                print(final_message)
                 self._dirt_play(final_message)

@@ -144,6 +144,11 @@ def silence(*args) -> None:
         for arg in args:
             bowl.scheduler.remove(arg)
 
+def panic(*args) -> None:
+    silence(*args)
+    if config.superdirt_handler:
+        D('superpanic')
+
 def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     """Generates a pattern
 

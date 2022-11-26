@@ -48,6 +48,9 @@ dev = [
     "pytest>= 7.2.0",
     "pytest-asyncio>=0.20.2",
 ]
+profile = [
+    "yappi>=1.4.0",
+]
 
 [project.urls]
 homepage = "https://sardine.raphaelforment.fr"

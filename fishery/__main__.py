@@ -1,162 +1,59 @@
-# https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
-# Taken from the CPython Github Repository. Custom version of the
-# asyncio REPL that will autoload Sardine whenever started.
-
-import ast
-import asyncio
-import code
-import concurrent.futures
-import inspect
-# import os
-# import platform
-import threading
-import types
-import warnings
-from asyncio import futures
-from pathlib import Path
+import contextlib
+import io
 from typing import Optional
 
-# import psutil
-from appdirs import user_data_dir
-from rich import print as pretty_print
-from rich.panel import Panel
+import click
 
-import sardine
+try:
+    import yappi
+except ImportError:
+    yappi = None
 
-from .runners import Runner
-
-# system = platform.system()
-# # Setting very high priority for this process (time-critical)
-# warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
-# \nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
-# if system == "Windows":
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(psutil.HIGH_PRIORITY_CLASS)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
-# else:
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(-20)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
+from . import console
 
 
-# Appdirs boilerplate
-APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
-USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+class Profiler:
+    def __init__(self, filepath: Optional[str]):
+        self.filepath = filepath
 
+    def __enter__(self):
+        if self.filepath is None:
+            return self
+        elif yappi is None:
+            raise RuntimeError("yappi must be installed to enable profiling")
 
-class AsyncIOInteractiveConsole(code.InteractiveConsole):
-    def __init__(self, locals: dict, loop: asyncio.BaseEventLoop):
-        super().__init__(locals)
-        self.compile.compiler.flags |= ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
+        yappi.set_clock_type("WALL")
+        yappi.start(builtins=False)
+        return self
 
-        self.loop = loop
-        self.repl_future: Optional[asyncio.Task] = None
-        self.repl_future_interrupted = False
-
-    def _callback(self, future: concurrent.futures.Future, code: types.CodeType):
-        self.repl_future = None
-        self.repl_future_interrupted = False
-
-        func = types.FunctionType(code, self.locals)
-        try:
-            coro = func()
-        except SystemExit:
-            raise
-        except KeyboardInterrupt as ex:
-            self.repl_future_interrupted = True
-            future.set_exception(ex)
-            return
-        except BaseException as ex:
-            future.set_exception(ex)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.filepath is None:
             return
 
-        if not inspect.iscoroutine(coro):
-            future.set_result(coro)
-            return
-
-        try:
-            self.repl_future = self.loop.create_task(coro)
-            futures._chain_future(self.repl_future, future)
-        except BaseException as exc:
-            future.set_exception(exc)
-
-    def runcode(self, code: types.CodeType):
-        future = concurrent.futures.Future()
-
-        loop.call_soon_threadsafe(self._callback, future, code)
-
-        try:
-            return future.result()
-        except SystemExit:
-            raise
-        except BaseException:
-            if self.repl_future_interrupted:
-                self.write("\nKeyboardInterrupt\n")
-            else:
-                self.showtraceback()
+        yappi.stop()
+        ystats = yappi.get_func_stats()
+        pstats = yappi.convert2pstats(ystats)
+        pstats.dump_stats(self.filepath)
+        click.echo(f"Profiler stats written to {self.filepath}")
 
 
-class REPLThread(threading.Thread):
-    def run(self):
-        try:
-            banner = ()
-            console.push("""import os""")
-            console.push("""os.environ['SARDINE_INIT_SESSION'] = 'YES'""")
-            console.push("""from sardine.run import *""")
-            console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
-        finally:
-            warnings.filterwarnings(
-                "ignore",
-                message=r"^coroutine .* was never awaited$",
-                category=RuntimeWarning,
-            )
-
-
-async def run_forever():
-    loop = asyncio.get_running_loop()
-    await loop.create_future()
+@click.command()
+@click.option(
+    "-p", "--profile", "profile_filepath",
+    default=None,
+    help="Profile sardine in the background and output pstats results "
+         "to the given file (requires the yappi package)",
+    type=click.Path(dir_okay=False, writable=True),
+)
+@click.version_option(
+    package_name="sardine",
+    prog_name=__package__,
+    message="%(prog)s for %(package)s v%(version)s",
+)
+def main(profile_filepath: Optional[io.BufferedWriter]):
+    with Profiler(profile_filepath):
+        console.start()
 
 
 if __name__ == "__main__":
-    loop = sardine.event_loop.new_event_loop()
-
-    repl_locals = {"asyncio": asyncio}
-    for key in (
-        "__name__",
-        "__package__",
-        "__loader__",
-        "__spec__",
-        "__builtins__",
-        "__file__",
-    ):
-        repl_locals[key] = locals()[key]
-
-    console = AsyncIOInteractiveConsole(repl_locals, loop)
-
-    try:
-        import readline  # NoQA
-    except ImportError:
-        pass
-
-    repl_thread = REPLThread()
-    repl_thread.daemon = True
-    repl_thread.start()
-
-    with Runner(loop=loop) as runner:
-        while True:
-            try:
-                runner.run(run_forever())
-            except KeyboardInterrupt:
-                if console.repl_future and not console.repl_future.done():
-                    console.repl_future.cancel()
-                    console.repl_future_interrupted = True
-                else:
-                    break
-            else:
-                break
+    main()

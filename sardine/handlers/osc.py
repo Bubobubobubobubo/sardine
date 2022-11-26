@@ -46,3 +46,7 @@ class OSCHandler(BaseHandler):
         )
         osc_send(bun, self._name)
         osc_process()
+
+    def send():
+        pass
+

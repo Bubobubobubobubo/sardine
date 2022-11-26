@@ -290,3 +290,51 @@ class MidiHandler(BaseHandler, threading.Thread):
                         velocity=pattern['velocity'],
                         duration=pattern['duration']
                 )
+
+    @_alias_param(name='iterator', alias='i')
+    @_alias_param(name='divisor', alias='d')
+    @_alias_param(name='rate', alias='r')
+    def send_control(
+        self,
+        control: VALUES = 0, 
+        channel: VALUES = 0,
+        value: VALUES = 60,
+        iterator: int = 0, 
+        divisor: int = 1,
+        rate: float = 1
+    ) -> None:
+        """
+        This method takes the role of the old .out method used in Sardine V1
+        """
+
+        if iterator % divisor!= 0: 
+            return
+
+        pattern = self.pattern_reduce(
+                break_polyphony=False,
+                pattern={
+                    'control': control,
+                    'channel': channel, 
+                    'value': value, 
+                },
+                iterator=iterator, 
+                divisor=divisor, 
+                rate=rate 
+        )
+
+        is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
+
+        if is_polyphonic:
+            for message in self.reduce_polyphonic_message(pattern):
+                if not isinstance(message['control'], type(None)):
+                    self._control_change(
+                    control=int(message['control']),
+                    channel=int(message['channel']),
+                    value=int(message['value']))
+        else:
+            if not isinstance(pattern['control'], type(None)):
+                self._control_change(
+                    control=int(pattern['control']),
+                    channel=int(pattern['channel']),
+                    value=int(pattern['value']))
+

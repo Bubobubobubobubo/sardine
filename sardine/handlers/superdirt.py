@@ -144,8 +144,9 @@ class SuperDirtHandler(BaseHandler):
 
     @staticmethod
     def _alias_param(name, alias):
-        """Alias a keyword parameter in a function. Throws a TypeError when a value is
-        given for both the original kwarg and the alias.
+        """
+        Alias a keyword parameter in a function. Throws a TypeError when 
+        a value is given for both the original kwarg and the alias.
         """
         MISSING = object()
     

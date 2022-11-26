@@ -215,8 +215,6 @@ play, play_midi, play_osc, run = (
         Player.run
 )
 
-
-
 # Aliases!
 
 again = bowl.scheduler.schedule_func
@@ -224,7 +222,7 @@ sleep = bowl.sleep
 I, V = bowl.iterators, bowl.variables
 P = Pat
 M = midi.send
-# CC = midi.send_control
+CC = midi.send_control
 if config.superdirt_handler:
     SC = dirt._superdirt_process
     D = dirt.send

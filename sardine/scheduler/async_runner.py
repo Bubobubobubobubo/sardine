@@ -443,8 +443,8 @@ class AsyncRunner:
             self.scheduler.runners.pop(name, None)
 
     async def _call_func(self, delta: float, func, args, kwargs):
-        """Calls the given function and may apply a time shift when the
-        `deferred` attribute is set to True.
+        """Calls the given function and optionally applies time shift
+        according to the `defer_beats` attribute.
         """
         shift = self.defer_beats * self.clock.beat_duration - delta
         self.time.shift += shift

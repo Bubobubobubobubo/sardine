@@ -29,6 +29,7 @@ class InternalClock(BaseClock):
 
     @property
     def beat(self) -> int:
+        # FIXME: Internal clock beat will abruptly change with tempo
         return int(self.shifted_time // self.beat_duration)
 
     @property
@@ -72,8 +73,10 @@ class InternalClock(BaseClock):
         if not 1 <= new_tempo <= 999:
             raise ValueError("new tempo must be within 1 and 999")
 
+        old_tempo = getattr(self, "_tempo", new_tempo)
         self._tempo = new_tempo
         self._beat_duration = 60 / new_tempo
+        self._dispatch_tempo_update(old_tempo, new_tempo)
 
     ## METHODS  ##############################################################
 

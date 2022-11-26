@@ -18,7 +18,9 @@ class Scheduler(BaseHandler):
         super().__init__()
         self.runners: dict[str, AsyncRunner] = {}
         self.deferred = deferred_scheduling
-        self._events = {}
+        self._events = {
+            "tempo_update": self.on_tempo_update,
+        }
 
     def __repr__(self) -> str:
         n_runners = len(self.runners)
@@ -29,15 +31,7 @@ class Scheduler(BaseHandler):
             self.deferred,
         )
 
-    # NOTE: on any change to the beat interval (accel, nudge, etc.), reload runners
-
-    # Internal methods
-
-    def _reload_runners(self):
-        for runner in self.runners.values():
-            runner.reload()
-
-    # Scheduling methods
+    # Public methods
 
     def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
@@ -62,8 +56,6 @@ class Scheduler(BaseHandler):
         if runner is not None:
             runner.stop()
 
-    # Public methods
-
     def print_children(self):
         """Print all children on clock"""
         [print(child) for child in self.runners]
@@ -73,6 +65,14 @@ class Scheduler(BaseHandler):
             runner.stop()
         self.runners.clear()
 
+    # Internal methods
+
+    def _reload_runners(self):
+        for runner in self.runners.values():
+            runner.reload()
+
+    # Handler hooks
+
     def setup(self):
         for event in self._events:
             self.register(event)
@@ -80,3 +80,7 @@ class Scheduler(BaseHandler):
     def hook(self, event: str, *args):
         func = self._events[event]
         func(*args)
+
+    def on_tempo_update(self, old: float, new: float):
+        # Let runners re-calculate their next interval sooner
+        self._reload_runners()

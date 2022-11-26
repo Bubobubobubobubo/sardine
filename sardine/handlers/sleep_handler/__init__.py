@@ -18,17 +18,18 @@ class SleepHandler(BaseHandler):
 
     Args:
         delta_record_size (int):
-            The maximum number of recordings to store
-            when averaging the delta for anti-drift.
-            Set to 0 to disable drift correction.
+            The maximum number of recordings to store when averaging the
+            delta for anti-drift. Set to 0 to disable drift correction.
+            WARNING: this is an experimental setting and may severely degrade
+            sleep accuracy when enabled.
         poll_interval (float):
             The polling interval to use when the current clock does not
-            support its own method of sleep.=
+            support its own method of sleep.
     """
 
     def __init__(
         self,
-        delta_record_size: int = 10,
+        delta_record_size: int = 0,
         poll_interval: float = 0.001,
     ):
         super().__init__()

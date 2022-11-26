@@ -1,5 +1,6 @@
 import asyncio
 import heapq
+from collections import deque
 from typing import Optional, Union
 
 from exceptiongroup import BaseExceptionGroup
@@ -16,12 +17,20 @@ class SleepHandler(BaseHandler):
     """The primary interface for other components to sleep.
 
     Args:
+        delta_record_size (int):
+            The maximum number of recordings to store
+            when averaging the delta for anti-drift.
+            Set to 0 to disable drift correction.
         poll_interval (float):
             The polling interval to use when the current clock does not
-            support its own method of sleep.
+            support its own method of sleep.=
     """
 
-    def __init__(self, poll_interval: float = 0.001):
+    def __init__(
+        self,
+        delta_record_size: int = 10,
+        poll_interval: float = 0.001,
+    ):
         super().__init__()
 
         self.poll_interval = poll_interval
@@ -30,6 +39,7 @@ class SleepHandler(BaseHandler):
         self._interrupt_event = asyncio.Event()
         self._wake_event = asyncio.Event()
         self._time_handles: list[TimeHandle] = []
+        self._previous_deltas: deque[float] = deque(maxlen=delta_record_size)
 
     # Public methods
 
@@ -43,11 +53,12 @@ class SleepHandler(BaseHandler):
 
         The deadline is based on the fish bowl clock's time.
         """
-        # TODO SleepHandler drift compensation
         if self.env is None:
             raise ValueError("SleepHandler must be added to a fish bowl")
         elif not self.env.is_running():
             raise RuntimeError("cannot use sleep until fish bowl has started")
+
+        clock = self.env.clock
 
         while True:
             # Handle stop/pauses before proceeding
@@ -55,13 +66,17 @@ class SleepHandler(BaseHandler):
                 asyncio.current_task().cancel()
             await self._wake_event.wait()
 
-            clock = self.env.clock
+            corrected_deadline = deadline - self._get_avg_delta()
 
             # Use clock sleep if available, else polling implementation
             if clock.can_sleep():
-                sleep_task = asyncio.create_task(clock.sleep(deadline - clock.time))
+                sleep_task = asyncio.create_task(
+                    clock.sleep(corrected_deadline - clock.time)
+                )
             else:
-                sleep_task = asyncio.create_task(self._sleep_until(deadline))
+                sleep_task = asyncio.create_task(
+                    self._sleep_until(corrected_deadline)
+                )
 
             # Wait until sleep completes or interruption
             intrp_task = asyncio.create_task(self._interrupt_event.wait())
@@ -70,6 +85,7 @@ class SleepHandler(BaseHandler):
             done, pending = await asyncio.wait(
                 tasks, return_when=asyncio.FIRST_COMPLETED
             )
+            delta = clock.time - corrected_deadline
 
             for t in pending:
                 t.cancel()
@@ -82,9 +98,15 @@ class SleepHandler(BaseHandler):
                 )
 
             if sleep_task in done:
+                self._previous_deltas.append(delta)
                 return
 
     # Internal methods
+
+    def _get_avg_delta(self) -> float:
+        if self._previous_deltas:
+            return sum(self._previous_deltas) / len(self._previous_deltas)
+        return 0.0
 
     def _check_running(self):
         if self._time_handles and not self._is_polling():

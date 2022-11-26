@@ -1,15 +1,9 @@
-import asyncio
 import importlib
-import os
 import sys
 from pathlib import Path
-from sys import argv
-from typing import Union, Callable, Any
+from typing import Union, Any
 from math import floor
-
 from rich import print
-from rich.panel import Panel
-
 from . import *
 from .io.UserConfig import (
     pretty_print_configuration_file,
@@ -18,14 +12,11 @@ from .io.UserConfig import (
 from .utils import config_line_printer, sardine_intro
 from .sequences import PatternHolder, Player
 
+# Reading user configuration (taken from sardine-config)
 config = read_user_configuration()
+clock = LinkClock if config.link_clock else InternalClock
 
-# | INITIALISATION |#
-CRASH_TEST = False
-
-# Reading user configuration
-config = read_user_configuration()
-
+# Printing banner and some infos about setup/config
 print(sardine_intro)
 print(config_line_printer(config))
 
@@ -41,23 +32,29 @@ if Path(f"{config.user_config_path}").is_file():
 else:
     print(f"[red]No user provided configuration file found...")
 
-# Real initialisation takes place here ############################
-clock = LinkClock if config.link_clock else InternalClock
-# clock = LinkClock if config.link_clock else InternalClock
+# Initialisation of the FishBowl (the environment holding everything together)
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
 )
-# Attaching handlers
-midi = MidiHandler()
+
+# Basic handlers initialization
+
+# MIDI Handler: matching with the MIDI port defined in the configuration file
+midi = MidiHandler(port_name=config.midi)
 bowl.add_handler(midi)
 
+# OSC Handler: dummy OSC handler, mostly used for test purposes
+my_osc_connexion = OSCHandler(
+        ip= "127.0.0.1",
+        port= 12345,
+        name= "Custom OSC Connexion",
+        ahead_amount= 0.0)
+bowl.add_handler(my_osc_connexion)
+
+# SuperDirt Handler: conditionnally
 if config.superdirt_handler:
     dirt = SuperDirtHandler()
-    D = dirt.send
     bowl.add_handler(dirt)
-
-# Starting the clock
-bowl.start()
 
 
 def swim(fn):
@@ -68,6 +65,13 @@ def swim(fn):
     bowl.scheduler.schedule_func(fn)
     return fn
 
+def die(fn):
+    """
+    Swimming decorator: remove a function from the clock. The function will not
+    be called again and will likely stop recursing in time.
+    """
+    bowl.scheduler.remove(fn)
+    return fn
 
 def sleep(n_beats: Union[int, float]):
     """Artificially sleep in the current function for `n_beats`.
@@ -125,17 +129,13 @@ def sleep(n_beats: Union[int, float]):
     duration = bowl.clock.get_beat_time(n_beats, sync=False)
     bowl.time.shift += duration
 
-
-def die(fn):
-    """
-    Swimming decorator: remove a function from the clock. The function will not
-    be called again and will likely stop recursing in time.
-    """
-    bowl.scheduler.remove(fn)
-    return fn
-
 def silence(*args) -> None:
-    """Silence a function of every function currently running"""
+    """
+    Silence is capable of stopping one or all currently running swimming functions. The
+    function will also trigger a general MIDI note_off event (all channels, all notes).
+    This function will only kill events on the Sardine side. For a function capable of 
+    killing synthesizers running on SuperCollider, try the more potent 'panic' function.
+    """
     if len(args) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
@@ -145,12 +145,22 @@ def silence(*args) -> None:
             bowl.scheduler.remove(arg)
 
 def panic(*args) -> None:
+    """
+    If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to 
+    silence() capable of killing synths on-the-fly. Use as a last ressource if you are
+    loosing control of the system.
+    """
     silence(*args)
     if config.superdirt_handler:
         D('superpanic')
 
 def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
-    """Generates a pattern
+    """
+    General purpose pattern interface. This function can be used to summon the global 
+    parser stored in the fish_bowl. It is generally used to pattern outside of the 
+    handler/sender system, if you are playing with custom libraries, imported code or 
+    if you want to take the best of the patterning system without having to deal with
+    all the built-in I/O.
 
     Args:
         pattern (str): A pattern to be parsed
@@ -163,24 +173,24 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     result = parser.parse(pattern)
 
     def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
-        """Joseph Enguehard's algorithm for solving iteration speed"""
+        """
+        Joseph Enguehard's algorithm for solving iteration speed. Used internally
+        to correct the index position using a division, a rate and an iterator as 
+        parameters. Allows iteration at different 'speeds' (rates) and skipping 
+        some indexes!
+        """
         return floor(iterator * rate / div) % len(pattern)
 
     return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
 
 class Delay:
     """
-    with delay(0.5):
-        do_stuff()
+    Delay is a compound statement providing an alternative syntax to the overridden 
+    sleep() method. It implements the bare minimum to reproduce sleep behavior using
+    extra indentation for marking visually where sleep takes effect.
     """
 
     def __init__(self, duration: Union[int, float] = 1, delayFirst: bool = True):
-        """
-        This compound statements needs to know two things, already provided
-        by some default values:
-        duration: for how long do we wait before or after the block?
-        delayFirst: are we waiting before or after the block?
-        """
         self.duration = duration
         self.delayFirst = delayFirst
 
@@ -204,6 +214,12 @@ __surfing_patterns = PatternHolder(
     OSCSender=None #TODO: reimplement
 )
 
+# TODO: Rewrite surfing methods
+#
+# Surfing methods provide an alternative syntax for Sardine that emulates FoxDot. It is
+# generally easier for live coders to start using Sardine with this technique, as it is
+# closer to what they expect from a live coding interface.
+
 for (key, value) in __surfing_patterns._patterns.items():
     globals()[key] = value
 swim(__surfing_patterns._global_runner)
@@ -226,15 +242,11 @@ N = midi.send                          # For sending MIDI Notes
 PC = midi.send_program                 # For MIDI Program changes
 CC = midi.send_control                 # For MIDI Control Change messages
 
-# Attaching a dummy OSC connexion for test purposes
-my_osc_connexion = OSCHandler(
-        ip= "127.0.0.1",
-        port= 12345,
-        name= "Custom OSC Connexion",
-        ahead_amount= 0.0)
-bowl.add_handler(my_osc_connexion)
 Ocustom = my_osc_connexion.send
 
 if config.superdirt_handler:
     SC = dirt._superdirt_process
     D = dirt.send
+
+# Clock start
+bowl.start()

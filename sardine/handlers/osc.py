@@ -52,7 +52,6 @@ class OSCHandler(BaseHandler):
             oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
             [msg],
         )
-        print(f"Sending osc message: {message}")
         osc_send(bun, self._name)
         osc_process()
 

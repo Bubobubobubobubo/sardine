@@ -156,15 +156,15 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         key = (note, channel)
         note_task = self.active_notes.get(key)
-        if note_task is not None:
+        if note_task is not None and not note_task.done():
             note_task.cancel()
         else:
             self._midi.send(mido.Message(
                 'note_on', note=int(note), channel=int(channel),
                 velocity=int(velocity)))
-        self.active_notes[key] = asyncio.create_task(
-            self.send_off(note=note, delay=duration-0.02,
-                velocity=velocity, channel=channel))
+            self.active_notes[key] = asyncio.create_task(
+                self.send_off(note=note, delay=duration-0.02,
+                    velocity=velocity, channel=channel))
 
 
     def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:

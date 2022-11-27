@@ -59,6 +59,14 @@ my_osc_listener = OSCInHandler(
 )
 bowl.add_handler(my_osc_listener)
 
+# MIDI Listener Handler: dummy MIDI Listener handler, used for test purposes
+target = ControlTarget(control=20, channel=0)
+my_osc_listener = MidiInHandler(
+        port='MIDI Bus 2'
+)
+bowl.add_handler(my_osc_listener)
+
+
 # SuperDirt Handler: conditionnally
 if config.superdirt_handler:
     dirt = SuperDirtHandler()

@@ -200,23 +200,38 @@ class FishBowl:
     def add_handler(self, handler: "BaseHandler"):
         """Adds a new handler to the fish bowl.
 
+        If the handler has any child handlers, they will be
+        recursively added to the fish bowl as well.
+
         This method is idempotent; adding the handler more than once
         will cause nothing to happen. However, handler objects cannot
         be shared across different fish bowls.
+
+        If an error occurs during the handler setup (including its children),
+        the handler will be removed before propagating the exception.
+        This means that `teardown()` is called even after an incomplete setup.
 
         Args:
             handler (BaseHandler): The handler being added.
 
         Raises:
             ValueError:
-                The handler has already been added to a different fish bowl.
+                The handler is either already added to a different fish bowl
+                or the handler's parent was not yet added to this fish bowl.
         """
         if handler.env is not None:
             if handler.env is self:
                 return
-            raise ValueError(
-                f"{handler!r} is already being used by {handler.env!r}"
-            )
+            raise ValueError(f"{handler!r} was already added to {handler.env!r}")
+        elif handler.parent is not None and handler.parent.env is not self:
+            if handler.parent.env is None:
+                raise ValueError(
+                    f"The parent {handler.parent!r} must be added to the fish bowl"
+                )
+            else:
+                raise ValueError(
+                    f"The parent {handler.parent!r} was already added to {handler.env!r}"
+                )
 
         # It may be possible that the user set `env` to None, but
         # given that `register_hook()` is idempotent, it's probably
@@ -226,6 +241,8 @@ class FishBowl:
         self._handlers[handler] = None
         try:
             handler.setup()
+            for child in handler.children:
+                self.add_handler(child)
         except BaseException as e:
             self.remove_handler(handler)
             raise e
@@ -233,27 +250,56 @@ class FishBowl:
     def remove_handler(self, handler: "BaseHandler"):
         """Removes an existing handler from the fish bowl.
 
-        After a handler has been removed, it can be re-used in new fish bowls.
+        If the handler has any child handlers, they will be
+        recursively removed from the fish bowl as well.
+
+        After the handler has been removed, it can be re-used in new fish bowls.
 
         This method is idempotent; removing the handler when
         it has already been removed will cause nothing to happen.
 
+        If an error occurs during the handler teardown (including its children),
+        its children and hooks will still be removed. At the end, all exceptions
+        are grouped into a `BaseExceptionGroup` before being raised.
+
         Args:
             handler (BaseHandler): The handler to remove from the fish bowl.
+
+        Raises:
+            ValueError:
+                One of the handler's parents has locked its children from
+                being removed.
         """
         if handler not in self._handlers:
             return
+        elif handler.locked:
+            raise ValueError(f"{handler!r} has been locked by its parent")
+
+        exceptions: list[BaseException] = []
+
+        for child in handler.children:
+            try:
+                self.remove_handler(child)
+            except BaseException as e:  # pylint: disable=invalid-name,broad-except
+                exceptions.append(e)
 
         try:
             handler.teardown()
-        finally:
-            handler._env = None  # pylint: disable=protected-access
-            del self._handlers[handler]
+        except BaseException as e:  # pylint: disable=invalid-name,broad-except
+            exceptions.append(e)
 
-            event_set = self._hook_events.get(handler)
-            if event_set is not None:
-                for event in tuple(event_set):
-                    self.unregister_hook(event, handler)
+        handler._env = None  # pylint: disable=protected-access
+        del self._handlers[handler]
+
+        event_set = self._hook_events.get(handler)
+        if event_set is not None:
+            for event in tuple(event_set):
+                self.unregister_hook(event, handler)
+
+        if exceptions:
+            raise BaseExceptionGroup(
+                f"Errors raised while removing {handler!r}", exceptions
+            )
 
     # Hook management
 
@@ -315,13 +361,12 @@ class FishBowl:
         for func in hooks:
             try:
                 func(event, *args)
-            # pylint: disable=invalid-name,broad-except
-            except Exception as e:
+
+            except Exception as e:  # pylint: disable=invalid-name,broad-except
                 exceptions.append(e)
-            except BaseException as e:
+            except BaseException as e:  # pylint: disable=invalid-name,broad-except
                 exceptions.append(e)
                 break
-            # pylint: enable=invalid-name,broad-except
 
         if exceptions:
             raise BaseExceptionGroup(

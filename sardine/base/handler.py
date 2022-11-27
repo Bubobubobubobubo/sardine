@@ -4,33 +4,71 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-__all__ = ("BaseHandler",)
+__all__ = ("BaseHandler", "HandlerGroup")
 
 
 class BaseHandler(ABC):
     """Handles particular events that are dispatched by a fish bowl.
 
     To add a handler to a fish bowl, the `FishBowl.add_handler()` method
-    should be called.
+    should be called. Handlers can only be tied to one fish bowl at a time.
 
     Unlike the fish bowl's concept of "hooks", handlers can apply themselves
     to multiple events at once and have access to the fish bowl via
     the `env` property.
 
-    Handlers can only be tied to one fish bowl at a time.
+    Handlers can also be given "child handlers" using the
+    `BaseHandler.add_child()` method. Whenever a parent handler is added
+    to a fish bowl, its children are automatically added afterwards.
+    Likewise, when a parent handler is removed, its children are also removed.
+
+    Child handlers can still be manually removed from the fish bowl
+    after being added. However, child handlers cannot be added to a
+    fish bowl before the parent handler is added, or be added to
+    a fish bowl different than the parent's handler.
+
+    Args:
+        lock_children (Optional[bool]):
+            If True, any child handlers are required to share the same
+            fish bowl as the parent. Children can still be removed
+            If False, child handlers can freely be removed.
+            If None, this will be deferred to the parent handler's setting.
+            For handlers without a parent, None is equivalent to False.
     """
 
-    def __init__(self):
+    def __init__(self, *, lock_children: Optional[bool] = None):
+        self.lock_children = lock_children
         self._env: "Optional[FishBowl]" = None
+        self._children: list[BaseHandler] = []
+        self._parent: Optional[BaseHandler] = None
 
     def __call__(self, *args, **kwargs):
         """Calls the handler's `hook()` method."""
         self.hook(*args, **kwargs)
 
     @property
+    def children(self) -> "list[BaseHandler]":
+        """A list of this handler's immediate children."""
+        return self._children.copy()
+
+    @property
     def env(self) -> "Optional[FishBowl]":
         """The fish bowl (a.k.a. environment) that this handler is added to."""
         return self._env
+
+    @property
+    def locked(self) -> bool:
+        """Indicates if this handler is locked by one of its parent handlers."""
+        if self.parent is None:
+            return False
+        elif self.parent.lock_children is None:
+            return self.parent.locked
+        return self.parent.lock_children
+
+    @property
+    def parent(self) -> "Optional[BaseHandler]":
+        """The parent of this handler, if any."""
+        return self._parent
 
     # Abstract methods
 
@@ -64,6 +102,67 @@ class BaseHandler(ABC):
 
     # Public methods
 
+    def add_child(self, handler: "BaseHandler"):
+        """Adds another handler as a child of this handler.
+
+        If the parent handler is already added to a fish bowl, this
+        method will *not* add the child handler to the same fish bowl.
+        The child handler can still be added to the parent's fish bowl
+        before or after this is called.
+
+        This method is idempotent; adding the handler more than once
+        will cause nothing to happen. However, child handlers cannot
+        be shared with other parent handlers.
+
+        Args:
+            handler (BaseHandler): The handler being added.
+
+        Raises:
+            ValueError:
+                The handler is either already added to a fish bowl other than
+                the parent, or is already a child of a different handler,
+                or was attempting to add itself as a child.
+
+        """
+        if handler is self:
+            raise ValueError(f"{handler!r} cannot be a child of itself")
+        elif handler.env is not None and handler.env is not self.env:
+            raise ValueError(f"{handler!r} is already being used by {handler.env!r}")
+        elif handler.parent is not None:
+            if handler.parent is self:
+                return
+            raise ValueError(f"{handler!r} is already a child of {handler.parent!r}")
+
+        handler._parent = self  # pylint: disable=protected-access
+        self._children.append(handler)
+
+    def remove_child(self, handler: "BaseHandler"):
+        """Removes an existing child handler from this handler.
+
+        If the child handler was already set up, this method will *not*
+        remove the child handler from the fish bowl.
+
+        After a handler has been removed, it can be re-used in new fish bowls.
+
+        This method is idempotent; removing the handler when
+        it has already been removed will cause nothing to happen.
+
+        Args:
+            handler (BaseHandler): The child handler to remove.
+        """
+        try:
+            i = self._children.index(handler)
+        except ValueError:
+            return
+
+        # The statement below is intentionally commented to let locked
+        # handlers unbind themselves from their parent if desired:
+        # if handler.env is not None and handler.locked:
+        #     raise ValueError(f"{handler!r} has been locked by its parent")
+
+        handler._parent = None  # pylint: disable=protected-access
+        self._children.pop(i)
+
     def register(self, event: Optional[str]):
         """Registers the handler for the given event.
 
@@ -87,3 +186,22 @@ class BaseHandler(ABC):
             )
 
         self.env.unregister_hook(event, self)
+
+
+class HandlerGroup(BaseHandler):
+    """A generic handler with the purpose of grouping other handlers together.
+
+    This class can be used for grouping handlers that don't necessarily use
+    anything from each other::
+
+        group = HandlerGroup(lock_children=True)
+        group.add_child(SomeHandler())
+        group.add_child(AnotherHandler())
+
+    However, if those handlers do depend on each other, it is recommended
+    to subclass this or the `BaseHandler` and add them as attributes of
+    the group, making the handlers available through the `parent` attribute.
+    """
+
+    def hook(self, event: str, *args):
+        ...

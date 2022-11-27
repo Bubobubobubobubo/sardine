@@ -83,29 +83,39 @@ class FishBowl:
 
     ## TRANSPORT ##############################################################
 
-    def pause(self):
+    def pause(self) -> bool:
         """Pauses the fish bowl.
 
         This will emit a `pause` event unless the fish bowl does
         not need to be paused, e.g. being paused once already or not
         having started.
+
+        Returns:
+            bool: True if the fish bowl was paused, False otherwise.
         """
-        if self.is_running() and not self.is_paused():
+        allowed = self.is_running() and not self.is_paused()
+        if allowed:
             self._resumed.clear()
             self.dispatch("pause")
+        return allowed
 
-    def resume(self):
+    def resume(self) -> bool:
         """Resumes the fish bowl.
 
         This will emit a `resume` event unless the fish bowl does
         not need to be resumed, e.g. if the clock is not running
         or has not been paused.
+
+        Returns:
+            bool: True if the fish bowl was resumed, False otherwise.
         """
-        if self.is_running() and self.is_paused():
+        allowed = self.is_running() and self.is_paused()
+        if allowed:
             self._resumed.set()
             self.dispatch("resume")
+        return allowed
 
-    def start(self):
+    def start(self) -> bool:
         """Starts the fish bowl.
 
         This will emit a `start` event unless the fish bowl does
@@ -113,21 +123,31 @@ class FishBowl:
 
         If the fish bowl is started, paused, stopped, and started again,
         handlers should treat it as if the fish bowl is no longer paused.
+
+        Returns:
+            bool: True if the fish bowl was started, False otherwise.
         """
-        if not self.is_running():
+        allowed = not self.is_running()
+        if allowed:
             self._alive.set()
             self._resumed.set()
             self.dispatch("start")
+        return allowed
 
-    def stop(self):
+    def stop(self) -> bool:
         """Stops the fish bowl.
 
         This will emit a `stop` event unless the fish bowl does
         not need to be stopped, e.g. if the clock is not running.
+
+        Returns:
+            bool: True if the fish bowl was stopped, False otherwise.
         """
-        if self.is_running():
+        allowed = self.is_running()
+        if allowed:
             self._alive.clear()
             self.dispatch("stop")
+        return allowed
 
     def is_paused(self):
         """Checks if the fish bowl is paused."""

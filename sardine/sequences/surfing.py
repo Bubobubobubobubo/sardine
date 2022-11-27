@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING, Callable, Union, Optional
 from rich import print
 from rich.panel import Panel
 
+from ..base import BaseClock, BaseHandler
+
 if TYPE_CHECKING:
     from ..handlers import MidiHandler, OSCHandler, SuperDirtHandler
 
@@ -97,7 +99,7 @@ class Player:
         return f"[Player {self._name}]: {self._content}, div: {self._div}, rate: {self._rate}"
 
 
-class PatternHolder:
+class PatternHolder(BaseHandler):
 
     """
     A Pattern Holder, at core, is simply a dict. This dict will contaminate the
@@ -111,27 +113,28 @@ class PatternHolder:
 
     def __init__(
         self,
-        MIDISender: "MidiHandler",
-        OSCSender: "OSCHandler",
-        SuperDirtSender: Optional["SuperDirtHandler"],
-        clock,
+        midi_handler: "MidiHandler",
+        osc_handler: "OSCHandler",
+        superdirt_handler: "Optional[SuperDirtHandler]",
     ):
-        # Grabbing a reference to environment through the MIDIHandler
-        try:
-            self._env = MIDISender.env
-            self._midisender = MIDISender
-            self._again = self._env.scheduler.start_func
-            self._oscsender = OSCSender
-            self._superdirtsender = SuperDirtSender
-            self._clock = clock
-            self._speed = 1
-            self._patterns = {}
-            self._init_internal_dictionary()
-        except Exception as e:
-            print(f'Error during surfing mode init: {e}')
+        super().__init__()
+
+        self._midisender = midi_handler
+        self._oscsender = osc_handler
+        self._superdirtsender = superdirt_handler
+        self._speed = 1
+        self._patterns = {}
 
     def __repr__(self) -> str:
         return f"Surfboard || speed: {self._speed}"
+
+    @property
+    def again(self):
+        return self.env.scheduler.start_func
+
+    @property
+    def clock(self) -> BaseClock:
+        return self.env.clock
 
     @property
     def speed(self):
@@ -148,7 +151,7 @@ class PatternHolder:
         for key in self._patterns.keys():
             self._patterns[key]._content = {}
 
-    def _init_internal_dictionary(self):
+    def setup(self):
         """
         Initialisation process. Create the dictionary keys, add one player per
         key. We can't push the dictionary to globals now. It needs to be done
@@ -158,7 +161,7 @@ class PatternHolder:
             globals()[k] = v
         """
         names = ["P" + l for l in ascii_uppercase + ascii_lowercase]
-        self._patterns = {k: Player(clock=self._clock, name=k) for k in names}
+        self._patterns = {k: Player(clock=self.clock, name=k) for k in names}
 
     def _global_runner(self, d=1, i=0):
         """
@@ -167,7 +170,7 @@ class PatternHolder:
         """
 
         # The delay should be updated dynamically for each loop
-        d = self._env.clock.beat_duration / 4
+        d = self.env.clock.beat_duration / 4
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
 
         for player in patterns:
@@ -176,4 +179,8 @@ class PatternHolder:
                 pass
             except Exception as e:
                 continue
-        self._again(self._global_runner, d=d, i=i + 1)
+        self.again(self._global_runner, d=d, i=i + 1)
+
+    # Handler hooks
+
+    def hook(self, event: str, *args): ...

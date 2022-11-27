@@ -1,4 +1,5 @@
 import asyncio
+import concurrent.futures
 import threading
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -79,17 +80,22 @@ class BaseThreadedLoopMixin(BaseRunnerMixin, ABC):
     def _run(self):
         try:
             self.before_loop()
+
+            fut = asyncio.run_coroutine_threadsafe(
+                self._completed_event.wait(),
+                self._loop
+            )
+
             try:
                 while not self._completed_event.is_set():
                     self.loop()
 
-                    asyncio.run_coroutine_threadsafe(
-                        asyncio.wait_for(
-                            self._completed_event.wait(),
-                            timeout=self.loop_interval
-                        ),
-                        self._loop
-                    )
+                    try:
+                        fut.result(timeout=self.loop_interval)
+                    except asyncio.CancelledError:
+                        break
+                    except concurrent.futures.TimeoutError:
+                        pass
             finally:
                 self.after_loop()
         finally:

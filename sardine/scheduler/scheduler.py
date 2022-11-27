@@ -67,9 +67,12 @@ class Scheduler(BaseHandler):
 
     # Internal methods
 
-    def _reload_runners(self):
+    def _reload_runners(self, *, interval_correction: bool):
         for runner in self.runners.values():
             runner.reload()
+
+            if interval_correction:
+                runner.allow_interval_correction()
 
     # Handler hooks
 
@@ -82,5 +85,4 @@ class Scheduler(BaseHandler):
         func(*args)
 
     def on_tempo_update(self, old: float, new: float):
-        # Let runners re-calculate their next interval sooner
-        self._reload_runners()
+        self._reload_runners(interval_correction=True)

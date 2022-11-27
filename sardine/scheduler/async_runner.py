@@ -202,7 +202,7 @@ class AsyncRunner:
             # Function reschedule, patch the top-most state
             last_state.args = args
             last_state.kwargs = kwargs
-            self._allow_interval_correction()
+            self.allow_interval_correction()
         else:
             # New function, transfer arguments from last state if possible
             # (any excess arguments here should be discarded by `_runner()`)
@@ -256,7 +256,7 @@ class AsyncRunner:
 
     # Interval shifting
 
-    def _allow_interval_correction(self):
+    def allow_interval_correction(self):
         """Allows the interval to be corrected in the next iteration."""
         self._can_correct_interval = True
 

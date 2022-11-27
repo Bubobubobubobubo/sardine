@@ -198,9 +198,6 @@ class FishBowl:
     def add_handler(self, handler: "BaseHandler"):
         """Adds a new handler to the fish bowl.
 
-        This handler will receive all messages currently dispatched
-        in the environment and react accordingly.
-
         This method is idempotent; adding the handler more than once
         will cause nothing to happen. However, handler objects cannot
         be shared across different fish bowls.

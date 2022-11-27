@@ -30,7 +30,7 @@ class OSCInHandler(BaseHandler):
             port: int = 11223, 
             name: str = "OSCIn"
     ):
-        self.env = None
+        super().__init__()
         self._ip, self._port, self._name = ip, port, name
         self._server = osc_udp_server(ip, port, name)
         osc_process()

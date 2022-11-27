@@ -42,7 +42,6 @@ class SuperDirtHandler(BaseHandler):
         self._ahead_amount = ahead_amount
 
         # Setting up environment
-        self.env = None
         self._events = {
             "meter": self._superdirt_process.meter,
             "scope": self._superdirt_process.scope,

@@ -5,8 +5,8 @@ __all__ = ("DummyHandler",)
 
 class DummyHandler(BaseHandler):
     def __init__(self, ip: str = "127.0.0.1", port: int = 23456):
+        super().__init__()
         self._ip, self._port = (ip, port)
-        self.env = None
         self._events = {
             "bleep": self._bleep,
             "bloop": self._bloop,

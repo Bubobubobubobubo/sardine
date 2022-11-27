@@ -40,7 +40,7 @@ class MidiInHandler(BaseHandler):
         target: Union[ControlTarget, NoteTarget, None] = None,
         port: Optional[str] = None,
     ):
-        self.env = None
+        super().__init__()
         self.target = target
         self.queue = deque(maxlen=20)
         self._last_item: Optional[Message] = None

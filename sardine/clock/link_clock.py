@@ -1,27 +1,23 @@
-import asyncio
-import threading
-import time
 from typing import Optional, Union
 
 import link
 
-from ..base import BaseClock
+from ..base import BaseClock, BaseThreadedLoopMixin
 
 NUMBER = Union[int, float]
 
 __all__ = ("LinkClock",)
 
 
-class LinkClock(BaseClock):
-
-    POLL_INTERVAL = 0.001
+class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def __init__(
         self,
         tempo: NUMBER = 120,
         bpb: int = 4,
+        loop_interval: float = 0.001,
     ):
-        super().__init__()
+        super().__init__(loop_interval=loop_interval)
 
         self._link: Optional[link.Link] = None
         self._beat: int = 0
@@ -32,10 +28,6 @@ class LinkClock(BaseClock):
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
-
-        # Thread control
-        self._run_thread: Optional[threading.Thread] = None
-        self._completed_event = asyncio.Event()
 
     ## GETTERS  ################################################
 
@@ -116,31 +108,17 @@ class LinkClock(BaseClock):
 
         self._dispatch_tempo_update(old_tempo, tempo)
 
-    def _run(self):
-        try:
-            self._link = link.Link(self._tempo)
-            self._link.enabled = True
-            self._link.startStopSyncEnabled = True
+    def before_loop(self):
+        self._link = link.Link(self._tempo)
+        self._link.enabled = True
+        self._link.startStopSyncEnabled = True
 
-            # Set the origin at the start
-            self._capture_link_info()
-            self._internal_origin = self.internal_time
+        # Set the origin at the start
+        self._capture_link_info()
+        self._internal_origin = self.internal_time
 
-            # Poll continuously to get the latest time
-            while not self._completed_event.is_set():
-                self._capture_link_info()
-                time.sleep(self.POLL_INTERVAL)
-        finally:
-            self._link = None
-            self._completed_event.set()
+    def loop(self):
+        self._capture_link_info()
 
-    async def run(self):
-        """Main loop for the LinkClock"""
-        self._completed_event.clear()
-        self._run_thread = threading.Thread(target=self._run)
-        self._run_thread.start()
-
-        try:
-            await self._completed_event.wait()
-        finally:
-            self._completed_event.set()
+    def after_loop(self):
+        self._link = None

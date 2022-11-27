@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-import asyncio
 from typing import Optional, Union
 
-from .handler import BaseHandler
+from .runner import BaseRunnerHandler
 
 __all__ = ("BaseClock",)
 
@@ -11,7 +10,7 @@ def _round_float(n: float, prec: int = 3):
     return s.rstrip("0").rstrip(".")
 
 
-class BaseClock(BaseHandler, ABC):
+class BaseClock(BaseRunnerHandler, ABC):
     """The base for all clocks to inherit from.
 
     This interface expects clocks to manage its own source of time
@@ -25,7 +24,6 @@ class BaseClock(BaseHandler, ABC):
 
     def __init__(self):
         super().__init__()
-        self._run_task: Optional[asyncio.Task] = None
         self._time_is_origin: bool = True
 
     def __repr__(self) -> str:
@@ -216,10 +214,6 @@ class BaseClock(BaseHandler, ABC):
         """
         return self.get_beat_time(n_bars * self.beats_per_bar, sync=sync)
 
-    def is_running(self) -> bool:
-        """Indicates if an asyncio task is currently executing `run()`."""
-        return self._run_task is not None and not self._run_task.done()
-
     async def sleep(self, duration: Union[float, int]) -> None:
         """Sleeps for the given duration.
 
@@ -245,19 +239,9 @@ class BaseClock(BaseHandler, ABC):
 
     # Handler hooks
 
-    def setup(self):
-        for event in ("start", "pause", "resume", "stop"):
-            self.register(event)
-
-    def teardown(self):
-        if self.is_running():
-            self._run_task.cancel()
-
     def hook(self, event: str, *args):
+        super().hook(event, *args)
         if event in ("start", "resume"):
-            if not self.is_running():
-                self._run_task = asyncio.create_task(self.run())
-
             # Setting internal origin here is only useful for the resume event,
             # unless the clock is able to provide an internal time before
             # the clock has started
@@ -269,6 +253,5 @@ class BaseClock(BaseHandler, ABC):
         elif event == "stop":
             self.env.time.origin = self.time
             self._time_is_origin = True
-            self.teardown()
         # print(f"{event=} {self.env.time.origin=} {self.time=} "
         #       f"{self.env.is_paused()=} {self.env.is_running()=}")

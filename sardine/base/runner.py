@@ -92,7 +92,7 @@ class BaseThreadedLoopMixin(BaseRunnerMixin, ABC):
 
                     try:
                         fut.result(timeout=self.loop_interval)
-                    except asyncio.CancelledError:
+                    except concurrent.futures.CancelledError:
                         break
                     except concurrent.futures.TimeoutError:
                         pass

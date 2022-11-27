@@ -71,6 +71,8 @@ class FishBowl:
 
     def __del__(self):
         self.stop()
+        for handler in self.handlers:
+            self.remove_handler(handler)
 
     def __repr__(self) -> str:
         running = self.is_running()

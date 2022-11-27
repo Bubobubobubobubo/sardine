@@ -1,12 +1,11 @@
-from ..base.handler import BaseHandler
-from osc4py3.as_eventloop import (
-    osc_method,
-    osc_udp_server,
-)
+from typing import Any, Callable, Union
+
 from osc4py3.as_eventloop import *
+from osc4py3.as_eventloop import osc_method, osc_udp_server
 from osc4py3.oscmethod import *
 from rich import print
-from typing import Union, Any, Callable
+
+from ..base.handler import BaseHandler
 from .osc_loop import OSCLoop
 
 __all__ = ("OSCInHandler",)
@@ -23,14 +22,14 @@ def flatten(l):
     else:
         return [l]
 
-class OSCInHandler(BaseHandler):
 
+class OSCInHandler(BaseHandler):
     def __init__(
-            self, 
-            loop: OSCLoop,
-            ip: str = "127.0.0.1", 
-            port: int = 11223, 
-            name: str = "OSCIn"
+        self,
+        loop: OSCLoop,
+        ip: str = "127.0.0.1",
+        port: int = 11223,
+        name: str = "OSCIn",
     ):
         super().__init__()
         self.loop = loop
@@ -40,8 +39,7 @@ class OSCInHandler(BaseHandler):
         self._server = osc_udp_server(ip, port, name)
         osc_process()
         self._watched_values = {}
-        self._events = {
-        }
+        self._events = {}
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} {self._name} ip={self._ip} port={self._port}>"
@@ -65,10 +63,7 @@ class OSCInHandler(BaseHandler):
 
         def generic_value_tracker(*args, **kwargs):
             """Generic value tracker to be attached to an address"""
-            self._watched_values[address] = {
-                    "args": flatten(args), 
-                    "kwargs": kwargs
-            }
+            self._watched_values[address] = {"args": flatten(args), "kwargs": kwargs}
             return (args, kwargs)
 
         osc_method(address, generic_value_tracker, argscheme=OSCARG_DATA)
@@ -98,21 +93,20 @@ class OSCInHandler(BaseHandler):
 
     def remote(self, address: str):
         """
-        Remote for controlling Sardine from an external client by talking directly to 
+        Remote for controlling Sardine from an external client by talking directly to
         the fish_bowl dispatch system. If the address matches an internal function de-
         clared by some handler, the dispatch function will be called and *args will be
         forwarded as well.
 
         address: address matching to a dispatch function (like 'pause', 'stop', etc..)
         """
-        print('Attaching address to matching incoming message')
+        print("Attaching address to matching incoming message")
 
         def event_dispatcher(address, *args) -> None:
-            print(f'Event Name: {address}')
+            print(f"Event Name: {address}")
             self.env.dispatch(address, *args)
 
         osc_method(address, event_dispatcher, argscheme=OSCARG_DATA)
-
 
     def get(self, address: str) -> Union[Any, None]:
         """Get a watched value. Return None if not found"""

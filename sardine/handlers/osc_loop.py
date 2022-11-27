@@ -1,9 +1,4 @@
-import asyncio
-import threading
-import time
-from typing import Optional
-
-from osc4py3.as_eventloop import *
+from osc4py3.as_eventloop import osc_process, osc_startup, osc_terminate
 
 from ..base import BaseRunnerHandler, BaseThreadedLoopMixin
 

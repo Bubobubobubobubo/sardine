@@ -1,7 +1,7 @@
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 from osc4py3.as_eventloop import *
-from osc4py3.as_eventloop import osc_method, osc_udp_server
+from osc4py3.oscchannel import TransportChannel, get_channel
 from osc4py3.oscmethod import *
 from rich import print
 
@@ -34,26 +34,25 @@ class OSCInHandler(BaseHandler):
         loop.add_child(self)
 
         self._ip, self._port, self._name = ip, port, name
-        self._server = osc_udp_server(ip, port, name)
         self._watched_values = {}
         self._events = {}
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} {self._name} ip={self._ip} port={self._port}>"
 
+    # Handler methods
+
     def setup(self):
-        for event in self._events:
-            self.register(event)
+        osc_udp_server(self._ip, self._port, self._name)
 
-    def hook(self, event: str, *args):
-        func = self._events[event]
-        func(*args)
+    def teardown(self):
+        channel: Optional[TransportChannel] = get_channel(self._name)
+        if channel is not None:
+            channel.terminate()
 
-    def _bleep(self, *args) -> None:
-        print(f"bleep: {args}")
+    def hook(self, event: str, *args): ...
 
-    def _bloop(self, *args) -> None:
-        print(f"bloop: {args}")
+    # Interface
 
     def _generic_store(self, address) -> None:
         """Generic storage function to attach to a given address"""

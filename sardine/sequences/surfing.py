@@ -126,7 +126,7 @@ class PatternHolder(BaseHandler):
         self._patterns = {}
 
     def __repr__(self) -> str:
-        return f"Surfboard || speed: {self._speed}"
+        return f"<Surfboard speed={self._speed}>"
 
     @property
     def again(self):

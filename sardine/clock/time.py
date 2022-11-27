@@ -28,7 +28,7 @@ class Time(BaseHandler):
         self._origin = origin
 
     def __repr__(self) -> str:
-        return "{}({})".format(
+        return "<{}({})>".format(
             type(self).__name__,
             " ".join(
                 f"{attr}={getattr(self, attr)}"

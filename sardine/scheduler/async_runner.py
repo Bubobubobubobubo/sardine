@@ -395,8 +395,6 @@ class AsyncRunner:
 
                 try:
                     # Use copied context in function by creating it as a task
-                    if name == "baba":
-                        print(self.clock.tempo, duration)
                     await asyncio.create_task(
                         self._call_func(sleep_drift, state.func, args, kwargs),
                         name=f"asyncrunner-func-{name}",

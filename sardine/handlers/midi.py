@@ -24,7 +24,7 @@ class MidiHandler(BaseHandler, threading.Thread):
     MidiHandler: a class capable of reacting to most MIDI Messages.
     """
 
-    def __init__(self, port_name: str = "Sardine"):
+    def __init__(self, port_name: str = "Sardine", nudge: float = 0.0):
         # Not exactly a pleasing solution for multiple inheritance
         threading.Thread.__init__(self)
         BaseHandler.__init__(self)
@@ -52,6 +52,7 @@ class MidiHandler(BaseHandler, threading.Thread):
 
         # Setting up the handler
         self.env = None
+        self._nudge = nudge
         self.events = {
             "start": self._start,
             "continue": self._continue,
@@ -69,7 +70,7 @@ class MidiHandler(BaseHandler, threading.Thread):
         }
  
     def __repr__(self) -> str:
-        return f"{self._port_name}: MIDI Handler"
+        return f"<MIDI Handler port={self._port_name} nudge={self._nudge}>"
 
     def setup(self):
         for event in self.events:

@@ -33,14 +33,14 @@ class OSCInHandler(BaseHandler):
         self.env = None
         self._ip, self._port, self._name = ip, port, name
         self._server = osc_udp_server(ip, port, name)
+        osc_process()
         self._watched_values = {}
         self._events = {
-            "bleep": self._bleep,
-            "bloop": self._bloop,
         }
 
     def __repr__(self) -> str:
-        return f"OSCInHandler {self._name}: {self._ip}:{self._port}"
+        return f"<OSCIinHandler {self._name} ip={self._ip} port={self._port}>"
+
 
     def setup(self):
         for event in self._events:
@@ -103,10 +103,9 @@ class OSCInHandler(BaseHandler):
         """
         print('Attaching address to matching incoming message')
 
-        def event_dispatcher(*args, **kwargs) -> None:
-            print(f'Event Name: {args[0]}')
-            event_name = args[0]
-            self.env.dispatch(event_name, *args[1:])
+        def event_dispatcher(address, *args) -> None:
+            print(f'Event Name: {address}')
+            self.env.dispatch(address, *args)
 
         osc_method(address, event_dispatcher, argscheme=OSCARG_DATA)
 

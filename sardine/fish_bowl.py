@@ -6,7 +6,7 @@ from exceptiongroup import BaseExceptionGroup
 
 from .base import BaseClock, BaseHandler, BaseParser
 from .clock import InternalClock, Time
-from .handlers import SleepHandler
+from .handlers import SleepHandler, OscLoop
 from .scheduler import Scheduler
 from .sequences import Iterator, ListParser, Pattern, Variables
 
@@ -25,7 +25,8 @@ class FishBowl:
 
     def __init__(
         self,
-        clock: BaseClock = None,
+        clock: Optional[BaseClock] = None,
+        osc_loop: Optional[OscLoop] = None,
         iterator: Optional[Iterator] = None,
         parser: Optional[BaseParser] = None,
         scheduler: Optional[Scheduler] = None,
@@ -33,6 +34,7 @@ class FishBowl:
         time: Optional[Time] = None,
         variables: Optional[Variables] = None,
     ):
+        self.osc_looppp = osc_loop or OscLoop()
         self.clock = clock or InternalClock()
         self.iterators = iterator or Iterator()
         self.parser = parser or ListParser()

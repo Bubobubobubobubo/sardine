@@ -7,6 +7,7 @@ import asyncio
 import code
 import concurrent.futures
 import inspect
+
 # import os
 # import platform
 import threading
@@ -106,6 +107,7 @@ class REPLThread(threading.Thread):
     def __init__(self, *args, console: AsyncIOInteractiveConsole, **kwargs):
         super().__init__(*args, **kwargs)
         self.console = console
+
     def run(self):
         try:
             banner = ()

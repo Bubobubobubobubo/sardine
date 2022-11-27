@@ -1,57 +1,54 @@
-import contextlib
-import io
-from typing import Optional
-
 import click
 
-try:
-    import yappi
-except ImportError:
-    yappi = None
-
 from . import console
+from .profiler import Profiler
 
 
-class Profiler:
-    def __init__(self, filepath: Optional[str]):
-        self.filepath = filepath
-
-    def __enter__(self):
-        if self.filepath is None:
-            return self
-        elif yappi is None:
-            raise RuntimeError("yappi must be installed to enable profiling")
-
-        yappi.set_clock_type("WALL")
-        yappi.start(builtins=False)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.filepath is None:
-            return
-
-        yappi.stop()
-        ystats = yappi.get_func_stats()
-        pstats = yappi.convert2pstats(ystats)
-        pstats.dump_stats(self.filepath)
-        click.echo(f"Profiler stats written to {self.filepath}")
-
-
-@click.command()
-@click.option(
-    "-p", "--profile", "profile_filepath",
-    default=None,
-    help="Profile sardine in the background and output pstats results "
-         "to the given file (requires the yappi package)",
-    type=click.Path(dir_okay=False, writable=True),
+@click.group(
+    help="Starts sardine in an asyncio REPL.",
+    invoke_without_command=True,
 )
 @click.version_option(
     package_name="sardine",
     prog_name=__package__,
     message="%(prog)s for %(package)s v%(version)s",
 )
-def main(profile_filepath: Optional[io.BufferedWriter]):
-    with Profiler(profile_filepath):
+@click.pass_context
+def main(ctx: click.Context):
+    if ctx.invoked_subcommand is None:
+        console.start()
+
+
+@main.command(
+    short_help="Run sardine with a background profiler (requires the yappi package)",
+    help="""
+        This command starts the deterministic profiler, yappi, and measures statistics
+        for both sardine and any functions written in the console. Once the REPL
+        is closed, a pstats file will be written containing the session's stats.
+        You can inspect the file's contents with Python's built-in pstats module
+        or a third-party package like snakeviz.
+        """,
+)
+@click.option(
+    "-c",
+    "--clock",
+    default="wall",
+    help="The clock type to use. Wall time includes time spent waiting, "
+    "while CPU time ignores it.",
+    show_default=True,
+    type=click.Choice(("cpu", "wall"), case_sensitive=False),
+)
+@click.option(
+    "-o",
+    "filepath",
+    default="stats.prof",
+    help="The path to use when outputting the pstats file",
+    show_default=True,
+    type=click.Path(dir_okay=False, writable=True),
+)
+def profile(clock: str, filepath: str):
+    profiler = Profiler(clock=clock, filepath=filepath)
+    with profiler:
         console.start()
 
 

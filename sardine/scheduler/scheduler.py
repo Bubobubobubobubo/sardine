@@ -18,9 +18,6 @@ class Scheduler(BaseHandler):
         super().__init__()
         self.runners: dict[str, AsyncRunner] = {}
         self.deferred = deferred_scheduling
-        self._events = {
-            "tempo_update": self.on_tempo_update,
-        }
 
     def __repr__(self) -> str:
         n_runners = len(self.runners)
@@ -77,12 +74,9 @@ class Scheduler(BaseHandler):
     # Handler hooks
 
     def setup(self):
-        for event in self._events:
+        for event in ("tempo_update",):
             self.register(event)
 
     def hook(self, event: str, *args):
-        func = self._events[event]
-        func(*args)
-
-    def on_tempo_update(self, old: float, new: float):
-        self._reload_runners(interval_correction=True)
+        if event == "tempo_update":
+            self._reload_runners(interval_correction=True)

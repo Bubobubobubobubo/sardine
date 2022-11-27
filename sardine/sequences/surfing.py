@@ -180,7 +180,3 @@ class PatternHolder(BaseHandler):
             except Exception as e:
                 continue
         self.again(self._global_runner, d=d, i=i + 1)
-
-    # Handler hooks
-
-    def hook(self, event: str, *args): ...

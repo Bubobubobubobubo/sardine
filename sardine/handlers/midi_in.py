@@ -45,8 +45,6 @@ class MidiInHandler(BaseHandler):
         self.queue = deque(maxlen=20)
         self._last_item: Optional[Message] = None
         self._last_value = 0
-        self._events = {
-        }
 
         if port:
             try:
@@ -61,14 +59,6 @@ class MidiInHandler(BaseHandler):
                 listened_port = mido.get_input_names()[0]
             except Exception:
                 raise OSError(f"Couldn't listen on port {port}")
-
-    def setup(self):
-        for event in self._events:
-            self.register(event)
-
-    def hook(self, event: str, *args):
-        func = self._events[event]
-        func(*args)
 
     def __str__(self):
         """String representation of the MIDI Listener"""

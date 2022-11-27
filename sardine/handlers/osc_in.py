@@ -49,8 +49,6 @@ class OSCInHandler(BaseHandler):
         if channel is not None:
             channel.terminate()
 
-    def hook(self, event: str, *args): ...
-
     # Interface
 
     def _generic_store(self, address) -> None:

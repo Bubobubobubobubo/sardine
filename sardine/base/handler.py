@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -7,7 +6,7 @@ if TYPE_CHECKING:
 __all__ = ("BaseHandler", "HandlerGroup")
 
 
-class BaseHandler(ABC):
+class BaseHandler:
     """Handles particular events that are dispatched by a fish bowl.
 
     To add a handler to a fish bowl, the `FishBowl.add_handler()` method
@@ -104,7 +103,6 @@ class BaseHandler(ABC):
         and set the `env` attribute to None.
         """
 
-    @abstractmethod
     def hook(self, event: str, *args):
         """Dispatched by the fish bowl for the handler's registered events."""
 
@@ -210,6 +208,3 @@ class HandlerGroup(BaseHandler):
     to subclass this or the `BaseHandler` and add them as attributes of
     the group, making the handlers available through the `parent` attribute.
     """
-
-    def hook(self, event: str, *args):
-        ...

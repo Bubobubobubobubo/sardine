@@ -81,8 +81,3 @@ class Time(BaseHandler):
     def reset(self):
         """Resets the time origin back to 0."""
         self._origin = 0.0
-
-    def hook(self, event: str, *args):
-        # This won't be registered for any events yet,
-        # but the base class requires this method to be defined
-        pass

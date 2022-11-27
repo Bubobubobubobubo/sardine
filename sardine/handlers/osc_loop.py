@@ -13,7 +13,6 @@ class OscLoop(BaseHandler):
 
     def __init__(self):
         super().__init__()
-        self.env = None
 
         # Thread control
         self._run_thread: Optional[threading.Thread] = None

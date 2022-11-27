@@ -13,6 +13,7 @@ from typing import Union
 from itertools import chain
 from math import floor
 import time
+from .osc_loop import OSCLoop
 
 __all__ = ("OSCHandler",)
 
@@ -26,12 +27,15 @@ osc_startup()
 class OSCHandler(BaseHandler):
     def __init__(
         self,
+        loop: OSCLoop,
         ip: str = "127.0.0.1",
         port: int = 23456,
         name: str = "OSCSender",
         ahead_amount: float = 0.0,
     ):
         super().__init__()
+        self.loop = loop
+        loop.add_child(self)
 
         # Setting up OSC Connexion
         self._ip, self._port, self._name = (ip, port, name)

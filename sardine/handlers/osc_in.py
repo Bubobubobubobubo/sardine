@@ -7,6 +7,7 @@ from osc4py3.as_eventloop import *
 from osc4py3.oscmethod import *
 from rich import print
 from typing import Union, Any, Callable
+from .osc_loop import OSCLoop
 
 __all__ = ("OSCInHandler",)
 
@@ -26,11 +27,15 @@ class OSCInHandler(BaseHandler):
 
     def __init__(
             self, 
+            loop: OSCLoop,
             ip: str = "127.0.0.1", 
             port: int = 11223, 
             name: str = "OSCIn"
     ):
         super().__init__()
+        self.loop = loop
+        loop.add_child(self)
+
         self._ip, self._port, self._name = ip, port, name
         self._server = osc_udp_server(ip, port, name)
         osc_process()

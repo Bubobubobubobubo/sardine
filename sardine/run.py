@@ -43,28 +43,34 @@ bowl = FishBowl(
 midi = MidiHandler(port_name=config.midi)
 bowl.add_handler(midi)
 
+# OSC Loop: dummy OSC loop, mostly used for test purposes
+my_osc_loop = OSCLoop()
+
 # OSC Handler: dummy OSC handler, mostly used for test purposes
 my_osc_connexion = OSCHandler(
         ip= "127.0.0.1",
         port= 12345,
         name= "Custom OSC Connexion",
-        ahead_amount= 0.0)
-bowl.add_handler(my_osc_connexion)
+        ahead_amount= 0.0,
+        loop=my_osc_loop
+)
 
 # OSC Listener Handler: dummy OSCIn handler, used for test purposes
 my_osc_listener = OSCInHandler(
         ip='127.0.0.1',
         port=33333,
-        name='OSC-In test'
+        name='OSC-In test',
+        loop=my_osc_loop
 )
-bowl.add_handler(my_osc_listener)
+
+bowl.add_handler(my_osc_loop)
 
 # MIDI Listener Handler: dummy MIDI Listener handler, used for test purposes
 target = ControlTarget(control=20, channel=0)
-my_osc_listener = MidiInHandler(
+my_midi_listener = MidiInHandler(
         port='MIDI Bus 2'
 )
-bowl.add_handler(my_osc_listener)
+bowl.add_handler(my_midi_listener)
 
 
 # SuperDirt Handler: conditionnally

@@ -46,6 +46,14 @@ class BaseHandler(ABC):
         """Calls the handler's `hook()` method."""
         self.hook(*args, **kwargs)
 
+    def __repr__(self) -> str:
+        return "<{} {}>".format(
+            type(self).__name__,
+            " ".join(
+                f"{attr}={getattr(self, attr)}"
+                for attr in ("lock_children", "env",)
+            ),
+        )
     @property
     def children(self) -> "list[BaseHandler]":
         """A list of this handler's immediate children."""

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Hashable, Optional
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 __all__ = ("BaseHandler",)
 
 
-class BaseHandler(ABC, Hashable):
+class BaseHandler(ABC):
     """Handles particular events that are dispatched by a fish bowl.
 
     To add a handler to a fish bowl, the `FishBowl.add_handler()` method
@@ -22,10 +22,6 @@ class BaseHandler(ABC, Hashable):
 
     def __init__(self):
         self._env: "Optional[FishBowl]" = None
-
-    def __hash__(self):  # pylint: disable=useless-parent-delegation
-        # Hashable expects this to be implemented
-        return super().__hash__()
 
     def __call__(self, *args, **kwargs):
         """Calls the handler's `hook()` method."""

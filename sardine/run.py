@@ -62,7 +62,7 @@ def swim(fn):
     Swimming decorator: push a function to the clock. The function will be
     declared and followed by the clock system to recurse in time if needed.
     """
-    bowl.scheduler.schedule_func(fn)
+    bowl.scheduler.start_func(fn)
     return fn
 
 def die(fn):
@@ -70,7 +70,7 @@ def die(fn):
     Swimming decorator: remove a function from the clock. The function will not
     be called again and will likely stop recursing in time.
     """
-    bowl.scheduler.remove(fn)
+    bowl.scheduler.stop_func(fn)
     return fn
 
 def sleep(n_beats: Union[int, float]):
@@ -142,7 +142,7 @@ def silence(*args) -> None:
         return
     else:
         for arg in args:
-            bowl.scheduler.remove(arg)
+            bowl.scheduler.stop_func(arg)
 
 def panic(*args) -> None:
     """

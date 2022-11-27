@@ -34,7 +34,7 @@ class FishBowl:
         time: Optional[Time] = None,
         variables: Optional[Variables] = None,
     ):
-        self.osc_looppp = osc_loop or OscLoop()
+        self.osc_loop = osc_loop or OscLoop()
         self.clock = clock or InternalClock()
         self.iterators = iterator or Iterator()
         self.parser = parser or ListParser()
@@ -55,6 +55,7 @@ class FishBowl:
             HookProtocol, dict[Optional[str], None]
         ] = collections.defaultdict(dict)
 
+        self.add_handler(self.osc_loop)
         self.add_handler(self.clock)
         self.add_handler(self.parser)
         self.add_handler(self.scheduler)

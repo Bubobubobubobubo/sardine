@@ -342,6 +342,3 @@ class FishBowl:
 
         all_hooks = local_hooks | global_hooks
         self._run_hooks(all_hooks, event, *args)
-
-    def __call__(self, sender_type: str = 'midi', *args, **kwargs) -> Pattern:
-        return Pattern()

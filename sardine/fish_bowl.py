@@ -62,6 +62,11 @@ class FishBowl:
         self.add_handler(self.sleeper)
         self.add_handler(self.time)
 
+    @property
+    def handlers(self) -> list[BaseHandler]:
+        """A list of all handlers added to this fish bowl."""
+        return list(self._handlers)
+
     ## DUNDER #################################################################
 
     def __del__(self):

@@ -32,29 +32,7 @@ class BaseHandler(ABC):
         """The fish bowl (a.k.a. environment) that this handler is added to."""
         return self._env
 
-    def register(self, event: Optional[str]):
-        """Registers the handler for the given event.
-
-        This is a shorthand for doing `self.env.register_hook(event, self)`.
-        """
-        if self.env is None:
-            raise ValueError(
-                "handler cannot register hooks until it is added to a FishBowl"
-            )
-
-        self.env.register_hook(event, self)
-
-    def unregister(self, event: Optional[str]):
-        """Unregisters the handler for the given event.
-
-        This is a shorthand for doing `self.env.unregister_hook(event, self)`.
-        """
-        if self.env is None:
-            raise ValueError(
-                "handler cannot unregister hooks until it is added to a FishBowl"
-            )
-
-        self.env.unregister_hook(event, self)
+    # Abstract methods
 
     def setup(self):
         """Called when the handler is added to a fish bowl.
@@ -83,3 +61,29 @@ class BaseHandler(ABC):
     @abstractmethod
     def hook(self, event: str, *args):
         """Dispatched by the fish bowl for the handler's registered events."""
+
+    # Public methods
+
+    def register(self, event: Optional[str]):
+        """Registers the handler for the given event.
+
+        This is a shorthand for doing `self.env.register_hook(event, self)`.
+        """
+        if self.env is None:
+            raise ValueError(
+                "handler cannot register hooks until it is added to a FishBowl"
+            )
+
+        self.env.register_hook(event, self)
+
+    def unregister(self, event: Optional[str]):
+        """Unregisters the handler for the given event.
+
+        This is a shorthand for doing `self.env.unregister_hook(event, self)`.
+        """
+        if self.env is None:
+            raise ValueError(
+                "handler cannot unregister hooks until it is added to a FishBowl"
+            )
+
+        self.env.unregister_hook(event, self)

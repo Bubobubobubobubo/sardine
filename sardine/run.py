@@ -241,7 +241,7 @@ __surfing_patterns = PatternHolder(
 
 # Aliases!
 
-again = bowl.scheduler.schedule_func
+again = bowl.scheduler.start_func
 sleep = bowl.sleep
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env

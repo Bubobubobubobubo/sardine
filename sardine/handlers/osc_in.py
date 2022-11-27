@@ -10,8 +10,6 @@ from .osc_loop import OSCLoop
 
 __all__ = ("OSCInHandler",)
 
-osc_startup()
-
 
 def flatten(l):
     if isinstance(l, (list, tuple)):
@@ -37,7 +35,6 @@ class OSCInHandler(BaseHandler):
 
         self._ip, self._port, self._name = ip, port, name
         self._server = osc_udp_server(ip, port, name)
-        osc_process()
         self._watched_values = {}
         self._events = {}
 

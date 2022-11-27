@@ -1,7 +1,7 @@
 import time
 
 from osc4py3 import oscbuildparse
-from osc4py3.as_eventloop import osc_process, osc_send, osc_udp_client
+from osc4py3.as_eventloop import osc_send
 
 from ..base.handler import BaseHandler
 from ..io import read_user_configuration
@@ -73,7 +73,6 @@ class SuperDirtHandler(BaseHandler):
             [msg],
         )
         osc_send(bun, self._name)
-        osc_process()
 
     def __send_timed_message(self, address: str, message: list):
         """Build and send OSC bundles"""
@@ -83,7 +82,6 @@ class SuperDirtHandler(BaseHandler):
             [msg],
         )
         osc_send(bun, self._name)
-        osc_process()
 
     def _send(self, address, message):
         self.__send(address=address, message=message)

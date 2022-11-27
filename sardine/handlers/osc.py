@@ -6,7 +6,6 @@ from typing import Union
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
-from osc4py3.as_eventloop import osc_process, osc_send, osc_udp_client
 from osc4py3.oscmethod import *
 
 from ..base.handler import BaseHandler
@@ -18,8 +17,6 @@ __all__ = ("OSCHandler",)
 VALUES = Union[int, float, list, str]
 PATTERN = dict[str, list[float | int | list | str]]
 REDUCED_PATTERN = dict[str, list[float | int]]
-
-osc_startup()
 
 
 class OSCHandler(BaseHandler):
@@ -39,7 +36,6 @@ class OSCHandler(BaseHandler):
         self._ip, self._port, self._name = (ip, port, name)
         self._ahead_amount = ahead_amount
         self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
-        osc_process()
         self._events = {"send": self._send}
 
     def __repr__(self) -> str:
@@ -60,7 +56,6 @@ class OSCHandler(BaseHandler):
             [msg],
         )
         osc_send(bun, self._name)
-        osc_process()
 
     def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:
         """Joseph Enguehard's algorithm for solving iteration speed"""

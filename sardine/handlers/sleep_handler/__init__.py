@@ -43,7 +43,7 @@ class SleepHandler(BaseHandler):
         self._previous_deltas: deque[float] = deque(maxlen=delta_record_size)
 
     def __repr__(self) -> str:
-        return f"<Sleep Handler interval={self.poll_interval}>"
+        return f"<{type(self).__name__} interval={self.poll_interval}>"
 
     # Public methods
 

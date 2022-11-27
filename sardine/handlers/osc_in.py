@@ -39,8 +39,7 @@ class OSCInHandler(BaseHandler):
         }
 
     def __repr__(self) -> str:
-        return f"<OSCIinHandler {self._name} ip={self._ip} port={self._port}>"
-
+        return f"<{type(self).__name__} {self._name} ip={self._ip} port={self._port}>"
 
     def setup(self):
         for event in self._events:

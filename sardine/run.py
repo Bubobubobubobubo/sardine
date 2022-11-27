@@ -256,6 +256,7 @@ bowl.add_handler(_surfing_patterns)
 # Aliases!
 
 again = bowl.scheduler.start_func
+clock = bowl.clock
 sleep = bowl.sleep
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env

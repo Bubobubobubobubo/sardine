@@ -5,9 +5,7 @@ import threading
 import mido
 
 from ..base.handler import BaseHandler
-from ..io.MidiIo import MIDIIo
-from typing import Union, Optional, TYPE_CHECKING
-from itertools import cycle, islice
+from typing import Union
 from rich import print
 from math import floor
 from ..sequences import Chord

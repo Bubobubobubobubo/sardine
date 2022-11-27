@@ -1,20 +1,26 @@
-import time
-
 from osc4py3 import oscbuildparse
-from osc4py3.as_eventloop import osc_process, osc_send, osc_udp_client
+from osc4py3.as_eventloop import (
+        osc_process, 
+        osc_send, 
+        osc_udp_client
+)
 from osc4py3.oscmethod import *
+from osc4py3.as_eventloop import *
 from ..base.handler import BaseHandler
 from functools import wraps
 from ..sequences import Chord
 from typing import Union
 from itertools import chain
 from math import floor
+import time
 
 __all__ = ("OSCHandler",)
 
 VALUES = Union[int, float, list, str]
 PATTERN = dict[str, list[float | int | list | str]]
 REDUCED_PATTERN = dict[str, list[float | int]]
+
+osc_startup()
 
 
 class OSCHandler(BaseHandler):
@@ -30,9 +36,12 @@ class OSCHandler(BaseHandler):
         # Setting up OSC Connexion
         self._ip, self._port, self._name = (ip, port, name)
         self._ahead_amount = ahead_amount
+        self.client = osc_udp_client(
+            address=self._ip,
+            port=self._port,
+            name=self._name
+        )
         osc_process()
-        self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
-
         self._events = {"send": self._send}
 
     def __repr__(self) -> str:

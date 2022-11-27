@@ -51,6 +51,14 @@ my_osc_connexion = OSCHandler(
         ahead_amount= 0.0)
 bowl.add_handler(my_osc_connexion)
 
+# OSC Listener Handler: dummy OSCIn handler, used for test purposes
+my_osc_listener = OSCInHandler(
+        ip='127.0.0.1',
+        port=33333,
+        name='OSC-In test'
+)
+bowl.add_handler(my_osc_listener)
+
 # SuperDirt Handler: conditionnally
 if config.superdirt_handler:
     dirt = SuperDirtHandler()
@@ -220,16 +228,16 @@ __surfing_patterns = PatternHolder(
 # generally easier for live coders to start using Sardine with this technique, as it is
 # closer to what they expect from a live coding interface.
 
-for (key, value) in __surfing_patterns._patterns.items():
-    globals()[key] = value
-swim(__surfing_patterns._global_runner)
-surf = __surfing_patterns
-play, play_midi, play_osc, run = (
-        Player.play, 
-        Player.play_midi, 
-        Player.play_osc,
-        Player.run
-)
+# for (key, value) in __surfing_patterns._patterns.items():
+#     globals()[key] = value
+# swim(__surfing_patterns._global_runner)
+# surf = __surfing_patterns
+# play, play_midi, play_osc, run = (
+#         Player.play, 
+#         Player.play_midi, 
+#         Player.play_osc,
+#         Player.run
+# )
 
 # Aliases!
 
@@ -241,7 +249,6 @@ P = Pat                                # Generic pattern interface
 N = midi.send                          # For sending MIDI Notes
 PC = midi.send_program                 # For MIDI Program changes
 CC = midi.send_control                 # For MIDI Control Change messages
-
 Ocustom = my_osc_connexion.send
 
 if config.superdirt_handler:

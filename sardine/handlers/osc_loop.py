@@ -14,7 +14,6 @@ class OscLoop(BaseHandler):
     def __init__(self):
         super().__init__()
         self.env = None
-        osc_startup()
 
         # Thread control
         self._run_thread: Optional[threading.Thread] = None
@@ -44,6 +43,7 @@ class OscLoop(BaseHandler):
 
     def _run(self):
         """Low-level loop"""
+        osc_startup()
         try:
             while not self._completed_event.is_set():
                 osc_process()

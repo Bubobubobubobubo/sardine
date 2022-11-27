@@ -1,8 +1,10 @@
 import time
 
 from osc4py3 import oscbuildparse
-from osc4py3.as_eventloop import osc_send
-
+from osc4py3.as_eventloop import (
+        osc_send, 
+        osc_udp_client
+)
 from ..base.handler import BaseHandler
 from ..io import read_user_configuration
 from ..superdirt.AutoBoot import SuperDirtProcess
@@ -39,6 +41,11 @@ class SuperDirtHandler(BaseHandler):
             print(f"[red]SuperCollider could not be found: {Error}![/red]")
 
         # Opening a new OSC Client to talk with it
+        self._osc_client = osc_udp_client(
+                address='127.0.0.1', 
+                port=57120, 
+                name=self._name
+        )
         self._ahead_amount = ahead_amount
 
         # Setting up environment

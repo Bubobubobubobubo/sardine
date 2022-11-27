@@ -263,7 +263,7 @@ class AsyncRunner:
     def _correct_interval(self, delay: Union[float, int]):
         """Checks if the interval should be corrected.
 
-        Interval correction occurs when `_allow_interval_correction()`
+        Interval correction occurs when `allow_interval_correction()`
         is called, and the given interval is different from the last
         interval *only* for the current iteration. If the interval
         did not change, interval correction must be requested again.
@@ -274,8 +274,7 @@ class AsyncRunner:
         """
         interval = delay * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
-            delta = self.clock.time - self._expected_time
-            self.interval_shift = self.clock.get_beat_time(delay) + delta
+            self.interval_shift = self.clock.get_beat_time(delay) + self._delta
 
             self._last_interval = interval
 
@@ -407,6 +406,8 @@ class AsyncRunner:
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
+
+                self._delta = self.clock.time - self._expected_time
         finally:
             # Remove from clock if necessary
             print_panel(f"[yellow][Stopped [red]{name}[/red]][/yellow]")

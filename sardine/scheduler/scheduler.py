@@ -33,7 +33,7 @@ class Scheduler(BaseHandler):
 
     # Public methods
 
-    def schedule_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
+    def start_func(self, func: MaybeCoroFunc, /, *args, **kwargs):
         """Schedules the given function to be executed."""
         if not (inspect.isfunction(func) or inspect.ismethod(func)):
             raise TypeError(f"func must be a function, not {type(func).__name__}")
@@ -50,7 +50,7 @@ class Scheduler(BaseHandler):
         else:
             runner.start()
 
-    def remove(self, func: MaybeCoroFunc, /):
+    def stop_func(self, func: MaybeCoroFunc, /):
         """Schedules the given function to stop execution."""
         runner = self.runners.get(func.__name__)
         if runner is not None:

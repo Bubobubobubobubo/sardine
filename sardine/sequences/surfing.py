@@ -120,7 +120,7 @@ class PatternHolder:
         try:
             self._env = MIDISender.env
             self._midisender = MIDISender
-            self._again = self._env.scheduler.schedule_func
+            self._again = self._env.scheduler.start_func
             self._oscsender = OSCSender
             self._superdirtsender = SuperDirtSender
             self._clock = clock

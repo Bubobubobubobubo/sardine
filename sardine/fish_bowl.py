@@ -219,8 +219,12 @@ class FishBowl:
         # fine to call `BaseHandler.setup()` again
 
         handler._env = self  # pylint: disable=protected-access
-        handler.setup()
         self._handlers[handler] = None
+        try:
+            handler.setup()
+        except BaseException as e:
+            self.remove_handler(handler)
+            raise e
 
     def remove_handler(self, handler: "BaseHandler"):
         """Removes an existing handler from the fish bowl.
@@ -236,14 +240,16 @@ class FishBowl:
         if handler not in self._handlers:
             return
 
-        handler.teardown()
-        handler._env = None  # pylint: disable=protected-access
-        del self._handlers[handler]
+        try:
+            handler.teardown()
+        finally:
+            handler._env = None  # pylint: disable=protected-access
+            del self._handlers[handler]
 
-        event_set = self._hook_events.get(handler)
-        if event_set is not None:
-            for event in tuple(event_set):
-                self.unregister_hook(event, handler)
+            event_set = self._hook_events.get(handler)
+            if event_set is not None:
+                for event in tuple(event_set):
+                    self.unregister_hook(event, handler)
 
     # Hook management
 

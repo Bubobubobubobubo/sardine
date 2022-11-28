@@ -1,10 +1,9 @@
 import asyncio
-import functools
 import inspect
 import traceback
 from collections import deque
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Optional, Union
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, MutableSequence, Optional, Union
 
 from rich import print
 from rich.panel import Panel
@@ -18,8 +17,6 @@ if TYPE_CHECKING:
     from .scheduler import Scheduler
 
 __all__ = ("AsyncRunner", "FunctionState")
-
-MAX_FUNCTION_STATES = 3
 
 
 def print_panel(text: str) -> None:
@@ -105,7 +102,6 @@ class FunctionState:
     kwargs: dict
 
 
-@dataclass
 class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
@@ -127,14 +123,21 @@ class AsyncRunner:
 
     """
 
-    name: str
-    scheduler: "Optional[Scheduler]" = field(default=None, init=False)
-    states: list[FunctionState] = field(
-        default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES),
-        repr=False,
-    )
+    MAX_FUNCTION_STATES = 3
 
-    interval_shift: float = field(default=0.0, repr=False)
+    name: str
+    """Uniquely identifies a runner when it is added to a scheduler."""
+
+    scheduler: "Optional[Scheduler]"
+    """The scheduler this runner was added to."""
+    states: MutableSequence[FunctionState]
+    """
+    The function stack, used for auto-restoring functions.
+
+    This is implemented with a deque to ensure a limit on how many functions
+    are stored in the cache.
+    """
+    interval_shift: float
     """
     The amount of time to offset the runner's interval.
 
@@ -154,20 +157,49 @@ class AsyncRunner:
     their interval shifts should be set to the same value (usually 0).
     """
 
-    _swimming: bool = field(default=False, repr=False)
-    _stop: bool = field(default=False, repr=False)
-    _task: Union[asyncio.Task, None] = field(default=None, repr=False)
-    _reload_event: asyncio.Event = field(default_factory=asyncio.Event, repr=False)
+    _swimming: bool
+    _stop: bool
+    _task: Optional[asyncio.Task]
+    _reload_event: asyncio.Event
 
-    _can_correct_interval: bool = field(default=False, repr=False)
-    _delta: float = field(default=0.0, repr=False)
-    _expected_time: float = field(default=0.0, repr=False)
-    _last_interval: float = field(default=0.0, repr=False)
+    _can_correct_interval: bool
+    _delta: float
+    _expected_time: float
+    _last_interval: float
+
+    def __init__(self, name: str):
+        self.name = name
+        self.scheduler = None
+        self.states = deque(maxlen=self.MAX_FUNCTION_STATES)
+        self.interval_shift = 0.0
+
+        self._swimming = False
+        self._stop = False
+        self._task = None
+        self._reload_event = asyncio.Event()
+
+        self._can_correct_interval = False
+        self._delta = 0.0
+        self._expected_time = 0.0
+        self._last_interval = 0.0
+
+    def __repr__(self):
+        cls_name = type(self).__name__
+        status = ("running" if self.is_running() else "stopped")
+        attrs = " ".join(
+            f"{attr}={getattr(self, attr)}"
+            for attr in (
+                "name",
+                "scheduler",
+            )
+        )
+        return f"<{cls_name} {status} {attrs}>"
 
     # Helper properties
 
     @property
     def clock(self) -> BaseClock:
+        """A shorthand for the current clock."""
         return self.scheduler.env.clock
 
     @property
@@ -177,6 +209,7 @@ class AsyncRunner:
 
     @property
     def env(self) -> "FishBowl":
+        """A shorthand for the scheduler's fish bowl."""
         return self.scheduler.env
 
     @property

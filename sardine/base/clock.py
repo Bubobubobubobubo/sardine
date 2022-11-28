@@ -65,7 +65,8 @@ class BaseClock(BaseRunnerHandler, ABC):
     def bar(self) -> int:
         """The bar of the clock's current time.
 
-        This property should account for time shift.
+        This property should account for time shift, but it is not expected
+        to be consistent across clocks or after any updates to the tempo.
         """
 
     @property
@@ -73,7 +74,8 @@ class BaseClock(BaseRunnerHandler, ABC):
     def beat(self) -> int:
         """The beat of the clock's current time.
 
-        This property should account for time shift.
+        This property should account for time shift, but it is not expected
+        to be consistent across clocks or after any updates to the tempo.
         """
 
     @property
@@ -87,7 +89,11 @@ class BaseClock(BaseRunnerHandler, ABC):
     @property
     @abstractmethod
     def beats_per_bar(self) -> int:
-        """The number of beats in each bar."""
+        """The number of beats in each bar.
+
+        This property should account for time shift, but it is not expected
+        to be consistent across clocks or after any updates to the tempo.
+        """
 
     @property
     @abstractmethod
@@ -116,7 +122,8 @@ class BaseClock(BaseRunnerHandler, ABC):
     def phase(self) -> float:
         """The phase of the current beat in the range `[0, beat_duration)`.
 
-        This property should account for time shift.
+        This property should account for time shift, but it is not expected
+        to be consistent across clocks or after any updates to the tempo.
         """
 
     @property

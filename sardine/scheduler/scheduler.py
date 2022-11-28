@@ -1,12 +1,8 @@
-import inspect
 from typing import Optional
-
-from rich import print
 
 from ..base import BaseHandler
 from ..utils import plural
 from .async_runner import AsyncRunner
-from .constants import MaybeCoroFunc
 
 __all__ = ("Scheduler",)
 

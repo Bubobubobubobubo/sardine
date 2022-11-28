@@ -39,8 +39,7 @@ class Scheduler(BaseHandler):
         """Adds the runner to the scheduler and starts it.
 
         If the runner is already running on the same scheduler,
-        this will update the scheduler's internal reference
-        to the runner, but otherwise do nothing.
+        this will only update the scheduler's internal reference.
 
         Args:
             runner (AsyncRunner): The runner to schedule and start.
@@ -60,8 +59,7 @@ class Scheduler(BaseHandler):
         old = self.get_runner(runner.name)
         if old is not None and old is not runner:
             raise ValueError(
-                f"Runner {runner.name!r} conflicts with the name "
-                "of an existing runner"
+                f"A different runner already exists with the name {runner.name!r}"
             )
 
         self._runners[runner.name] = runner
@@ -70,9 +68,6 @@ class Scheduler(BaseHandler):
 
     def stop_runner(self, runner: AsyncRunner):
         """Removes the runner from the scheduler and stops it.
-
-        Note that this does not remove the runner's reference to
-        the scheduler until it is garbage collected.
 
         Args:
             runner (AsyncRunner): The runner to remove.
@@ -87,6 +82,8 @@ class Scheduler(BaseHandler):
         ):
             raise ValueError(f"Runner {runner.name!r} is running on another scheduler")
 
+        # We don't set `runner.scheduler = None` because it might
+        # break the background task in the process
         runner.stop()
 
         if self._runners.get(runner.name) is runner:

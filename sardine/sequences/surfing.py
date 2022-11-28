@@ -1,20 +1,8 @@
-# Surfing mode ###############################################################
-#
-# Surfing mode is an emulation of the FoxDot (https://foxdot.org/) patterning
-# system. It works in a rather similar way, at least for the public interface.
-# The rest is just carefully attributing senders to a _global_runner function
-# that behaves just like any other swimming function.
-#
-# It can be useful to quickly lay down some drumming materials while using swim-
-# ming functions for more delicate operations :)
-################################################################################
 from string import ascii_lowercase, ascii_uppercase
 from typing import TYPE_CHECKING, Callable, Union, Optional
-
-from rich import print
-from rich.panel import Panel
-
 from ..base import BaseClock, BaseHandler
+from rich.panel import Panel
+from rich import print
 
 if TYPE_CHECKING:
     from ..handlers import MidiHandler, OSCHandler, SuperDirtHandler
@@ -30,70 +18,56 @@ class Player:
     div, rate, etc...
     """
 
-    def __init__(
-        self,
-        clock,
-        name: str,
-        content: Union[None, dict] = {},
-        rate: Union[int, float] = 1,
-    ):
-        self._clock = clock
+    def __init__(self, name: str, content: Union[None, dict] = {}):
         self._name = name
         self._content = content
-        self._rate = rate
-        self._dur = 1
-        self._div = 1
 
     @classmethod
     def run(cls, func: Callable):
         """
-        The play method will call a SuperDirtSender
+        The run method can be used to schedule any arbitrary function in rhythm just
+        like if it was a regular swimming function with a lone function call nested 
+        inside it.
         """
         return {"type": "function", "func": func}
 
     @classmethod
     def play(cls, *args, **kwargs):
         """
-        The play method will call a SuperDirtSender
+        The play method is analog to using the 'D()' send method (SuperDirt).
         """
         return {"type": "sound", "args": args, "kwargs": kwargs}
 
     @classmethod
     def play_midi(cls, *args, **kwargs):
         """
-        The play MIDI method will call the Note Send Handler
+        The play_midi method is analog to using the 'M()' send method (MIDIOut).
+        """
+        return {"type": "MIDI", "args": args, "kwargs": kwargs}
+
+    @classmethod
+    def play_control(cls, *args, **kwargs):
+        """
+        The play_control method is analog to using the 'CC()' send method (CCSender).
         """
         return {"type": "MIDI", "args": args, "kwargs": kwargs}
 
     @classmethod
     def play_osc(cls, *args, **kwargs):
         """
-        The play_osc method will call an OSCSender
+        #TODO: what to do of this?
         """
         return {"type": "OSC", "args": args, "kwargs": kwargs}
 
     def __rshift__(self, method_result):
         """
-        Public method for Players
+        Entry point for allocating a task to a given Player. Possible tasks are 'play',
+        'play_midi', 'play_osc', 'play_control' or 'run'. These methods all correspond 
+        to one possible simple operation to pattern and more could be added in the 
+        future.
         """
         print(Panel.fit(f"[yellow][[red]{self._name}[/red] update!][/yellow]"))
         self._content = method_result
-
-    @property
-    def rate(self) -> Union[int, float]:
-        return self._rate
-
-    @rate.setter
-    def rate(self, value: Union[int, float]) -> None:
-        self._rate = value
-
-    @property
-    def dur(self):
-        return self._dur
-
-    @dur.setter
-    def dur(self, value: int) -> None:
-        pass
 
     def __repr__(self) -> str:
         return f"[Player {self._name}]: {self._content}, div: {self._div}, rate: {self._rate}"
@@ -102,13 +76,14 @@ class Player:
 class PatternHolder(BaseHandler):
 
     """
-    A Pattern Holder, at core, is simply a dict. This dict will contaminate the
-    global namespace with references to players, just like FoxDot. Dozens of re-
-    ferences to Players() will be inserted in the global namespace to be used by
-    musicians.
+    A Pattern Holder, at core, is simply a dict. This dict will contaminate the global
+    namespace with references to players, just like FoxDot. Dozens of re ferences to
+    Players() will be inserted in the global namespace to be used by musicians.
 
-    Players are senders in disguise. This tiny object will hold all the required
-    information to play a sender, including its rate, div, etc...
+    Players are swimming functions in disguise, with a better and terser syntax. Howe-
+    ver, you loose the ability of having multiple statements per swimming function. Each
+    Player can have its own rate, it's own patterned rhythm, etc... It should behave just
+    like a regular swimming function.
     """
 
     def __init__(
@@ -162,6 +137,13 @@ class PatternHolder(BaseHandler):
         """
         names = ["P" + l for l in ascii_uppercase + ascii_lowercase]
         self._patterns = {k: Player(clock=self.clock, name=k) for k in names}
+
+    def _template_runner(self):
+        """
+        Template runner that every Player will eventually specialise with its own 
+        data. 
+        """
+        ...
 
     def _global_runner(self, d=1, i=0):
         """

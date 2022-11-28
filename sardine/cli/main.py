@@ -217,7 +217,7 @@ def _select_additional_options(config_file: dict) -> dict:
     print(
         Panel.fit(
             (
-                f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | "
+                f"[red]Debug mode: [green]{config_file['debug']}[/green][/red] | "
                 + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
             )
         )
@@ -240,7 +240,7 @@ def _select_additional_options(config_file: dict) -> dict:
     print(
         Panel.fit(
             (
-                f"[red]Debug mode: [green]{config_file['boot_superdirt']}[/green][/red] | "
+                f"[red]Debug mode: [green]{config_file['debug']}[/green][/red] | "
                 + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
             )
         )

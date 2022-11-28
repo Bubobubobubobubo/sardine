@@ -119,7 +119,9 @@ def die(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
         return func
 
     runner = bowl.scheduler.get_runner(func.__name__)
-    if runner is None:
+    if runner is not None:
+        bowl.scheduler.stop_runner(runner)
+    else:
         runner = AsyncRunner(func.__name__)
         runner.push(func)
     return runner

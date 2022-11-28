@@ -29,6 +29,11 @@ class Scheduler(BaseHandler):
             self.deferred,
         )
 
+    @property
+    def runners(self) -> list[AsyncRunner]:
+        """A list of the current runners stored in the scheduler."""
+        return list(self._runners.values())
+
     # Public methods
 
     def get_runner(self, name: str) -> Optional[AsyncRunner]:
@@ -89,12 +94,8 @@ class Scheduler(BaseHandler):
         if self._runners.get(runner.name) is runner:
             del self._runners[runner.name]
 
-    def print_children(self):
-        """Print all children on clock"""
-        [print(child) for child in self._runners]
-
     def reset(self):
-        for runner in tuple(self._runners.values()):
+        for runner in self.runners:
             self.stop_runner(runner)
 
     # Internal methods

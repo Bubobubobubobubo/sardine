@@ -93,6 +93,11 @@ def swim(func: Union[Callable, AsyncRunner], *args, **kwargs) -> AsyncRunner:
     else:
         runner.push(func, *args, **kwargs)
 
+        # Intentionally avoid interval correction so
+        # the user doesn't accidentally nudge the runner
+        runner.swim()
+        runner.reload()
+
     bowl.scheduler.start_runner(runner)
     return runner
 
@@ -104,8 +109,7 @@ def again(runner: AsyncRunner, *args, **kwargs):
     """
     runner.update_state(*args, **kwargs)
     runner.swim()
-    # In case the runner is sleeping - usually when the user
-    # manually calls `again()` - wake up the runner
+    # If this is manually called we should wake up the runner sooner
     runner.reload()
 
 

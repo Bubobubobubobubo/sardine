@@ -7,6 +7,7 @@ __all__ = ("Player",)
 NUMBER = Union[float, int]
 
 class PlayerType(Enum):
+    # fmt: off
     INACTIVE    = auto()
     FUNCTION    = auto()
     SUPERDIRT   = auto()

@@ -20,6 +20,7 @@ class Time(BaseHandler):
     Any new clocks must continue from this origin when they are running,
     and must update the origin when they are paused or stopped.
     """
+
     def __init__(
         self,
         origin: float = 0.0,
@@ -30,10 +31,7 @@ class Time(BaseHandler):
     def __repr__(self) -> str:
         return "{}({})".format(
             type(self).__name__,
-            " ".join(
-                f"{attr}={getattr(self, attr)}"
-                for attr in ("origin",)
-            ),
+            " ".join(f"{attr}={getattr(self, attr)}" for attr in ("origin",)),
         )
 
     @property

@@ -4,6 +4,7 @@ from rich import print
 
 __all__ = ("Player",)
 
+
 class Player:
 
     """
@@ -20,7 +21,7 @@ class Player:
     def run(cls, func: Callable):
         """
         The run method can be used to schedule any arbitrary function in rhythm just
-        like if it was a regular swimming function with a lone function call nested 
+        like if it was a regular swimming function with a lone function call nested
         inside it.
         """
         return {"type": "function", "func": func}
@@ -56,8 +57,8 @@ class Player:
     def __rshift__(self, method_result):
         """
         Entry point for allocating a task to a given Player. Possible tasks are 'play',
-        'play_midi', 'play_osc', 'play_control' or 'run'. These methods all correspond 
-        to one possible simple operation to pattern and more could be added in the 
+        'play_midi', 'play_osc', 'play_control' or 'run'. These methods all correspond
+        to one possible simple operation to pattern and more could be added in the
         future.
         """
         print(Panel.fit(f"[yellow][[red]{self._name}[/red] update!][/yellow]"))

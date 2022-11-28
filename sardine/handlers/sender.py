@@ -7,6 +7,7 @@ VALUES = Union[int, float, list, str]
 PATTERN = dict[str, list[float | int | list | str]]
 REDUCED_PATTERN = dict[str, list[float | int]]
 
+
 @staticmethod
 def _alias_param(name, alias):
     """
@@ -23,10 +24,12 @@ def _alias_param(name, alias):
             alias_value = kwargs.pop(alias, MISSING)
             if alias_value is not MISSING:
                 if name in kwargs:
-                    raise TypeError(f'Cannot pass both {name!r} and {alias!r} in call')
+                    raise TypeError(f"Cannot pass both {name!r} and {alias!r} in call")
                 kwargs[name] = alias_value
             return func(*args, **kwargs)
+
         return wrapper
+
     return deco
 
 
@@ -34,9 +37,9 @@ class Sender:
 
     """
     Handlers can inherit from 'Sender' if they are in charge of some output operation.
-    Output operations in Sardine generally involve some amount of pattern parsing and 
+    Output operations in Sardine generally involve some amount of pattern parsing and
     monophonic/polyphonic message composition. This class implements most of the inter-
-    nal behavior necessary for patterning. Each handler rely on these methods in the 
+    nal behavior necessary for patterning. Each handler rely on these methods in the
     final 'send' method called by the user.
 
     pattern_element: return the right index number for the pattern.
@@ -49,47 +52,51 @@ class Sender:
         """Joseph Enguehard's algorithm for solving iteration speed"""
         return floor(iterator * rate / div) % len(pattern)
 
-    def pattern_reduce(self,
-            pattern: PATTERN,
-            iterator: int,
-            divisor: int,
-            rate: float,
+    def pattern_reduce(
+        self,
+        pattern: PATTERN,
+        iterator: int,
+        divisor: int,
+        rate: float,
     ) -> dict:
         pattern = {
-                k: self.env.parser.parse(v) if isinstance(
-            v, str) else v for k, v in pattern.items()
+            k: self.env.parser.parse(v) if isinstance(v, str) else v
+            for k, v in pattern.items()
         }
         pattern = {
-                k:v[self.pattern_element(
-                    div=divisor,
-                    rate=rate,
-                    iterator=iterator,
-                    pattern=v)] if hasattr(
-                        v, "__getitem__") else v for k, v in pattern.items()
+            k: v[
+                self.pattern_element(
+                    div=divisor, rate=rate, iterator=iterator, pattern=v
+                )
+            ]
+            if hasattr(v, "__getitem__")
+            else v
+            for k, v in pattern.items()
         }
         return pattern
 
-
-    def reduce_polyphonic_message(
-            self,
-            pattern: PATTERN) -> list[dict]:
+    def reduce_polyphonic_message(self, pattern: PATTERN) -> list[dict]:
         """
         Reduce a polyphonic message to a list of messages represented as
         dictionaries holding values to be sent through the MIDI Port
         """
         message_list: list = []
-        length = [x for x in filter(
-            lambda x: hasattr(x, '__getitem__'), pattern.values())
+        length = [
+            x for x in filter(lambda x: hasattr(x, "__getitem__"), pattern.values())
         ]
         length = max([len(i) for i in length])
 
-        # Break the chords into lists
-        pattern = {k:list(value) if isinstance(
-            value, Chord) else value for k, value in pattern.items()}
+        # Break the chords into lists
+        pattern = {
+            k: list(value) if isinstance(value, Chord) else value
+            for k, value in pattern.items()
+        }
 
         for _ in range(length):
-            message_list.append({k:v[_%len(v)] if isinstance(
-                v, (Chord, list)) else v for k, v in pattern.items()}
+            message_list.append(
+                {
+                    k: v[_ % len(v)] if isinstance(v, (Chord, list)) else v
+                    for k, v in pattern.items()
+                }
             )
         return message_list
-

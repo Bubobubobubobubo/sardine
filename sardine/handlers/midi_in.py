@@ -2,20 +2,11 @@ from ..base.handler import BaseHandler
 from collections import deque
 from dataclasses import dataclass
 from typing import Optional, Union
-from mido import (
-        Message,
-        get_input_names, 
-        open_input, 
-        parse_string_stream
-)
+from mido import Message, get_input_names, open_input, parse_string_stream
 from rich import print
 import mido
 
-__all__ = (
-        "MidiInHandler", 
-        "ControlTarget", 
-        "NoteTarget"
-)
+__all__ = ("MidiInHandler", "ControlTarget", "NoteTarget")
 
 
 @dataclass

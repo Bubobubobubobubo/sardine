@@ -11,8 +11,7 @@ from rich.panel import Panel
 
 from . import funclib
 from .chord import Chord
-from .utils import (CyclicalList, map_binary_function, map_unary_function,
-                    zip_cycle)
+from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cycle
 
 
 @v_args(inline=True)

@@ -10,7 +10,6 @@ __all__ = ("LinkClock",)
 
 
 class LinkClock(BaseThreadedLoopMixin, BaseClock):
-
     def __init__(
         self,
         tempo: NUMBER = 120,
@@ -100,7 +99,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._internal_time = link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
-        # Sardine phase is typically defined from 0.0 to the beat duration.
+        # Sardine phase is typically defined from 0.0 to the beat duration.
         # Conversions are needed for the phase coming from the LinkClock.
         self._phase = phase % 1 * self.beat_duration
         self._playing = playing

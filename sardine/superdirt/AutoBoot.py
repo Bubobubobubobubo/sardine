@@ -173,7 +173,7 @@ class SuperDirtProcess:
         """User friendly alias for write_stdin"""
         self._write_stdin(message)
 
-    def trace(self, value: bool=True) -> None:
+    def trace(self, value: bool = True) -> None:
         """Tracing OSC messages sent to SuperCollider (only visible in verbose mode)"""
         self._write_stdin(f"OSCFunc.trace({'true' if value else 'false'});")
 

@@ -708,7 +708,7 @@ class Clock:
 
     async def run_active(self):
         """
-        Main runner for the active mode (master). Currently unstable depending 
+        Main runner for the active mode (master). Currently unstable depending
         on CPU load. It needs to be further refined.
         """
         self._current_tick, self._delta = 0, 0.0

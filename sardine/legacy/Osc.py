@@ -8,7 +8,7 @@ from osc4py3.as_eventloop import (
     osc_udp_server,
 )
 
-__all__ = ("Receiver", )
+__all__ = ("Receiver",)
 
 
 def flatten(l):

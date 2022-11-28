@@ -78,9 +78,7 @@ class SleepHandler(BaseHandler):
                     clock.sleep(corrected_deadline - clock.time)
                 )
             else:
-                sleep_task = asyncio.create_task(
-                    self._sleep_until(corrected_deadline)
-                )
+                sleep_task = asyncio.create_task(self._sleep_until(corrected_deadline))
 
             # Wait until sleep completes or interruption
             intrp_task = asyncio.create_task(self._interrupt_event.wait())

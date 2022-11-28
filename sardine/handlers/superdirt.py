@@ -1,10 +1,7 @@
 import time
 
 from osc4py3 import oscbuildparse
-from osc4py3.as_eventloop import (
-        osc_send, 
-        osc_udp_client
-)
+from osc4py3.as_eventloop import osc_send, osc_udp_client
 from ..base.handler import BaseHandler
 from ..io import read_user_configuration
 from ..superdirt.AutoBoot import SuperDirtProcess
@@ -13,13 +10,10 @@ from typing import Union
 from itertools import chain
 from math import floor
 from functools import wraps
-from .sender import (
-        _alias_param, 
-        Sender,
-        VALUES
-)
+from .sender import _alias_param, Sender, VALUES
 
 __all__ = ("SuperDirtHandler",)
+
 
 class SuperDirtHandler(BaseHandler, Sender):
     def __init__(
@@ -42,9 +36,7 @@ class SuperDirtHandler(BaseHandler, Sender):
 
         # Opening a new OSC Client to talk with it
         self._osc_client = osc_udp_client(
-                address='127.0.0.1', 
-                port=57120, 
-                name=self._name
+            address="127.0.0.1", port=57120, name=self._name
         )
         self._ahead_amount = ahead_amount
 
@@ -59,7 +51,7 @@ class SuperDirtHandler(BaseHandler, Sender):
             "dirt_play": self._dirt_play,
             "panic": self._dirt_panic,
             "boot": self._superdirt_process.boot,
-            "kill": self._superdirt_process.kill
+            "kill": self._superdirt_process.kill,
         }
 
     def __repr__(self) -> str:
@@ -99,33 +91,32 @@ class SuperDirtHandler(BaseHandler, Sender):
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
 
-    @_alias_param(name='iterator', alias='i')
-    @_alias_param(name='divisor', alias='d')
-    @_alias_param(name='rate', alias='r')
+    @_alias_param(name="iterator", alias="i")
+    @_alias_param(name="divisor", alias="d")
+    @_alias_param(name="rate", alias="r")
     def send(
-            self, 
-            sound: str,
-            orbit: int=0,
-            iterator: int = 0, 
-            divisor: int = 1,
-            rate: float = 1,
-            **kwargs):
+        self,
+        sound: str,
+        orbit: int = 0,
+        iterator: int = 0,
+        divisor: int = 1,
+        rate: float = 1,
+        **kwargs,
+    ):
 
-        if iterator % divisor!= 0: 
+        if iterator % divisor != 0:
             return
 
         pattern = kwargs
-        pattern['sound'] = sound
-        pattern['orbit'] = 0
-        pattern['cps'] = round(self.env.clock.phase, 4)
-        pattern['cycle'] = ((self.env.clock.bar 
-            * self.env.clock.beats_per_bar) + self.env.clock.beat)
+        pattern["sound"] = sound
+        pattern["orbit"] = 0
+        pattern["cps"] = round(self.env.clock.phase, 4)
+        pattern["cycle"] = (
+            self.env.clock.bar * self.env.clock.beats_per_bar
+        ) + self.env.clock.beat
 
         pattern = self.pattern_reduce(
-                pattern=pattern,
-                iterator=iterator, 
-                divisor=divisor, 
-                rate=rate 
+            pattern=pattern, iterator=iterator, divisor=divisor, rate=rate
         )
 
         is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
@@ -133,9 +124,9 @@ class SuperDirtHandler(BaseHandler, Sender):
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
                 final_message = list(chain(*sorted(message.items())))
-                if not isinstance(message['sound'], type(None)):
+                if not isinstance(message["sound"], type(None)):
                     self._dirt_play(final_message)
         else:
-            if not isinstance(pattern['sound'], type(None)):
+            if not isinstance(pattern["sound"], type(None)):
                 final_message = list(chain(*sorted(pattern.items())))
                 self._dirt_play(final_message)

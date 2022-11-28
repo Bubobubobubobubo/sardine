@@ -45,10 +45,7 @@ class ListParser(BaseHandler):
         self.debug = debug
         self.parser_type = parser_type
 
-        self._events = {
-            'parse': self.parse,
-            'parse_debug': self._parse_debug
-        }
+        self._events = {"parse": self.parse, "parse_debug": self._parse_debug}
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} debug={self.debug} type={self.parser_type}>"

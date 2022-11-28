@@ -364,7 +364,6 @@ class AsyncRunner:
                     self.swim()
                     continue
 
-
                 # start = self.clock.time
 
                 self._correct_interval(delay)

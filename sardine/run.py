@@ -14,7 +14,7 @@ from .utils import config_line_printer, sardine_intro
 config = read_user_configuration()
 clock = LinkClock if config.link_clock else InternalClock
 
-# Printing banner and some infos about setup/config
+# Printing banner and some infos about setup/config
 print(sardine_intro)
 print(config_line_printer(config))
 
@@ -30,7 +30,7 @@ if Path(f"{config.user_config_path}").is_file():
 else:
     print(f"[red]No user provided configuration file found...")
 
-# Initialisation of the FishBowl (the environment holding everything together)
+# Initialisation of the FishBowl (the environment holding everything together)
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
 )
@@ -44,30 +44,25 @@ bowl.add_handler(midi)
 # OSC Loop: dummy OSC loop, mostly used for test purposes
 my_osc_loop = OSCLoop()
 
-# OSC Handler: dummy OSC handler, mostly used for test purposes
+# OSC Handler: dummy OSC handler, mostly used for test purposes
 my_osc_connexion = OSCHandler(
-        ip= "127.0.0.1",
-        port= 12345,
-        name= "Custom OSC Connexion",
-        ahead_amount= 0.0,
-        loop=my_osc_loop
+    ip="127.0.0.1",
+    port=12345,
+    name="Custom OSC Connexion",
+    ahead_amount=0.0,
+    loop=my_osc_loop,
 )
 
 # OSC Listener Handler: dummy OSCIn handler, used for test purposes
 my_osc_listener = OSCInHandler(
-        ip='127.0.0.1',
-        port=33333,
-        name='OSC-In test',
-        loop=my_osc_loop
+    ip="127.0.0.1", port=33333, name="OSC-In test", loop=my_osc_loop
 )
 
 bowl.add_handler(my_osc_loop)
 
 # MIDI Listener Handler: dummy MIDI Listener handler, used for test purposes
 target = ControlTarget(control=20, channel=0)
-my_midi_listener = MidiInHandler(
-        port='MIDI Bus 2'
-)
+my_midi_listener = MidiInHandler(port="MIDI Bus 2")
 bowl.add_handler(my_midi_listener)
 
 
@@ -85,6 +80,7 @@ def swim(fn):
     bowl.scheduler.start_func(fn)
     return fn
 
+
 def die(fn):
     """
     Swimming decorator: remove a function from the clock. The function will not
@@ -92,6 +88,7 @@ def die(fn):
     """
     bowl.scheduler.stop_func(fn)
     return fn
+
 
 def sleep(n_beats: Union[int, float]):
     """Artificially sleep in the current function for `n_beats`.
@@ -149,11 +146,12 @@ def sleep(n_beats: Union[int, float]):
     duration = bowl.clock.get_beat_time(n_beats, sync=False)
     bowl.time.shift += duration
 
+
 def silence(*args) -> None:
     """
     Silence is capable of stopping one or all currently running swimming functions. The
     function will also trigger a general MIDI note_off event (all channels, all notes).
-    This function will only kill events on the Sardine side. For a function capable of 
+    This function will only kill events on the Sardine side. For a function capable of
     killing synthesizers running on SuperCollider, try the more potent 'panic' function.
     """
     if len(args) == 0:
@@ -164,21 +162,23 @@ def silence(*args) -> None:
         for arg in args:
             bowl.scheduler.stop_func(arg)
 
+
 def panic(*args) -> None:
     """
-    If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to 
+    If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to
     silence() capable of killing synths on-the-fly. Use as a last ressource if you are
     loosing control of the system.
     """
     silence(*args)
     if config.superdirt_handler:
-        D('superpanic')
+        D("superpanic")
+
 
 def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     """
-    General purpose pattern interface. This function can be used to summon the global 
-    parser stored in the fish_bowl. It is generally used to pattern outside of the 
-    handler/sender system, if you are playing with custom libraries, imported code or 
+    General purpose pattern interface. This function can be used to summon the global
+    parser stored in the fish_bowl. It is generally used to pattern outside of the
+    handler/sender system, if you are playing with custom libraries, imported code or
     if you want to take the best of the patterning system without having to deal with
     all the built-in I/O.
 
@@ -195,17 +195,18 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
         """
         Joseph Enguehard's algorithm for solving iteration speed. Used internally
-        to correct the index position using a division, a rate and an iterator as 
-        parameters. Allows iteration at different 'speeds' (rates) and skipping 
+        to correct the index position using a division, a rate and an iterator as
+        parameters. Allows iteration at different 'speeds' (rates) and skipping
         some indexes!
         """
         return floor(iterator * rate / div) % len(pattern)
 
     return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
 
+
 class Delay:
     """
-    Delay is a compound statement providing an alternative syntax to the overridden 
+    Delay is a compound statement providing an alternative syntax to the overridden
     sleep() method. It implements the bare minimum to reproduce sleep behavior using
     extra indentation for marking visually where sleep takes effect.
     """
@@ -227,17 +228,18 @@ class Delay:
         if not self.delayFirst:
             sleep(self.duration)
 
-# Aliases!
+
+# Aliases!
 
 again = bowl.scheduler.start_func
 clock = bowl.clock
 sleep = bowl.sleep
 
-I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
-P = Pat                                # Generic pattern interface
-N = midi.send                          # For sending MIDI Notes
-PC = midi.send_program                 # For MIDI Program changes
-CC = midi.send_control                 # For MIDI Control Change messages
+I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
+P = Pat  # Generic pattern interface
+N = midi.send  # For sending MIDI Notes
+PC = midi.send_program  # For MIDI Program changes
+CC = midi.send_control  # For MIDI Control Change messages
 Ocustom = my_osc_connexion.send
 
 if config.superdirt_handler:

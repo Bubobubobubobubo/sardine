@@ -11,6 +11,7 @@ __all__ = ("BaseRunnerMixin", "BaseThreadedLoopMixin", "BaseRunnerHandler")
 
 class BaseRunnerMixin(ABC):
     """Provides methods for running a background asynchronous function."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._run_task: Optional[asyncio.Task] = None
@@ -82,8 +83,7 @@ class BaseThreadedLoopMixin(BaseRunnerMixin, ABC):
             self.before_loop()
 
             fut = asyncio.run_coroutine_threadsafe(
-                self._completed_event.wait(),
-                self._loop
+                self._completed_event.wait(), self._loop
             )
 
             try:
@@ -119,6 +119,7 @@ class BaseRunnerHandler(BaseRunnerMixin, BaseHandler, ABC):
     Subclasses that override `setup()`, `teardown()`, or `hook()`, must call
     the corresponding super method.
     """
+
     TRANSPORT_EVENTS = ("start", "stop", "pause", "resume")
 
     def setup(self):

@@ -50,9 +50,13 @@ class BaseHandler:
             type(self).__name__,
             " ".join(
                 f"{attr}={getattr(self, attr)}"
-                for attr in ("lock_children", "env",)
+                for attr in (
+                    "lock_children",
+                    "env",
+                )
             ),
         )
+
     @property
     def children(self) -> "list[BaseHandler]":
         """A list of this handler's immediate children."""

@@ -10,13 +10,12 @@ from math import floor
 from ..sequences import Chord
 from functools import wraps
 from .sender import (
-        _alias_param, 
-        Sender,
-        VALUES,
+    _alias_param,
+    Sender,
+    VALUES,
 )
 
 __all__ = ("MidiHandler",)
-
 
 
 class MidiHandler(BaseHandler, Sender):
@@ -28,7 +27,6 @@ class MidiHandler(BaseHandler, Sender):
     def __init__(self, port_name: str = "Sardine", nudge: float = 0.0):
         super().__init__()
         self.active_notes: dict[tuple[int, int], asyncio.Task] = {}
-
 
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
@@ -129,28 +127,27 @@ class MidiHandler(BaseHandler, Sender):
     def _pitch_wheel(self, pitch: int, channel: int) -> None:
         self._midi.send(mido.Message("pitchweel", pitch=pitch, channel=channel))
 
-    async def send_off(self, note: int, channel: int, velocity: int, delay: Union[int, float]):
+    async def send_off(
+        self, note: int, channel: int, velocity: int, delay: Union[int, float]
+    ):
         await self.env.sleep(delay)
-        self._midi.send(mido.Message("note_off", note=note,
-            channel=channel, velocity=velocity))
+        self._midi.send(
+            mido.Message("note_off", note=note, channel=channel, velocity=velocity)
+        )
         self.active_notes.pop((note, channel), None)
 
     def all_notes_off(self):
         """
         Panic button for MIDI notes on every channel. Is there a message for this?
         """
-        for note in range(0,128):
-            for channel in range(0,16):
-                self._midi.send(mido.Message(
-                    'note_off',
-                    note=note,velocity=0,
-                    channel=channel))
+        for note in range(0, 128):
+            for channel in range(0, 16):
+                self._midi.send(
+                    mido.Message("note_off", note=note, velocity=0, channel=channel)
+                )
 
-    def send_midi_note(self,
-            note: int,
-            channel: int,
-            velocity: int,
-            duration: float
+    def send_midi_note(
+        self, note: int, channel: int, velocity: int, duration: float
     ) -> None:
         """Template function for MIDI Note sending"""
 
@@ -159,16 +156,23 @@ class MidiHandler(BaseHandler, Sender):
         if note_task is not None and not note_task.done():
             note_task.cancel()
         else:
-            self._midi.send(mido.Message(
-                'note_on', note=int(note), channel=int(channel),
-                velocity=int(velocity)))
+            self._midi.send(
+                mido.Message(
+                    "note_on",
+                    note=int(note),
+                    channel=int(channel),
+                    velocity=int(velocity),
+                )
+            )
             self.active_notes[key] = asyncio.create_task(
-                self.send_off(note=note, delay=duration-0.02,
-                    velocity=velocity, channel=channel))
+                self.send_off(
+                    note=note, delay=duration - 0.02, velocity=velocity, channel=channel
+                )
+            )
 
-    @_alias_param(name='iterator', alias='i')
-    @_alias_param(name='divisor', alias='d')
-    @_alias_param(name='rate', alias='r')
+    @_alias_param(name="iterator", alias="i")
+    @_alias_param(name="divisor", alias="d")
+    @_alias_param(name="rate", alias="r")
     def send(
         self,
         note: VALUES = 60,
@@ -177,7 +181,7 @@ class MidiHandler(BaseHandler, Sender):
         duration: VALUES = 1,
         iterator: int = 0,
         divisor: int = 1,
-        rate: float = 1
+        rate: float = 1,
     ) -> None:
         """
         This method is responsible for preparing the pattern message before sending it
@@ -187,44 +191,44 @@ class MidiHandler(BaseHandler, Sender):
         into a single MIDI message.
         """
 
-        if iterator % divisor!= 0:
+        if iterator % divisor != 0:
             return
 
         pattern = self.pattern_reduce(
-                pattern={
-                    'note': note,
-                    'velocity': velocity,
-                    'channel': channel,
-                    'duration': duration
-                },
-                iterator=iterator,
-                divisor=divisor,
-                rate=rate
+            pattern={
+                "note": note,
+                "velocity": velocity,
+                "channel": channel,
+                "duration": duration,
+            },
+            iterator=iterator,
+            divisor=divisor,
+            rate=rate,
         )
 
         is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
 
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
-                if not isinstance(message['note'], type(None)):
+                if not isinstance(message["note"], type(None)):
                     self.send_midi_note(
-                            note=message['note'],
-                            channel=message['channel'],
-                            velocity=message['velocity'],
-                            duration=message['duration']
+                        note=message["note"],
+                        channel=message["channel"],
+                        velocity=message["velocity"],
+                        duration=message["duration"],
                     )
         else:
-            if not isinstance(pattern['note'], type(None)):
+            if not isinstance(pattern["note"], type(None)):
                 self.send_midi_note(
-                        note=pattern['note'],
-                        channel=pattern['channel'],
-                        velocity=pattern['velocity'],
-                        duration=pattern['duration']
+                    note=pattern["note"],
+                    channel=pattern["channel"],
+                    velocity=pattern["velocity"],
+                    duration=pattern["duration"],
                 )
 
-    @_alias_param(name='iterator', alias='i')
-    @_alias_param(name='divisor', alias='d')
-    @_alias_param(name='rate', alias='r')
+    @_alias_param(name="iterator", alias="i")
+    @_alias_param(name="divisor", alias="d")
+    @_alias_param(name="rate", alias="r")
     def send_control(
         self,
         control: VALUES = 0,
@@ -232,80 +236,79 @@ class MidiHandler(BaseHandler, Sender):
         value: VALUES = 60,
         iterator: int = 0,
         divisor: int = 1,
-        rate: float = 1
+        rate: float = 1,
     ) -> None:
         """
         Variant of the 'send' function specialized in sending control changes. See the
         'send' method for more information.
         """
 
-        if iterator % divisor!= 0:
+        if iterator % divisor != 0:
             return
 
         pattern = self.pattern_reduce(
-                pattern={
-                    'control': control,
-                    'channel': channel,
-                    'value': value,
-                },
-                iterator=iterator,
-                divisor=divisor,
-                rate=rate
+            pattern={
+                "control": control,
+                "channel": channel,
+                "value": value,
+            },
+            iterator=iterator,
+            divisor=divisor,
+            rate=rate,
         )
 
         is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
 
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
-                if not isinstance(message['control'], type(None)):
+                if not isinstance(message["control"], type(None)):
                     self._control_change(
-                    control=int(message['control']),
-                    channel=int(message['channel']),
-                    value=int(message['value']))
+                        control=int(message["control"]),
+                        channel=int(message["channel"]),
+                        value=int(message["value"]),
+                    )
         else:
-            if not isinstance(pattern['control'], type(None)):
+            if not isinstance(pattern["control"], type(None)):
                 self._control_change(
-                    control=int(pattern['control']),
-                    channel=int(pattern['channel']),
-                    value=int(pattern['value']))
+                    control=int(pattern["control"]),
+                    channel=int(pattern["channel"]),
+                    value=int(pattern["value"]),
+                )
 
-    @_alias_param(name='iterator', alias='i')
-    @_alias_param(name='divisor', alias='d')
-    @_alias_param(name='rate', alias='r')
+    @_alias_param(name="iterator", alias="i")
+    @_alias_param(name="divisor", alias="d")
+    @_alias_param(name="rate", alias="r")
     def send_program(
         self,
         channel: VALUES,
         value: VALUES = 60,
         iterator: int = 0,
         divisor: int = 1,
-        rate: float = 1
+        rate: float = 1,
     ) -> None:
-        if iterator % divisor!= 0:
+        if iterator % divisor != 0:
             return
 
         pattern = self.pattern_reduce(
-                pattern={
-                    'channel': channel,
-                    'value': value,
-                },
-                iterator=iterator,
-                divisor=divisor,
-                rate=rate
+            pattern={
+                "channel": channel,
+                "value": value,
+            },
+            iterator=iterator,
+            divisor=divisor,
+            rate=rate,
         )
 
         is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
 
         if is_polyphonic:
             for message in self.reduce_polyphonic_message(pattern):
-                if not isinstance(message['channel'], type(None)):
+                if not isinstance(message["channel"], type(None)):
                     self._program_change(
-                            program=message['value'],
-                            channel=message['channel']
+                        program=message["value"], channel=message["channel"]
                     )
         else:
-            if not isinstance(pattern['channel'], type(None)):
+            if not isinstance(pattern["channel"], type(None)):
                 self._program_change(
-                        program=pattern['value'],
-                        channel=pattern['channel']
+                    program=pattern["value"], channel=pattern["channel"]
                 )
-

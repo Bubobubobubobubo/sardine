@@ -276,6 +276,7 @@ class Delay:
 
 
 from sys import argv
+
 hook_path = argv[0]
 if "__main__.py" in hook_path:
     os.environ["SARDINE_INIT_SESSION"] = "YES"
@@ -353,10 +354,11 @@ if (
     c.schedule_func(__surfing_patterns._global_runner)
     surf = __surfing_patterns
     play, play_midi, play_osc, run = (
-            Player.play, 
-            Player.play_midi, 
-            Player.play_osc,
-            Player.run)
+        Player.play,
+        Player.play_midi,
+        Player.play_osc,
+        Player.run,
+    )
 
     def hush(*args):
         """

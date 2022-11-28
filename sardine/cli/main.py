@@ -258,7 +258,15 @@ def main():
     Just like before, we are building a monolothic configuration dict that we
     inject into the current config.json file. Not fancy but cool nonetheless!
     """
-    MENU_CHOICES = ["Show Config", "Reset", "MIDI", "Clock", "SuperCollider", "More", "Exit"]
+    MENU_CHOICES = [
+        "Show Config",
+        "Reset",
+        "MIDI",
+        "Clock",
+        "SuperCollider",
+        "More",
+        "Exit",
+    ]
     try:
         USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
@@ -287,7 +295,7 @@ def main():
                 continue
         elif menu_select == "Reset":
             create_template_configuration_file(CONFIG_JSON)
-            USER_CONFIG = read_json_file()['config']
+            USER_CONFIG = read_json_file()["config"]
         elif menu_select == "Show Config":
             print(USER_CONFIG)
         elif menu_select == "MIDI":

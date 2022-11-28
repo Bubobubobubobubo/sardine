@@ -5,6 +5,7 @@ from .runner import BaseRunnerHandler
 
 __all__ = ("BaseClock",)
 
+
 def _round_float(n: float, prec: int = 3):
     s = format(n, f".{prec}f")
     return s.rstrip("0").rstrip(".")
@@ -39,9 +40,7 @@ class BaseClock(BaseRunnerHandler, ABC):
         )
 
     def __str__(self) -> str:
-        return (
-            "({name} {0.time:.1f}s) -> [{tempo}|{beat}/{bar} {phase:.0%}]"
-        ).format(
+        return ("({name} {0.time:.1f}s) -> [{tempo}|{beat}/{bar} {phase:.0%}]").format(
             self,
             name=type(self).__name__,
             tempo=_round_float(self.tempo, 3),

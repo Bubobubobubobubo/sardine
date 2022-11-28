@@ -1,7 +1,7 @@
 # Modified copy of asyncio/runners.py from Python 3.11.0
 # https://github.com/python/cpython/blob/3.11/Lib/asyncio/runners.py
 
-__all__ = ('Runner',)
+__all__ = ("Runner",)
 
 import asyncio
 import contextvars
@@ -92,7 +92,8 @@ class Runner:
         if asyncio._get_running_loop() is not None:
             # fail fast with short traceback
             raise RuntimeError(
-                "Runner.run() cannot be called from a running event loop")
+                "Runner.run() cannot be called from a running event loop"
+            )
 
         self._lazy_init()
 
@@ -104,7 +105,8 @@ class Runner:
         else:
             task = self._loop.create_task(coro)
 
-        if (threading.current_thread() is threading.main_thread()
+        if (
+            threading.current_thread() is threading.main_thread()
             and signal.getsignal(signal.SIGINT) is signal.default_int_handler
         ):
             sigint_handler = functools.partial(self._on_sigint, main_task=task)
@@ -130,7 +132,8 @@ class Runner:
                     raise KeyboardInterrupt()
             raise  # CancelledError
         finally:
-            if (sigint_handler is not None
+            if (
+                sigint_handler is not None
                 and signal.getsignal(signal.SIGINT) is sigint_handler
             ):
                 signal.signal(signal.SIGINT, signal.default_int_handler)
@@ -181,8 +184,10 @@ def _cancel_all_tasks(loop: asyncio.BaseEventLoop):
         if task.cancelled():
             continue
         if task.exception() is not None:
-            loop.call_exception_handler({
-                'message': 'unhandled exception during asyncio.run() shutdown',
-                'exception': task.exception(),
-                'task': task,
-            })
+            loop.call_exception_handler(
+                {
+                    "message": "unhandled exception during asyncio.run() shutdown",
+                    "exception": task.exception(),
+                    "task": task,
+                }
+            )

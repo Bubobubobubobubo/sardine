@@ -1,19 +1,13 @@
 from string import ascii_lowercase, ascii_uppercase
-from typing import (
-        TYPE_CHECKING, 
-        Optional
-)
+from typing import TYPE_CHECKING, Optional
 from ..base import BaseHandler, BaseClock
 from ..surfing import Player
 
 if TYPE_CHECKING:
-    from ..handlers import (
-            MidiHandler,
-            OSCHandler, 
-            SuperDirtHandler
-    )
+    from ..handlers import MidiHandler, OSCHandler, SuperDirtHandler
 
-__all__ = ('PatternHolder',)
+__all__ = ("PatternHolder",)
+
 
 class PatternHolder(BaseHandler):
 
@@ -84,8 +78,8 @@ class PatternHolder(BaseHandler):
 
     def _template_runner(self):
         """
-        Template runner that every Player will eventually specialise with its own 
-        data. 
+        Template runner that every Player will eventually specialise with its own
+        data.
         """
         ...
 
@@ -95,12 +89,12 @@ class PatternHolder(BaseHandler):
         the player/senders together for scheduling.
         """
 
-        # The delay should be updated dynamically for each loop
+        # The delay should be updated dynamically for each loop
         d = self.env.clock.beat_duration / 4
         patterns = [p for p in self._patterns.values() if p._content not in [None, {}]]
 
         for player in patterns:
-            #TODO: rewrite surfing mode function
+            # TODO: rewrite surfing mode function
             try:
                 pass
             except Exception as e:

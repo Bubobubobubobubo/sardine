@@ -7,12 +7,13 @@ from ..base.handler import BaseHandler
 from ..sequences import Chord
 from .osc_loop import OSCLoop
 from .sender import (
-        VALUES,
-        Sender, 
-        _alias_param,
+    VALUES,
+    Sender,
+    _alias_param,
 )
 
 __all__ = ("OSCHandler",)
+
 
 class OSCHandler(BaseHandler, Sender):
     def __init__(
@@ -30,11 +31,7 @@ class OSCHandler(BaseHandler, Sender):
         # Setting up OSC Connexion
         self._ip, self._port, self._name = (ip, port, name)
         self._ahead_amount = ahead_amount
-        self.client = osc_udp_client(
-                address=self._ip, 
-                port=self._port, 
-                name=self._name
-        )
+        self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
         self._events = {"send": self._send}
 
     def __repr__(self) -> str:

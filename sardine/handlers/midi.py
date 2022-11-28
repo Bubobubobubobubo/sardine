@@ -1,6 +1,5 @@
 import sys
 import asyncio
-import threading
 
 import mido
 
@@ -18,16 +17,14 @@ PATTERN = dict[str, list[float | int | list | str]]
 REDUCED_PATTERN = dict[str, list[float | int]]
 
 
-class MidiHandler(BaseHandler, threading.Thread):
+class MidiHandler(BaseHandler):
 
     """
     MidiHandler: a class capable of reacting to most MIDI Messages.
     """
 
     def __init__(self, port_name: str = "Sardine", nudge: float = 0.0):
-        # Not exactly a pleasing solution for multiple inheritance
-        threading.Thread.__init__(self)
-        BaseHandler.__init__(self)
+        super().__init__()
         self.active_notes: dict[tuple[int, int], asyncio.Task] = {}
 
 

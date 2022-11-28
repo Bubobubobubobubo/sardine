@@ -1,6 +1,5 @@
 from .chance import *
 from .iterators import *
-from .patterns import *
 from .sardine_parser import *
 from .sequence import *
 from .surfing import *

@@ -233,7 +233,6 @@ class Delay:
 
 again = bowl.scheduler.start_func
 clock = bowl.clock
-sleep = bowl.sleep
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
 P = Pat  # Generic pattern interface

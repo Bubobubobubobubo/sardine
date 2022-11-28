@@ -6,11 +6,9 @@ from math import floor
 from rich import print
 from . import *
 from .io.UserConfig import (
-    pretty_print_configuration_file,
     read_user_configuration,
 )
 from .utils import config_line_printer, sardine_intro
-from .sequences import PatternHolder, Player
 
 # Reading user configuration (taken from sardine-config)
 config = read_user_configuration()
@@ -228,30 +226,6 @@ class Delay:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if not self.delayFirst:
             sleep(self.duration)
-
-# _surfing_patterns = PatternHolder(
-#     midi_handler=midi,
-#     superdirt_handler=dirt if config.superdirt_handler else None,
-#     osc_handler=None,  #TODO: reimplement
-# )
-# bowl.add_handler(_surfing_patterns)
-
-# TODO: Rewrite surfing methods
-#
-# Surfing methods provide an alternative syntax for Sardine that emulates FoxDot. It is
-# generally easier for live coders to start using Sardine with this technique, as it is
-# closer to what they expect from a live coding interface.
-
-# for (key, value) in __surfing_patterns._patterns.items():
-#     globals()[key] = value
-# swim(__surfing_patterns._global_runner)
-# surf = __surfing_patterns
-# play, play_midi, play_osc, run = (
-#         Player.play, 
-#         Player.play_midi, 
-#         Player.play_osc,
-#         Player.run
-# )
 
 # Aliases!
 

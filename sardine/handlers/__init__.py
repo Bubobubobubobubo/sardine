@@ -8,3 +8,4 @@ from .osc_loop import *
 from .sleep_handler import *
 from .superdirt import *
 from .sender import *
+from .pattern_holder import *

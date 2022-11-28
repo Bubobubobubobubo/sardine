@@ -94,8 +94,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         playing: bool = s.isPlaying()
         tempo: float = s.tempo()
 
-        old_tempo = self._tempo
-
         self._internal_time = link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
@@ -104,8 +102,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._phase = phase % 1 * self.beat_duration
         self._playing = playing
         self._tempo = tempo
-
-        self._dispatch_tempo_update(old_tempo, tempo)
 
     def before_loop(self):
         self._link = link.Link(self._tempo)

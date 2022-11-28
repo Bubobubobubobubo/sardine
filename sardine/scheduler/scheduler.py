@@ -102,13 +102,3 @@ class Scheduler(BaseHandler):
 
             if interval_correction:
                 runner.allow_interval_correction()
-
-    # Handler hooks
-
-    def setup(self):
-        for event in ("tempo_update",):
-            self.register(event)
-
-    def hook(self, event: str, *args):
-        if event == "tempo_update":
-            self._reload_runners(interval_correction=True)

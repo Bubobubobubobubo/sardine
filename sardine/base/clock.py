@@ -225,17 +225,6 @@ class BaseClock(BaseRunnerHandler, ABC):
         """
         raise NotImplementedError
 
-    # Protected methods
-
-    def _dispatch_tempo_update(self, old: float, new: float):
-        """Dispatches a `tempo_update` event if the old and new tempos changed.
-
-        Subclasses are expected to always call this method
-        after a new tempo is set.
-        """
-        if self.env is not None and old != new:
-            self.env.dispatch("tempo_update", old, new)
-
     # Handler hooks
 
     def hook(self, event: str, *args):

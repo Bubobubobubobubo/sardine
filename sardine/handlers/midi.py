@@ -9,15 +9,17 @@ from rich import print
 from math import floor
 from ..sequences import Chord
 from functools import wraps
+from .sender import (
+        _alias_param, 
+        Sender,
+        VALUES,
+)
 
 __all__ = ("MidiHandler",)
 
-VALUES = Union[int, float, list, str]
-PATTERN = dict[str, list[float | int | list | str]]
-REDUCED_PATTERN = dict[str, list[float | int]]
 
 
-class MidiHandler(BaseHandler):
+class MidiHandler(BaseHandler, Sender):
 
     """
     MidiHandler: a class capable of reacting to most MIDI Messages.
@@ -164,78 +166,6 @@ class MidiHandler(BaseHandler):
                 self.send_off(note=note, delay=duration-0.02,
                     velocity=velocity, channel=channel))
 
-
-    def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:
-        """Joseph Enguehard's algorithm for solving iteration speed"""
-        return floor(iterator * rate / div) % len(pattern)
-
-
-    def pattern_reduce(self,
-            pattern: PATTERN,
-            iterator: int,
-            divisor: int,
-            rate: float,
-            break_polyphony=False,
-    ) -> dict:
-        pattern = {
-                k: self.env.parser.parse(v) if isinstance(
-            v, str) else v for k, v in pattern.items()
-        }
-        pattern = {
-                k:v[self.pattern_element(
-                    div=divisor,
-                    rate=rate,
-                    iterator=iterator,
-                    pattern=v)] if hasattr(
-                        v, "__getitem__") else v for k, v in pattern.items()
-        }
-        return pattern
-
-    def reduce_polyphonic_message(
-            self,
-            pattern: PATTERN) -> list[dict]:
-        """
-        Reduce a polyphonic message to a list of messages represented as
-        dictionaries holding values to be sent through the MIDI Port
-        """
-        message_list: list = []
-        length = [x for x in filter(
-            lambda x: hasattr(x, '__getitem__'), pattern.values())
-        ]
-        length = max([len(i) for i in length])
-
-        # Break the chords into lists
-        pattern = {k:list(value) if isinstance(
-            value, Chord) else value for k, value in pattern.items()}
-
-        for _ in range(length):
-            message_list.append({k:v[_%len(v)] if isinstance(
-                v, (Chord, list)) else v for k, v in pattern.items()}
-            )
-        return message_list
-
-    @staticmethod
-    def _alias_param(name, alias):
-        """
-        Alias a keyword parameter in a function. Throws a TypeError when a value is
-        given for both the original kwarg and the alias. Method taken from
-        github.com/thegamecracks/abattlemetrics/blob/main/abattlemetrics/client.py
-        (@thegamecracks).
-        """
-        MISSING = object()
-
-        def deco(func):
-            @wraps(func)
-            def wrapper(*args, **kwargs):
-                alias_value = kwargs.pop(alias, MISSING)
-                if alias_value is not MISSING:
-                    if name in kwargs:
-                        raise TypeError(f'Cannot pass both {name!r} and {alias!r} in call')
-                    kwargs[name] = alias_value
-                return func(*args, **kwargs)
-            return wrapper
-        return deco
-
     @_alias_param(name='iterator', alias='i')
     @_alias_param(name='divisor', alias='d')
     @_alias_param(name='rate', alias='r')
@@ -261,7 +191,6 @@ class MidiHandler(BaseHandler):
             return
 
         pattern = self.pattern_reduce(
-                break_polyphony=False,
                 pattern={
                     'note': note,
                     'velocity': velocity,
@@ -314,7 +243,6 @@ class MidiHandler(BaseHandler):
             return
 
         pattern = self.pattern_reduce(
-                break_polyphony=False,
                 pattern={
                     'control': control,
                     'channel': channel,
@@ -356,7 +284,6 @@ class MidiHandler(BaseHandler):
             return
 
         pattern = self.pattern_reduce(
-                break_polyphony=False,
                 pattern={
                     'channel': channel,
                     'value': value,

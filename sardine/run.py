@@ -229,12 +229,12 @@ class Delay:
         if not self.delayFirst:
             sleep(self.duration)
 
-_surfing_patterns = PatternHolder(
-    midi_handler=midi,
-    superdirt_handler=dirt if config.superdirt_handler else None,
-    osc_handler=None,  #TODO: reimplement
-)
-bowl.add_handler(_surfing_patterns)
+# _surfing_patterns = PatternHolder(
+#     midi_handler=midi,
+#     superdirt_handler=dirt if config.superdirt_handler else None,
+#     osc_handler=None,  #TODO: reimplement
+# )
+# bowl.add_handler(_surfing_patterns)
 
 # TODO: Rewrite surfing methods
 #

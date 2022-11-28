@@ -6,5 +6,5 @@ from .osc import *
 from .osc_in import *
 from .osc_loop import *
 from .sleep_handler import *
-from .supercollider import *
 from .superdirt import *
+from .sender import *

@@ -88,12 +88,14 @@ class PatternHolder(BaseHandler):
 
     def __init__(
         self,
+        clock,
         midi_handler: "MidiHandler",
         osc_handler: "OSCHandler",
         superdirt_handler: "Optional[SuperDirtHandler]",
     ):
         super().__init__()
 
+        self._clock = clock
         self._midisender = midi_handler
         self._oscsender = osc_handler
         self._superdirtsender = superdirt_handler

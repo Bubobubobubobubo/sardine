@@ -11,13 +11,6 @@ from .io.UserConfig import (
 )
 from .utils import config_line_printer, sardine_intro
 from .sequences import PatternHolder, Player
-from osc4py3.as_eventloop import (
-        osc_startup,
-        osc_process
-)
-
-osc_startup()
-osc_process()
 
 # Reading user configuration (taken from sardine-config)
 config = read_user_configuration()

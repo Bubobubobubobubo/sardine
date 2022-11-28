@@ -4,7 +4,7 @@ import inspect
 import traceback
 from collections import deque
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from rich import print
 from rich.panel import Panel
@@ -127,9 +127,11 @@ class AsyncRunner:
 
     """
 
-    scheduler: "Scheduler"
+    name: str
+    scheduler: "Optional[Scheduler]" = field(default=None, init=False)
     states: list[FunctionState] = field(
-        default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES)
+        default_factory=functools.partial(deque, maxlen=MAX_FUNCTION_STATES),
+        repr=False,
     )
 
     interval_shift: float = field(default=0.0, repr=False)
@@ -186,29 +188,31 @@ class AsyncRunner:
 
     def push(self, func: "MaybeCoroFunc", *args, **kwargs):
         """Pushes a function state to the runner to be called in the next iteration."""
-        if not self.states:
+        if not callable(func):
+            raise TypeError(f"Expected a callable, got {func!r}")
+        elif not self.states:
             state = FunctionState(func, args, kwargs)
-
-            # Once the runner starts it needs the `_last_delay` for interval correction,
-            # and since we are in a convenient spot we will populate it here
-            delay = _extract_new_delay(inspect.signature(func), kwargs)
-            self._last_interval = delay * self.clock.beat_duration
-
             return self.states.append(state)
 
         last_state = self.states[-1]
 
-        if func is last_state.func:
-            # Function reschedule, patch the top-most state
-            last_state.args = args
-            last_state.kwargs = kwargs
-            self.allow_interval_correction()
-        else:
-            # New function, transfer arguments from last state if possible
-            # (any excess arguments here should be discarded by `_runner()`)
-            args = args + last_state.args[len(args) :]
-            kwargs = last_state.kwargs | kwargs
-            self.states.append(FunctionState(func, args, kwargs))
+        # Transfer arguments from last state if possible
+        # (`_runner()` will discard excess arguments later)
+        args = args + last_state.args[len(args) :]
+        kwargs = last_state.kwargs | kwargs
+        self.states.append(FunctionState(func, args, kwargs))
+
+    def update_state(self, *args, **kwargs):
+        """Updates the top-most function state with new arguments.
+
+        This assumes that the function is rescheduling itself, and
+        will therefore allow interval correction to occur in case
+        the delay or tempo has changed.
+        """
+        last_state = self.states[-1]
+        last_state.args = args
+        last_state.kwargs = kwargs
+        self.allow_interval_correction()
 
     def reload(self):
         """Triggers an immediate state reload.
@@ -223,21 +227,17 @@ class AsyncRunner:
     def start(self):
         """Initializes the background runner task.
 
-        Raises:
-            RuntimeError: This method was called after the task already started.
+        If the task has already started, this is a no-op.
         """
-        if self._task is not None:
-            raise RuntimeError("runner task has already started")
+        if self.is_running():
+            return
 
         self._task = asyncio.create_task(self._runner())
         self._task.add_done_callback(asyncio.Task.result)
 
-    def started(self) -> bool:
-        """Returns True if the runner has been started.
-
-        This method will remain true even if the runner stops afterwards.
-        """
-        return self._task is not None
+    def is_running(self) -> bool:
+        """Returns True if the runner is running."""
+        return self._task is not None and not self._task.done()
 
     def swim(self):
         """Allows the runner to continue the next iteration.
@@ -321,28 +321,34 @@ class AsyncRunner:
         because the upcoming call to `BaseClock.get_beat_time()` in step 2
         will synchronize the interval for us.
         """
-        self.swim()
+        # Prepare to swim
         last_state = self.states[-1]
-        name = last_state.func.__name__
-        if name != "_global_runner":
-            print_panel(f"[yellow][[red]{name}[/red] is swimming][/yellow]")
+        self._swimming = True
+        self._stop = False
+
+        # Calculate the initial value for `_last_interval`
+        self._last_interval = (
+            _extract_new_delay(inspect.signature(last_state.func), last_state.kwargs)
+            * self.clock.beat_duration
+        )
+
+        if self.name != "_global_runner":
+            print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self.states and self._swimming and not self._stop:
-                # `state.func` must schedule itself to keep swimming
                 self._swimming = False
                 self._reload_event.clear()
                 state = self.states[-1]
-                name = state.func.__name__
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    if name != "_global_runner":
+                    if self.name != "_global_runner":
                         if pushed:
-                            print_panel(f"[yellow][Updating [red]{name}[/red]]")
+                            print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
                         else:
                             print_panel(
-                                f"[yellow][Saving [red]{name}[/red] from crash]"
+                                f"[yellow][Saving [red]{self.name}[/red] from crash]"
                             )
                     last_state = state
 
@@ -358,7 +364,7 @@ class AsyncRunner:
 
                     delay = _extract_new_delay(signature, state.kwargs)
                 except (TypeError, ValueError) as e:
-                    print(f"[red][Bad function definition ({name})]")
+                    print(f"[red][Bad function definition ({self.name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
@@ -396,19 +402,17 @@ class AsyncRunner:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
                         self._call_func(sleep_drift, state.func, args, kwargs),
-                        name=f"asyncrunner-func-{name}",
+                        name=f"asyncrunner-func-{self.name}",
                     )
                 except Exception as e:
-                    print(f"[red][Function exception | ({name})]")
+                    print(f"[red][Function exception | ({self.name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
                     self._revert_state()
                     self.swim()
 
                 self._delta = self.clock.time - self._expected_time
         finally:
-            # Remove from clock if necessary
-            print_panel(f"[yellow][Stopped [red]{name}[/red]][/yellow]")
-            self.scheduler.runners.pop(name, None)
+            print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     async def _call_func(self, delta: float, func, args, kwargs):
         """Calls the given function and optionally applies time shift
@@ -420,10 +424,4 @@ class AsyncRunner:
         return await _maybe_coro(func, *args, **kwargs)
 
     def _revert_state(self):
-        failed = self.states.pop()
-
-        if self.states:
-            # patch the global scope so recursive functions don't
-            # invoke the failed function
-            reverted = self.states[-1]
-            failed.func.__globals__[failed.func.__name__] = reverted.func
+        self.states.pop()

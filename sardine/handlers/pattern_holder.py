@@ -41,6 +41,8 @@ class PatternHolder(BaseHandler):
     def __repr__(self) -> str:
         return f"<{type(self).__name__} speed={self._speed}>"
 
+    # FIXME: start_func removed, PatternHolder must use AsyncRunner directly
+    #        (see run.py:again for reference)
     @property
     def again(self):
         return self.env.scheduler.start_func

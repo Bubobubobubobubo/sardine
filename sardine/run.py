@@ -1,13 +1,13 @@
 import importlib
 import sys
-from pathlib import Path
-from typing import Union, Any
 from math import floor
+from pathlib import Path
+from typing import Any, Callable, Union
+
 from rich import print
+
 from . import *
-from .io.UserConfig import (
-    read_user_configuration,
-)
+from .io.UserConfig import read_user_configuration
 from .utils import config_line_printer, sardine_intro
 
 # Reading user configuration (taken from sardine-config)
@@ -72,22 +72,57 @@ if config.superdirt_handler:
     bowl.add_handler(dirt)
 
 
-def swim(fn):
+def swim(func: Union[Callable, AsyncRunner], *args, **kwargs) -> AsyncRunner:
     """
-    Swimming decorator: push a function to the clock. The function will be
-    declared and followed by the clock system to recurse in time if needed.
+    Swimming decorator: push a function to the scheduler. The function will be
+    declared and followed by the scheduler system to recurse in time if needed.
     """
-    bowl.scheduler.start_func(fn)
-    return fn
+    if isinstance(func, AsyncRunner):
+        func.update_state(*args, **kwargs)
+        bowl.scheduler.start_runner(func)
+        return func
+
+    runner = bowl.scheduler.get_runner(func.__name__)
+    if runner is None:
+        runner = AsyncRunner(func.__name__)
+
+    # Runners normally allow the same functions to appear in the stack,
+    # but we will treat repeat functions as just reloading the runner
+    if runner.states and runner.states[-1].func is func:
+        again(runner)
+    else:
+        runner.push(func, *args, **kwargs)
+
+    bowl.scheduler.start_runner(runner)
+    return runner
 
 
-def die(fn):
+def again(runner: AsyncRunner, *args, **kwargs):
     """
-    Swimming decorator: remove a function from the clock. The function will not
-    be called again and will likely stop recursing in time.
+    Keep a runner swimming. User functions should continuously call this
+    at the end of their function until they want the function to stop.
     """
-    bowl.scheduler.stop_func(fn)
-    return fn
+    runner.update_state(*args, **kwargs)
+    runner.swim()
+    # In case the runner is sleeping - usually when the user
+    # manually calls `again()` - wake up the runner
+    runner.reload()
+
+
+def die(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
+    """
+    Swimming decorator: remove a function from the scheduler. The function
+    will not be called again and will likely stop recursing in time.
+    """
+    if isinstance(func, AsyncRunner):
+        bowl.scheduler.stop_runner(func)
+        return func
+
+    runner = bowl.scheduler.get_runner(func.__name__)
+    if runner is None:
+        runner = AsyncRunner(func.__name__)
+        runner.push(func)
+    return runner
 
 
 def sleep(n_beats: Union[int, float]):
@@ -147,29 +182,29 @@ def sleep(n_beats: Union[int, float]):
     bowl.time.shift += duration
 
 
-def silence(*args) -> None:
+def silence(*runners: AsyncRunner) -> None:
     """
     Silence is capable of stopping one or all currently running swimming functions. The
     function will also trigger a general MIDI note_off event (all channels, all notes).
     This function will only kill events on the Sardine side. For a function capable of
     killing synthesizers running on SuperCollider, try the more potent 'panic' function.
     """
-    if len(args) == 0:
+    if len(runners) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
         return
-    else:
-        for arg in args:
-            bowl.scheduler.stop_func(arg)
+
+    for run in runners:
+        bowl.scheduler.stop_runner(run)
 
 
-def panic(*args) -> None:
+def panic(*runners: AsyncRunner) -> None:
     """
     If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to
     silence() capable of killing synths on-the-fly. Use as a last ressource if you are
     loosing control of the system.
     """
-    silence(*args)
+    silence(*runners)
     if config.superdirt_handler:
         D("superpanic")
 
@@ -231,7 +266,6 @@ class Delay:
 
 # Aliases!
 
-again = bowl.scheduler.start_func
 clock = bowl.clock
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env

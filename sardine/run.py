@@ -61,9 +61,9 @@ my_osc_listener = OSCInHandler(
 bowl.add_handler(my_osc_loop)
 
 # MIDI Listener Handler: dummy MIDI Listener handler, used for test purposes
-target = ControlTarget(control=20, channel=0)
-my_midi_listener = MidiInHandler(port="MIDI Bus 2")
-bowl.add_handler(my_midi_listener)
+# target = ControlTarget(control=20, channel=0)
+# my_midi_listener = MidiInHandler(port="MIDI Bus 2")
+# bowl.add_handler(my_midi_listener)
 
 
 # SuperDirt Handler: conditionnally

@@ -365,8 +365,7 @@ class AsyncRunner:
             * self.clock.beat_duration
         )
 
-        if self.name != "_global_runner":
-            print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+        print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self.states and self._swimming and not self._stop:
@@ -376,13 +375,12 @@ class AsyncRunner:
 
                 if state is not last_state:
                     pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    if self.name != "_global_runner":
-                        if pushed:
-                            print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
-                        else:
-                            print_panel(
-                                f"[yellow][Saving [red]{self.name}[/red] from crash]"
-                            )
+                    if pushed:
+                        print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
+                    else:
+                        print_panel(
+                            f"[yellow][Saving [red]{self.name}[/red] from crash]"
+                        )
                     last_state = state
 
                 signature = inspect.signature(state.func)

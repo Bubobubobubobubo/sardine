@@ -38,7 +38,7 @@ bowl = FishBowl(
 # Basic handlers initialization
 
 # MIDI Handler: matching with the MIDI port defined in the configuration file
-midi = MidiHandler(port_name=config.midi)
+midi = MidiHandler(port_name=str(config.midi))
 bowl.add_handler(midi)
 
 # OSC Loop: dummy OSC loop, mostly used for test purposes

@@ -32,13 +32,18 @@ class MidiHandler(BaseHandler, Sender):
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
         self._midi = None
+
         # For MacOS/Linux
         if sys.platform not in "win32":
             if self._port_name in ["Sardine", "internal"]:
                 self._midi = mido.open_output("Sardine", virtual=True)
             else:
-                self._midi = mido.open_output(self._available_ports[0], virtual=True)
-                self._port_name = str(self._available_ports[0])
+                try:
+                    self._midi = mido.open_output(self._port_name, virtual=False)
+                except Exception as e: #TODO what error are we trying to catch here?
+                    self._midi = mido.open_output(self._available_ports[0], virtual=False)
+                    self._port_name = str(self._available_ports[0])
+
         # For W10/W11
         else:
             try:
@@ -149,26 +154,34 @@ class MidiHandler(BaseHandler, Sender):
     def send_midi_note(
         self, note: int, channel: int, velocity: int, duration: float
     ) -> None:
-        """Template function for MIDI Note sending"""
+        """
+        Function in charge of handling MIDI note sending. This also includes various 
+        corner cases and typical MIDI note management such as: 
+        - handling duration by clever combining 'note_on' and 'note_off' events.
+        - retriggering: turning a note off and on again if the note is repeated before
+          the end of its previously defined duration.
+        """
 
         key = (note, channel)
         note_task = self.active_notes.get(key)
+
         if note_task is not None and not note_task.done():
             note_task.cancel()
-        else:
-            self._midi.send(
-                mido.Message(
-                    "note_on",
-                    note=int(note),
-                    channel=int(channel),
-                    velocity=int(velocity),
-                )
+            self.active_notes.pop(key, None)
+
+        self._midi.send(
+            mido.Message(
+                "note_on",
+                note=int(note),
+                channel=int(channel),
+                velocity=int(velocity),
             )
-            self.active_notes[key] = asyncio.create_task(
-                self.send_off(
-                    note=note, delay=duration - 0.02, velocity=velocity, channel=channel
-                )
+        )
+        self.active_notes[key] = asyncio.create_task(
+            self.send_off(
+                note=note, delay=duration - 0.02, velocity=velocity, channel=channel
             )
+        )
 
     @_alias_param(name="iterator", alias="i")
     @_alias_param(name="divisor", alias="d")

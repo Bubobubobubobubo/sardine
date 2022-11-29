@@ -423,8 +423,11 @@ class AsyncRunner:
                 #     f"post drift: {sleep_drift}"
                 # )
 
-                for fut in pending:
-                    fut.cancel()
+                for task in pending:
+                    task.cancel()
+                for task in done:
+                    task.result()
+
                 if reload_task in done:
                     self.swim()
                     continue

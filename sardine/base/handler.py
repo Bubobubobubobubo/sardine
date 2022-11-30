@@ -40,8 +40,10 @@ class BaseHandler:
     Args:
         lock_children (Optional[bool]):
             If True, any child handlers are required to share the same
-            fish bowl as the parent. Children can still be removed
-            If False, child handlers can freely be removed.
+            fish bowl as the parent. Once its children are added to
+            a fish bowl, they cannot be removed by themselves, and the
+            parent must be removed instead.
+            If False, child handlers are freely removable.
             If None, this will be deferred to the parent handler's setting.
             For handlers without a parent, None is equivalent to False.
     """
@@ -135,6 +137,10 @@ class BaseHandler:
         will cause nothing to happen. However, child handlers cannot
         be shared with other parent handlers.
 
+        WARNING: this method does not prevent cyclic references from
+        occurring. Behaviour is undefined when a handler adds any of
+        its ancestors as a child of itself.
+
         Args:
             handler (BaseHandler): The handler being added.
 
@@ -150,6 +156,7 @@ class BaseHandler:
         elif handler.env is not None and handler.env is not self.env:
             raise ValueError(f"{handler!r} is already being used by {handler.env!r}")
         elif handler.parent is not None:
+            # FIXME: proper handler cyclic reference prevention (ancestors/descendents)
             if handler.parent is self:
                 return
             raise ValueError(f"{handler!r} is already a child of {handler.parent!r}")

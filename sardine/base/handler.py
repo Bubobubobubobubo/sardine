@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-__all__ = ("BaseHandler", "HandlerGroup")
+__all__ = ("BaseHandler",)
 
 
 class BaseHandler:
@@ -25,6 +25,17 @@ class BaseHandler:
     after being added. However, child handlers cannot be added to a
     fish bowl before the parent handler is added, or be added to
     a fish bowl different than the parent's handler.
+
+    This class can also be used directly for grouping handlers that don't
+    necessarily require anything from each other::
+
+        group = BaseHandler(lock_children=True)
+        group.add_child(SomeHandler())
+        group.add_child(AnotherHandler())
+
+    However, if those handlers do depend on each other, it is recommended
+    to subclass this and add them as attributes of the group, making the
+    handlers available through the `parent` attribute.
 
     Args:
         lock_children (Optional[bool]):
@@ -196,19 +207,3 @@ class BaseHandler:
             )
 
         self.env.unregister_hook(event, self)
-
-
-class HandlerGroup(BaseHandler):
-    """A generic handler with the purpose of grouping other handlers together.
-
-    This class can be used for grouping handlers that don't necessarily use
-    anything from each other::
-
-        group = HandlerGroup(lock_children=True)
-        group.add_child(SomeHandler())
-        group.add_child(AnotherHandler())
-
-    However, if those handlers do depend on each other, it is recommended
-    to subclass this or the `BaseHandler` and add them as attributes of
-    the group, making the handlers available through the `parent` attribute.
-    """

@@ -1,26 +1,35 @@
 import asyncio
 import math
+from typing import Type
 
 import pytest
 import rich
 from rich.table import Table
 
-from sardine import FishBowl, InternalClock
+from sardine import BaseClock, FishBowl, InternalClock, LinkClock
 
 from . import EventLogHandler, Pauser, fish_bowl
 
 
 @pytest.mark.asyncio
-async def test_internal_clock(fish_bowl: FishBowl):
+@pytest.mark.parametrize(
+    "clock_type,real_tol,expected_tol",
+    [
+        (InternalClock, 0.00025, 0.024),
+        (LinkClock, 0.032, 0.034),
+    ],
+)
+async def test_clock_sleeping(
+    clock_type: Type[BaseClock],
+    real_tol: float,
+    expected_tol: float,
+):
     PAUSE_DURATION = 0.1
-    EXPECTED_TOLERANCE = 0.024
     ALWAYS_FAIL = False
-    REAL_TOLERANCE = 0.00025
-    # Calibrate above tolerances to acceptable levels
 
-    assert isinstance(fish_bowl.clock, InternalClock)
+    fish_bowl = FishBowl(clock=clock_type())
 
-    end_event = "test_internal_clock"
+    end_event = "test_finish"
     event_order = ("start", "pause", "resume", "stop", end_event)
 
     logger = EventLogHandler(whitelist=event_order)
@@ -53,12 +62,12 @@ async def test_internal_clock(fish_bowl: FishBowl):
         r_dev = clock - real
         table.add_row(str(clock), str(r_dev), str(e_dev))
     table.add_section()
-    table.add_row("Tolerance", f"<{REAL_TOLERANCE}", f"<{EXPECTED_TOLERANCE}")
+    table.add_row("Tolerance", f"<{real_tol}", f"<{expected_tol}")
     rich.print(table)
 
     rows = zip(logger.events, pauser.cumulative_real, pauser.cumulative_expected)
     for event, rt, et in rows:
-        assert math.isclose(event.clock_time, et, abs_tol=EXPECTED_TOLERANCE)
-        assert math.isclose(event.clock_time, rt, abs_tol=REAL_TOLERANCE)
+        assert math.isclose(event.clock_time, et, abs_tol=expected_tol)
+        assert math.isclose(event.clock_time, rt, abs_tol=real_tol)
 
     assert not ALWAYS_FAIL, "ALWAYS_FAIL is enabled"

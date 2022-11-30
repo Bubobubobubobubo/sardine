@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
 
-__all__ = ("BaseHandler", "HandlerGroup")
+__all__ = ("BaseHandler",)
 
 
 class BaseHandler:
@@ -26,11 +26,24 @@ class BaseHandler:
     fish bowl before the parent handler is added, or be added to
     a fish bowl different than the parent's handler.
 
+    This class can also be used directly for grouping handlers that don't
+    necessarily require anything from each other::
+
+        group = BaseHandler(lock_children=True)
+        group.add_child(SomeHandler())
+        group.add_child(AnotherHandler())
+
+    However, if those handlers do depend on each other, it is recommended
+    to subclass this and add them as attributes of the group, making the
+    handlers available through the `parent` attribute.
+
     Args:
         lock_children (Optional[bool]):
             If True, any child handlers are required to share the same
-            fish bowl as the parent. Children can still be removed
-            If False, child handlers can freely be removed.
+            fish bowl as the parent. Once its children are added to
+            a fish bowl, they cannot be removed by themselves, and the
+            parent must be removed instead.
+            If False, child handlers are freely removable.
             If None, this will be deferred to the parent handler's setting.
             For handlers without a parent, None is equivalent to False.
     """
@@ -124,6 +137,10 @@ class BaseHandler:
         will cause nothing to happen. However, child handlers cannot
         be shared with other parent handlers.
 
+        WARNING: this method does not prevent cyclic references from
+        occurring. Behaviour is undefined when a handler adds any of
+        its ancestors as a child of itself.
+
         Args:
             handler (BaseHandler): The handler being added.
 
@@ -139,6 +156,7 @@ class BaseHandler:
         elif handler.env is not None and handler.env is not self.env:
             raise ValueError(f"{handler!r} is already being used by {handler.env!r}")
         elif handler.parent is not None:
+            # FIXME: proper handler cyclic reference prevention (ancestors/descendents)
             if handler.parent is self:
                 return
             raise ValueError(f"{handler!r} is already a child of {handler.parent!r}")
@@ -196,19 +214,3 @@ class BaseHandler:
             )
 
         self.env.unregister_hook(event, self)
-
-
-class HandlerGroup(BaseHandler):
-    """A generic handler with the purpose of grouping other handlers together.
-
-    This class can be used for grouping handlers that don't necessarily use
-    anything from each other::
-
-        group = HandlerGroup(lock_children=True)
-        group.add_child(SomeHandler())
-        group.add_child(AnotherHandler())
-
-    However, if those handlers do depend on each other, it is recommended
-    to subclass this or the `BaseHandler` and add them as attributes of
-    the group, making the handlers available through the `parent` attribute.
-    """

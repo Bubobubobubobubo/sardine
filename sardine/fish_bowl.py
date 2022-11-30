@@ -274,11 +274,16 @@ class FishBowl:
 
         exceptions: list[BaseException] = []
 
+        was_locked = handler.lock_children
+        handler.lock_children = None
+
         for child in handler.children:
             try:
                 self.remove_handler(child)
             except BaseException as e:  # pylint: disable=invalid-name,broad-except
                 exceptions.append(e)
+
+        handler.lock_children = was_locked
 
         try:
             handler.teardown()

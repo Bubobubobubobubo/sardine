@@ -53,10 +53,16 @@ class Player(BaseHandler):
             *args, 
             d: int | float | str,
             i: int = 0,
-            **kwargs
+            **kwargs,
     ): 
         """Entry point of a pattern into the Player"""
-        return PatternInformation(sender_method, args, kwargs, d, i)
+        return PatternInformation(
+                sender_method=sender_method, 
+                args=args,
+                kwargs=kwargs,
+                delay=d,
+                iterator=i
+        )
 
     def __rshift__(self, info: Optional[PatternInformation]) -> None:
         """
@@ -66,11 +72,16 @@ class Player(BaseHandler):
         """
         self.push(pattern=info)
 
-    def func(self, pattern: PatternInformation, d: int | float = 1, i: int= 0) -> None:
+    def func(self, pattern: PatternInformation, i: int= 0, d: int | float = 1) -> None:
         """Central swimming function defined by the player"""
 
-        pattern.sender_method(*pattern.args, *pattern.kwargs, i=pattern.iterator)
-        self.again(pattern, d=pattern.delay, i=i+self._iteration_span)
+        pattern.sender_method(
+                *pattern.args, 
+                **pattern.kwargs, 
+                i=i
+        )
+
+        self.again(pattern=pattern, d=pattern.delay, i=i+self._iteration_span)
 
     def push(self, pattern: Optional[PatternInformation]):
         """
@@ -83,7 +94,7 @@ class Player(BaseHandler):
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
 
-        self.runner.push(self.func, *pattern.args, **pattern.kwargs, d=pattern.delay)
+        self.runner.push(self.func, pattern=pattern, d=pattern.delay)
         self.env.scheduler.start_runner(self.runner)
 
     def again(self, *args, **kwargs):

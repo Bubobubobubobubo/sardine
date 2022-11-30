@@ -9,6 +9,7 @@ from rich import print
 from . import *
 from .io.UserConfig import read_user_configuration
 from .utils import config_line_printer, sardine_intro
+from string import ascii_lowercase, ascii_uppercase
 
 # Reading user configuration (taken from sardine-config)
 config = read_user_configuration()
@@ -60,11 +61,12 @@ my_osc_listener = OSCInHandler(
 
 bowl.add_handler(my_osc_loop)
 
-# MIDI Listener Handler: dummy MIDI Listener handler, used for test purposes
-# target = ControlTarget(control=20, channel=0)
-# my_midi_listener = MidiInHandler(port="MIDI Bus 2")
-# bowl.add_handler(my_midi_listener)
-
+# Adding Players
+player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+for player in player_names:
+    p = Player(name=player)
+    globals()[player] = p
+    bowl.add_handler(p)
 
 # SuperDirt Handler: conditionnally
 if config.superdirt_handler:

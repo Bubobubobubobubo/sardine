@@ -185,7 +185,7 @@ class AsyncRunner:
 
     def __repr__(self):
         cls_name = type(self).__name__
-        status = ("running" if self.is_running() else "stopped")
+        status = "running" if self.is_running() else "stopped"
         attrs = " ".join(
             f"{attr}={getattr(self, attr)}"
             for attr in (

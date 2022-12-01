@@ -33,8 +33,10 @@ class MidiHandler(Sender):
             else:
                 try:
                     self._midi = mido.open_output(self._port_name, virtual=False)
-                except Exception as e: #TODO what error are we trying to catch here?
-                    self._midi = mido.open_output(self._available_ports[0], virtual=False)
+                except Exception as e:  # TODO what error are we trying to catch here?
+                    self._midi = mido.open_output(
+                        self._available_ports[0], virtual=False
+                    )
                     self._port_name = str(self._available_ports[0])
 
         # For W10/W11
@@ -148,8 +150,8 @@ class MidiHandler(Sender):
         self, note: int, channel: int, velocity: int, duration: float
     ) -> None:
         """
-        Function in charge of handling MIDI note sending. This also includes various 
-        corner cases and typical MIDI note management such as: 
+        Function in charge of handling MIDI note sending. This also includes various
+        corner cases and typical MIDI note management such as:
         - handling duration by clever combining 'note_on' and 'note_off' events.
         - retriggering: turning a note off and on again if the note is repeated before
           the end of its previously defined duration.

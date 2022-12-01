@@ -61,7 +61,7 @@ my_osc_listener = OSCInHandler(
 
 bowl.add_handler(my_osc_loop)
 
-# Adding Players
+# Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
 for player in player_names:
     p = Player(name=player)

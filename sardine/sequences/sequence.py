@@ -100,4 +100,4 @@ def imod(mod: int, i: int) -> bool:
 
 def pick(*args) -> list:
     """Alternative function to use random.choice. More terse"""
-    return choice(list(args))
+    return random.choice(list(args))

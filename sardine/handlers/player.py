@@ -1,10 +1,12 @@
 from ..base.handler import BaseHandler
 from dataclasses import dataclass
 from ..scheduler import AsyncRunner
+from math import floor
 from typing import (
         TYPE_CHECKING,
         TypeAlias,
         Optional,
+        Any,
 )
 
 if TYPE_CHECKING:
@@ -80,6 +82,21 @@ class Player(BaseHandler):
         """
         self.push(pattern=info)
 
+    def get_new_period(self, pattern: PatternInformation) -> int | float: 
+        """Get period value for the current cycle"""
+        def _p_index(div: int, rate: int, iterator: int, pattern: list):
+            """Joseph Enguehard's algorithm"""
+            return floor(iterator * rate / div) % len(pattern)
+
+        parser = self.env.parser
+        period = parser.parse(pattern.period) 
+        return period[_p_index(
+            div=pattern.divisor, 
+            rate=pattern.rate, 
+            iterator=pattern.iterator,
+            pattern=period)
+        ]
+
     def func(
             self, 
             pattern: PatternInformation, 
@@ -89,6 +106,7 @@ class Player(BaseHandler):
             r: int | float = 1,
     ) -> None:
         """Central swimming function defined by the player"""
+        pattern.iterator = pattern.iterator + self._iteration_span
 
         pattern.sender.send(
                 *pattern.args, 
@@ -97,11 +115,12 @@ class Player(BaseHandler):
                 divisor=d, 
                 rate=r,
         )
-
+        period = self.get_new_period(pattern=pattern)
+      
         self.again(
                 pattern=pattern, 
-                p=pattern.period, 
-                i=pattern.iterator+self._iteration_span,
+                p=period, 
+                i=pattern.iterator,
                 r=pattern.rate,
         )
 
@@ -111,12 +130,13 @@ class Player(BaseHandler):
         manually. If PatternInformation is hot-swapped by None, the Player will stop
         scheduling its internal function, defined in self.func.
         """
+        period = self.get_new_period(pattern=pattern)
 
         # This is a local equivalent to the silence() function.
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
 
-        self.runner.push(self.func, pattern=pattern, p=pattern.period)
+        self.runner.push(self.func, pattern=pattern, p=period)
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()
 

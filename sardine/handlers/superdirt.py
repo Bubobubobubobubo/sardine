@@ -6,7 +6,14 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from ..io import read_user_configuration
 from ..superdirt.AutoBoot import SuperDirtProcess
-from .sender import Number, NumericElement, ParsableElement, Sender, _alias_param
+from .sender import (
+    Number,
+    NumericElement,
+    ParsableElement,
+    Sender,
+    StringElement,
+    _alias_param,
+)
 
 __all__ = ("SuperDirtHandler",)
 
@@ -92,7 +99,7 @@ class SuperDirtHandler(Sender):
     @_alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: str,
+        sound: StringElement,
         orbit: NumericElement = 0,
         iterator: Number = 0,
         divisor: NumericElement = 1,

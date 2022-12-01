@@ -13,6 +13,7 @@ ParsableElement = Union[RecursiveElement, str]
 
 # Sub-types of ParsableElement
 NumericElement = Union[Number, list, str]
+StringElement = Union[str, list]  # assume list is list[StringElement]
 
 Pattern = dict[str, list[ParsableElement]]
 ReducedPattern = dict[str, ReducedElement]

@@ -7,11 +7,9 @@ from osc4py3.as_eventloop import *
 from osc4py3.oscmethod import *
 
 from .osc_loop import OSCLoop
-from .sender import Number, NumericElement, Sender, _alias_param
+from .sender import Number, NumericElement, Sender, StringElement, _alias_param
 
 __all__ = ("OSCHandler",)
-
-AddressElement = Union[str, list[str]]
 
 
 class OSCHandler(Sender):
@@ -57,7 +55,7 @@ class OSCHandler(Sender):
     @_alias_param(name="rate", alias="r")
     def send(
         self,
-        address: AddressElement,
+        address: StringElement,
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,

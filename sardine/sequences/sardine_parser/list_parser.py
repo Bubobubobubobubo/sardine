@@ -45,15 +45,10 @@ class ListParser(BaseHandler):
         self.debug = debug
         self.parser_type = parser_type
 
-        self._events = {"parse": self.parse, "parse_debug": self._parse_debug}
-
     def __repr__(self) -> str:
         return f"<{type(self).__name__} debug={self.debug} type={self.parser_type}>"
 
     def setup(self):
-        for event in self._events:
-            self.register(event)
-
         parsers = {
             "sardine": {
                 "raw": Lark.open(
@@ -83,10 +78,6 @@ class ListParser(BaseHandler):
             self._printing_parser = parsers[self.parser_type]["raw"]
         except KeyError:
             ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
-
-    def hook(self, event: str, *args):
-        func = self._events[event]
-        func(*args)
 
     def __flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will

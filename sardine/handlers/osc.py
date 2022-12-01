@@ -57,7 +57,7 @@ class OSCHandler(Sender):
     @_alias_param(name="rate", alias="r")
     def send(
         self,
-        address: AddressElement = 60,
+        address: AddressElement,
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,

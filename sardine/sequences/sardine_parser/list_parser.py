@@ -3,7 +3,7 @@ from pathlib import Path
 from lark import Lark, Tree
 from rich import print
 
-from ...base.handler import BaseHandler
+from ...base import BaseParser
 from .chord import Chord
 from .tree_calc import CalculateTree
 
@@ -24,7 +24,7 @@ grammar_path = Path(__file__).parent
 grammar = grammar_path / "sardine.lark"
 
 
-class ListParser(BaseHandler):
+class ListParser(BaseParser):
     def __init__(
         self,
         parser_type: str = "sardine",
@@ -41,7 +41,7 @@ class ListParser(BaseHandler):
         Args:
             parser_type (str, optional): Type of parser. Defaults to "number".
         """
-        BaseHandler.__init__(self)
+        super().__init__()
         self.debug = debug
         self.parser_type = parser_type
 

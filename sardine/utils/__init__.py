@@ -1,11 +1,15 @@
 import functools
+from typing import Callable, ParamSpec, TypeVar
 
 from .Messages import *
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 MISSING = object()
 
 
-def alias_param(name, alias):
+def alias_param(name: str, alias: str):
     """
     Alias a keyword parameter in a function. Throws a TypeError when a value is
     given for both the original kwarg and the alias. Method taken from
@@ -13,9 +17,9 @@ def alias_param(name, alias):
     (@thegamecracks).
     """
 
-    def deco(func):
+    def deco(func: Callable[P, T]):
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             alias_value = kwargs.pop(alias, MISSING)
             if alias_value is not MISSING:
                 if name in kwargs:

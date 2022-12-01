@@ -69,8 +69,8 @@ class Sender(BaseHandler):
         self,
         pattern: Pattern,
         iterator: Number,
-        divisor: NumericElement,
-        rate: NumericElement,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
     ) -> Generator[ReducedPattern, None, None]:
         """Reduces a pattern to an iterator yielding subpatterns.
 
@@ -116,7 +116,7 @@ class Sender(BaseHandler):
 
         if any(isinstance(n, (list, str)) for n in (divisor, rate)):
             divisor, rate = next(
-                self.pattern_reduce({"divisor": divisor, "rate": rate}, iterator, 1, 1)
+                self.pattern_reduce({"divisor": divisor, "rate": rate}, iterator)
             ).values()
 
         if iterator % divisor != 0:

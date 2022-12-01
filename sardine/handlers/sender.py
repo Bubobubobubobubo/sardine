@@ -1,17 +1,23 @@
 from functools import wraps
 from math import floor
-from typing import Union
+from typing import Generator, TypeVar, Union
 
-from ..sequences import Chord
+from ..base import BaseHandler
 
 __all__ = ("Sender",)
 
-VALUES = Union[int, float, list, str]
-PATTERN = dict[str, list[float | int | list | str]]
-REDUCED_PATTERN = dict[str, list[float | int]]
+Number = Union[float, int]
+ReducedElement = TypeVar("ReducedElement")
+RecursiveElement = Union[ReducedElement, list]  # assume list is list[RecursiveElement]
+ParsableElement = Union[RecursiveElement, str]
+
+# Sub-types of ParsableElement
+NumericElement = Union[Number, list, str]
+
+Pattern = dict[str, list[ParsableElement]]
+ReducedPattern = dict[str, ReducedElement]
 
 
-@staticmethod
 def _alias_param(name, alias):
     """
     Alias a keyword parameter in a function. Throws a TypeError when a value is
@@ -36,7 +42,21 @@ def _alias_param(name, alias):
     return deco
 
 
-class Sender:
+def _maybe_index(val: RecursiveElement, i: int) -> RecursiveElement:
+    if not isinstance(val, list):
+        return val
+
+    length = len(val)
+    return val[i % length]
+
+
+def _maybe_length(val: RecursiveElement) -> int:
+    if isinstance(val, list):
+        return len(val)
+    return 0
+
+
+class Sender(BaseHandler):
 
     """
     Handlers can inherit from 'Sender' if they are in charge of some output operation.
@@ -51,55 +71,85 @@ class Sender:
                     index.
     """
 
-    def pattern_element(self, div: int, rate: int, iterator: int, pattern: list) -> int:
+    def pattern_element(
+        self,
+        val: RecursiveElement,
+        iterator: Number,
+        div: Number,
+        rate: Number,
+    ) -> RecursiveElement:
         """Joseph Enguehard's algorithm for solving iteration speed"""
-        return floor(iterator * rate / div) % len(pattern)
+        # For simplicity, we're allowing non-sequences to be passed through
+        if not isinstance(val, list):
+            return val
+
+        length = len(val)
+        if length > 0:
+            i = floor(iterator * rate / div) % length
+            return val[i]
+        raise ValueError(f"Cannot pattern an empty sequence: {val!r}")
 
     def pattern_reduce(
         self,
-        pattern: PATTERN,
-        iterator: int,
-        divisor: int,
-        rate: float,
-    ) -> dict:
-        pattern = {
-            k: self.env.parser.parse(v) if isinstance(v, str) else v
-            for k, v in pattern.items()
-        }
-        pattern = {
-            k: v[
-                self.pattern_element(
-                    div=divisor, rate=rate, iterator=iterator, pattern=v
-                )
-            ]
-            if hasattr(v, "__getitem__")
-            else v
-            for k, v in pattern.items()
-        }
-        return pattern
+        pattern: Pattern,
+        iterator: Number,
+        divisor: NumericElement,
+        rate: NumericElement,
+    ) -> Generator[ReducedPattern, None, None]:
+        """Reduces a pattern to an iterator yielding subpatterns.
 
-    def reduce_polyphonic_message(self, pattern: PATTERN) -> list[dict]:
+        First, any string values are parsed using the fish bowl's parser.
+        Afterwards, if the pattern is a dictionary where none of its values
+        are lists, the pattern is wrapped in a list and returned, ignoring
+        the iterator/divisor/rate parameters. For example::
+
+            >>> pat = {"note": 60, "velocity": 100}
+            >>> list(sender.pattern_reduce(pat, 0, 1, 1))
+            [{'note': 60, 'velocity': 100}]
+
+        If it is a monophonic pattern, i.e. a dictionary where one or more
+        of its values are lists, the corresponding element of those lists
+        are indexed using the `pattern_element()` method which implements
+        Joseph Enguehard's algorithm::
+
+            >>> pat = {"note": [60, 70, 80, 90], "velocity": 100}
+            >>> for i in range(1, 4):
+            ...     list(sender.pattern_reduce(pat, i, 2, 3))
+            [{'note': 70, 'velocity': 100}]
+            [{'note': 90, 'velocity': 100}]
+            [{'note': 60, 'velocity': 100}]
+
+        If it is a polyphonic pattern, i.e. a dictionary where one or more
+        of the values indexed by the above algorithm are also lists, the
+        elements of each list are paired together into several reduced patterns.
+        The number of messages is determined by the length of the longest list.
+        Any lists that are shorter than the longest list will repeat its
+        elements from the start to match the length of the longest list.
+        Any values that are not lists are simply repeated.
         """
-        Reduce a polyphonic message to a list of messages represented as
-        dictionaries holding values to be sent through the MIDI Port
-        """
-        message_list: list = []
-        length = [
-            x for x in filter(lambda x: hasattr(x, "__getitem__"), pattern.values())
-        ]
-        length = max([len(i) for i in length])
+        # TODO: more examples for pattern_reduce()
+        def maybe_parse(val: ParsableElement) -> RecursiveElement:
+            if isinstance(val, str):
+                return self.env.parser.parse(val)
+            return val
 
-        # Break the chords into lists
-        pattern = {
-            k: list(value) if isinstance(value, Chord) else value
-            for k, value in pattern.items()
-        }
+        if any(isinstance(n, (list, str)) for n in (divisor, rate)):
+            divisor, rate = next(
+                self.pattern_reduce({"divisor": divisor, "rate": rate}, iterator, 1, 1)
+            ).values()
 
-        for _ in range(length):
-            message_list.append(
-                {
-                    k: v[_ % len(v)] if isinstance(v, (Chord, list)) else v
-                    for k, v in pattern.items()
-                }
-            )
-        return message_list
+        pattern = {k: maybe_parse(v) for k, v in pattern.items()}
+
+        for k, v in pattern.items():
+            pattern[k] = self.pattern_element(v, iterator, divisor, rate)
+
+        if not any(isinstance(v, list) for v in pattern.values()):
+            # Base case where we have a monophonic message
+            yield pattern
+
+        # For polyphonic messages, recursively reduce them
+        # to a list of monophonic messages
+        max_length = max(_maybe_length(v) for v in pattern.values())
+        for i in range(max_length):
+            sub_pattern = {k: _maybe_index(v, i) for k, v in pattern.items()}
+            yield from self.pattern_reduce(sub_pattern, iterator, divisor, rate)

@@ -1,21 +1,20 @@
 import time
 from itertools import chain
+from typing import Union
+
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
 from osc4py3.oscmethod import *
-from ..base.handler import BaseHandler
-from ..sequences import Chord
+
 from .osc_loop import OSCLoop
-from .sender import (
-    VALUES,
-    Sender,
-    _alias_param,
-)
+from .sender import Number, NumericElement, Sender, _alias_param
 
 __all__ = ("OSCHandler",)
 
+AddressElement = Union[str, list[str]]
 
-class OSCHandler(BaseHandler, Sender):
+
+class OSCHandler(Sender):
     def __init__(
         self,
         loop: OSCLoop,
@@ -58,36 +57,18 @@ class OSCHandler(BaseHandler, Sender):
     @_alias_param(name="rate", alias="r")
     def send(
         self,
-        address: VALUES = 60,
-        iterator: int = 0,
-        divisor: int = 1,
-        rate: float = 1,
-        **kwargs,
+        address: AddressElement = 60,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        **pattern: NumericElement,
     ) -> None:
 
         if iterator % divisor != 0:
             return
 
-        pattern = kwargs
         pattern["address"] = address
-
-        pattern = self.pattern_reduce(
-            pattern=pattern, iterator=iterator, divisor=divisor, rate=rate
-        )
-
-        is_polyphonic = any(isinstance(v, Chord) for v in pattern.values())
-
-        if is_polyphonic:
-            for message in self.reduce_polyphonic_message(pattern):
-                if not isinstance(message["address"], type(None)):
-                    # Removing the address key from the final list
-                    del message["address"]
-                    final_message = list(chain(*sorted(message.items())))
-                    self._send(address="/" + message["address"], message=final_message)
-        else:
-            address = pattern["address"]
-            if not isinstance(pattern["address"], type(None)):
-                # Removing the address key from the final list
-                del pattern["address"]
-                final_message = list(chain(*sorted(pattern.items())))
-                self._send(address="/" + address, message=final_message)
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            address = message.pop("address")
+            serialized = list(chain(*sorted(message.items())))
+            self._send(f"/{address}", serialized)

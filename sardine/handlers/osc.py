@@ -1,13 +1,13 @@
 import time
 from itertools import chain
-from typing import Union
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
 from osc4py3.oscmethod import *
 
+from ..utils import alias_param
 from .osc_loop import OSCLoop
-from .sender import Number, NumericElement, Sender, StringElement, _alias_param
+from .sender import Number, NumericElement, Sender, StringElement
 
 __all__ = ("OSCHandler",)
 
@@ -50,9 +50,9 @@ class OSCHandler(Sender):
         )
         osc_send(bun, self._name)
 
-    @_alias_param(name="iterator", alias="i")
-    @_alias_param(name="divisor", alias="d")
-    @_alias_param(name="rate", alias="r")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def send(
         self,
         address: StringElement,

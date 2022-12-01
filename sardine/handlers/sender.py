@@ -1,4 +1,3 @@
-from functools import wraps
 from math import floor
 from typing import Generator, TypeVar, Union
 
@@ -17,30 +16,6 @@ StringElement = Union[str, list]  # assume list is list[StringElement]
 
 Pattern = dict[str, list[ParsableElement]]
 ReducedPattern = dict[str, ReducedElement]
-
-
-def _alias_param(name, alias):
-    """
-    Alias a keyword parameter in a function. Throws a TypeError when a value is
-    given for both the original kwarg and the alias. Method taken from
-    github.com/thegamecracks/abattlemetrics/blob/main/abattlemetrics/client.py
-    (@thegamecracks).
-    """
-    MISSING = object()
-
-    def deco(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            alias_value = kwargs.pop(alias, MISSING)
-            if alias_value is not MISSING:
-                if name in kwargs:
-                    raise TypeError(f"Cannot pass both {name!r} and {alias!r} in call")
-                kwargs[name] = alias_value
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return deco
 
 
 def _maybe_index(val: RecursiveElement, i: int) -> RecursiveElement:

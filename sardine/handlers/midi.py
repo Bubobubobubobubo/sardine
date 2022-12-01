@@ -5,7 +5,8 @@ from typing import Union
 import mido
 from rich import print
 
-from .sender import Number, NumericElement, Sender, _alias_param
+from ..utils import alias_param
+from .sender import Number, NumericElement, Sender
 
 __all__ = ("MidiHandler",)
 
@@ -175,9 +176,9 @@ class MidiHandler(Sender):
             )
         )
 
-    @_alias_param(name="iterator", alias="i")
-    @_alias_param(name="divisor", alias="d")
-    @_alias_param(name="rate", alias="r")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def send(
         self,
         note: NumericElement = 60,
@@ -210,9 +211,9 @@ class MidiHandler(Sender):
                 message[k] = int(message[k])
             self.send_midi_note(**message)
 
-    @_alias_param(name="iterator", alias="i")
-    @_alias_param(name="divisor", alias="d")
-    @_alias_param(name="rate", alias="r")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def send_control(
         self,
         control: NumericElement = 0,
@@ -236,9 +237,9 @@ class MidiHandler(Sender):
                 message[k] = int(v)
             self._control_change(**message)
 
-    @_alias_param(name="iterator", alias="i")
-    @_alias_param(name="divisor", alias="d")
-    @_alias_param(name="rate", alias="r")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def send_program(
         self,
         channel: NumericElement,

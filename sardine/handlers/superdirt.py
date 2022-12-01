@@ -6,14 +6,8 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from ..io import read_user_configuration
 from ..superdirt.AutoBoot import SuperDirtProcess
-from .sender import (
-    Number,
-    NumericElement,
-    ParsableElement,
-    Sender,
-    StringElement,
-    _alias_param,
-)
+from ..utils import alias_param
+from .sender import Number, NumericElement, ParsableElement, Sender, StringElement
 
 __all__ = ("SuperDirtHandler",)
 
@@ -94,9 +88,9 @@ class SuperDirtHandler(Sender):
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
 
-    @_alias_param(name="iterator", alias="i")
-    @_alias_param(name="divisor", alias="d")
-    @_alias_param(name="rate", alias="r")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def send(
         self,
         sound: StringElement,

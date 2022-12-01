@@ -2,19 +2,29 @@ from ..base.handler import BaseHandler
 from dataclasses import dataclass
 from ..scheduler import AsyncRunner
 from typing import (
-        Callable,
+        TYPE_CHECKING,
+        TypeAlias,
         Optional,
 )
+
+if TYPE_CHECKING:
+    from .midi import MidiHandler
+    from .osc import OSCHandler
+    from .superdirt import SuperDirtHandler
+
+SENDER: TypeAlias = 'MidiHandler | OSCHandler | SuperDirtHandler'
 
 __all__ = ("Player",)
 
 @dataclass
 class PatternInformation:
-    sender_method: Callable
+    sender: SENDER
     args: tuple
     kwargs: dict
-    delay: int | float | str
+    period: int | float | str
     iterator: int
+    divisor: int
+    rate: int | float
 
 class Player(BaseHandler):
 
@@ -24,18 +34,13 @@ class Player(BaseHandler):
     quick interface for the user to output musical and data patterns. Players are han-
     dling the whole lifetime of a pattern, from its initial entry in the scheduler to 
     its death when the silence() or panic() method is called.
-
-    P1 >> d('bd', room=0.5, dry=0.2)
-    P2 >> n(note='D@min7', velocity='80~100')
     """
     def __init__(self, name: str):
         super().__init__()
         self._name = name
         self.runner = AsyncRunner(name=name)
         self._iteration_span: int = 1
-        self._delay: int | float = 1.0
-        self._events = {
-        }
+        self._period: int | float = 1.0
 
     @property
     def iterator(self) -> int:
@@ -49,19 +54,22 @@ class Player(BaseHandler):
 
     @staticmethod
     def play(
-            sender_method: Callable,
+            sender: SENDER, 
             *args, 
-            d: int | float | str,
+            p: int | float | str, 
             i: int = 0,
-            **kwargs,
-    ): 
+            d: int = 1,
+            r: int | float = 1.0,
+            **kwargs): 
         """Entry point of a pattern into the Player"""
         return PatternInformation(
-                sender_method=sender_method, 
+                sender=sender, 
                 args=args,
                 kwargs=kwargs,
-                delay=d,
-                iterator=i
+                period=p,
+                divisor=d,
+                iterator=i,
+                rate=r
         )
 
     def __rshift__(self, info: Optional[PatternInformation]) -> None:
@@ -72,16 +80,30 @@ class Player(BaseHandler):
         """
         self.push(pattern=info)
 
-    def func(self, pattern: PatternInformation, i: int= 0, d: int | float = 1) -> None:
+    def func(
+            self, 
+            pattern: PatternInformation, 
+            p: int | float = 1,
+            i: int= 0, 
+            d: int = 1, 
+            r: int | float = 1,
+    ) -> None:
         """Central swimming function defined by the player"""
 
-        pattern.sender_method(
+        pattern.sender.send(
                 *pattern.args, 
-                **pattern.kwargs, 
-                i=i
+                **pattern.kwargs,
+                iterator=i, 
+                divisor=d, 
+                rate=r,
         )
 
-        self.again(pattern=pattern, d=pattern.delay, i=i+self._iteration_span)
+        self.again(
+                pattern=pattern, 
+                p=pattern.period, 
+                i=pattern.iterator+self._iteration_span,
+                r=pattern.rate,
+        )
 
     def push(self, pattern: Optional[PatternInformation]):
         """
@@ -94,7 +116,7 @@ class Player(BaseHandler):
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
 
-        self.runner.push(self.func, pattern=pattern, d=pattern.delay)
+        self.runner.push(self.func, pattern=pattern, p=pattern.period)
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()
 

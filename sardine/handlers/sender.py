@@ -1,7 +1,10 @@
 from functools import wraps
-from typing import Union
-from ..sequences import Chord
 from math import floor
+from typing import Union
+
+from ..sequences import Chord
+
+__all__ = ("Sender",)
 
 VALUES = Union[int, float, list, str]
 PATTERN = dict[str, list[float | int | list | str]]

@@ -1,5 +1,6 @@
 import time
 from itertools import chain
+from typing import Optional
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
@@ -93,7 +94,7 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: StringElement,
+        sound: Optional[StringElement],
         orbit: NumericElement = 0,
         iterator: Number = 0,
         divisor: NumericElement = 1,
@@ -102,6 +103,8 @@ class SuperDirtHandler(Sender):
     ):
 
         if iterator % divisor != 0:
+            return
+        elif sound is None:
             return
 
         pattern["sound"] = sound
@@ -112,5 +115,7 @@ class SuperDirtHandler(Sender):
         ) + self.env.clock.beat
 
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["sound"] is None:
+                continue
             serialized = list(chain(*sorted(message.items())))
             self._dirt_play(serialized)

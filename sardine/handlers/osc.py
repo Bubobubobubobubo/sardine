@@ -1,5 +1,6 @@
 import time
 from itertools import chain
+from typing import Optional
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
@@ -55,7 +56,7 @@ class OSCHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        address: StringElement,
+        address: Optional[StringElement],
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
@@ -64,9 +65,13 @@ class OSCHandler(Sender):
 
         if iterator % divisor != 0:
             return
+        elif address is None:
+            return
 
         pattern["address"] = address
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["address"] is None:
+                continue
             address = message.pop("address")
             serialized = list(chain(*sorted(message.items())))
             self._send(f"/{address}", serialized)

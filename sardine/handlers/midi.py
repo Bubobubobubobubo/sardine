@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from typing import Union
+from typing import Optional, Union
 
 import mido
 from rich import print
@@ -183,7 +183,7 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        note: NumericElement = 60,
+        note: Optional[NumericElement] = 60,
         velocity: NumericElement = 100,
         channel: NumericElement = 0,
         duration: NumericElement = 1,
@@ -201,6 +201,8 @@ class MidiHandler(Sender):
 
         if iterator % divisor != 0:
             return
+        elif note is None:
+            return
 
         pattern = {
             "note": note,
@@ -209,6 +211,8 @@ class MidiHandler(Sender):
             "duration": duration,
         }
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["note"] is None:
+                continue
             for k in ("note", "velocity", "channel"):
                 message[k] = int(message[k])
             self.send_midi_note(**message)
@@ -218,7 +222,7 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_control(
         self,
-        control: NumericElement = 0,
+        control: Optional[NumericElement] = 0,
         channel: NumericElement = 0,
         value: NumericElement = 60,
         iterator: Number = 0,
@@ -232,9 +236,13 @@ class MidiHandler(Sender):
 
         if iterator % divisor != 0:
             return
+        elif control is None:
+            return
 
         pattern = {"control": control, "channel": channel, "value": value}
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["control"] is None:
+                continue
             for k, v in message.items():
                 message[k] = int(v)
             self._control_change(**message)
@@ -244,7 +252,7 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_program(
         self,
-        channel: NumericElement,
+        channel: Optional[NumericElement],
         value: NumericElement = 60,
         iterator: Number = 0,
         divisor: NumericElement = 1,
@@ -252,9 +260,13 @@ class MidiHandler(Sender):
     ) -> None:
         if iterator % divisor != 0:
             return
+        elif channel is None:
+            return
 
         pattern = {"channel": channel, "program": value}
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["channel"] is None:
+                continue
             for k, v in message.items():
                 message[k] = int(v)
             self._program_change(**message)

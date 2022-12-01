@@ -50,20 +50,20 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
     return pass_through
 
 
-def _extract_new_delay(
+def _extract_new_period(
     sig: inspect.Signature, kwargs: dict[str, Any]
 ) -> Union[float, int]:
-    delay = kwargs.get("d")
-    if delay is None:
-        param = sig.parameters.get("d")
-        delay = getattr(param, "default", 1)
+    period = kwargs.get("p")
+    if period is None:
+        param = sig.parameters.get("p")
+        period = getattr(param, "default", 1)
 
-    if not isinstance(delay, (float, int)):
-        raise TypeError(f"Delay must be a float or integer, not {delay!r}")
-    elif delay <= 0:
-        raise ValueError(f"Delay must be >0, not {delay}")
+    if not isinstance(period, (float, int)):
+        raise TypeError(f"Period must be a float or integer, not {period!r}")
+    elif period <= 0:
+        raise ValueError(f"Period must be >0, not {period}")
 
-    return delay
+    return period
 
 
 def _missing_kwargs(
@@ -114,7 +114,7 @@ class AsyncRunner:
     This helps improve sound synchronization by giving the function
     more time to execute. For example, assuming bpm = 120, `deferred=False`
     would expect its function to complete instantaneously,
-    whereas `deferred=True` would allow a function with `d=1`
+    whereas `deferred=True` would allow a function with `p=1`
     to finish execution within 500ms (1 beat) instead.
 
     In either case, if the function takes too long to execute, it will miss
@@ -143,16 +143,16 @@ class AsyncRunner:
 
     An interval defines the amount of time between each execution
     of the current function. For example, a clock with a beat duration
-    of 0.5s and a delay of 2 beats means each interval is 1 second.
+    of 0.5s and a period of 2 beats means each interval is 1 second.
 
     Through interval shifting, a function can switch between different
-    delays/tempos and then compensate for the clock's current time to
+    periods/tempos and then compensate for the clock's current time to
     avoid the next immediate beat being shorter than expected.
 
     Initially, functions have an interval shift of 0. The runner
     will automatically change its interval shift when the function
-    schedules itself with a new delay or a change in the clock's beat
-    duration occurs. This can lead to functions with the same delay
+    schedules itself with a new period or a change in the clock's beat
+    duration occurs. This can lead to functions with the same period
     running at different phases. To synchronize these functions together,
     their interval shifts should be set to the same value (usually 0).
     """
@@ -240,7 +240,7 @@ class AsyncRunner:
 
         This assumes that the function is rescheduling itself, and
         will therefore allow interval correction to occur in case
-        the delay or tempo has changed.
+        the period or tempo has changed.
         """
         last_state = self.states[-1]
         last_state.args = args
@@ -293,7 +293,7 @@ class AsyncRunner:
         """Allows the interval to be corrected in the next iteration."""
         self._can_correct_interval = True
 
-    def _correct_interval(self, delay: Union[float, int]):
+    def _correct_interval(self, period: Union[float, int]):
         """Checks if the interval should be corrected.
 
         Interval correction occurs when `allow_interval_correction()`
@@ -302,32 +302,32 @@ class AsyncRunner:
         did not change, interval correction must be requested again.
 
         Args:
-            delay (Union[float, int]):
-                The delay being used in the current iteration.
+            period (Union[float, int]):
+                The period being used in the current iteration.
         """
-        interval = delay * self.clock.beat_duration
+        interval = period * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
-            self.interval_shift = self.clock.get_beat_time(delay) + self._delta
+            self.interval_shift = self.clock.get_beat_time(period) + self._delta
 
             self._last_interval = interval
 
         self._can_correct_interval = False
 
-    def _get_corrected_interval(self, delay: Union[float, int]) -> float:
+    def _get_corrected_interval(self, period: Union[float, int]) -> float:
         """Returns the amount of time until the next interval.
 
-        The base interval is determined by the `delay` argument,
+        The base interval is determined by the `period` argument,
         and then offsetted by the `interval_shift` attribute.
 
         Args:
-            delay (Union[float, int]):
+            period (Union[float, int]):
                 The number of beats in the interval.
 
         Returns:
             float: The amount of time until the next interval is reached.
         """
         with self.time.scoped_shift(self.interval_shift):
-            return self.clock.get_beat_time(delay)
+            return self.clock.get_beat_time(period)
 
     # Runner loop
 
@@ -361,7 +361,7 @@ class AsyncRunner:
 
         # Calculate the initial value for `_last_interval`
         self._last_interval = (
-            _extract_new_delay(inspect.signature(last_state.func), last_state.kwargs)
+            _extract_new_period(inspect.signature(last_state.func), last_state.kwargs)
             * self.clock.beat_duration
         )
 
@@ -393,7 +393,7 @@ class AsyncRunner:
                     args = state.args
                     kwargs = _discard_kwargs(signature, state.kwargs)
 
-                    delay = _extract_new_delay(signature, state.kwargs)
+                    period = _extract_new_period(signature, state.kwargs)
                 except (TypeError, ValueError) as e:
                     print(f"[red][Bad function definition ({self.name})]")
                     traceback.print_exception(type(e), e, e.__traceback__)
@@ -403,8 +403,8 @@ class AsyncRunner:
 
                 # start = self.clock.time
 
-                self._correct_interval(delay)
-                duration = self._get_corrected_interval(delay)
+                self._correct_interval(period)
+                duration = self._get_corrected_interval(period)
                 self._expected_time = self.clock.time + duration
 
                 wait_task = asyncio.create_task(self.env.sleep(duration))

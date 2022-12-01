@@ -139,7 +139,7 @@ def sleep(n_beats: Union[int, float]):
     Example usage: ::
 
         @swim
-        def func(delay=4):
+        def func(p=4):
             sleep(3)
             for _ in range(3):
                 S('909').out()
@@ -162,7 +162,7 @@ def sleep(n_beats: Union[int, float]):
     ::
 
         @swim
-        async def func(delay=4):
+        async def func(p=4):
             print(bowl.clock.time)  # 0.0s
 
             sleep(1)     # virtual +500ms (assuming bowl.clock.tempo = 120)

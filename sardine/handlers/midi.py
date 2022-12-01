@@ -199,9 +199,7 @@ class MidiHandler(Sender):
         into a single MIDI message.
         """
 
-        if iterator % divisor != 0:
-            return
-        elif note is None:
+        if note is None:
             return
 
         pattern = {
@@ -234,9 +232,7 @@ class MidiHandler(Sender):
         'send' method for more information.
         """
 
-        if iterator % divisor != 0:
-            return
-        elif control is None:
+        if control is None:
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
@@ -258,9 +254,7 @@ class MidiHandler(Sender):
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
     ) -> None:
-        if iterator % divisor != 0:
-            return
-        elif channel is None:
+        if channel is None:
             return
 
         pattern = {"channel": channel, "program": value}

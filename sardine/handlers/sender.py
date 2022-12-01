@@ -102,8 +102,13 @@ class Sender(BaseHandler):
         Any lists that are shorter than the longest list will repeat its
         elements from the start to match the length of the longest list.
         Any values that are not lists are simply repeated.
+
+        With a divisor other than 1, patterns are only generated if the
+        iterator is divisible by the divisor. This means that some calls
+        may yield zero messages.
         """
         # TODO: more examples for pattern_reduce()
+        # TODO: document pattern_reduce() arguments
         def maybe_parse(val: ParsableElement) -> RecursiveElement:
             if isinstance(val, str):
                 return self.env.parser.parse(val)
@@ -113,6 +118,9 @@ class Sender(BaseHandler):
             divisor, rate = next(
                 self.pattern_reduce({"divisor": divisor, "rate": rate}, iterator, 1, 1)
             ).values()
+
+        if iterator % divisor != 0:
+            return
 
         pattern = {k: maybe_parse(v) for k, v in pattern.items()}
 

@@ -102,9 +102,7 @@ class SuperDirtHandler(Sender):
         **pattern: ParsableElement,
     ):
 
-        if iterator % divisor != 0:
-            return
-        elif sound is None:
+        if sound is None:
             return
 
         pattern["sound"] = sound

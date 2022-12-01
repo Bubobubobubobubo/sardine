@@ -63,9 +63,7 @@ class OSCHandler(Sender):
         **pattern: NumericElement,
     ) -> None:
 
-        if iterator % divisor != 0:
-            return
-        elif address is None:
+        if address is None:
             return
 
         pattern["address"] = address

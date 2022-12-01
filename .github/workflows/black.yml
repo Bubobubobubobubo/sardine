@@ -1,9 +1,14 @@
-name: Lint
+name: Style Lint
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  lint:
+  formatter:
+    name: Run black
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

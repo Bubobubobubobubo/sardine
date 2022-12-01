@@ -96,6 +96,7 @@ class Player(BaseHandler):
 
         self.runner.push(self.func, pattern=pattern, d=pattern.delay)
         self.env.scheduler.start_runner(self.runner)
+        self.runner.reload()
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

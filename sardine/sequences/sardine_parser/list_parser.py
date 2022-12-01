@@ -77,7 +77,7 @@ class ListParser(BaseHandler):
             self._result_parser = parsers[self.parser_type]["full"]
             self._printing_parser = parsers[self.parser_type]["raw"]
         except KeyError:
-            ParserError(f"Invalid Parser grammar, {parser_type} is not a grammar.")
+            ParserError(f"Invalid Parser grammar, {self.parser_type} is not a grammar.")
 
     def __flatten_result(self, pat):
         """Flatten a nested list, for usage after parsing a pattern. Will

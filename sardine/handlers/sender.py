@@ -71,6 +71,8 @@ class Sender(BaseHandler):
         iterator: Number,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        *,
+        use_divisor_to_skip: bool = True,
     ) -> Generator[ReducedPattern, None, None]:
         """Reduces a pattern to an iterator yielding subpatterns.
 
@@ -103,9 +105,9 @@ class Sender(BaseHandler):
         elements from the start to match the length of the longest list.
         Any values that are not lists are simply repeated.
 
-        With a divisor other than 1, patterns are only generated if the
-        iterator is divisible by the divisor. This means that some calls
-        may yield zero messages.
+        When `use_divisor_to_skip` is True and the `divisor` is a number
+        other than 1, patterns are only generated if the iterator is
+        divisible by the divisor, and will otherwise yield zero messages.
         """
         # TODO: more examples for pattern_reduce()
         # TODO: document pattern_reduce() arguments
@@ -119,7 +121,7 @@ class Sender(BaseHandler):
                 self.pattern_reduce({"divisor": divisor, "rate": rate}, iterator)
             ).values()
 
-        if iterator % divisor != 0:
+        if use_divisor_to_skip and iterator % divisor != 0:
             return
 
         pattern = {k: maybe_parse(v) for k, v in pattern.items()}

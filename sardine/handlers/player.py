@@ -1,22 +1,27 @@
 from dataclasses import dataclass
-from math import floor
-from typing import Callable, Optional
+from typing import Any, Callable, Optional, ParamSpec, TypeVar
 
-from ..base.handler import BaseHandler
+from ..base import BaseHandler
+from ..handlers.sender import Number, NumericElement, Sender
 from ..scheduler import AsyncRunner
+from ..utils import alias_param
 
 __all__ = ("Player",)
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 
 @dataclass
 class PatternInformation:
-    send_method: Callable
-    args: tuple
-    kwargs: dict
-    period: int | float | str
-    iterator: int
-    divisor: int
-    rate: int | float
+    sender: Sender
+    send_method: Callable[P, T]
+    args: tuple[Any]
+    kwargs: dict[str, Any]
+    period: NumericElement
+    iterator: Number
+    divisor: NumericElement
+    rate: NumericElement
 
 
 class Player(BaseHandler):
@@ -47,81 +52,63 @@ class Player(BaseHandler):
         self._iteration_span = value
 
     @staticmethod
+    @alias_param(name="period", alias="p")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
     def play(
-        send_method: Callable,
-        *args,
-        p: int | float | str = 1.0,
-        i: int = 0,
-        d: int = 1,
-        r: int | float = 1.0,
-        **kwargs,
+        sender: Sender,
+        send_method: Callable[P, T],
+        *args: P.args,
+        period: NumericElement = 1,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
         return PatternInformation(
-            send_method=send_method,
-            args=args,
-            kwargs=kwargs,
-            period=p,
-            divisor=d,
-            iterator=i,
-            rate=r,
+            sender, send_method, args, kwargs, period, iterator, divisor, rate
         )
 
-    def __rshift__(self, info: Optional[PatternInformation]) -> None:
+    def __rshift__(self, pattern: Optional[PatternInformation]) -> None:
         """
         This method acts as a cosmetic disguise for feeding PatternInformation into a
         given player. Its syntax is inspired by FoxDot (Ryan Kirkbride), another very
         popular live coding library.
         """
-        self.push(pattern=info)
+        self.push(pattern)
 
-    def get_new_period(self, pattern: PatternInformation) -> int | float:
+    def get_new_period(self, pattern: PatternInformation) -> Number:
         """Get period value for the current cycle"""
-
-        def _p_index(div: int, rate: int, iterator: int, pattern: list):
-            """Joseph Enguehard's algorithm"""
-            return floor(iterator * rate / div) % len(pattern)
-
-        if isinstance(pattern.period, str):
-            parser = self.env.parser
-            period = parser.parse(pattern.period)
-            return period[
-                _p_index(
-                    div=pattern.divisor,
-                    rate=pattern.rate,
-                    iterator=pattern.iterator,
-                    pattern=period,
-                )
-            ]
-        else:
-            return pattern.period
+        for message in pattern.sender.pattern_reduce(
+            {"period": pattern.period},
+            pattern.iterator,
+            pattern.divisor,
+            pattern.rate,
+            use_divisor_to_skip=False,
+        ):
+            return message["period"]
+        return 1
 
     def func(
         self,
         pattern: PatternInformation,
-        p: int | float = 1,
-        i: int = 0,
-        d: int = 1,
-        r: int | float = 1,
+        p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
-        pattern.iterator = pattern.iterator + self._iteration_span
 
         pattern.send_method(
             *pattern.args,
             **pattern.kwargs,
-            iterator=i,
-            divisor=d,
-            rate=r,
+            iterator=pattern.iterator,
+            divisor=pattern.divisor,
+            rate=pattern.rate,
         )
-        period = self.get_new_period(pattern=pattern)
 
-        self.again(
-            pattern=pattern,
-            p=period,
-            i=pattern.iterator,
-            r=pattern.rate,
-        )
+        pattern.iterator += self._iteration_span
+        period = self.get_new_period(pattern)
+        self.again(pattern=pattern, p=period)
 
     def push(self, pattern: Optional[PatternInformation]):
         """
@@ -129,12 +116,11 @@ class Player(BaseHandler):
         manually. If PatternInformation is hot-swapped by None, the Player will stop
         scheduling its internal function, defined in self.func.
         """
-        period = self.get_new_period(pattern=pattern)
-
         # This is a local equivalent to the silence() function.
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
 
+        period = self.get_new_period(pattern)
         self.runner.push(self.func, pattern=pattern, p=period)
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

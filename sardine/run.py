@@ -284,9 +284,21 @@ CC = midi.send_control  # For MIDI Control Change messages
 Ocustom = my_osc_connexion.send
 play = Player.play
 
+def n(send_method=N, *args, **kwargs):
+    return play(send_method=send_method, *args, **kwargs)
+def cc(send_method=CC, *args, **kwargs):
+    return play(send_method=send_method, *args, **kwargs)
+def pc(send_method=PC, *args, **kwargs):
+    return play(send_method=send_method, *args, **kwargs)
+
+
+
+
 if config.superdirt_handler:
     SC = dirt._superdirt_process
     D = dirt.send
+    def d(sound, send_method=D, **kwargs):
+        return play(send_method=send_method, sound=sound, **kwargs)
 
 # Clock start
 bowl.start()

@@ -3,24 +3,15 @@ from dataclasses import dataclass
 from ..scheduler import AsyncRunner
 from math import floor
 from typing import (
-        TYPE_CHECKING,
-        TypeAlias,
+        Callable,
         Optional,
-        Any,
 )
-
-if TYPE_CHECKING:
-    from .midi import MidiHandler
-    from .osc import OSCHandler
-    from .superdirt import SuperDirtHandler
-
-SENDER: TypeAlias = 'MidiHandler | OSCHandler | SuperDirtHandler'
 
 __all__ = ("Player",)
 
 @dataclass
 class PatternInformation:
-    sender: SENDER
+    send_method: Callable
     args: tuple
     kwargs: dict
     period: int | float | str
@@ -56,16 +47,16 @@ class Player(BaseHandler):
 
     @staticmethod
     def play(
-            sender: SENDER, 
+            send_method: Callable, 
             *args, 
-            p: int | float | str, 
+            p: int | float | str = 1.0, 
             i: int = 0,
             d: int = 1,
             r: int | float = 1.0,
             **kwargs): 
         """Entry point of a pattern into the Player"""
         return PatternInformation(
-                sender=sender, 
+                send_method=send_method, 
                 args=args,
                 kwargs=kwargs,
                 period=p,
@@ -88,14 +79,17 @@ class Player(BaseHandler):
             """Joseph Enguehard's algorithm"""
             return floor(iterator * rate / div) % len(pattern)
 
-        parser = self.env.parser
-        period = parser.parse(pattern.period) 
-        return period[_p_index(
-            div=pattern.divisor, 
-            rate=pattern.rate, 
-            iterator=pattern.iterator,
-            pattern=period)
-        ]
+        if isinstance(pattern.period, str):
+            parser = self.env.parser
+            period = parser.parse(pattern.period) 
+            return period[_p_index(
+                div=pattern.divisor, 
+                rate=pattern.rate, 
+                iterator=pattern.iterator,
+                pattern=period)
+            ]
+        else:
+            return pattern.period
 
     def func(
             self, 
@@ -108,7 +102,7 @@ class Player(BaseHandler):
         """Central swimming function defined by the player"""
         pattern.iterator = pattern.iterator + self._iteration_span
 
-        pattern.sender.send(
+        pattern.send_method(
                 *pattern.args, 
                 **pattern.kwargs,
                 iterator=i, 

@@ -68,7 +68,6 @@ class Player(BaseHandler):
 
         period = self.env.parser.parse(period)
         period = list(map(lambda x: _remap(x, 0, sum(period), 0, timespan), period))
-        print(f"Period: {period}, sum of period: {sum(period)}, timespan: {timespan}")
         return period
 
     @staticmethod

@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, ParamSpec, TypeVar
 
@@ -22,6 +23,7 @@ class PatternInformation:
     iterator: Number
     divisor: NumericElement
     rate: NumericElement
+    snap: Number
     timespan: Optional[float]
 
 
@@ -85,13 +87,23 @@ class Player(BaseHandler):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        snap: Number = 0,
         **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
         
         return PatternInformation(
-            sender, send_method, args, kwargs, 
-            period, iterator, divisor, rate, timespan)
+            sender,
+            send_method,
+            args,
+            kwargs,
+            period,
+            iterator,
+            divisor,
+            rate,
+            snap,
+            timespan,
+        )
 
     def __rshift__(self, pattern: Optional[PatternInformation]) -> None:
         """
@@ -149,10 +161,29 @@ class Player(BaseHandler):
         # the new pattern can be synchronized
         self.runner.interval_shift = 0.0
 
+        self.start(pattern)
+
+    def start(self, pattern: PatternInformation):
+        def callback(_task: Optional[asyncio.Task] = None):
+            self.runner.push(self.func, pattern=pattern, p=period)
+            self.env.scheduler.start_runner(self.runner)
+            self.runner.reload()
+
         period = self.get_new_period(pattern)
-        self.runner.push(self.func, pattern=pattern, p=period)
-        self.env.scheduler.start_runner(self.runner)
-        self.runner.reload()
+
+        if pattern.snap is None or pattern.snap <= 0:
+            return callback()
+
+        duration = self.env.clock.get_beat_time(pattern.snap, sync=False)
+        period_time = self.env.clock.get_beat_time(period, sync=False)
+
+        # Manually synchronize runner to the given snap
+        self.runner.interval_shift = duration
+
+        # Sleep one period short and so the runner can sleep the remaining time
+        # NOTE: if sleep() wakes up early this might cause the runner to fire early
+        task = asyncio.create_task(self.env.sleep(duration - period_time))
+        task.add_done_callback(callback)
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

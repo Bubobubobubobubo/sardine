@@ -161,6 +161,8 @@ class MidiHandler(Sender):
         note_task = self.active_notes.get(key)
 
         if note_task is not None and not note_task.done():
+            # Brute force solution (temporary fix)
+            self._note_off(channel=channel, note=note, velocity=0)
             note_task.cancel()
             self.active_notes.pop(key, None)
 

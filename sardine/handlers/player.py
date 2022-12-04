@@ -145,6 +145,10 @@ class Player(BaseHandler):
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
 
+        # Forcibly reset the interval shift back to 0 to make sure
+        # the new pattern can be synchronized
+        self.runner.interval_shift = 0.0
+
         period = self.get_new_period(pattern)
         self.runner.push(self.func, pattern=pattern, p=period)
         self.env.scheduler.start_runner(self.runner)

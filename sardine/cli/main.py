@@ -172,12 +172,14 @@ def _select_supercollider_settings(config_file: dict) -> dict:
         Panel.fit(
             (
                 f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
+                + f"[red]Boot SuperCollider: [green]{config_file['boot_supercollider']}[/red][/green] | "
+                + f"[red]Sardine boot file: [green]{config_file['sardine_boot_file']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
         )
     )
     boot = inquirer.select(
-        message="Add SuperDirt instance to Sardine?",
+        message="Add SuperDirt handler to Sardine?",
         choices=[
             Choice(value=True, enabled=True, name="Yes"),
             Choice(value=False, name="No"),
@@ -185,6 +187,27 @@ def _select_supercollider_settings(config_file: dict) -> dict:
         default=None,
     ).execute()
     config_file["superdirt_handler"] = boot
+
+    boot_supercollider = inquirer.select(
+        message="Boot a SuperCollider instance?",
+        choices=[
+            Choice(value=True, enabled=True, name="Yes"),
+            Choice(value=False, name="No"),
+        ],
+        default=None,
+    ).execute()
+    config_file["boot_supercollider"] = boot_supercollider
+
+    sardine_boot_file = inquirer.select(
+        message="Use Sardine boot file (in config folder)?",
+        choices=[
+            Choice(value=True, enabled=True, name="Yes"),
+            Choice(value=False, name="No"),
+        ],
+        default=None,
+    ).execute()
+    config_file["sardine_boot_file"] = sardine_boot_file
+
     verbose_superdirt = inquirer.select(
         message="Turn on verbose output for SuperCollider?",
         choices=[
@@ -205,6 +228,8 @@ def _select_supercollider_settings(config_file: dict) -> dict:
         Panel.fit(
             (
                 f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
+                + f"[red]Boot SuperCollider: [green]{config_file['boot_supercollider']}[/red][/green] | "
+                + f"[red]Sardine boot file: [green]{config_file['sardine_boot_file']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
         )

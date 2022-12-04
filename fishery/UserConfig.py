@@ -23,6 +23,8 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "parameters": [],
         "superdirt_handler": True,
+        "boot_supercollider": False,
+        "sardine_boot_file": True,
         "verbose_superdirt": False,
         "link_clock": False,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
@@ -51,7 +53,9 @@ class Config:
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
+    boot_supercollider: bool
     superdirt_handler: bool
+    sardine_boot_file: bool
     link_clock: bool
     deferred_scheduling: bool
 
@@ -64,6 +68,8 @@ class Config:
             parameters=config["parameters"],
             bpm=config["bpm"],
             superdirt_handler=config["superdirt_handler"],
+            boot_supercollider=config["boot_supercollider"],
+            sardine_boot_file=config["sardine_boot_file"],
             verbose_superdirt=config["verbose_superdirt"],
             link_clock=config["link_clock"],
             superdirt_config_path=config["superdirt_config_path"],
@@ -79,6 +85,8 @@ class Config:
                 "parameters": self.parameters,
                 "bpm": self.bpm,
                 "superdirt_handler": self.superdirt_handler,
+                "boot_supercollider": self.boot_supercollider,
+                "sardine_boot_file": self.sardine_boot_file,
                 "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,
                 "link_clock": self.link_clock,

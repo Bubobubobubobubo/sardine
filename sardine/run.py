@@ -8,6 +8,7 @@ from rich import print
 
 from . import *
 from .io.UserConfig import read_user_configuration
+from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, sardine_intro
 from string import ascii_lowercase, ascii_uppercase
 
@@ -35,6 +36,18 @@ else:
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
 )
+
+# Opening SuperColliderXSuperDirt subprocess. Dissociated from the SuperDirt handlers.
+config = read_user_configuration()
+if config.boot_supercollider:
+    try:
+        SC = SuperDirtProcess(
+                startup_file=(
+                    config.superdirt_config_path if config.sardine_boot_file else None), 
+                verbose=config.verbose_superdirt,
+        )
+    except OSError as Error:
+        print(f"[red]SuperCollider could not be found: {Error}![/red]")
 
 # Basic handlers initialization
 
@@ -298,7 +311,6 @@ def pc(*args, **kwargs):
 
 
 if config.superdirt_handler:
-    SC = dirt._superdirt_process
     D = dirt.send
 
     def d(*args, **kwargs):

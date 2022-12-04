@@ -3,11 +3,10 @@ from os import walk, path
 from pathlib import Path
 import platform, subprocess
 import shutil
-from typing import Union
+from typing import Union, Optional
 from appdirs import *
 import tempfile
 import psutil
-import re
 import asyncio
 from rich.console import Console
 from rich.panel import Panel
@@ -18,14 +17,18 @@ __all__ = ("SuperDirtProcess",)
 
 class SuperDirtProcess:
     def __init__(
-        self, startup_file: Union[str, None] = None, preemptive=True, verbose=False
+        self, 
+        startup_file: Optional[str] = None, 
+        preemptive=True, 
+        verbose=False
     ):
 
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
         self._synth_directory = self._find_synths_directory()
-        self._startup_file = self._find_startup_file(user_file=startup_file)
+        self._startup_file = (self._find_startup_file(user_file=startup_file) if 
+                              startup_file is not None else None)
         self.temp_file = tempfile.NamedTemporaryFile()
         self._verbose = verbose
 
@@ -196,7 +199,7 @@ class SuperDirtProcess:
     def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
-    def startup_file_path(self) -> str:
+    def startup_file_path(self) -> str | None:
         return self._startup_file
 
     def load_custom_synthdefs(self) -> None:
@@ -261,7 +264,9 @@ SCLang && SuperDirt...[/yellow]"
                 universal_newlines=True,
                 start_new_session=True,
             )
-            self._write_stdin(message="""load("{}")""".format(self._startup_file))
+            if self._startup_file is not None:
+                self._write_stdin(
+                        message="""load("{}")""".format(self._startup_file))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
 

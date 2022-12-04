@@ -22,34 +22,18 @@ class SuperDirtHandler(Sender):
         super().__init__()
         self._name = name
 
-        # Opening SuperColliderXSuperDirt subprocess
-        try:
-            config = read_user_configuration()
-            self._superdirt_process = SuperDirtProcess(
-                startup_file=config.superdirt_config_path,
-                verbose=config.verbose_superdirt,
-            )
-        except OSError as Error:
-            print(f"[red]SuperCollider could not be found: {Error}![/red]")
-
         # Opening a new OSC Client to talk with it
         self._osc_client = osc_udp_client(
-            address="127.0.0.1", port=57120, name=self._name
+            address="127.0.0.1", 
+            port=57120, 
+            name=self._name
         )
         self._ahead_amount = ahead_amount
 
         # Setting up environment
         self._events = {
-            "meter": self._superdirt_process.meter,
-            "scope": self._superdirt_process.scope,
-            "trace": self._superdirt_process.trace(True),
-            "untrace": self._superdirt_process.trace(False),
-            "send": self._superdirt_process.send,
-            "freqscope": self._superdirt_process.freqscope,
             "dirt_play": self._dirt_play,
             "panic": self._dirt_panic,
-            "boot": self._superdirt_process.boot,
-            "kill": self._superdirt_process.kill,
         }
 
     def __repr__(self) -> str:

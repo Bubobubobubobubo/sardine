@@ -3,7 +3,7 @@ import sys
 from math import floor
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
-from typing import Any, Callable, Literal, Optional, ParamSpec, TypeVar, Union, overload
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
 from rich import print
 
@@ -105,7 +105,7 @@ def swim(
 
 @overload
 def swim(
-    func: Literal[None],
+    func: None,
     /,
     *args: P.args,
     snap: Optional[Union[float, int]] = 0,
@@ -114,13 +114,8 @@ def swim(
     ...
 
 
-def swim(  # pylint: disable=keyword-arg-before-vararg  # signature is valid
-    func: Optional[Union[Callable[P, T], AsyncRunner]] = None,
-    /,
-    *args: P.args,
-    snap: Optional[Union[float, int]] = 0,
-    **kwargs: P.kwargs,
-) -> AsyncRunner:
+# pylint: disable=keyword-arg-before-vararg  # signature is valid
+def swim(func=None, /, *args, snap=0, **kwargs):
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.

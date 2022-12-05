@@ -5,8 +5,6 @@ from typing import Optional
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 
-from ..io import read_user_configuration
-from ..superdirt.AutoBoot import SuperDirtProcess
 from ..utils import alias_param
 from .sender import Number, NumericElement, ParsableElement, Sender, StringElement
 

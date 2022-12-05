@@ -1,18 +1,18 @@
-import argparse
+import json
+from itertools import chain
+from pathlib import Path
+
 import click
 import mido
-import json
-import sys
 
 # Wildcard used in docs..
 from appdirs import *
-from pathlib import Path
+from InquirerPy import inquirer, prompt
+from InquirerPy.base.control import Choice
+from InquirerPy.validator import EmptyInputValidator
 from rich import print
 from rich.panel import Panel
-from itertools import chain
-from InquirerPy import inquirer, prompt
-from InquirerPy.validator import EmptyInputValidator
-from InquirerPy.base.control import Choice
+
 from ..io.UserConfig import create_template_configuration_file
 
 FUNNY_TEXT = """

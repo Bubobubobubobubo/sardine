@@ -1,7 +1,6 @@
 import asyncio
 import sys
 from typing import Optional, Union
-from ..utils import alias_param
 
 import mido
 from rich import print

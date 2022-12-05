@@ -2,7 +2,8 @@ import importlib
 import sys
 from math import floor
 from pathlib import Path
-from typing import Any, Callable, Optional, Literal, ParamSpec, TypeVar, Union, overload
+from string import ascii_lowercase, ascii_uppercase
+from typing import Any, Callable, Literal, Optional, ParamSpec, TypeVar, Union, overload
 
 from rich import print
 
@@ -10,7 +11,6 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, sardine_intro
-from string import ascii_lowercase, ascii_uppercase
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")

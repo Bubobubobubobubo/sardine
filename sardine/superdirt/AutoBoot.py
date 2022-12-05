@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-from os import walk, path
-from pathlib import Path
-import platform, subprocess
-import shutil
-from typing import Union, Optional
-from appdirs import *
-import tempfile
-import psutil
 import asyncio
+import platform
+import shutil
+import subprocess
+import tempfile
+from os import path, walk
+from pathlib import Path
+from typing import Optional, Union
+
+import psutil
+from appdirs import *
+from rich import print
 from rich.console import Console
 from rich.panel import Panel
-from rich import print
 
 __all__ = ("SuperDirtProcess",)
 

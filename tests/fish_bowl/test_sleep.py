@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from sardine import FishBowl, MissileMode, InternalClock
+from sardine import FishBowl, InternalClock, MissileMode
 
 from . import Pauser, fish_bowl
 

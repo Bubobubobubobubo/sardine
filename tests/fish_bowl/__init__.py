@@ -14,9 +14,10 @@ from typing import (
     Union,
 )
 
+import pytest_asyncio
 import rich
 from rich.table import Column, Table
-import pytest_asyncio
+
 from sardine import BaseHandler, FishBowl
 
 __all__ = ("EventLogEntry", "EventLogHandler", "fish_bowl")

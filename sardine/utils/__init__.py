@@ -1,7 +1,10 @@
 import functools
-from typing import Callable, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, Union
 
 from .Messages import *
+
+if TYPE_CHECKING:
+    from ..base import BaseClock
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -30,6 +33,12 @@ def alias_param(name: str, alias: str):
         return wrapper
 
     return deco
+
+
+def get_snap_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
+    next_bar = clock.get_bar_time(1)
+    offset = clock.get_beat_time(offset_beats, sync=False)
+    return clock.time + next_bar + offset
 
 
 def plural(n: int, word: str, suffix: str = "s"):

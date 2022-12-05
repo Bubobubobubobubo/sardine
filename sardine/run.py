@@ -2,15 +2,18 @@ import importlib
 import sys
 from math import floor
 from pathlib import Path
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Literal, ParamSpec, TypeVar, Union, overload
 
 from rich import print
 
 from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
-from .utils import config_line_printer, sardine_intro
+from .utils import config_line_printer, get_snap_deadline, sardine_intro
 from string import ascii_lowercase, ascii_uppercase
+
+P = ParamSpec("P")  # NOTE: name is similar to surfboards
+T = TypeVar("T")
 
 # Reading user configuration (taken from sardine-config)
 config = read_user_configuration()
@@ -88,34 +91,87 @@ if config.superdirt_handler:
     bowl.add_handler(dirt)
 
 
-def swim(func: Union[Callable, AsyncRunner], *args, **kwargs) -> AsyncRunner:
+@overload
+def swim(
+    func: Union[Callable[P, T], AsyncRunner],
+    /,
+    # NOTE: AsyncRunner doesn't support generic args/kwargs
+    *args: P.args,
+    snap: Optional[Union[float, int]] = 0,
+    **kwargs: P.kwargs,
+) -> AsyncRunner:
+    ...
+
+
+@overload
+def swim(
+    func: Literal[None],
+    /,
+    *args: P.args,
+    snap: Optional[Union[float, int]] = 0,
+    **kwargs: P.kwargs,
+) -> Callable[[Callable[P, T]], AsyncRunner]:
+    ...
+
+
+def swim(  # pylint: disable=keyword-arg-before-vararg  # signature is valid
+    func: Optional[Union[Callable[P, T], AsyncRunner]] = None,
+    /,
+    *args: P.args,
+    snap: Optional[Union[float, int]] = 0,
+    **kwargs: P.kwargs,
+) -> AsyncRunner:
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.
+
+    Args:
+        func (Optional[Union[Callable[P, T], AsyncRunner]]):
+            The function to be scheduled. If this is an AsyncRunner,
+            the current state is simply updated with new arguments.
+        *args: Positional arguments to be passed to `func.`
+        snap (Optional[Union[float, int]]):
+            If set to a numeric value, the new function will be
+            deferred until the next bar + `snap` beats arrives.
+            If None, the function is immediately pushed and will
+            run on its next interval.
+            If `func` is an AsyncRunner, this parameter has no effect.
+        **kwargs: Keyword arguments to be passed to `func.`
     """
-    if isinstance(func, AsyncRunner):
-        func.update_state(*args, **kwargs)
-        bowl.scheduler.start_runner(func)
-        return func
 
-    runner = bowl.scheduler.get_runner(func.__name__)
-    if runner is None:
-        runner = AsyncRunner(func.__name__)
+    def decorator(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
+        if isinstance(func, AsyncRunner):
+            func.update_state(*args, **kwargs)
+            bowl.scheduler.start_runner(func)
+            return func
 
-    # Runners normally allow the same functions to appear in the stack,
-    # but we will treat repeat functions as just reloading the runner
-    if runner.states and runner.states[-1].func is func:
-        again(runner)
-    else:
-        runner.push(func, *args, **kwargs)
+        runner = bowl.scheduler.get_runner(func.__name__)
+        if runner is None:
+            runner = AsyncRunner(func.__name__)
+
+        # Runners normally allow the same functions to appear in the stack,
+        # but we will treat repeat functions as just reloading the runner
+        if runner.states and runner.states[-1].func is func:
+            again(runner)
+            bowl.scheduler.start_runner(runner)
+            return runner
+        elif snap is not None:
+            deadline = get_snap_deadline(bowl.clock, snap)
+            runner.push_deferred(deadline, func, *args, **kwargs)
+        else:
+            runner.push(func, *args, **kwargs)
 
         # Intentionally avoid interval correction so
         # the user doesn't accidentally nudge the runner
         runner.swim()
         runner.reload()
 
-    bowl.scheduler.start_runner(runner)
-    return runner
+        bowl.scheduler.start_runner(runner)
+        return runner
+
+    if func is not None:
+        return decorator(func)
+    return decorator
 
 
 def again(runner: AsyncRunner, *args, **kwargs):

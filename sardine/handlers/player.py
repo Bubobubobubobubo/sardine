@@ -1,11 +1,10 @@
-import asyncio
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, ParamSpec, TypeVar
 
 from ..base import BaseHandler
 from ..handlers.sender import Number, NumericElement, Sender
 from ..scheduler import AsyncRunner
-from ..utils import alias_param
+from ..utils import alias_param, get_snap_deadline
 
 __all__ = ("Player",)
 
@@ -164,16 +163,11 @@ class Player(BaseHandler):
 
         period = self.get_new_period(pattern)
 
-        deadline = self._get_snap_deadline(pattern)
+        deadline = get_snap_deadline(self.env.clock, pattern.snap)
         self.runner.push_deferred(deadline, self.func, pattern=pattern, p=period)
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()
-
-    def _get_snap_deadline(self, pattern: PatternInformation) -> float:
-        next_bar = self.env.clock.get_bar_time(1)
-        offset = self.env.clock.get_beat_time(pattern.snap, sync=False)
-        return self.env.clock.time + next_bar + offset
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

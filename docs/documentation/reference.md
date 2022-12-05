@@ -63,14 +63,15 @@ th, td {
 |**`sound`**        |**Implicit** (first argument of `S()`)                      |--------------|
 |**`begin`**        |Start position of audio playback                            |0 -> 1        |
 |**`end`**          |End position of audio playback                              |0 -> 1        |
-|**`accelerate`**   |Rising sample playback speed                                |0 -> x        |
+|**`speed`**        |Sample playback, impacts pitch. Negative will play reverse  |-x -> 0 -> x  |
+|**`accelerate`**   |Rising sample playback speed (pitch glissando)              |-x -> 0 -> x  |
 |**`cps`**          |**Implicit** (cycles per second, inherited from Tidal)      |--------------|
 |**`loop`**         |???                                                         |???           |
 |**`delta`**        |**Unused**                                                  |--------------|
 |**`cut`**          |Cut other sounds playing on same orbit, start playing       |0 or 1        |
 |**`legato`**       |Play sample for the given duration (without cutting others) |0 -> x        |
 |**`pan`**          |Pan sound from left to right speaker (by default)           |0 -> 1        |
-|**`orbit`**        |Play sound/synth on the given audio effect bus              |0 -> x        |
+|**`orbit`**        |Play sound/synth on the given audio effect bus (0 - 11)     |0 - 11        |
 |**`latency`**      |Add a latency to audio playback (in seconds)                |0 -> x        |
 |**`lag`**          |Similar to latency/offset                                   |0 -> x        |
 |**`offset`**       |Similar to latency/lag                                      |0 -> x        |

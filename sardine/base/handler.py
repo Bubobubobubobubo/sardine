@@ -62,7 +62,7 @@ class BaseHandler:
         return "<{} {}>".format(
             type(self).__name__,
             " ".join(
-                f"{attr}={getattr(self, attr)}"
+                f"{attr}={getattr(self, attr)!r}"
                 for attr in (
                     "lock_children",
                     "env",

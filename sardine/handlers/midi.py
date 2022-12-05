@@ -67,7 +67,7 @@ class MidiHandler(Sender):
         }
 
     def __repr__(self) -> str:
-        return f"<{type(self).__name__} port={self._port_name} nudge={self._nudge}>"
+        return f"<{type(self).__name__} port={self._port_name!r} nudge={self._nudge}>"
 
     def setup(self):
         for event in self.events:

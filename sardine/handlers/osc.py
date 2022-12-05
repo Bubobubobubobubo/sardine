@@ -33,7 +33,7 @@ class OSCHandler(Sender):
         self._events = {"send": self._send}
 
     def __repr__(self) -> str:
-        return f"<{type(self).__name__} {self._name} ip={self._ip} port={self._port}>"
+        return f"<{type(self).__name__} {self._name} ip={self._ip!r} port={self._port}>"
 
     def setup(self):
         for event in self._events:

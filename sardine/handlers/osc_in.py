@@ -37,7 +37,7 @@ class OSCInHandler(BaseHandler):
         self._watched_values = {}
 
     def __repr__(self) -> str:
-        return f"<{type(self).__name__} {self._name} ip={self._ip} port={self._port}>"
+        return f"<{type(self).__name__} {self._name} ip={self._ip!r} port={self._port}>"
 
     # Handler methods
 

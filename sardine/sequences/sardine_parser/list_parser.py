@@ -46,7 +46,7 @@ class ListParser(BaseParser):
         self.parser_type = parser_type
 
     def __repr__(self) -> str:
-        return f"<{type(self).__name__} debug={self.debug} type={self.parser_type}>"
+        return f"<{type(self).__name__} debug={self.debug} type={self.parser_type!r}>"
 
     def setup(self):
         parsers = {

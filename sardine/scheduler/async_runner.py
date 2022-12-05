@@ -230,7 +230,7 @@ class AsyncRunner:
         cls_name = type(self).__name__
         status = "running" if self.is_running() else "stopped"
         attrs = " ".join(
-            f"{attr}={getattr(self, attr)}"
+            f"{attr}={getattr(self, attr)!r}"
             for attr in (
                 "name",
                 "scheduler",

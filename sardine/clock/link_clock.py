@@ -36,7 +36,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @property
     def beat(self) -> int:
-        return self._beat + self.beat_shift
+        return self._beat + int(self.beat_shift)
 
     @property
     def beat_duration(self) -> float:

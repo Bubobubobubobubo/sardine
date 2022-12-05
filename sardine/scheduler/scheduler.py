@@ -67,11 +67,13 @@ class Scheduler(BaseHandler):
         runner.scheduler = self
         runner.start()
 
-    def stop_runner(self, runner: AsyncRunner):
+    def stop_runner(self, runner: AsyncRunner, *, reset_states: bool = True):
         """Removes the runner from the scheduler and stops it.
 
         Args:
             runner (AsyncRunner): The runner to remove.
+            reset_states (bool):
+                If True, `AsyncRunner.reset_states()` will be called.
 
         Raises:
             ValueError: The runner is running on another scheduler.
@@ -87,12 +89,21 @@ class Scheduler(BaseHandler):
         # break the background task in the process
         runner.stop()
 
+        if reset_states:
+            runner.reset_states()
+
         if self._runners.get(runner.name) is runner:
             del self._runners[runner.name]
 
-    def reset(self):
+    def reset(self, *args, **kwargs):
+        """Stops and removes all runners from the scheduler.
+        
+        Args:
+            *args: Positional arguments to be passed to `stop_runner()`.
+            **kwargs: Keyword arguments to be passed to `stop_runner()`.
+        """
         for runner in self.runners:
-            self.stop_runner(runner)
+            self.stop_runner(runner, *args, **kwargs)
 
     # Internal methods
 

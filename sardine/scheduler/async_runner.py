@@ -377,6 +377,16 @@ class AsyncRunner:
         self._stop = True
         self.reload()
 
+    def reset_states(self):
+        """Clears all function states from the runner.
+
+        This method can safely be called while the runner is running.
+        In such case, the runner will stop by itself on the next
+        iteration unless a new state is pushed after this method.
+        """
+        self.states.clear()
+        self.deferred_states.clear()
+
     # Interval shifting
 
     def allow_interval_correction(self):

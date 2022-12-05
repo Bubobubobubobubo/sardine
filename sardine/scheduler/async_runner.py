@@ -176,14 +176,18 @@ class AsyncRunner:
     The absolute time that the next interval should start at.
 
     Setting this attribute will take priority over the regular interval
-    on the next iteration. This can be helpful for getting a runner
-    to begin on a specific interval, although for that purpose, `snap`
-    must be combined with `interval_shift` to properly re-sync the pattern.
-    As such, it is recommended to use `delay_interval()` instead of this
-    attribute directly.
+    on the next iteration and cause the runner to wait until the snap
+    deadline has arrived.
+    
+    The `delay_interval()` method combines this with interval shifting
+    to properly delay a runner and its interval until the given deadline.
 
     Once this time has been passed and the next iteration was run,
     this attribute will be reset to `None`.
+
+    Note that deferred states will take priority over this, and in fact even
+    replace the snap, if one or more of those states specify a deadline earlier
+    than the current snap's deadline.
     """
 
     _swimming: bool
@@ -262,9 +266,15 @@ class AsyncRunner:
         It is recommended to reload the runner after this in case the
         current iteration sleeps past the deadline.
         
-        Note that this does not take priority over `snap`; if a snap is
-        specified, the runner will continue to wait for that deadline to
-        pass.
+        Note that this does not take priority over the `snap` attribute;
+        if a snap is specified, the runner will continue to wait for that
+        deadline to pass. If running a new function immediately is desired,
+        the `snap` should be set to `None` before reloading the runner.
+
+        Args:
+            func (MaybeCoroFunc): The function to add.
+            *args: The positional arguments being passed to `func`.
+            **kwargs: The keyword arguments being passed to `func`.
         """
         if not callable(func):
             raise TypeError(f"Expected a callable, got {func!r}")
@@ -287,6 +297,9 @@ class AsyncRunner:
 
         It is recommended to reload the runner after this in case the
         current iteration sleeps past the deadline.
+
+        If there is an existing `snap` deadline, deferred states will take
+        priority and replace the `snap` attribute to ensure they run on time.
 
         Args:
             time (Union[float, int]):

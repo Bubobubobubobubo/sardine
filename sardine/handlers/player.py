@@ -162,15 +162,17 @@ class Player(BaseHandler):
         self.runner.interval_shift = 0.0
 
         period = self.get_new_period(pattern)
-        self.runner.push(self.func, pattern=pattern, p=period)
+
+        deadline = self._get_snap_deadline(pattern)
+        self.runner.push_deferred(deadline, self.func, pattern=pattern, p=period)
+
         self.env.scheduler.start_runner(self.runner)
-        self.apply_snap(pattern)
         self.runner.reload()
 
-    def apply_snap(self, pattern: PatternInformation):
+    def _get_snap_deadline(self, pattern: PatternInformation) -> float:
         next_bar = self.env.clock.get_bar_time(1)
         offset = self.env.clock.get_beat_time(pattern.snap, sync=False)
-        self.runner.delay_interval(self.env.clock.time + next_bar + offset)
+        return self.env.clock.time + next_bar + offset
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

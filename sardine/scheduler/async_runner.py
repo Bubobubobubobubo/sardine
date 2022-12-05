@@ -1,9 +1,10 @@
 import asyncio
+import heapq
 import inspect
 import traceback
 from collections import deque
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, MutableSequence, Optional, Union
+from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
 
 from rich import print
 from rich.panel import Panel
@@ -102,6 +103,12 @@ class FunctionState:
     kwargs: dict
 
 
+class DeferredState(NamedTuple):
+    deadline: Union[float, int]
+    index: int
+    state: FunctionState
+
+
 class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
@@ -137,6 +144,14 @@ class AsyncRunner:
     This is implemented with a deque to ensure a limit on how many functions
     are stored in the cache.
     """
+    deferred_states: list[DeferredState]
+    """
+    A heap queue storing (time, index, state) pairs.
+
+    Unlike regular `states`, these states are left in the background until
+    their time arrives, at which point they are moved to the `states` sequence
+    and will take over the next iteration.
+    """
     interval_shift: float
     """
     The amount of time to offset the runner's interval.
@@ -160,7 +175,7 @@ class AsyncRunner:
     """
     The absolute time that the next interval should start at.
 
-    Setting this attribute will take priority over the current interval
+    Setting this attribute will take priority over the regular interval
     on the next iteration. This can be helpful for getting a runner
     to begin on a specific interval, although for that purpose, `snap`
     must be combined with `interval_shift` to properly re-sync the pattern.
@@ -176,15 +191,19 @@ class AsyncRunner:
     _task: Optional[asyncio.Task]
     _reload_event: asyncio.Event
 
+    _deferred_state_index: int
+
     _can_correct_interval: bool
     _delta: float
     _expected_time: float
     _last_interval: float
+    _sleep_drift: float
 
     def __init__(self, name: str):
         self.name = name
         self.scheduler = None
         self.states = deque(maxlen=self.MAX_FUNCTION_STATES)
+        self.deferred_states = []
         self.interval_shift = 0.0
         self.snap = None
 
@@ -193,10 +212,13 @@ class AsyncRunner:
         self._task = None
         self._reload_event = asyncio.Event()
 
+        self._deferred_state_index = 0
+
         self._can_correct_interval = False
         self._delta = 0.0
         self._expected_time = 0.0
         self._last_interval = 0.0
+        self._sleep_drift = 0.0
 
     def __repr__(self):
         cls_name = type(self).__name__
@@ -235,7 +257,15 @@ class AsyncRunner:
     # State management
 
     def push(self, func: "MaybeCoroFunc", *args, **kwargs):
-        """Pushes a function state to the runner to be called in the next iteration."""
+        """Pushes a function state to the runner to be called in the next iteration.
+
+        It is recommended to reload the runner after this in case the
+        current iteration sleeps past the deadline.
+        
+        Note that this does not take priority over `snap`; if a snap is
+        specified, the runner will continue to wait for that deadline to
+        pass.
+        """
         if not callable(func):
             raise TypeError(f"Expected a callable, got {func!r}")
         elif not self.states:
@@ -249,6 +279,36 @@ class AsyncRunner:
         args = args + last_state.args[len(args) :]
         kwargs = last_state.kwargs | kwargs
         self.states.append(FunctionState(func, args, kwargs))
+
+    def push_deferred(
+        self, deadline: Union[float, int], func: "MaybeCoroFunc", *args, **kwargs
+    ):
+        """Adds a function to a queue to eventually be run.
+
+        It is recommended to reload the runner after this in case the
+        current iteration sleeps past the deadline.
+
+        Args:
+            time (Union[float, int]):
+                The absolute clock time to wait before the function state
+                is pushed.
+            func (MaybeCoroFunc): The function to add.
+            *args: The positional arguments being passed to `func`.
+            **kwargs: The keyword arguments being passed to `func`.
+        """
+        if self.is_running() and self.clock.time >= deadline:
+            return self.push(func, *args, **kwargs)
+        elif not callable(func):
+            raise TypeError(f"Expected a callable, got {func!r}")
+
+        if not self.deferred_states:
+            self._deferred_state_index = 0
+
+        index = self._deferred_state_index
+        self._deferred_state_index += 1
+
+        state = FunctionState(func, args, kwargs)
+        heapq.heappush(self.deferred_states, DeferredState(deadline, index, state))
 
     def update_state(self, *args, **kwargs):
         """Updates the top-most function state with new arguments.
@@ -308,33 +368,34 @@ class AsyncRunner:
         """Allows the interval to be corrected in the next iteration."""
         self._can_correct_interval = True
 
-    def delay_interval(self, snap: Union[float, int]):
-        """Delays the next iteration until the given time has passed.
+    def delay_interval(self, deadline: Union[float, int], period: Union[float, int]):
+        """Delays the next iteration until the given deadline has passed.
 
         This is equivalent to setting the runner's `snap` attribute
-        to the given time, and also applying an appropriate interval
-        shift so the iteration that follows won't be shorter than expected.
+        to the deadline and also applying an appropriate interval
+        shift to synchronize the period.
 
         The runner must be started from a scheduler before this method can
         be used. In addition, at least one function state must be pushed to
-        the runner in order to calculate the interval shift.
+        the runner (deferred or not) in order to calculate the interval shift.
 
         To take effect immediately, the runner should be reloaded
         to skip the current iteration.
 
         Args:
             time (Union[float, int]): The absolute time to wait.
+            period (Union[float, int]): The period to synchronize to.
 
         Raises:
             RuntimeError: A function must be pushed before this can be used.
         """
-        period = self._get_period()
-        self.snap = snap
+        self.snap = deadline
         # Unlike _correct_interval(), we don't need to worry about delta
         # here. _get_corrected_interval() ignores the interval until the
         # snap time has passed, at which point any sleep drift will be
         # accounted by `get_beat_time()` as per normal operation.
-        self.interval_shift = self.clock.get_beat_time(period)
+        with self.time.scoped_shift(deadline - self.clock.time):
+            self.interval_shift = self.clock.get_beat_time(period)
 
     def _check_snap(self) -> None:
         if self.snap is not None and self.clock.time > self.snap:
@@ -378,28 +439,20 @@ class AsyncRunner:
             float: The amount of time until the next interval is reached.
         """
         snap_duration = self._get_snap_duration()
-        if snap_duration >= 0:
+        if snap_duration is not None:
             return snap_duration
 
         with self.time.scoped_shift(self.interval_shift):
             return self.clock.get_beat_time(period)
 
-    def _get_period(self) -> Union[float, int]:
-        if not self.states:
-            raise RuntimeError("At least one function must be pushed to extract period")
-
-        state = self.states[-1]
-        return _extract_new_period(inspect.signature(state.func), state.kwargs)
-
-    def _get_snap_duration(self) -> float:
+    def _get_snap_duration(self) -> Optional[float]:
         """Returns the amount of time to wait for the snap, if any.
 
-        If the `snap` attribute is None or the time snap has already passed
-        (exclusive), this returns a negative number.
+        If the `snap` attribute is None, this returns None.
         """
-        if self.snap is None or self.clock.time > self.snap:
-            return -1.0
-        return self.snap - self.clock.time
+        if self.snap is None:
+            return None
+        return max(0.0, self.snap - self.clock.time)
 
     # Runner loop
 
@@ -427,84 +480,105 @@ class AsyncRunner:
         will synchronize the interval for us.
         """
         # Prepare to swim
-        last_state = self.states[-1]
+        last_state = self._get_state()
         self._swimming = True
         self._stop = False
 
         # Calculate the initial value for `_last_interval`
-        self._last_interval = self._get_period() * self.clock.beat_duration
+        self._last_interval = self._get_period(last_state) * self.clock.beat_duration
 
         print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
-            while self.states and self._swimming and not self._stop:
+            while (
+                (self.states or self.deferred_states)
+                and self._swimming
+                and not self._stop
+            ):
                 self._swimming = False
                 self._reload_event.clear()
-                state = self.states[-1]
 
-                if state is not last_state:
-                    pushed = len(self.states) > 1 and self.states[-2] is last_state
-                    if pushed:
-                        print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
-                    else:
-                        print_panel(
-                            f"[yellow][Saving [red]{self.name}[/red] from crash]"
-                        )
+                state = self._get_state()
+
+                if state is not None:
+                    if last_state is not None and state is not last_state:
+                        pushed = len(self.states) > 1 and self.states[-2] is last_state
+                        # FIXME: runner thinks there's a crash if more than one
+                        #        state is pushed
+                        if pushed:
+                            print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
+                        else:
+                            print_panel(
+                                f"[yellow][Saving [red]{self.name}[/red] from crash]"
+                            )
                     last_state = state
 
-                signature = inspect.signature(state.func)
+                    signature = inspect.signature(state.func)
 
-                try:
-                    _assert_function_signature(signature, state.args, state.kwargs)
+                    try:
+                        _assert_function_signature(signature, state.args, state.kwargs)
 
-                    # Remove any kwargs not present in the new function
-                    # (prevents TypeError when user reduces the signature)
-                    args = state.args
-                    kwargs = _discard_kwargs(signature, state.kwargs)
+                        # Remove any kwargs not present in the new function
+                        # (prevents TypeError when user reduces the signature)
+                        args = state.args
+                        kwargs = _discard_kwargs(signature, state.kwargs)
 
-                    period = _extract_new_period(signature, state.kwargs)
-                except (TypeError, ValueError) as e:
-                    print(f"[red][Bad function definition ({self.name})]")
-                    traceback.print_exception(type(e), e, e.__traceback__)
-                    self._revert_state()
+                        period = _extract_new_period(signature, state.kwargs)
+                    except (TypeError, ValueError) as e:
+                        print(f"[red][Bad function definition ({self.name})]")
+                        traceback.print_exception(type(e), e, e.__traceback__)
+                        self._revert_state()
+                        self.swim()
+                        continue
+
+                    self._correct_interval(period)
+
+                    duration = self._get_corrected_interval(period)
+                    self._expected_time = self.clock.time + duration
+
+                # Push any deferred states that have or will arrive onto the stack
+                arriving_states: list[DeferredState] = []
+                while self.deferred_states:
+                    entry = self.deferred_states[0]
+                    if (
+                        self.clock.time >= entry.deadline
+                        or state is not None
+                        and self._expected_time >= entry.deadline
+                    ):
+                        heapq.heappop(self.deferred_states)
+                        arriving_states.append(entry)
+                    else:
+                        break
+
+                if arriving_states:
+                    latest_entry = arriving_states[-1]
+                    self.states.extend(e.state for e in arriving_states)
+                    # In case the new state has a faster interval than before,
+                    # delay it so it doesn't run too early
+                    self.delay_interval(
+                        latest_entry.deadline,
+                        self._get_period(latest_entry.state),
+                    )
+                    self.swim()
+                    continue
+                elif state is None:
+                    # Nothing to do until the next deferred state arrives
+                    deadline = self.deferred_states[0].deadline
+                    duration = self.clock.time - deadline
+                    interrupted = await self._sleep(duration)
                     self.swim()
                     continue
 
-                # start = self.clock.time
-
-                self._correct_interval(period)
-                duration = self._get_corrected_interval(period)
-                self._expected_time = self.clock.time + duration
-
-                wait_task = asyncio.create_task(self.env.sleep(duration))
-                reload_task = asyncio.create_task(self._reload_event.wait())
-                done, pending = await asyncio.wait(
-                    (wait_task, reload_task),
-                    return_when=asyncio.FIRST_COMPLETED,
-                )
-
-                sleep_drift = self.clock.time - self._expected_time
-
-                # print(
-                #     f"{self.clock} AR [green]"
-                #     f"expected: {self._expected_interval}, previous: {start}, "
-                #     f"delta: {self._delta}, shift: {self.interval_shift}, "
-                #     f"post drift: {sleep_drift}"
-                # )
-
-                for task in pending:
-                    task.cancel()
-                for task in done:
-                    task.result()
-
-                if reload_task in done:
+                # NOTE: `duration` will always be defined at this point
+                interrupted = await self._sleep(duration)
+                if interrupted:
                     self.swim()
                     continue
 
                 try:
                     # Use copied context in function by creating it as a task
                     await asyncio.create_task(
-                        self._call_func(sleep_drift, state.func, args, kwargs),
+                        self._call_func(state.func, args, kwargs),
                         name=f"asyncrunner-func-{self.name}",
                     )
                 except Exception as e:
@@ -518,14 +592,52 @@ class AsyncRunner:
         finally:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
-    async def _call_func(self, delta: float, func, args, kwargs):
+    async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
         according to the `defer_beats` attribute.
         """
-        shift = self.defer_beats * self.clock.beat_duration - delta
+        shift = self.defer_beats * self.clock.beat_duration - self._sleep_drift
         self.time.shift += shift
 
         return await _maybe_coro(func, *args, **kwargs)
+
+    @staticmethod
+    def _get_period(state: Optional[FunctionState]) -> Union[float, int]:
+        if state is None:
+            return 0.0
+
+        return _extract_new_period(inspect.signature(state.func), state.kwargs)
+
+    def _get_state(self) -> Optional[FunctionState]:
+        return self.states[-1] if self.states else None
+
+    async def _sleep(self, duration: Union[float, int]) -> bool:
+        """Sleeps for the given duration or until the runner is reloaded.
+
+        Args:
+            duration (Union[float, int]): The amount of time to sleep.
+
+        Returns:
+            bool: True if the runner was reloaded, False otherwise.
+        """
+        if duration <= 0:
+            return self._reload_event.is_set()
+
+        wait_task = asyncio.create_task(self.env.sleep(duration))
+        reload_task = asyncio.create_task(self._reload_event.wait())
+        done, pending = await asyncio.wait(
+            (wait_task, reload_task),
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+
+        self._sleep_drift = self.clock.time - self._expected_time
+
+        for task in pending:
+            task.cancel()
+        for task in done:
+            task.result()
+
+        return reload_task in done
 
     def _revert_state(self):
         self.states.pop()

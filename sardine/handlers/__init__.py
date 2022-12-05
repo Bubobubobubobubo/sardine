@@ -1,4 +1,3 @@
-from .dummy import *
 from .midi import *
 from .midi_in import *
 from .missile import *

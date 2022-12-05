@@ -161,29 +161,16 @@ class Player(BaseHandler):
         # the new pattern can be synchronized
         self.runner.interval_shift = 0.0
 
-        self.start(pattern)
-
-    def start(self, pattern: PatternInformation):
-        def callback(_task: Optional[asyncio.Task] = None):
-            self.runner.push(self.func, pattern=pattern, p=period)
-            self.env.scheduler.start_runner(self.runner)
-            self.runner.reload()
-
         period = self.get_new_period(pattern)
+        self.runner.push(self.func, pattern=pattern, p=period)
+        self.env.scheduler.start_runner(self.runner)
+        self.apply_snap(pattern)
+        self.runner.reload()
 
-        if pattern.snap is None or pattern.snap <= 0:
-            return callback()
-
-        duration = self.env.clock.get_beat_time(pattern.snap, sync=False)
-        period_time = self.env.clock.get_beat_time(period, sync=False)
-
-        # Manually synchronize runner to the given snap
-        self.runner.interval_shift = duration
-
-        # Sleep one period short and so the runner can sleep the remaining time
-        # NOTE: if sleep() wakes up early this might cause the runner to fire early
-        task = asyncio.create_task(self.env.sleep(duration - period_time))
-        task.add_done_callback(callback)
+    def apply_snap(self, pattern: PatternInformation):
+        next_bar = self.env.clock.get_bar_time(1)
+        offset = self.env.clock.get_beat_time(pattern.snap, sync=False)
+        self.runner.delay_interval(self.env.clock.time + next_bar + offset)
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

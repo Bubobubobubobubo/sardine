@@ -156,6 +156,20 @@ class AsyncRunner:
     running at different phases. To synchronize these functions together,
     their interval shifts should be set to the same value (usually 0).
     """
+    snap: Optional[Union[float, int]]
+    """
+    The absolute time that the next interval should start at.
+
+    Setting this attribute will take priority over the current interval
+    on the next iteration. This can be helpful for getting a runner
+    to begin on a specific interval, although for that purpose, `snap`
+    must be combined with `interval_shift` to properly re-sync the pattern.
+    As such, it is recommended to use `delay_interval()` instead of this
+    attribute directly.
+
+    Once this time has been passed and the next iteration was run,
+    this attribute will be reset to `None`.
+    """
 
     _swimming: bool
     _stop: bool
@@ -172,6 +186,7 @@ class AsyncRunner:
         self.scheduler = None
         self.states = deque(maxlen=self.MAX_FUNCTION_STATES)
         self.interval_shift = 0.0
+        self.snap = None
 
         self._swimming = False
         self._stop = False
@@ -293,6 +308,38 @@ class AsyncRunner:
         """Allows the interval to be corrected in the next iteration."""
         self._can_correct_interval = True
 
+    def delay_interval(self, snap: Union[float, int]):
+        """Delays the next iteration until the given time has passed.
+
+        This is equivalent to setting the runner's `snap` attribute
+        to the given time, and also applying an appropriate interval
+        shift so the iteration that follows won't be shorter than expected.
+
+        The runner must be started from a scheduler before this method can
+        be used. In addition, at least one function state must be pushed to
+        the runner in order to calculate the interval shift.
+
+        To take effect immediately, the runner should be reloaded
+        to skip the current iteration.
+
+        Args:
+            time (Union[float, int]): The absolute time to wait.
+
+        Raises:
+            RuntimeError: A function must be pushed before this can be used.
+        """
+        period = self._get_period()
+        self.snap = snap
+        # Unlike _correct_interval(), we don't need to worry about delta
+        # here. _get_corrected_interval() ignores the interval until the
+        # snap time has passed, at which point any sleep drift will be
+        # accounted by `get_beat_time()` as per normal operation.
+        self.interval_shift = self.clock.get_beat_time(period)
+
+    def _check_snap(self) -> None:
+        if self.snap is not None and self.clock.time > self.snap:
+            self.snap = None
+
     def _correct_interval(self, period: Union[float, int]):
         """Checks if the interval should be corrected.
 
@@ -319,6 +366,10 @@ class AsyncRunner:
         The base interval is determined by the `period` argument,
         and then offsetted by the `interval_shift` attribute.
 
+        If the `snap` attribute is set to an absolute time
+        and the current clock time has not passed the snap,
+        it will take priority over whatever period was passed.
+
         Args:
             period (Union[float, int]):
                 The number of beats in the interval.
@@ -326,8 +377,29 @@ class AsyncRunner:
         Returns:
             float: The amount of time until the next interval is reached.
         """
+        snap_duration = self._get_snap_duration()
+        if snap_duration >= 0:
+            return snap_duration
+
         with self.time.scoped_shift(self.interval_shift):
             return self.clock.get_beat_time(period)
+
+    def _get_period(self) -> Union[float, int]:
+        if not self.states:
+            raise RuntimeError("At least one function must be pushed to extract period")
+
+        state = self.states[-1]
+        return _extract_new_period(inspect.signature(state.func), state.kwargs)
+
+    def _get_snap_duration(self) -> float:
+        """Returns the amount of time to wait for the snap, if any.
+
+        If the `snap` attribute is None or the time snap has already passed
+        (exclusive), this returns a negative number.
+        """
+        if self.snap is None or self.clock.time > self.snap:
+            return -1.0
+        return self.snap - self.clock.time
 
     # Runner loop
 
@@ -360,10 +432,7 @@ class AsyncRunner:
         self._stop = False
 
         # Calculate the initial value for `_last_interval`
-        self._last_interval = (
-            _extract_new_period(inspect.signature(last_state.func), last_state.kwargs)
-            * self.clock.beat_duration
-        )
+        self._last_interval = self._get_period() * self.clock.beat_duration
 
         print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
@@ -445,6 +514,7 @@ class AsyncRunner:
                     self.swim()
 
                 self._delta = self.clock.time - self._expected_time
+                self._check_snap()
         finally:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 

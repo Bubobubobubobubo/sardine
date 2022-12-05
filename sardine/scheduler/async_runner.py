@@ -194,6 +194,7 @@ class AsyncRunner:
     _stop: bool
     _task: Optional[asyncio.Task]
     _reload_event: asyncio.Event
+    _has_reverted: bool
 
     _deferred_state_index: int
 
@@ -215,6 +216,7 @@ class AsyncRunner:
         self._stop = False
         self._task = None
         self._reload_event = asyncio.Event()
+        self._has_reverted = False
 
         self._deferred_state_index = 0
 
@@ -515,15 +517,13 @@ class AsyncRunner:
 
                 if state is not None:
                     if last_state is not None and state is not last_state:
-                        pushed = len(self.states) > 1 and self.states[-2] is last_state
-                        # FIXME: runner thinks there's a crash if more than one
-                        #        state is pushed
-                        if pushed:
+                        if not self._has_reverted:
                             print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
                         else:
                             print_panel(
                                 f"[yellow][Saving [red]{self.name}[/red] from crash]"
                             )
+                            self._has_reverted = False
                     last_state = state
 
                     signature = inspect.signature(state.func)
@@ -654,3 +654,4 @@ class AsyncRunner:
 
     def _revert_state(self):
         self.states.pop()
+        self._has_reverted = True

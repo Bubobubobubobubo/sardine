@@ -42,9 +42,10 @@ config = read_user_configuration()
 if config.boot_supercollider:
     try:
         SC = SuperDirtProcess(
-                startup_file=(
-                    config.superdirt_config_path if config.sardine_boot_file else None), 
-                verbose=config.verbose_superdirt,
+            startup_file=(
+                config.superdirt_config_path if config.sardine_boot_file else None
+            ),
+            verbose=config.verbose_superdirt,
         )
     except OSError as Error:
         print(f"[red]SuperCollider could not be found: {Error}![/red]")

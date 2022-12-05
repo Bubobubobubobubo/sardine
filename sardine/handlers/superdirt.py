@@ -24,9 +24,7 @@ class SuperDirtHandler(Sender):
 
         # Opening a new OSC Client to talk with it
         self._osc_client = osc_udp_client(
-            address="127.0.0.1", 
-            port=57120, 
-            name=self._name
+            address="127.0.0.1", port=57120, name=self._name
         )
         self._ahead_amount = ahead_amount
 

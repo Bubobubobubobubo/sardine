@@ -181,9 +181,9 @@ class MidiHandler(Sender):
             )
         )
 
-    @alias_param(name='channel', alias='chan')
-    @alias_param(name='duration', alias='dur')
-    @alias_param(name='velocity', alias='vel')
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="duration", alias="dur")
+    @alias_param(name="velocity", alias="vel")
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")

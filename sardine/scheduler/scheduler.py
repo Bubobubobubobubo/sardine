@@ -97,7 +97,7 @@ class Scheduler(BaseHandler):
 
     def reset(self, *args, **kwargs):
         """Stops and removes all runners from the scheduler.
-        
+
         Args:
             *args: Positional arguments to be passed to `stop_runner()`.
             **kwargs: Keyword arguments to be passed to `stop_runner()`.

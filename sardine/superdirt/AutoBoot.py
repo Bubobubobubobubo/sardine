@@ -17,18 +17,18 @@ __all__ = ("SuperDirtProcess",)
 
 class SuperDirtProcess:
     def __init__(
-        self, 
-        startup_file: Optional[str] = None, 
-        preemptive=True, 
-        verbose=False
+        self, startup_file: Optional[str] = None, preemptive=True, verbose=False
     ):
 
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
         self._synth_directory = self._find_synths_directory()
-        self._startup_file = (self._find_startup_file(user_file=startup_file) if 
-                              startup_file is not None else None)
+        self._startup_file = (
+            self._find_startup_file(user_file=startup_file)
+            if startup_file is not None
+            else None
+        )
         self.temp_file = tempfile.NamedTemporaryFile()
         self._verbose = verbose
 
@@ -265,8 +265,7 @@ SCLang && SuperDirt...[/yellow]"
                 start_new_session=True,
             )
             if self._startup_file is not None:
-                self._write_stdin(
-                        message="""load("{}")""".format(self._startup_file))
+                self._write_stdin(message="""load("{}")""".format(self._startup_file))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
 

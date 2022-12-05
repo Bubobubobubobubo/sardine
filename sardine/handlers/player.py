@@ -54,13 +54,13 @@ class Player(BaseHandler):
         """Internal iterator stored by the Player instance"""
         self._iteration_span = value
 
-
     def fit_period_to_timespan(self, period: NumericElement, timespan: float):
         """
         Fit a given period to a certain timestamp (forcing a pattern to have a fixed
         duration. This feature can be useful for preventing users from creating loops
         that will phase out too easily.
         """
+
         def _remap(x, in_min, in_max, out_min, out_max):
             """Remap a value v from range (x, y) to range (x', y')"""
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -91,7 +91,7 @@ class Player(BaseHandler):
         **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
-        
+
         return PatternInformation(
             sender,
             send_method,
@@ -113,7 +113,8 @@ class Player(BaseHandler):
         """
         if pattern is not None and pattern.timespan is not None:
             pattern.period = self.fit_period_to_timespan(
-                    pattern.period, pattern.timespan)
+                pattern.period, pattern.timespan
+            )
         self.push(pattern)
 
     def get_new_period(self, pattern: PatternInformation) -> Number:

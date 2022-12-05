@@ -178,7 +178,7 @@ class AsyncRunner:
     Setting this attribute will take priority over the regular interval
     on the next iteration and cause the runner to wait until the snap
     deadline has arrived.
-    
+
     The `delay_interval()` method combines this with interval shifting
     to properly delay a runner and its interval until the given deadline.
 
@@ -267,7 +267,7 @@ class AsyncRunner:
 
         It is recommended to reload the runner after this in case the
         current iteration sleeps past the deadline.
-        
+
         Note that this does not take priority over the `snap` attribute;
         if a snap is specified, the runner will continue to wait for that
         deadline to pass. If running a new function immediately is desired,

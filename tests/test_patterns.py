@@ -18,7 +18,6 @@ def fish_bowl(request: pytest.FixtureRequest):
     [
         (".", [None]),
         (".!4", [None] * 4),
-        (".?", [None]),
     ],
 )
 def test_silence_op(fish_bowl: FishBowl, pattern: str, expected: list):
@@ -36,26 +35,6 @@ def test_silence_op(fish_bowl: FishBowl, pattern: str, expected: list):
 )
 def test_choice_op(fish_bowl: FishBowl, pattern: str, expected: list):
     assert fish_bowl.parser.parse(pattern) in expected
-
-
-@pytest.mark.parametrize(
-    "pattern,expected_true",
-    [
-        ("[1,2,3,4,5]?", [1, 2, 3, 4, 5]),
-        ("1?,2?,3?,4?", [1, 2, 3, 4]),
-    ],
-)
-def test_presence_op(
-    fish_bowl: FishBowl,
-    monkeypatch: pytest.MonkeyPatch,
-    pattern: str,
-    expected_true: list,
-):
-    expected_false = [None] * len(expected_true)
-    monkeypatch.setattr(random, "random", lambda: 1.0 - 1e-16)
-    assert fish_bowl.parser.parse(pattern) == expected_true
-    monkeypatch.setattr(random, "random", lambda: 0.0)
-    assert fish_bowl.parser.parse(pattern) == expected_false
 
 
 @pytest.mark.parametrize(

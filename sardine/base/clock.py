@@ -242,10 +242,7 @@ class BaseClock(BaseRunnerHandler, ABC):
             # the clock has started
             self.internal_origin = self.internal_time
             self._time_is_origin = False
-        elif event == "pause":
-            self.env.time.origin = self.time
-            self._time_is_origin = True
-        elif event == "stop":
+        elif event in ("pause", "stop"):
             self.env.time.origin = self.time
             self._time_is_origin = True
         # print(f"{event=} {self.env.time.origin=} {self.time=} "

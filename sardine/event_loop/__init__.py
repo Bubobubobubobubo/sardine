@@ -64,7 +64,10 @@ def install_policy():
             break
 
     if not successful:
-        rich.print("[yellow]Rhythm accuracy may be impacted")
+        rich.print(
+            "[yellow]No custom event loop applied; "
+            "rhythm accuracy may be impacted"
+        )
 
 
 def new_event_loop() -> asyncio.BaseEventLoop:

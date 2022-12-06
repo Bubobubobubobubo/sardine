@@ -11,6 +11,7 @@ from rich.panel import Panel
 
 from ..base import BaseClock
 from ..clock import Time
+from ..utils import MISSING
 from .constants import MaybeCoroFunc
 
 if TYPE_CHECKING:
@@ -40,7 +41,6 @@ def _assert_function_signature(sig: inspect.Signature, args, kwargs):
 
 def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
     """Discards any kwargs not present in the given signature."""
-    MISSING = object()
     pass_through = kwargs.copy()
 
     for param in sig.parameters.values():
@@ -200,6 +200,7 @@ class AsyncRunner:
     _delta: float
     _expected_time: float
     _last_interval: float
+    _last_state: Optional[FunctionState]
     _sleep_drift: float
 
     def __init__(self, name: str):
@@ -222,6 +223,7 @@ class AsyncRunner:
         self._delta = 0.0
         self._expected_time = 0.0
         self._last_interval = 0.0
+        self._last_state = None
         self._sleep_drift = 0.0
 
     def __repr__(self):
@@ -418,10 +420,6 @@ class AsyncRunner:
         with self.time.scoped_shift(deadline - self.clock.time):
             self.interval_shift = self.clock.get_beat_time(period)
 
-    def _check_snap(self) -> None:
-        if self.snap is not None and self.clock.time > self.snap:
-            self.snap = None
-
     def _correct_interval(self, period: Union[float, int]):
         """Checks if the interval should be corrected.
 
@@ -478,138 +476,105 @@ class AsyncRunner:
     # Runner loop
 
     async def _runner(self):
-        """The entry point for AsyncRunner. This can only be started
-        once per AsyncRunner instance through the `start()` method.
-
-        Drift correction
-        ----------------
-        In this loop, there is a potential for drift to occur anywhere with
-        an async/await keyword. The relevant steps here are:
-
-            1. Correct interval
-            2. (await) Sleep until interval
-            3. (await) Call function
-            4. Repeat
-
-        Step 2 tends to add a bit of latency (a result of `asyncio.wait()`).
-        When using deferred scheduling, step 3 subtracts that drift to make
-        sure sounds are still scheduled for the correct time.
-
-        Step 3 usually adds drift too, and slow functions can further increase
-        this drift. However, we don't need to measure the drift here
-        because the upcoming call to `BaseClock.get_beat_time()` in step 2
-        will synchronize the interval for us.
-        """
         # Prepare to swim
-        last_state = self._get_state()
+        self._last_state = self._get_state()
         self._swimming = True
         self._stop = False
 
-        # Calculate the initial value for `_last_interval`
-        self._last_interval = self._get_period(last_state) * self.clock.beat_duration
+        period = self._get_period(self._last_state)
+        self._last_interval = period * self.clock.beat_duration
 
         print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
-            while (
-                (self.states or self.deferred_states)
-                and self._swimming
-                and not self._stop
-            ):
-                self._swimming = False
-                self._reload_event.clear()
-
-                state = self._get_state()
-
-                if state is not None:
-                    if last_state is not None and state is not last_state:
-                        if not self._has_reverted:
-                            print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
-                        else:
-                            print_panel(
-                                f"[yellow][Saving [red]{self.name}[/red] from crash]"
-                            )
-                            self._has_reverted = False
-                    last_state = state
-
-                    signature = inspect.signature(state.func)
-
-                    try:
-                        _assert_function_signature(signature, state.args, state.kwargs)
-
-                        # Remove any kwargs not present in the new function
-                        # (prevents TypeError when user reduces the signature)
-                        args = state.args
-                        kwargs = _discard_kwargs(signature, state.kwargs)
-
-                        period = _extract_new_period(signature, state.kwargs)
-                    except (TypeError, ValueError) as e:
-                        print(f"[red][Bad function definition ({self.name})]")
-                        traceback.print_exception(type(e), e, e.__traceback__)
-                        self._revert_state()
-                        self.swim()
-                        continue
-
-                    self._correct_interval(period)
-
-                    duration = self._get_corrected_interval(period)
-                    self._expected_time = self.clock.time + duration
-
-                # Push any deferred states that have or will arrive onto the stack
-                arriving_states: list[DeferredState] = []
-                while self.deferred_states:
-                    entry = self.deferred_states[0]
-                    if (
-                        self.clock.time >= entry.deadline
-                        or state is not None
-                        and self._expected_time >= entry.deadline
-                    ):
-                        heapq.heappop(self.deferred_states)
-                        arriving_states.append(entry)
-                    else:
-                        break
-
-                if arriving_states:
-                    latest_entry = arriving_states[-1]
-                    self.states.extend(e.state for e in arriving_states)
-                    # In case the new state has a faster interval than before,
-                    # delay it so it doesn't run too early
-                    self.delay_interval(
-                        latest_entry.deadline,
-                        self._get_period(latest_entry.state),
-                    )
-                    self.swim()
-                    continue
-                elif state is None:
-                    # Nothing to do until the next deferred state arrives
-                    deadline = self.deferred_states[0].deadline
-                    duration = self.clock.time - deadline
-                    interrupted = await self._sleep(duration)
-                    self.swim()
-                    continue
-
-                # NOTE: `duration` will always be defined at this point
-                interrupted = await self._sleep(duration)
-                if interrupted:
-                    self.swim()
-                    continue
-
-                try:
-                    # Use copied context in function by creating it as a task
-                    await asyncio.create_task(
-                        self._call_func(state.func, args, kwargs),
-                        name=f"asyncrunner-func-{self.name}",
-                    )
-                except Exception as e:
-                    print(f"[red][Function exception | ({self.name})]")
-                    traceback.print_exception(type(e), e, e.__traceback__)
-                    self._revert_state()
-                    self.swim()
-
-                self._delta = self.clock.time - self._expected_time
-                self._check_snap()
+            while self._is_ready_for_iteration():
+                await self._run_once()
         finally:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
+
+    async def _run_once(self):
+        self._swimming = False
+        self._reload_event.clear()
+
+        state = self._get_state()
+
+        if state is not None:
+            self._maybe_print_new_state(state)
+            self._last_state = state
+            signature = inspect.signature(state.func)
+
+            try:
+                _assert_function_signature(signature, state.args, state.kwargs)
+                args = state.args
+                # Prevent any TypeErrors when the user reduces the signature
+                kwargs = _discard_kwargs(signature, state.kwargs)
+                period = _extract_new_period(signature, state.kwargs)
+            except (TypeError, ValueError) as exc:
+                print(f"[red][Bad function definition ({self.name})]")
+                traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+                self._revert_state()
+                self.swim()
+                return
+
+            self._correct_interval(period)
+            duration = self._get_corrected_interval(period)
+            self._expected_time = self.clock.time + duration
+
+        # Push any deferred states that have or will arrive onto the stack
+        arriving_states: list[DeferredState] = []
+        while self.deferred_states:
+            entry = self.deferred_states[0]
+            if (
+                self.clock.time >= entry.deadline
+                or state is not None
+                and self._expected_time >= entry.deadline
+            ):
+                heapq.heappop(self.deferred_states)
+                arriving_states.append(entry)
+            else:
+                break
+
+        if arriving_states:
+            latest_entry = arriving_states[-1]
+            self.states.extend(e.state for e in arriving_states)
+            # In case the new state has a faster interval than before,
+            # delay it so it doesn't run too early
+            self.delay_interval(
+                latest_entry.deadline,
+                self._get_period(latest_entry.state),
+            )
+            self.swim()
+            return
+        elif state is None:
+            # Nothing to do until the next deferred state arrives
+            deadline = self.deferred_states[0].deadline
+            duration = self.clock.time - deadline
+            interrupted = await self._sleep(duration)
+            self.swim()
+            return
+
+        # NOTE: duration will always be defined at this point
+        interrupted = await self._sleep(duration)
+        if interrupted:
+            self.swim()
+            return
+
+        try:
+            # Use copied context in function by creating it as a task
+            await asyncio.create_task(
+                self._call_func(state.func, args, kwargs),
+                name=f"asyncrunner-func-{self.name}",
+            )
+        except Exception as exc:
+            print(f"[red][Function exception | ({self.name})]")
+            traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+            self._revert_state()
+            self.swim()
+
+        self._delta = self.clock.time - self._expected_time
+        self._check_snap()
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
@@ -620,6 +585,10 @@ class AsyncRunner:
 
         return await _maybe_coro(func, *args, **kwargs)
 
+    def _check_snap(self) -> None:
+        if self.snap is not None and self.clock.time > self.snap:
+            self.snap = None
+
     @staticmethod
     def _get_period(state: Optional[FunctionState]) -> Union[float, int]:
         if state is None:
@@ -629,6 +598,21 @@ class AsyncRunner:
 
     def _get_state(self) -> Optional[FunctionState]:
         return self.states[-1] if self.states else None
+
+    def _is_ready_for_iteration(self) -> bool:
+        return (
+            (self.states or self.deferred_states)
+            and self._swimming  # self.swim()
+            and not self._stop  # self.stop()
+        )
+
+    def _maybe_print_new_state(self, state: FunctionState):
+        if self._last_state is not None and state is not self._last_state:
+            if not self._has_reverted:
+                print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
+            else:
+                print_panel(f"[yellow][Saving [red]{self.name}[/red] from crash]")
+                self._has_reverted = False
 
     async def _sleep(self, duration: Union[float, int]) -> bool:
         """Sleeps for the given duration or until the runner is reloaded.

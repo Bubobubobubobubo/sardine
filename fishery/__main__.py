@@ -3,8 +3,13 @@ import click
 from . import console
 from .profiler import Profiler
 
+CONTEXT_SETTINGS = {
+    "help_option_names": ["-h", "--help"],
+}
+
 
 @click.group(
+    context_settings=CONTEXT_SETTINGS,
     help="Starts sardine in an asyncio REPL.",
     invoke_without_command=True,
 )

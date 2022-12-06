@@ -54,8 +54,8 @@ def install_policy():
     methods = (
         # _install_precision_sansio,
         _install_uvloop,
-        _install_precision_proactor,
-        _install_precision_selector,
+        # _install_precision_proactor,
+        # _install_precision_selector,
     )
     successful = False
     for func in methods:

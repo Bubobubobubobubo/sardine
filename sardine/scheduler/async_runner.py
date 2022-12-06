@@ -413,10 +413,6 @@ class AsyncRunner:
             RuntimeError: A function must be pushed before this can be used.
         """
         self.snap = deadline
-        # Unlike _correct_interval(), we don't need to worry about delta
-        # here. _get_corrected_interval() ignores the interval until the
-        # snap time has passed, at which point any sleep drift will be
-        # accounted by `get_beat_time()` as per normal operation.
         with self.time.scoped_shift(deadline - self.clock.time):
             self.interval_shift = self.clock.get_beat_time(period)
 
@@ -434,7 +430,7 @@ class AsyncRunner:
         """
         interval = period * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
-            self.interval_shift = self.clock.get_beat_time(period) + self._delta
+            self.interval_shift = self.clock.get_beat_time(period)
 
             self._last_interval = interval
 
@@ -461,8 +457,8 @@ class AsyncRunner:
         if snap_duration is not None:
             return snap_duration
 
-        with self.time.scoped_shift(self.interval_shift):
-            return self.clock.get_beat_time(period)
+        with self.time.scoped_shift(self.interval_shift + self._delta):
+            return self.clock.get_beat_time(period) - self._delta
 
     def _get_snap_duration(self) -> Optional[float]:
         """Returns the amount of time to wait for the snap, if any.

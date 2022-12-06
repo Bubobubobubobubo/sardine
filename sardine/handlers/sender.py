@@ -47,8 +47,8 @@ class Sender(BaseHandler):
                     index.
     """
 
+    @staticmethod
     def pattern_element(
-        self,
         val: RecursiveElement,
         iterator: Number,
         div: Number,

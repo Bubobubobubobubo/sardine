@@ -51,7 +51,7 @@ class Sender(BaseHandler):
     def pattern_element(
         val: RecursiveElement,
         iterator: Number,
-        div: Number,
+        divisor: Number,
         rate: Number,
     ) -> RecursiveElement:
         """Joseph Enguehard's algorithm for solving iteration speed"""
@@ -61,7 +61,7 @@ class Sender(BaseHandler):
 
         length = len(val)
         if length > 0:
-            i = floor(iterator * rate / div) % length
+            i = floor(iterator * rate / divisor) % length
             return val[i]
         raise ValueError(f"Cannot pattern an empty sequence: {val!r}")
 

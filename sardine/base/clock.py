@@ -150,8 +150,6 @@ class BaseClock(BaseRunnerHandler, ABC):
         along with the fish bowl's `Time.origin` to calculate a monotonic
         time for the entire system.
 
-        This number will also add any `Time.shift` that has been applied.
-
         If the fish bowl has been paused or stopped, `Time.origin` will be set
         to the latest value provided by `internal_time`, and this property
         will return `Time.origin` until the fish bowl resumes or starts again.

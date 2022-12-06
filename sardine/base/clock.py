@@ -1,3 +1,5 @@
+import math
+import time
 from abc import ABC, abstractmethod
 from typing import Optional, Union
 
@@ -199,7 +201,15 @@ class BaseClock(BaseRunnerHandler, ABC):
         elif not sync:
             return interval
 
-        return interval - self.shifted_time % interval
+        duration = interval - self.shifted_time % interval
+
+        # Due to potential rounding errors, we might get a duration
+        # that should be, but isn't actually equal to the interval.
+        # As such, we will replace any durations below a picosecond.
+        if math.isclose(duration, 0.0, rel_tol=0.0, abs_tol=1e-12):
+            return interval
+
+        return duration
 
     def get_bar_time(self, n_bars: Union[int, float], *, sync: bool = True) -> float:
         """Determines the amount of time to wait for N bars to pass.

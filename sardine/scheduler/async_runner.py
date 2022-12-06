@@ -436,8 +436,7 @@ class AsyncRunner:
         if self._can_correct_interval and interval != self._last_interval:
             self.interval_shift = self.clock.get_beat_time(period) + self._delta
 
-            self._last_interval = interval
-
+        self._last_interval = interval
         self._can_correct_interval = False
 
     def _get_corrected_interval(self, period: Union[float, int]) -> float:

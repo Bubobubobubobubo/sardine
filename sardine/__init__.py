@@ -4,3 +4,5 @@ from .clock import *
 from .fish_bowl import *
 from .handlers import *
 from .scheduler import *
+
+__version__ = "0.1.0"

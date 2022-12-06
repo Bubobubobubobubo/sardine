@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sardine"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Python's missing algorave module"
 authors = [
     {name = "Raphaël Forment", email="raphael.forment@gmail.com"},
@@ -37,6 +37,9 @@ dependencies = [
     "lark>=1.1",
     "exceptiongroup>=1.0.4",
 ]
+
+[tool.hatch.version]
+path = "sardine/__init__.py"
 
 [tool.isort]
 profile = "black"

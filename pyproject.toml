@@ -66,6 +66,7 @@ repository = "https://github.com/Bubobubobubobubo/sardine"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]
+fishery = 'fishery.__main__:main'
 sardine-config-python = 'sardine.cli.main:edit_python_configuration'
 sardine-config-superdirt = 'sardine.cli.main:edit_superdirt_configuration'
 sardine-config = 'sardine.cli.main:main'

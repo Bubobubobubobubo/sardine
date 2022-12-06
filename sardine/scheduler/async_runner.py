@@ -309,9 +309,7 @@ class AsyncRunner:
             *args: The positional arguments being passed to `func`.
             **kwargs: The keyword arguments being passed to `func`.
         """
-        if self.is_running() and self.clock.time >= deadline:
-            return self.push(func, *args, **kwargs)
-        elif not callable(func):
+        if not callable(func):
             raise TypeError(f"Expected a callable, got {func!r}")
 
         if not self.deferred_states:

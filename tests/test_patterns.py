@@ -45,19 +45,14 @@ def test_choice_op(fish_bowl: FishBowl, pattern: str, expected: list):
         ("1?,2?,3?,4?", [1, 2, 3, 4]),
     ],
 )
-def test_presence_operator(
+def test_presence_op(
     fish_bowl: FishBowl,
     monkeypatch: pytest.MonkeyPatch,
     pattern: str,
     expected_true: list,
 ):
-    """
-    Test the presence operator (?) that can make things disappear
-    50% of the time
-    """
     expected_false = [None] * len(expected_true)
     monkeypatch.setattr(random, "random", lambda: 1.0 - 1e-16)
-    # XXX: 1.0 isn't possible with random so we make it slightly under 1.0
     assert fish_bowl.parser.parse(pattern) == expected_true
     monkeypatch.setattr(random, "random", lambda: 0.0)
     assert fish_bowl.parser.parse(pattern) == expected_false

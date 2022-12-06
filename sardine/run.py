@@ -297,19 +297,8 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     Returns:
         int: The ith element from the resulting pattern
     """
-    parser = bowl.parser
-    result = parser.parse(pattern)
-
-    def _pattern_element(div: int, rate: int, iterator: int, pattern: list) -> Any:
-        """
-        Joseph Enguehard's algorithm for solving iteration speed. Used internally
-        to correct the index position using a division, a rate and an iterator as
-        parameters. Allows iteration at different 'speeds' (rates) and skipping
-        some indexes!
-        """
-        return floor(iterator * rate / div) % len(pattern)
-
-    return result[_pattern_element(div=div, rate=rate, iterator=i, pattern=result)]
+    result = bowl.parser.parse(pattern)
+    return Sender.pattern_element(result, i, div, rate)
 
 
 class Delay:

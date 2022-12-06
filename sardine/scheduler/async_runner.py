@@ -113,8 +113,7 @@ class AsyncRunner:
     """Handles calling synchronizing and running a function in
     the background, with support for run-time function patching.
 
-    This class should only be used through a BaseClock instance via
-    the `BaseClock.schedule_func()` method.
+    Runners should only be started from the `Scheduler.start_runner()` method.
 
     The `Scheduler.deferred` attribute is used to control if AsyncRunner
     runs with an implicit time shift when calling its function or not.
@@ -127,7 +126,6 @@ class AsyncRunner:
     In either case, if the function takes too long to execute, it will miss
     its scheduling deadline and cause an unexpected gap between function calls.
     Functions must complete within the time span to avoid this issue.
-
     """
 
     MAX_FUNCTION_STATES = 3

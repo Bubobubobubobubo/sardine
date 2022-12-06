@@ -463,8 +463,10 @@ class AsyncRunner:
 
         with self.time.scoped_shift(self.interval_shift - self._delta):
             # If the interval was corrected, this should equal to:
-            #    `period * beat_duration - delta`
-            return self.clock.get_beat_time(period) - self._delta
+            #    `period * beat_duration`
+            expected_duration = self.clock.get_beat_time(period)
+            self._expected_time = self.clock.shifted_time + expected_duration
+        return expected_duration - self._delta
 
     def _get_snap_duration(self) -> Optional[float]:
         """Returns the amount of time to wait for the snap, if any.
@@ -485,9 +487,8 @@ class AsyncRunner:
         self._delta = 0.0
 
         period = self._get_period(self._last_state)
-        duration = self._get_corrected_interval(period)
+        self._get_corrected_interval(period)  # sets `_expected_time`
         self._last_interval = period * self.clock.beat_duration
-        self._expected_time = self.clock.time + duration
 
         print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 

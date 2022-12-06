@@ -434,7 +434,8 @@ class AsyncRunner:
         """
         interval = period * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
-            self.interval_shift = self.clock.get_beat_time(period) + self._delta
+            with self.time.scoped_shift(-self._delta):
+                self.interval_shift = self.clock.get_beat_time(period) - self._delta
 
         self._last_interval = interval
         self._can_correct_interval = False

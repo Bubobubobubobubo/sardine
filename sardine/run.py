@@ -1,6 +1,5 @@
 import importlib
 import sys
-from math import floor
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload

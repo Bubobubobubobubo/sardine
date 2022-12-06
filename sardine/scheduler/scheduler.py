@@ -113,3 +113,10 @@ class Scheduler(BaseHandler):
 
             if interval_correction:
                 runner.allow_interval_correction()
+
+    def setup(self):
+        self.register("stop")
+
+    def hook(self, event: str, *args):
+        if event == "stop":
+            self.reset()

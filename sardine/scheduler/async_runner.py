@@ -330,6 +330,8 @@ class AsyncRunner:
         will therefore allow interval correction to occur in case
         the period or tempo has changed.
         """
+        if not self.states:
+            return  # reset_states() was likely called
         last_state = self.states[-1]
         last_state.args = args
         last_state.kwargs = kwargs
@@ -649,5 +651,6 @@ class AsyncRunner:
         return reload_task in done
 
     def _revert_state(self):
-        self.states.pop()
+        if self.states:
+            self.states.pop()
         self._has_reverted = True

@@ -555,7 +555,7 @@ class AsyncRunner:
         elif state is None:
             # Nothing to do until the next deferred state arrives
             deadline = self.deferred_states[0].deadline
-            duration = self.clock.time - deadline
+            duration = deadline - self.clock.time
             interrupted = await self._sleep(duration)
             self.swim()
             return

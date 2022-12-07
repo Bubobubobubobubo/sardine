@@ -1,0 +1,11 @@
+body {
+  font-family: Linux Libertine O;
+  padding: 3em;
+  max-width: 60em;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+}

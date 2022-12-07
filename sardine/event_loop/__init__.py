@@ -65,8 +65,7 @@ def install_policy():
 
     if not successful:
         rich.print(
-            "[yellow]No custom event loop applied; "
-            "rhythm accuracy may be impacted"
+            "[yellow]No custom event loop applied; rhythm accuracy may be impacted"
         )
 
 

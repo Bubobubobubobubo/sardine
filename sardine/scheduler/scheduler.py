@@ -88,6 +88,7 @@ class Scheduler(BaseHandler):
         # We don't set `runner.scheduler = None` because it might
         # break the background task in the process
         runner.stop()
+        runner.reload()
 
         if reset_states:
             runner.reset_states()

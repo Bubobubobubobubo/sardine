@@ -503,7 +503,14 @@ class AsyncRunner:
 
         try:
             while self._is_ready_for_iteration():
-                await self._run_once()
+                try:
+                    await self._run_once()
+                except Exception as exc:
+                    print(f"[red][Function exception | ({self.name})]")
+                    traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+                    self._revert_state()
+                    self.swim()
         finally:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
@@ -518,19 +525,11 @@ class AsyncRunner:
             self._last_state = state
             signature = inspect.signature(state.func)
 
-            try:
-                _assert_function_signature(signature, state.args, state.kwargs)
-                args = state.args
-                # Prevent any TypeErrors when the user reduces the signature
-                kwargs = _discard_kwargs(signature, state.kwargs)
-                period = _extract_new_period(signature, state.kwargs)
-            except (TypeError, ValueError) as exc:
-                print(f"[red][Bad function definition ({self.name})]")
-                traceback.print_exception(type(exc), exc, exc.__traceback__)
-
-                self._revert_state()
-                self.swim()
-                return
+            _assert_function_signature(signature, state.args, state.kwargs)
+            args = state.args
+            # Prevent any TypeErrors when the user reduces the signature
+            kwargs = _discard_kwargs(signature, state.kwargs)
+            period = _extract_new_period(signature, state.kwargs)
 
             self._correct_interval(period)
             duration = self._get_corrected_interval(period)
@@ -581,15 +580,9 @@ class AsyncRunner:
                 self._call_func(state.func, args, kwargs),
                 name=f"asyncrunner-func-{self.name}",
             )
-        except Exception as exc:
-            print(f"[red][Function exception | ({self.name})]")
-            traceback.print_exception(type(exc), exc, exc.__traceback__)
-
-            self._revert_state()
-            self.swim()
-
-        self._delta = self.clock.time - self._expected_time
-        self._check_snap()
+        finally:
+            self._delta = self.clock.time - self._expected_time
+            self._check_snap()
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift

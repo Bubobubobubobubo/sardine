@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>Sardine: a Modular Python Live Coding Environment</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="css/iclc.css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title">Sardine: a Modular Python Live Coding Environment</h1>
+<ul id="authorlist">
+<li>true</li>
+</ul>
+</div>
+
+<h2 class="abstract">Abstract</h2>
+<div id="abstract">
+<p>Sardine is a live coding environment and library for Python 3.10+
+focusing on the modularity and extensibility of its base components
+(clocks, parser, <em>handlers</em>). Sardine has been designed to be
+easily integrated with existing <em>live-coding</em> environments as
+both a tool for experimentation and demonstration of various live coding
+techniques : temporal recursion, patterning, integration in various
+hardware and software setups. Although the tool is still in active
+development, it has already been used in multiple performances and
+algoraves. This paper is dedicated to the introduction of the
+<strong>Sardine</strong> system and the explanation of the main
+guidelines currently followed by contributors to the project. It will
+also present the preliminary results of our work through practical
+realizations that served as objectives and experimental validations for
+the first stages of development.</p>
+</div>
+
+<h1 data-number="1" id="introduction"><span
+class="header-section-number">1</span> Introduction</h1>
+<p>The Python language, with its large collection of libraries and
+modules, makes for a suitable environment for implementing a live coding
+library. The popularity of Python ensures good user support and many
+options for customization and integration into different text editors
+and running environments. The possibility to enjoy a powerful ecosystem
+of libraries focused on input/output, network communication or data
+processing makes it a prime target for the implementation of a library
+focused on experimentation in digital interactive media. Moreover,
+thanks to its lightweight syntax, Python can be read by programmers
+coming from different domains with a minimal adaptation time, making it
+a great platform for sharing information, collaborating and
+demonstrating the implementation of a given feature.</p>
+<p><strong>Sardine</strong> is born out of a curiosity for similar
+Python-based live-coding libraries such as <a
+href="https://foxdot.org">FoxDot</a>, <a
+href="https://github.com/ideoforms/isobar">Isobar</a> or the more recent
+<a href="https://github.com/tidalcycles/vortex">TidalVortex</a>. It is
+also best described as an attempt to re-create and bring the concept of
+temporal recursion and TidalCycles patterning to Python.</p>
+<h1 data-number="2"
+id="methodology-and-objectives-a-framework-for-exploring-live-coding-in-python"><span
+class="header-section-number">2</span> Methodology and objectives: a
+framework for exploring live-coding in Python</h1>
+<h1 data-number="3" id="sardine-implementation"><span
+class="header-section-number">3</span> Sardine implementation</h1>
+<p><strong>Sardine</strong> is implemented and distributed as two Python
+modules: <strong>Fishery</strong> and <strong>Sardine</strong>.</p>
+<h2 data-number="3.1" id="clock-and-scheduling-system"><span
+class="header-section-number">3.1</span> Clock and Scheduling
+System</h2>
+<h2 data-number="3.2" id="sardine-pattern-language"><span
+class="header-section-number">3.2</span> Sardine Pattern Language</h2>
+<p>A small patterning language has been developed for
+<strong>Sardine</strong> using the <a
+href="https://github.com/lark-parser/lark">Lark</a> parsing toolkit.
+Defined as a LALR parser, the syntax of the language is best described
+as a list-based calculator capable of dealing with basic MIDI note
+definition, custom chance operators and other composition tools.</p>
+<h2 data-number="3.3" id="players-and-handlers"><span
+class="header-section-number">3.3</span> Players and Handlers</h2>
+<p>Description of the event based system. How to define an handler, what
+is an hadler, etc…</p>
+<p>Demo of the <strong>SuperDirt</strong> handler, etc…</p>
+<h1 data-number="4" id="sardine-usage"><span
+class="header-section-number">4</span> Sardine usage</h1>
+<p>Basic facts about the usage of Sardine in various text editing
+environments + how to install and handle a Sardine installation.</p>
+<h2 data-number="4.1" id="algorave-and-performance"><span
+class="header-section-number">4.1</span> Algorave and performance</h2>
+<p>Zorba, Lorient, example code taken from performances.</p>
+<h2 data-number="4.2" id="controlling-legacy-midi-synthesizers"><span
+class="header-section-number">4.2</span> Controlling Legacy MIDI
+Synthesizers</h2>
+<p>Rémi Georges usage of Sardine: controlling legacy synthesizers along
+with TidalCycles, etc…</p>
+<h2 data-number="4.3" id="usage-of-sardine-at-the-iil-laboratory"><span
+class="header-section-number">4.3</span> Usage of Sardine at the IIL
+Laboratory</h2>
+<p>Projects involving the Magnetic Resonator Piano, Boids, etc…</p>
+<h1 data-number="5" id="project-directions"><span
+class="header-section-number">5</span> Project directions</h1>
+<h2 data-number="5.1" id="packaging-and-distribution"><span
+class="header-section-number">5.1</span> Packaging and distribution</h2>
+<p>Distribution and release for Python 3.11 with updated C++
+dependencies whenever possible. Distribution on Pypi when it’ll be bug
+free, etc…</p>
+<h2 data-number="5.2" id="opening-up-for-collaboration"><span
+class="header-section-number">5.2</span> Opening up for
+collaboration</h2>
+<p>Documenting, section about the website and integration of the
+Sardinopedia.</p>
+<h2 data-number="5.3" id="creation-and-performance"><span
+class="header-section-number">5.3</span> Creation and performance</h2>
+<h1 data-number="6" id="conclusion"><span
+class="header-section-number">6</span> Conclusion</h1>
+<p>Call for contributors, etc…</p>
+<h1 data-number="7" id="acknowledgments"><span
+class="header-section-number">7</span> Acknowledgments</h1>
+<p>I warmly thank my thesis supervisors Laurent Pottier and Alain
+Bonardi for their support and advice in the creation of this tool. I
+thank the doctoral school <em>3LA</em> from the University of Lyon for
+the funding it provided to this research. I extend my thanks to the
+musicians and friends who allowed me to take <strong>Sardine</strong> on
+stage and to present it to a wider audience these few last months: the
+<strong>Cookie Collective</strong>, Rémi Georges, etc…</p>
+<p>Welcome to the markdown (aka commonmark) template for the
+International Conference on Live Coding 2023.</p>
+<p>This document is a guide to using markdown for the conference, and is
+itself written in markdown. For full understanding, refer to
+iclc2023.txt to see the source of this document, and iclc2023.pdf to see
+the typeset output. Use of this template is currently only recommended
+for those familiar with commandline tools.</p>
+<p>We suggest you take a copy of this template (iclc2023.txt), and use
+it as a starting point for your ICLC paper.</p>
+<p>Preparing your submission using markdown will enable us to make
+proceedings available both in PDF files suitable for print, and in HTML
+suitable for the web. This is useful for making sure your paper is fully
+accessible, via Internet search, and with assistive technology such as
+screen readers for blind people. We recommend taking a straightforward
+approach to formatting your document.</p>
+<p>If you do not wish to use markdown, please do not be discouraged from
+submitting your paper. There is also a word document template available
+from the conference website.</p>
+<h1 data-number="8" id="learning-and-using-markdown"><span
+class="header-section-number">8</span> Learning and using markdown</h1>
+<p>We are happy to answer any questions you have about markdown in
+connection with your conference submission.</p>
+<p>If you have questions, you can email us directly: <a
+href="mailto:iclc@creativecodingutrecht.nl">iclc@creativecodingutrecht.nl</a></p>
+<h2 data-number="8.1" id="pandoc"><span
+class="header-section-number">8.1</span> Running pandoc</h2>
+<p>Pandoc is software which turns text written in markdown into a
+beautiful looking document, complete with references. You will need to
+run it to create PDF documents of your paper for checking and uploading
+for peer review.</p>
+<p>You may download pandoc for all major operating systems (including MS
+Windows, Apple Mac OS and GNU/Linux) from the following website: <a
+href="http://pandoc.org">http://pandoc.org</a></p>
+<p>As an alternative to the above downloads, on OS X only, the homebrew
+package manager can be used to install pandoc: <a
+href="http://brew.sh/">http://brew.sh/</a></p>
+<p>If you use homebrew to install on OS X you will need to install the
+pandoc package as follows:</p>
+<pre><code>brew update
+brew install pandoc</code></pre>
+<p>To produce PDF files you will need to have LaTeX installed, as well
+as pandoc. See the pandoc website for installation instructions: <a
+href="http://pandoc.org/installing.html">http://pandoc.org/installing.html</a>.
+LaTeX is used internally, you will not have to edit any LaTeX
+documents.</p>
+<p>To render your markdown source as HTML, open a terminal window,
+change into the folder where the template is and run the following
+command:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="at">--template</span><span class="op">=</span>pandoc/iclc.html <span class="at">--citeproc</span> <span class="at">--number-sections</span> iclc2023.md <span class="at">-o</span> iclc2023.html</span></code></pre></div>
+<p>To produce a PDF document, make sure you have LaTeX installed (see
+above), and run the following:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="at">--template</span><span class="op">=</span>pandoc/iclc.latex <span class="at">--citeproc</span> <span class="at">--number-sections</span> iclc2023.md <span class="at">-o</span> iclc2023.pdf</span></code></pre></div>
+<p>For a higher quality output, add the option
+<code>--latex-engine=xelatex</code> to the above. You will need the <a
+href="http://levien.com/type/myfonts/inconsolata.html">Inconsolata</a>
+and <a
+href="http://www.linuxlibertine.org/index.php?id=91&amp;L=1">Linux
+Libertine</a> opentype fonts installed.</p>
+<p>An example Makefile is also provided to run these commands for you.
+If you have <em>make</em> installed, you can use it to build the pdf
+files.</p>
+<h2 data-number="8.2" id="bibliographic-references"><span
+class="header-section-number">8.2</span> Bibliographic references</h2>
+<p>Pandoc accepts bibliographic databases in a range of formats, so make
+sure you have the right extension on your file.</p>
+<table>
+<caption>Supported bibliography formats with file extension.</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Format</th>
+<th>File extension</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">MODS</td>
+<td>.mods</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">BibLaTeX</td>
+<td>.bib</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BibTeX</td>
+<td>.bibtex</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RIS</td>
+<td>.ris</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">EndNote</td>
+<td>.enl</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">EndNote XML</td>
+<td>.xml</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ISI</td>
+<td>.wos</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MEDLINE</td>
+<td>.medline</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Copac</td>
+<td>.copac</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">JSON citeproc</td>
+<td>.json</td>
+</tr>
+</tbody>
+</table>
+<p>Authors may be referenced in two ways; inline, e.g. <span
+class="citation" data-cites="Schwitters32">Schwitters (1932)</span>
+wrote the Ursonate sound poem, or in parenthesis, e.g. Ursonate is a
+sound poem <span class="citation" data-cites="Schwitters32">(Schwitters
+1932)</span>. Multiple references should be grouped together like so
+<span class="citation"
+data-cites="Schwitters32 Miller56 Greenewalt46">(Schwitters 1932; Miller
+1956; Greenewalt 1946)</span>.</p>
+<p>The pandoc command given in the <a href="#pandoc">above section</a>
+will automatically render your references according to Chicago
+author-date style.</p>
+<p>At the head of the markdown source file for this template, you will
+see an entry for “bibliography” that points to the file references.bib.
+Here you’ll find examples of bibliography entries in BibLaTex format,
+including examples for articles, books, book chapters and items from
+conference proceedings.</p>
+<h2 data-number="8.3" id="code"><span
+class="header-section-number">8.3</span> Code</h2>
+<p>We have chosen a single column layout to better support code examples
+without having to break lines. The following shows how to include a code
+example with syntax highlighting:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d1 <span class="op">$</span> every <span class="dv">3</span> (iter <span class="dv">4</span>) <span class="op">$</span> brak <span class="op">$</span> <span class="st">&quot;bd [sn [[sn bd] sn]]*1/3&quot;</span></span></code></pre></div>
+<p>For more information please visit this page:
+[https://hackage.haskell.org/package/skylighting]</p>
+<h2 data-number="8.4" id="figures"><span
+class="header-section-number">8.4</span> Figures</h2>
+<p>Images should be included as figures, with captions provided and
+formatted as shown in Figure 1. Be prepared for the page layout and
+image size to be changed during the editing and layout process, and
+consider this when referring to the figures in the text.</p>
+<figure>
+<img src="images/pomeroy.jpg"
+alt="A descriptive caption should be given for all figures, understandable without reference to the rest of the article." />
+<figcaption aria-hidden="true"><em>A descriptive caption should be given
+for all figures, understandable without reference to the rest of the
+article.</em></figcaption>
+</figure>
+<h1 data-number="9" id="conclusion-1"><span
+class="header-section-number">9</span> Conclusion</h1>
+<p>We look forward to receiving your completed papers. Submission is
+through the online peer review system at
+https://iclc2023.creativecodingutrecht.nl/openconf.php only. Do not send
+papers directly by e-mail. In all cases, please submit a PDF version of
+your paper for peer review. At a later stage in preparing the
+proceedings, we may ask for the markdown or Word versions of your
+paper.</p>
+<h2 data-number="9.1" id="acknowledgments-1"><span
+class="header-section-number">9.1</span> Acknowledgments</h2>
+<p>At the end of the Conclusions, acknowledgements to people, projects,
+funding agencies, etc. can be included after the second-level heading
+“Acknowledgments”.</p>
+<h1 class="unnumbered" id="references">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent"
+role="doc-bibliography">
+<div id="ref-Greenewalt46" class="csl-entry" role="doc-biblioentry">
+Greenewalt, Mary H. 1946. <em>Nourathar, the Fine Art of Light Color
+Playing</em>. Philadelphia. Pa. Westbrook.
+</div>
+<div id="ref-Miller56" class="csl-entry" role="doc-biblioentry">
+Miller, G. A. 1956. <span>“The Magical Number Seven Plus or Minus Two:
+Some Limits on Our Capacity for Processing Information.”</span>
+<em>Psychological Review</em> 63 (2): 81–97.
+</div>
+<div id="ref-Schwitters32" class="csl-entry" role="doc-biblioentry">
+Schwitters, Kurt. 1932. <span>“Ursonate.”</span> <em>Merz</em> 24.
+</div>
+</div>
+</body>
+</html>

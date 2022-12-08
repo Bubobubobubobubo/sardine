@@ -1,7 +1,8 @@
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Union
+
 from appdirs import *
 from rich import print
 
@@ -21,11 +22,12 @@ TEMPLATE_CONFIGURATION = {
         "midi": None,
         "bpm": 125,
         "beats": 4,
-        "ppqn": 48,
         "parameters": [],
-        "boot_superdirt": True,
+        "superdirt_handler": True,
+        "boot_supercollider": False,
+        "sardine_boot_file": True,
         "verbose_superdirt": False,
-        "active_clock": True,
+        "link_clock": False,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "deferred_scheduling": True,
@@ -48,13 +50,14 @@ class Config:
     midi: Union[str, None]
     beats: int
     parameters: list
-    ppqn: int
     bpm: int
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
-    boot_superdirt: bool
-    active_clock: bool
+    boot_supercollider: bool
+    superdirt_handler: bool
+    sardine_boot_file: bool
+    link_clock: bool
     deferred_scheduling: bool
 
     @classmethod
@@ -64,11 +67,12 @@ class Config:
             midi=config["midi"],
             beats=config["beats"],
             parameters=config["parameters"],
-            ppqn=config["ppqn"],
             bpm=config["bpm"],
-            boot_superdirt=config["boot_superdirt"],
+            superdirt_handler=config["superdirt_handler"],
+            boot_supercollider=config["boot_supercollider"],
+            sardine_boot_file=config["sardine_boot_file"],
             verbose_superdirt=config["verbose_superdirt"],
-            active_clock=config["active_clock"],
+            link_clock=config["link_clock"],
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
             deferred_scheduling=config["deferred_scheduling"],
@@ -80,12 +84,13 @@ class Config:
                 "midi": self.midi,
                 "beats": self.beats,
                 "parameters": self.parameters,
-                "ppqn": self.ppqn,
                 "bpm": self.bpm,
-                "boot_superdirt": self.boot_superdirt,
+                "superdirt_handler": self.superdirt_handler,
+                "boot_supercollider": self.boot_supercollider,
+                "sardine_boot_file": self.sardine_boot_file,
                 "verbose_superdirt": self.verbose_superdirt,
                 "superdirt_config_path": self.superdirt_config_path,
-                "active_clock": self.active_clock,
+                "link_clock": self.link_clock,
                 "user_config_path": self.user_config_path,
                 "deferred_scheduling": self.deferred_scheduling,
             }

@@ -143,6 +143,7 @@ In addition to that, take note of the `play()` method used for assigning a **Sen
 * `play(*args, **kwargs)`: the default **SuperDirt** (or **S**) Sender.
 * `play_midi(*args, **kwargs)`: the default **MIDI** (or **M**) Sender.
 * `play_osc(*args, **kwargs)`: the default **OSC** (or **O**) Sender.
+* `run(func: Callable)`: run any function like if it was a surfboard!
 
 I repeat, these functions are basically senders with a different name! You will have to learn how to use **Senders** to be truly efficient with the surfing mode. You can spend your life using **Sardine** this way or combine it with *swimming functions*, this is entirely up to you! This mode was initially designed in order to demonstrate the syntax of [FoxDot](https://foxdot.org). I find it to be a fun and efficient way to jam along with friends as well :) You can just fire up a **Sardine** session and write pretty fast.
 

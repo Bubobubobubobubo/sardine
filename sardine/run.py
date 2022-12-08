@@ -69,6 +69,7 @@ osc_loop_obj = OSCLoop()
 #     ahead_amount=0.0,
 #     loop=my_osc_loop,
 # )
+# Ocustom = my_osc_connexion.send
 
 # # OSC Listener Handler: dummy OSCIn handler, used for test purposes
 # my_osc_listener = OSCInHandler(
@@ -79,10 +80,8 @@ osc_loop_obj = OSCLoop()
 if config.superdirt_handler:
     dirt = SuperDirtHandler(loop=osc_loop_obj)
 
-if osc_loop_obj.children:
-    bowl.add_handler(osc_loop_obj)
-else:
-    del osc_loop_obj
+# NOTE: always keep this loop running for user-made OSC handlers
+bowl.add_handler(osc_loop_obj)
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]

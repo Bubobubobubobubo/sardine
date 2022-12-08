@@ -58,8 +58,8 @@ if config.boot_supercollider:
 midi = MidiHandler(port_name=str(config.midi))
 bowl.add_handler(midi)
 
-# OSC Loop: dummy OSC loop, mostly used for test purposes
-my_osc_loop = OSCLoop()
+# OSC Loop: handles processing OSC messages
+osc_loop_obj = OSCLoop()
 
 # # OSC Handler: dummy OSC handler, mostly used for test purposes
 # my_osc_connexion = OSCHandler(
@@ -77,9 +77,12 @@ my_osc_loop = OSCLoop()
 
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
-    dirt = SuperDirtHandler(loop=my_osc_loop)
+    dirt = SuperDirtHandler(loop=osc_loop_obj)
 
-bowl.add_handler(my_osc_loop)
+if osc_loop_obj.children:
+    bowl.add_handler(osc_loop_obj)
+else:
+    del osc_loop_obj
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]

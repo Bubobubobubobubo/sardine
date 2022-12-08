@@ -489,15 +489,11 @@ class AsyncRunner:
     # Runner loop
 
     async def _runner(self):
-        # Prepare to swim
-        self._last_state = self._get_state()
-        self._swimming = True
-        self._stop = False
-        self._delta = 0.0
-
-        period = self._get_period(self._last_state)
-        self._get_corrected_interval(period)  # sets `_expected_time`
-        self._last_interval = period * self.clock.beat_duration
+        try:
+            self._prepare()
+        except Exception as exc:
+            self._revert_state()
+            raise exc
 
         print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
@@ -513,6 +509,16 @@ class AsyncRunner:
                     self.swim()
         finally:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
+
+    def _prepare(self):
+        self._last_state = self._get_state()
+        self._swimming = True
+        self._stop = False
+        self._delta = 0.0
+
+        period = self._get_period(self._last_state)
+        self._get_corrected_interval(period)  # sets `_expected_time`
+        self._last_interval = period * self.clock.beat_duration
 
     async def _run_once(self):
         self._swimming = False

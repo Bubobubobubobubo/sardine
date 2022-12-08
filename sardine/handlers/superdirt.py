@@ -6,6 +6,7 @@ from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from ..utils import alias_param
+from .osc_loop import OSCLoop
 from .sender import Number, NumericElement, ParsableElement, Sender, StringElement
 
 __all__ = ("SuperDirtHandler",)
@@ -14,11 +15,15 @@ __all__ = ("SuperDirtHandler",)
 class SuperDirtHandler(Sender):
     def __init__(
         self,
+        *,
+        loop: OSCLoop,
         name: str = "SuperDirt",
         ahead_amount: float = 0.3,
     ):
         super().__init__()
         self._name = name
+        self.loop = loop
+        loop.add_child(self)
 
         # Opening a new OSC Client to talk with it
         self._osc_client = osc_udp_client(

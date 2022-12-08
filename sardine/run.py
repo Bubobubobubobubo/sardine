@@ -75,6 +75,10 @@ my_osc_listener = OSCInHandler(
     ip="127.0.0.1", port=33333, name="OSC-In test", loop=my_osc_loop
 )
 
+# SuperDirt Handler: conditional
+if config.superdirt_handler:
+    dirt = SuperDirtHandler(loop=my_osc_loop)
+
 bowl.add_handler(my_osc_loop)
 
 # Adding Players
@@ -83,11 +87,6 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
-
-# SuperDirt Handler: conditionnally
-if config.superdirt_handler:
-    dirt = SuperDirtHandler()
-    bowl.add_handler(dirt)
 
 
 @overload

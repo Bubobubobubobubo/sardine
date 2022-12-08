@@ -336,7 +336,6 @@ P = Pat  # Generic pattern interface
 N = midi.send  # For sending MIDI Notes
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
-Ocustom = my_osc_connexion.send
 play = Player.play
 
 

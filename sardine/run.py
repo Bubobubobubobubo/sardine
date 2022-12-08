@@ -61,19 +61,19 @@ bowl.add_handler(midi)
 # OSC Loop: dummy OSC loop, mostly used for test purposes
 my_osc_loop = OSCLoop()
 
-# OSC Handler: dummy OSC handler, mostly used for test purposes
-my_osc_connexion = OSCHandler(
-    ip="127.0.0.1",
-    port=12345,
-    name="Custom OSC Connexion",
-    ahead_amount=0.0,
-    loop=my_osc_loop,
-)
+# # OSC Handler: dummy OSC handler, mostly used for test purposes
+# my_osc_connexion = OSCHandler(
+#     ip="127.0.0.1",
+#     port=12345,
+#     name="Custom OSC Connexion",
+#     ahead_amount=0.0,
+#     loop=my_osc_loop,
+# )
 
-# OSC Listener Handler: dummy OSCIn handler, used for test purposes
-my_osc_listener = OSCInHandler(
-    ip="127.0.0.1", port=33333, name="OSC-In test", loop=my_osc_loop
-)
+# # OSC Listener Handler: dummy OSCIn handler, used for test purposes
+# my_osc_listener = OSCInHandler(
+#     ip="127.0.0.1", port=33333, name="OSC-In test", loop=my_osc_loop
+# )
 
 # SuperDirt Handler: conditional
 if config.superdirt_handler:

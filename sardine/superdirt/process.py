@@ -136,7 +136,7 @@ class SuperDirtProcess:
                 where = self.temp_file.tell()
                 lines = self.temp_file.read()
                 if not lines:
-                    await asyncio.sleep(0.00)
+                    await asyncio.sleep(0.1)
                     self.temp_file.seek(where)
                 else:
                     if self._verbose:

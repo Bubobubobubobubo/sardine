@@ -13,6 +13,7 @@ from ..base import BaseClock
 from ..clock import Time
 from ..utils import MISSING
 from .constants import MaybeCoroFunc
+from .errors import *
 
 if TYPE_CHECKING:
     from ..fish_bowl import FishBowl
@@ -36,7 +37,7 @@ def _assert_function_signature(sig: inspect.Signature, args, kwargs):
             message += "; perhaps you meant `{}`?".format(
                 ", ".join(f"{k}={v!r}" for k, v in missing.items())
             )
-        raise TypeError(message)
+        raise BadArgumentError(message)
 
 
 def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -60,9 +61,9 @@ def _extract_new_period(
         period = getattr(param, "default", 1)
 
     if not isinstance(period, (float, int)):
-        raise TypeError(f"Period must be a float or integer, not {period!r}")
+        raise BadPeriodError(f"Period must be a float or integer, not {period!r}")
     elif period <= 0:
-        raise ValueError(f"Period must be >0, not {period}")
+        raise BadPeriodError(f"Period must be >0, not {period}")
 
     return period
 
@@ -277,9 +278,12 @@ class AsyncRunner:
             func (MaybeCoroFunc): The function to add.
             *args: The positional arguments being passed to `func`.
             **kwargs: The keyword arguments being passed to `func`.
+
+        Raises:
+            BadFunctionError: The value given for `func` must be callable.
         """
         if not callable(func):
-            raise TypeError(f"Expected a callable, got {func!r}")
+            raise BadFunctionError(f"Expected a callable, got {func!r}")
         elif not self.states:
             state = FunctionState(func, args, kwargs)
             return self.states.append(state)
@@ -310,9 +314,12 @@ class AsyncRunner:
             func (MaybeCoroFunc): The function to add.
             *args: The positional arguments being passed to `func`.
             **kwargs: The keyword arguments being passed to `func`.
+
+        Raises:
+            BadFunctionError: The value given for `func` must be callable.
         """
         if not callable(func):
-            raise TypeError(f"Expected a callable, got {func!r}")
+            raise BadFunctionError(f"Expected a callable, got {func!r}")
 
         if not self.deferred_states:
             self._deferred_state_index = 0

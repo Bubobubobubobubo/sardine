@@ -441,35 +441,86 @@ function</em> is helpful to allow newcomers to get a grasp on the
 temporal model offered by the system. The FoxDot’s inspired
 <em>surfboard</em> mechanism is currently the only abstraction available
 demonstrating this principle. It automatically handles its own
-scheduling logic and also provides iterators needed by the
-<em>Senders</em> that we will detail later on:</p>
+scheduling logic and provides its own iterators needed by the default
+parser. It also provides additional musical logic without the need of
+altering the base scheduling logic, thus adding a completely new – and
+optional – flavour of patterning/scheduling for Sardine users. Following
+this model, Sardine future versions are likely to include user-based
+modes of playing built upon the basic abstractions provided by the
+library.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Pa <span class="op">&gt;&gt;</span> d(<span class="st">&#39;bd, hh, cp, hh&#39;</span>, p<span class="op">=</span><span class="fl">0.5</span>) <span class="co"># Terser version of the above swimming function</span></span></code></pre></div>
-<h3 data-number="3.1.3" id="central-dispatch-environment"><span
-class="header-section-number">3.1.3</span> Central dispatch
-environment</h3>
-<p>Every component of the system can talk or access the data held by any
-other component through the central <em>‘FishBowl’</em> mechanism. The
-environment has been implemented as a message dispatcher allowing each
-component to subscribe to it throuh <em>hooks</em> and making each
-component capable of answering to <code>dispatch</code> messages (such
-as <code>bowl.dispatch('stop')</code> for stopping the clock). Some
-components are to be considered as hard dependencies, such as the
-<code>clock</code> and the <code>parser</code> as they provide the basic
-mechanisms needed by every other modular component to properly function.
-Every other can just take advantage of the central environment to
-provide additional features or logic (such as a midi output, an osc
-input, or any other user-defined construct).</p>
-<h2 data-number="3.2" id="sardine-pattern-language"><span
-class="header-section-number">3.2</span> Sardine Pattern Language</h2>
+<h2 data-number="3.2" id="environment-dispatch-and-handlers"><span
+class="header-section-number">3.2</span> Environment, dispatch and
+handlers</h2>
+<h3 data-number="3.2.1" id="the-fishbowl"><span
+class="header-section-number">3.2.1</span> The FishBowl</h3>
+<p>The only core component of Sardine left to introduce is the central
+environment organising a session, labelled the <em>‘FishBowl’</em>.
+Every component of the system can talk or access the data held by any
+other component through a unique central mechanism. The
+<em>‘FishBowl’</em> environment has been implemented as a message
+dispatcher allowing each component to subscribe to it throuh
+<em>hooks</em> and making each component capable of answering to
+<code>dispatch</code> messages. The <code>bowl.dispatch('stop')</code>
+message is an example of an important message – stopping the clock –
+asking for the collaboration and immediate response of multiple
+components. Naturally, some components are more important than others
+and can thus be considered as <em>hard</em> dependencies. Other
+<em>soft</em> dependencies, mainly the various <em>I/O</em> handlers
+available, can be added and removed from the environment/session at any
+point in time. The <code>clock</code> and the <code>parser</code> are
+two <em>hard</em> dependencies that cannot be removed but can be
+swapped. They provide the basic mechanisms needed by every other modular
+component to properly function. The fluidity of the <em>FishBowl</em>
+mechanism allows for the addition and removal of modular logic to any
+Sardine system, capable of answering to any message currently being
+dispatched to neighbor components. One can switch from the
+<code>internal</code> to the <code>link</code> clock <em>on-the-fly</em>
+if needed to synchronise with other players, or add a new OSC receiver.
+The parser can also be switched, even though the current version of
+Sardine does not feature multiple parsers.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>bowl <span class="op">=</span> FishBowl(clock<span class="op">=</span>clock(tempo<span class="op">=</span>config.bpm, bpb<span class="op">=</span>config.beats)) <span class="co"># declaring the bowl</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>midi <span class="op">=</span> MidiHandler(port_name<span class="op">=</span><span class="bu">str</span>(config.midi))                   <span class="co"># instance of new component</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>bowl.add_handler(midi)                                           <span class="co"># adding to the environment</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> midi.send                                                    <span class="co"># aliasing for playability</span></span></code></pre></div>
+<h3 data-number="3.2.2" id="component-example-the-midi-sender"><span
+class="header-section-number">3.2.2</span> Component example: the MIDI
+sender</h3>
+<p>In the preceding figure, a MIDI handler was added to the
+<em>‘FishBowl’</em>, thus giving access to a new MIDI output.
+<em>Senders</em> are one example of a Sardine modular components needing
+the collaboration of multiple parts of the system to function properly.
+The <code>M</code> (<code>midi.send</code>) function serves as the
+central output for this component. It represents the only function that
+the user will be playing with during a session. It needs, to operate
+efficiently, an access to the <code>parser</code> for patterning and
+composing a valid message, to the <code>clock</code> for sending its
+message in musical time and to the <code>SleepHandler</code> to
+precisely time calls between a ‘note on’ and ‘note off’ message. By
+declaring itself to the environment, it gained access to these much
+needed features that will be accessed transparenlty without having to
+deal with the innermost lower-level logic. By consequence, user
+interaction can be carefully implemented through one minimal function
+only, letting the system handle the hard and slightly convoluted
+asynchronous scheduling calls take place in the background.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># basic MIDI note scheduling (duration handled by `bowl.SleepHandler`)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="dv">60</span>, velocity<span class="op">=</span><span class="dv">100</span>, channel<span class="op">=</span><span class="dv">0</span>, dur<span class="op">=</span><span class="fl">0.25</span>)                        </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># patterning a similar call with added component specific logic (strings parsed by `bowl.parser`)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="st">&#39;C@penta, C&#39;&#39;, G3&#39;</span>, velocity<span class="op">=</span><span class="st">&#39;80~100&#39;</span>, channel<span class="op">=</span><span class="st">&#39;[0:10]&#39;</span>, i<span class="op">=</span>i, r<span class="op">=</span><span class="dv">2</span>) </span></code></pre></div>
+<h2 data-number="3.3" id="sardine-pattern-language"><span
+class="header-section-number">3.3</span> Sardine Pattern Language</h2>
 <p>A small patterning language has been developed for
 <strong>Sardine</strong> using the <a
 href="https://github.com/lark-parser/lark">Lark</a> parsing toolkit.
 Defined as a LALR parser, the syntax of the language is best described
 as a list-based calculator capable of dealing with basic MIDI note
 definition, custom chance operators and other composition tools.</p>
-<h2 data-number="3.3" id="players-and-handlers"><span
-class="header-section-number">3.3</span> Players and Handlers</h2>
+<h2 data-number="3.4" id="players-and-handlers"><span
+class="header-section-number">3.4</span> Players and Handlers</h2>
 <p>Description of the event based system. How to define an handler, what
 is an hadler, etc…</p>
 <p>Demo of the <strong>SuperDirt</strong> handler, etc…</p>
@@ -477,13 +528,6 @@ is an hadler, etc…</p>
 class="header-section-number">4</span> Sardine usage</h1>
 <p>Basic facts about the usage of Sardine in various text editing
 environments + how to install and handle a Sardine installation.</p>
-<figure>
-<img src="images/sardine_and_config_tool.png"
-alt="On the left pane, Sardine being imported through fishery*. On the right, the sardine-config configuration client." />
-<figcaption aria-hidden="true"><em>On the left pane, Sardine being
-imported through </em>fishery*. On the right, the
-<code>sardine-config</code> configuration client.</figcaption>
-</figure>
 <h2 data-number="4.1" id="algorave-and-performance"><span
 class="header-section-number">4.1</span> Algorave and performance</h2>
 <p>Zorba, Lorient, example code taken from performances.</p>

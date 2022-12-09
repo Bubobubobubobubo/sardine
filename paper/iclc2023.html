@@ -6,72 +6,10 @@
   <meta name="generator" content="pandoc" />
   <title>Sardine: a Modular Python Live Coding Environment</title>
   <style type="text/css">code{white-space: pre;}</style>
-  <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-  </style>
   <link rel="stylesheet" href="css/iclc.css" />
+  
+  
+  
 </head>
 <body>
 <div id="header">
@@ -89,48 +27,266 @@ focusing on the modularity and extensibility of its base components
 easily integrated with existing <em>live-coding</em> environments as
 both a tool for experimentation and demonstration of various live coding
 techniques : temporal recursion, patterning, integration in various
-hardware and software setups. Although the tool is still in active
-development, it has already been used in multiple performances and
-algoraves. This paper is dedicated to the introduction of the
+hardware and software setups. Although the tool is still in active early
+development, it has already been used in multiple public performances
+and algoraves. This paper is dedicated to the introduction of the
 <strong>Sardine</strong> system and the explanation of the main
 guidelines currently followed by contributors to the project. It will
 also present the preliminary results of our work through practical
-realizations that served as objectives and experimental validations for
-the first stages of development.</p>
+realizations that served as experimental validations during the early
+stages of development. Sardine already supports MIDI IN/Out, OSC IN/Out
+and <em>SuperCollider</em>/<em>SuperDirt</em> one-way communication
+through OSC.</p>
 </div>
 
+<figure>
+<img src="images/sardine_intro_picture.png"
+alt="Sardine first algorave in Lorient (France), 2022, October 13th. Photography: Guillaume Kerjean." />
+<figcaption aria-hidden="true"><em>Sardine first algorave in Lorient
+(France), 2022, October 13th. Photography: Guillaume
+Kerjean.</em></figcaption>
+</figure>
 <h1 data-number="1" id="introduction"><span
 class="header-section-number">1</span> Introduction</h1>
-<p>The Python language, with its large collection of libraries and
-modules, makes for a suitable environment for implementing a live coding
-library. The popularity of Python ensures good user support and many
-options for customization and integration into different text editors
-and running environments. The possibility to enjoy a powerful ecosystem
-of libraries focused on input/output, network communication or data
-processing makes it a prime target for the implementation of a library
-focused on experimentation in digital interactive media. Moreover,
-thanks to its lightweight syntax, Python can be read by programmers
-coming from different domains with a minimal adaptation time, making it
-a great platform for sharing information, collaborating and
-demonstrating the implementation of a given feature.</p>
-<p><strong>Sardine</strong> is born out of a curiosity for similar
-Python-based live-coding libraries such as <a
-href="https://foxdot.org">FoxDot</a>, <a
-href="https://github.com/ideoforms/isobar">Isobar</a> or the more recent
-<a href="https://github.com/tidalcycles/vortex">TidalVortex</a>. It is
-also best described as an attempt to re-create and bring the concept of
-temporal recursion and TidalCycles patterning to Python.</p>
+<p>Sardine is a live coding library based on Python 3.10+ focusing on
+modularity and extensibility of its base components. Despite still being
+in early alpha stage, Sardine is extensively documented on a <a
+href="https://sardine.raphaelforment.fr">dedicated website</a> providing
+guides, tutorials and media examples. Sardine provides three main
+features linked together by the <code>FishBowl</code>, an environment
+handling synchronisation and communication between them:</p>
+<ul>
+<li><p>a scheduling system based on asynchronous and recursive function
+calls, inspired by the concept of temporal recursion <span
+class="citation" data-cites="SorensenTemporal">(Sorensen 2013)</span>.
+Calls can be scheduled in musical time either on an
+<code>InternalClock</code> or a <code>LinkClock</code> based on the Link
+Protocol <span class="citation" data-cites="goltz2018ableton">(Goltz
+2018)</span>.</p></li>
+<li><p>a small and tidy number based pattern programming language with
+support for basic generative and musical syntax (MIDI notes, polyphony,
+etc…), time-based patterns (<em>clock</em> and <em>absolute</em> time),
+handling of symbolic names.</p></li>
+<li><p>a modular <em>handlers</em> system allowing the creation and/or
+removal of various I/O (<em>OSC</em>, <em>MIDI</em>) or base
+components.</p></li>
+</ul>
+<p>Sardine, by design, is in the direct lineage of previously released
+Python based libraries such as <a href="https://foxdot.org">FoxDot</a>
+<span class="citation" data-cites="kirkbride2016foxdot">(Kirkbride
+2016)</span>, <a href="https://github.com/ideoforms/isobar">Isobar</a>
+<span class="citation" data-cites="isobar">(Jones, n.d.)</span> or the
+very recent <a
+href="https://github.com/tidalcycles/vortex">TidalVortex</a> <span
+class="citation" data-cites="vortex">(McLean et al. 2022)</span>.
+Initially conceived as a demonstration tool, Sardine partially emulates
+some selected features from the previously mentioned libraries or from
+the dominant live-coding <em>dialects</em> such as the <a
+href="https://tidalcycles.org">TidalCycles</a> <span class="citation"
+data-cites="mclean2014making">(McLean 2014)</span> rhythmical
+mininotation or the <a href="https://sonic-pi.net/">Sonic Pi</a> <span
+class="citation" data-cites="aaron2016sonic">(Aaron 2016)</span>
+imperative writing syntax. Sardine is designed as a general
+<em>agnostic</em> framework for approaching live coding using Python.
+Thus, the library is aiming to support different writing paradigms and
+different approaches to live performance based on the manipulation of
+source code. The reliance on regular Python asynchronous functions for
+scheduling and music writing has for consequence that Sardine is
+particulary suited to let each developer-musician follow its own
+personal coding style, ensuring a blank slate for experimentation.
+Furthermore, Sardine design has been strongly influenced by Andrew Mc
+Pherson’s and Koray Tahiroğlu concerns about the <em>idiomatic
+patterns</em> <span class="citation"
+data-cites="mcpherson2020idiomatic">(McPherson and Tahıroğlu
+2020)</span> of usage enforced by computer music softwares, pushing
+users to repeat and strictly follow prefered patterns of usage.</p>
+<p>The version hereby presented, labelled as <code>0.2.0</code>, is
+offering a first-look into the complete intended design for the library.
+It features a near complete rewrite over the <code>0.1.0</code> version
+previously used by members of the french live coding scene and by the
+first global Sardine users. It features two clocks, one capable of
+network synchronisation, multiple handlers for MIDI, OSC and SuperDirt
+<em>input</em> and <em>output</em>, a robust asynchronous temporal
+recursive scheduling system and a reimagining of the <em>‘Player’</em>
+system previously introduced by FoxDot<span class="citation"
+data-cites="kirkbride2016foxdot">(Kirkbride 2016)</span>. Sardine
+originality lies in its temporal model, strongly anchored in Python’s
+default mechanisms for asynchronous programming – the
+<code>asyncio</code> library – offering a variant to other threaded
+musical clocks offered by past Python based live coding libraries. It
+also presents itself as an <em>agnostic</em> and minimal tool modular
+enough to be integrated into any live-coder tooling and setup, capable
+of handling very general MIDI, OSC or Python-based scheduling duties. As
+such, Sardine has been already successfully integrated in various
+laptop-based performance setups involving audio, video and hardware
+components.</p>
+<p>On the technical side, Sardine has been developed entirely using the
+Python programming language, with few libraries depending on C++ code
+through bindings to external libraries. Despite the known short-comings
+of Python for interpreted conversational real time programming
+(incomplete support of dynamic programming, slowness relative to other
+interpreted languages), we do believe that this language is suitable for
+the implementation of a live coding library. The large collection of
+available librairies and modules and the popularity of the language
+ensures the affordance of good tooling and rich customization and
+Sardine integration options into different text editors, running
+environments, etc… Sardine already takes advantage of a thorough
+ecosystem of libraries focused on data <em>input</em>/<em>output</em>,
+network communication and text manipulation. Moreover, thanks to its
+lightweight and clear syntax, Python can be read by programmers coming
+from different domains with a minimal adaptation time, making it a
+convenient platform for collaboration and experimentation over the
+implementation of bespoke features needed by performers.</p>
 <h1 data-number="2"
 id="methodology-and-objectives-a-framework-for-exploring-live-coding-in-python"><span
 class="header-section-number">2</span> Methodology and objectives: a
 framework for exploring live-coding in Python</h1>
+<p>Sardine is born out of a curiosity for the inner workings of
+similarly featured Python-based live-coding libraries such as <a
+href="https://foxdot.org">FoxDot</a>, <a
+href="https://github.com/ideoforms/isobar">Isobar</a> or the very recent
+<a href="https://github.com/tidalcycles/vortex">TidalVortex</a> <span
+class="citation" data-cites="vortex">(McLean et al. 2022)</span>. At it
+inception, the Sardine project was thought as an attempt to provide a
+functional but barebones live coding library for demonstration purposes
+in a dissertation manuscript; a library capable enough for showing the
+impact of design and implementation choices on the possibilities of
+musical expression and on the expressiveness offered by a live coding
+environment. Therefore, a particular attention has been given to
+reproducing or <em>at least</em> paving the way for the reproduction of
+different coding styles and representation of timed musical information.
+Base design has quickly evolved, after the first initial tests to
+increase the general modularity of the system. This has been done in
+order to easily support and maximise the <em>input</em>/<em>output</em>
+options handled by Sardine, allowing to quickly integrate it with other
+interfaces and live coding environments.</p>
+<p>The development of Sardine began initially in a period of
+collaboration and joint performances with the parisian <em>Cookie
+Collective</em> <span class="citation"
+data-cites="cookiewebsite">(Collective 2016)</span> and the Digital
+Audio Community from Lyon (<em>th4</em>, <em>ralt144MI</em>, etc..).
+Stemming from the <em>demoscene</em> and shader-coding scene, the
+<em>Cookie</em> is known for its complex multimedia performances, each
+member relying on bespoke hybrid audio-visual setups, ranging from low
+end computing devices to complex synthesizers and circuit-bended video
+mixers. The need to adapt and customize the live coding interfaces
+already in use to the needs of each performance and each artist gave
+rise to the idea of creating a modular interface that could be used and
+mastered by all the members of the collective, while allowing for
+jam-ready synchronisation with other musicians and live-coders. The
+splitting of Foxdot’s development into several competing branches
+reinforced the need for a customizable and easily editable Python
+interface by the community. Due to the open-ended nature of the
+development process, Sardine has been gradually shifting towards its
+current modular architecture, allowing each performer to refine the
+nature of the <em>inputs</em> and <em>outputs</em> controllable by the
+system, from simple MIDI note output to more convoluted custom Sysex
+messages support.</p>
 <h1 data-number="3" id="sardine-implementation"><span
 class="header-section-number">3</span> Sardine implementation</h1>
-<p><strong>Sardine</strong> is implemented and distributed as two Python
-modules: <strong>Fishery</strong> and <strong>Sardine</strong>.</p>
-<h2 data-number="3.1" id="clock-and-scheduling-system"><span
-class="header-section-number">3.1</span> Clock and Scheduling
+<p>Sardine is implemented and distributed as two complementary Python
+modules: <code>sardine</code> and <code>fishery</code>. They work hand
+in hand in a layered and coordinated fashion. <code>fishery</code>
+provides amendments to the default Python asynchronous REPL and
+constitutes the entry point for the Sardine system, accessible by typing
+<code>python -m fishery</code> right after install. <code>fishery</code>
+is nothing more but a slightly modified version of the base Python
+asynchronous REPL<a href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> shipped with Python 3.9+ versions.
+Importing it also imports <code>sardine</code> and will <em>de
+facto</em> starting a new playing session. The <em>SuperCollider</em>
+and <em>SuperDirt</em> (more on this later) boot process can also be
+handled directly by Sardine, that will then provide a basic but
+functional API to the SuperCollider <em>sclang</em> interpreter. As an
+helper for new users, a terminal based configuration client
+(<code>sardine-config</code>) is also provided and can be used to setup
+various options of the system before the start of a session.
+Configuration files are stored in a default standard location depending
+on the OS currently in use. This architecture, despite being slightly
+complex for non-initiated developers, is being used to make Sardine more
+accessible to novice users who may not be familiar with using the
+command line and Python development tools.</p>
+<p>Being packaged as a regular Python module, Sardine makes use of the
+<code>pyproject.toml</code> module configuration and packaging format
+defined by PEP 660. This has for advantages that no third party tool is
+currently required to install Sardine other than a base
+<em>complete</em> installation of a modern (3.10+) Python runtime.
+However, one must note that the package is not, at the time of writing,
+fully installable in the binary <em>‘wheels’</em> format generally
+favored by Python developers and users alike. This has to do with the
+problematic packaging of some C++ external dependencies used by Sardine
+to process various I/O processes. Future versions will hopefully be
+tighly packaged and served through the central ‘Pipy’ package
+distribution system. Most users will still have to install part of the
+compilation toolchain (<code>CMake</code> and any compatiblee C++
+compiler) to be able to manually compile these dependencies for the
+target system.</p>
+<p>Thanks to the generally great IDE support for Python,
+<em>Sardine</em> is not shipping with its own text-editor. It preferably
+relies on third-party tools such as <em>Atom</em>, <em>VSCode</em>,
+<em>Emacs</em>, <em>Vim</em> or even <em>Jupyter Notebooks</em>. Each
+one of these text editors generally support the piping of code from a
+text buffer to an attached REPL with the installation of a simple
+general-purpose Python plugin. This turns the Python interpreter into a
+monitoring tool and message receiver used mainly to print useful
+informations to the user.</p>
+<h2 data-number="3.1" id="event-loop-and-scheduling-system"><span
+class="header-section-number">3.1</span> Event loop and scheduling
 System</h2>
+<h3 data-number="3.1.1" id="event-loop"><span
+class="header-section-number">3.1.1</span> Event loop</h3>
+<p><img src="images/event_loop_diagram.png" style="width:49.0%"
+alt="Event Loop Diagram" /> </p>
+<p>Sardine is making heavy use of the asynchronous programming features
+offered by Python. More specifically, Sardine takes advantage of the not
+well known <code>asyncio</code> <em>REPL</em> prototype introduced by
+Python 3.8 <span class="citation" data-cites="asynciorepl">(Selivanov,
+n.d.)</span>. The UVLoop <span class="citation"
+data-cites="uvloop">(Stack) 2016)</span> drop-in replacement event loop
+is also being used in order to speed up the scheduling of asynchronous
+calls. Several hot-patches to the general asynchronous loop have been
+introduced by John Phan (<em>thegamecracks</em>) in order to make its
+behaviour consistent on every major OS platform. Sardine is laid out as
+a series of abstractions built on the <code>asyncio</code> event loop,
+making it aware of tempo and timing. Sardine <em>clock</em> (either the
+<code>internal</code> or <code>link</code>) clock automatically starts
+whenever the system is imported but pure asynchronous calls can still be
+handled even if the clock is being stopped, paused or switched.</p>
+<p>The consistency of the asynchronous clocks is being covered by tests
+(in the <code>tests/</code> folder) and has been proven to be on-par
+with the alternatives offered by other more widely used threaded clocks.
+Development of such feature has proven to be a rather difficult
+technical challenge due to the specificity of the task and of the
+relatively obscure inner workings of internal OS’s schedulers. Threaded
+components are still used for various <em>I/O</em> operations in order
+to lighten the load of the event loop and to alleviate the temporal cost
+of message processing.</p>
+<h3 data-number="3.1.2" id="scheduling"><span
+class="header-section-number">3.1.2</span> Scheduling</h3>
+<p><img src="images/asyncrunner_diagram.png" style="width:50.0%"
+alt="Lifetime of an asynchronous ‘swimming’ function" /> </p>
+<p>Python is known for not supporting tail-call recursion <span
+class="citation" data-cites="guido1 guido2">(Rossum 2009b,
+2009a)</span>, making the infinite recursion of a function a delicate
+task. To properly support this central feature, a complex system based
+on <code>AsyncRunners</code> has been developed and is used as the basis
+for every repetitive operation (such as a pattern) scheduled with
+Sardine. In the spirit of the metaphor followed by the whole program, a
+temporal recursive function is called by the development team a
+<em>swimming function</em>. A swimming function can be started using the
+<code>@swim</code> decorator<a href="#fn2" class="footnote-ref"
+id="fnref2" role="doc-noteref"><sup>2</sup></a>, stopped using the
+<code>@die</code> decorator and can receive updates all along its
+lifetime on the scheduler.</p>
+<p>Decorating a function is enough to push a given synchronous or
+asynchronous function to the scheduler, making it repeat every
+<code>p</code> (for <code>period</code>), a time measured in beats
+relative to the clock currently in use. The content of a given function
+will be re-evaluated for every recursion cycle and state can be
+preserved either by passing arguments to a subsequent call or by relying
+on global state. <em>Swimming functions</em>, as a base mechanism, are a
+powerful construct for building abstractions dealing with time, code
+re-evaluation and dynamic lifetime management of code components.</p>
 <h2 data-number="3.2" id="sardine-pattern-language"><span
 class="header-section-number">3.2</span> Sardine Pattern Language</h2>
 <p>A small patterning language has been developed for
@@ -148,6 +304,13 @@ is an hadler, etc…</p>
 class="header-section-number">4</span> Sardine usage</h1>
 <p>Basic facts about the usage of Sardine in various text editing
 environments + how to install and handle a Sardine installation.</p>
+<figure>
+<img src="images/sardine_and_config_tool.png"
+alt="On the left pane, Sardine being imported through fishery*. On the right, the sardine-config configuration client." />
+<figcaption aria-hidden="true"><em>On the left pane, Sardine being
+imported through </em>fishery*. On the right, the
+<code>sardine-config</code> configuration client.</figcaption>
+</figure>
 <h2 data-number="4.1" id="algorave-and-performance"><span
 class="header-section-number">4.1</span> Algorave and performance</h2>
 <p>Zorba, Lorient, example code taken from performances.</p>
@@ -156,8 +319,8 @@ class="header-section-number">4.2</span> Controlling Legacy MIDI
 Synthesizers</h2>
 <p>Rémi Georges usage of Sardine: controlling legacy synthesizers along
 with TidalCycles, etc…</p>
-<h2 data-number="4.3" id="usage-of-sardine-at-the-iil-laboratory"><span
-class="header-section-number">4.3</span> Usage of Sardine at the IIL
+<h2 data-number="4.3" id="usage-of-sardine-at-the-ii-laboratory"><span
+class="header-section-number">4.3</span> Usage of Sardine at the II
 Laboratory</h2>
 <p>Projects involving the Magnetic Resonator Piano, Boids, etc…</p>
 <h1 data-number="5" id="project-directions"><span
@@ -186,191 +349,85 @@ the funding it provided to this research. I extend my thanks to the
 musicians and friends who allowed me to take <strong>Sardine</strong> on
 stage and to present it to a wider audience these few last months: the
 <strong>Cookie Collective</strong>, Rémi Georges, etc…</p>
-<p>Welcome to the markdown (aka commonmark) template for the
-International Conference on Live Coding 2023.</p>
-<p>This document is a guide to using markdown for the conference, and is
-itself written in markdown. For full understanding, refer to
-iclc2023.txt to see the source of this document, and iclc2023.pdf to see
-the typeset output. Use of this template is currently only recommended
-for those familiar with commandline tools.</p>
-<p>We suggest you take a copy of this template (iclc2023.txt), and use
-it as a starting point for your ICLC paper.</p>
-<p>Preparing your submission using markdown will enable us to make
-proceedings available both in PDF files suitable for print, and in HTML
-suitable for the web. This is useful for making sure your paper is fully
-accessible, via Internet search, and with assistive technology such as
-screen readers for blind people. We recommend taking a straightforward
-approach to formatting your document.</p>
-<p>If you do not wish to use markdown, please do not be discouraged from
-submitting your paper. There is also a word document template available
-from the conference website.</p>
-<h1 data-number="8" id="learning-and-using-markdown"><span
-class="header-section-number">8</span> Learning and using markdown</h1>
-<p>We are happy to answer any questions you have about markdown in
-connection with your conference submission.</p>
-<p>If you have questions, you can email us directly: <a
-href="mailto:iclc@creativecodingutrecht.nl">iclc@creativecodingutrecht.nl</a></p>
-<h2 data-number="8.1" id="pandoc"><span
-class="header-section-number">8.1</span> Running pandoc</h2>
-<p>Pandoc is software which turns text written in markdown into a
-beautiful looking document, complete with references. You will need to
-run it to create PDF documents of your paper for checking and uploading
-for peer review.</p>
-<p>You may download pandoc for all major operating systems (including MS
-Windows, Apple Mac OS and GNU/Linux) from the following website: <a
-href="http://pandoc.org">http://pandoc.org</a></p>
-<p>As an alternative to the above downloads, on OS X only, the homebrew
-package manager can be used to install pandoc: <a
-href="http://brew.sh/">http://brew.sh/</a></p>
-<p>If you use homebrew to install on OS X you will need to install the
-pandoc package as follows:</p>
-<pre><code>brew update
-brew install pandoc</code></pre>
-<p>To produce PDF files you will need to have LaTeX installed, as well
-as pandoc. See the pandoc website for installation instructions: <a
-href="http://pandoc.org/installing.html">http://pandoc.org/installing.html</a>.
-LaTeX is used internally, you will not have to edit any LaTeX
-documents.</p>
-<p>To render your markdown source as HTML, open a terminal window,
-change into the folder where the template is and run the following
-command:</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="at">--template</span><span class="op">=</span>pandoc/iclc.html <span class="at">--citeproc</span> <span class="at">--number-sections</span> iclc2023.md <span class="at">-o</span> iclc2023.html</span></code></pre></div>
-<p>To produce a PDF document, make sure you have LaTeX installed (see
-above), and run the following:</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="at">--template</span><span class="op">=</span>pandoc/iclc.latex <span class="at">--citeproc</span> <span class="at">--number-sections</span> iclc2023.md <span class="at">-o</span> iclc2023.pdf</span></code></pre></div>
-<p>For a higher quality output, add the option
-<code>--latex-engine=xelatex</code> to the above. You will need the <a
-href="http://levien.com/type/myfonts/inconsolata.html">Inconsolata</a>
-and <a
-href="http://www.linuxlibertine.org/index.php?id=91&amp;L=1">Linux
-Libertine</a> opentype fonts installed.</p>
-<p>An example Makefile is also provided to run these commands for you.
-If you have <em>make</em> installed, you can use it to build the pdf
-files.</p>
-<h2 data-number="8.2" id="bibliographic-references"><span
-class="header-section-number">8.2</span> Bibliographic references</h2>
-<p>Pandoc accepts bibliographic databases in a range of formats, so make
-sure you have the right extension on your file.</p>
-<table>
-<caption>Supported bibliography formats with file extension.</caption>
-<thead>
-<tr class="header">
-<th style="text-align: left;">Format</th>
-<th>File extension</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">MODS</td>
-<td>.mods</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">BibLaTeX</td>
-<td>.bib</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">BibTeX</td>
-<td>.bibtex</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">RIS</td>
-<td>.ris</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">EndNote</td>
-<td>.enl</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">EndNote XML</td>
-<td>.xml</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ISI</td>
-<td>.wos</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">MEDLINE</td>
-<td>.medline</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Copac</td>
-<td>.copac</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">JSON citeproc</td>
-<td>.json</td>
-</tr>
-</tbody>
-</table>
-<p>Authors may be referenced in two ways; inline, e.g. <span
-class="citation" data-cites="Schwitters32">Schwitters (1932)</span>
-wrote the Ursonate sound poem, or in parenthesis, e.g. Ursonate is a
-sound poem <span class="citation" data-cites="Schwitters32">(Schwitters
-1932)</span>. Multiple references should be grouped together like so
-<span class="citation"
-data-cites="Schwitters32 Miller56 Greenewalt46">(Schwitters 1932; Miller
-1956; Greenewalt 1946)</span>.</p>
-<p>The pandoc command given in the <a href="#pandoc">above section</a>
-will automatically render your references according to Chicago
-author-date style.</p>
-<p>At the head of the markdown source file for this template, you will
-see an entry for “bibliography” that points to the file references.bib.
-Here you’ll find examples of bibliography entries in BibLaTex format,
-including examples for articles, books, book chapters and items from
-conference proceedings.</p>
-<h2 data-number="8.3" id="code"><span
-class="header-section-number">8.3</span> Code</h2>
-<p>We have chosen a single column layout to better support code examples
-without having to break lines. The following shows how to include a code
-example with syntax highlighting:</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d1 <span class="op">$</span> every <span class="dv">3</span> (iter <span class="dv">4</span>) <span class="op">$</span> brak <span class="op">$</span> <span class="st">&quot;bd [sn [[sn bd] sn]]*1/3&quot;</span></span></code></pre></div>
-<p>For more information please visit this page:
-[https://hackage.haskell.org/package/skylighting]</p>
-<h2 data-number="8.4" id="figures"><span
-class="header-section-number">8.4</span> Figures</h2>
-<p>Images should be included as figures, with captions provided and
-formatted as shown in Figure 1. Be prepared for the page layout and
-image size to be changed during the editing and layout process, and
-consider this when referring to the figures in the text.</p>
-<figure>
-<img src="images/pomeroy.jpg"
-alt="A descriptive caption should be given for all figures, understandable without reference to the rest of the article." />
-<figcaption aria-hidden="true"><em>A descriptive caption should be given
-for all figures, understandable without reference to the rest of the
-article.</em></figcaption>
-</figure>
-<h1 data-number="9" id="conclusion-1"><span
-class="header-section-number">9</span> Conclusion</h1>
-<p>We look forward to receiving your completed papers. Submission is
-through the online peer review system at
-https://iclc2023.creativecodingutrecht.nl/openconf.php only. Do not send
-papers directly by e-mail. In all cases, please submit a PDF version of
-your paper for peer review. At a later stage in preparing the
-proceedings, we may ask for the markdown or Word versions of your
-paper.</p>
-<h2 data-number="9.1" id="acknowledgments-1"><span
-class="header-section-number">9.1</span> Acknowledgments</h2>
-<p>At the end of the Conclusions, acknowledgements to people, projects,
-funding agencies, etc. can be included after the second-level heading
-“Acknowledgments”.</p>
 <h1 class="unnumbered" id="references">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent"
 role="doc-bibliography">
-<div id="ref-Greenewalt46" class="csl-entry" role="doc-biblioentry">
-Greenewalt, Mary H. 1946. <em>Nourathar, the Fine Art of Light Color
-Playing</em>. Philadelphia. Pa. Westbrook.
+<div id="ref-aaron2016sonic" class="csl-entry" role="doc-biblioentry">
+Aaron, Sam. 2016. <span>“Sonic Pi–Performance in Education, Technology
+and Art.”</span> <em>International Journal of Performance Arts and
+Digital Media</em> 12 (2): 171–78.
 </div>
-<div id="ref-Miller56" class="csl-entry" role="doc-biblioentry">
-Miller, G. A. 1956. <span>“The Magical Number Seven Plus or Minus Two:
-Some Limits on Our Capacity for Processing Information.”</span>
-<em>Psychological Review</em> 63 (2): 81–97.
+<div id="ref-cookiewebsite" class="csl-entry" role="doc-biblioentry">
+Collective, Cookie. 2016. <span>“Cookie Collective.”</span> <a
+href="https://cookie.paris/all/"
+class="uri">https://cookie.paris/all/</a>.
 </div>
-<div id="ref-Schwitters32" class="csl-entry" role="doc-biblioentry">
-Schwitters, Kurt. 1932. <span>“Ursonate.”</span> <em>Merz</em> 24.
+<div id="ref-goltz2018ableton" class="csl-entry" role="doc-biblioentry">
+Goltz, Florian. 2018. <span>“Ableton Link–a Technology to Synchronize
+Music Software.”</span> In <em>Proceedings of the Linux Audio
+Conference</em>, 39–42.
+</div>
+<div id="ref-isobar" class="csl-entry" role="doc-biblioentry">
+Jones, Daniel John. n.d. <span>“Isobar.”</span> <a
+href="https://github.com/ideoforms/isobar">https://github.com/ideoforms/isobar</a>.
+</div>
+<div id="ref-kirkbride2016foxdot" class="csl-entry"
+role="doc-biblioentry">
+Kirkbride, Ryan. 2016. <span>“Foxdot: Live Coding with Python and
+Supercollider.”</span> In <em>Proceedings of the International
+Conference on Live Interfaces</em>, 194–98.
+</div>
+<div id="ref-mclean2014making" class="csl-entry" role="doc-biblioentry">
+McLean, Alex. 2014. <span>“Making Programming Languages to Dance to:
+Live Coding with Tidal.”</span> In <em>Proceedings of the 2nd ACM
+SIGPLAN International Workshop on Functional Art, Music, Modeling &amp;
+Design</em>, 63–70.
+</div>
+<div id="ref-vortex" class="csl-entry" role="doc-biblioentry">
+McLean, Alex, Damian Silvani, Raphaël Forment, and Sylvain Le Beux.
+2022. <em>TidalVortex Zero</em>. Zenodo. <a
+href="https://doi.org/10.5281/zenodo.6456380">https://doi.org/10.5281/zenodo.6456380</a>.
+</div>
+<div id="ref-mcpherson2020idiomatic" class="csl-entry"
+role="doc-biblioentry">
+McPherson, Andrew, and Koray Tahıroğlu. 2020. <span>“Idiomatic Patterns
+and Aesthetic Influence in Computer Music Languages.”</span>
+<em>Organised Sound</em> 25 (1): 53–63.
+</div>
+<div id="ref-guido2" class="csl-entry" role="doc-biblioentry">
+Rossum, Guido Van. 2009a. <span>“Final Word on Tail Calls.”</span> Blog.
+</div>
+<div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
+———. 2009b. <span>“Tail Recursion Elimination.”</span> Blog.
+</div>
+<div id="ref-asynciorepl" class="csl-entry" role="doc-biblioentry">
+Selivanov, Yuri. n.d. <span>“Implement Asyncio REPL.”</span> <a
+href="https://github.com/python/cpython/issues/81209"
+class="uri">https://github.com/python/cpython/issues/81209</a>.
+</div>
+<div id="ref-SorensenTemporal" class="csl-entry" role="doc-biblioentry">
+Sorensen, Andrew. 2013. <span>“The Many Faces of a Temporal
+Recursion.”</span> <a
+href="http://extempore.moso.com.au/temporal_recursion.html">http://extempore.moso.com.au/temporal_recursion.html</a>.
+</div>
+<div id="ref-uvloop" class="csl-entry" role="doc-biblioentry">
+Stack), Yury Selivanov (Magic. 2016. <span>“UVLoop.”</span> <em>GitHub
+Repository</em>. <a href="https://github.com/MagicStack/uvloop"
+class="uri">https://github.com/MagicStack/uvloop</a>; GitHub.
 </div>
 </div>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p><em>Read, Eval, Print, Loop</em>: mechanism used by most
+interpreted languages to quickly process user input from the command
+line.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Decorators in Python are used to add a behaviour to an
+object without modifying the base object itself.<a href="#fnref2"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
 </body>
 </html>

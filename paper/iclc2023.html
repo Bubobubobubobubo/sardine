@@ -264,6 +264,8 @@ users to propose ideas and contribute to an extensively documented
 codebase.</p>
 <h1 data-number="3" id="sardine-implementation"><span
 class="header-section-number">3</span> Sardine implementation</h1>
+<img src="images/usage.png" alt="Sardine usage workflow" /><br />
+
 <p>Sardine is implemented and distributed as two complementary Python
 modules: <code>sardine</code> and <code>fishery</code>. They work hand
 in hand in a layered and coordinated fashion. <code>fishery</code>
@@ -271,17 +273,17 @@ provides amendments to the default Python asynchronous REPL<a
 href="#fn1" class="footnote-ref" id="fnref1"
 role="doc-noteref"><sup>1</sup></a> and constitutes the entry point for
 the Sardine system, accessible by typing <code>python -m fishery</code>
-right after install. <code>fishery</code> is nothing more but a slightly
-modified version of the base Python asynchronous REPL. Importing it also
-imports <code>sardine</code> and will <em>de facto</em> starting a new
-playing session. As an helper for new users, a terminal based
-configuration client (<code>sardine-config</code>) is also provided and
-can be used to setup various options before starting
-<code>fishery</code>. Configuration files are stored in a default
-standard location depending on the OS currently in use
-(<code>e.g.</code> <code>.local/share</code> on UNIX systems).
-Configuration files include a general JSON configuration file, a
-<code>.py</code> file usable to load user-specifc Python code at the
+or simply <code>fishery</code> right after install. <code>fishery</code>
+is nothing more but a slightly modified version of the base Python
+asynchronous REPL. Importing it also imports <code>sardine</code> and
+will <em>de facto</em> starting a new playing session. As an helper for
+new users, a terminal based configuration client
+(<code>sardine-config</code>) is also provided and can be used to setup
+various options before starting <code>fishery</code>. Configuration
+files are stored in a default standard location depending on the OS
+currently in use (<code>e.g.</code> <code>.local/share</code> on UNIX
+systems). Configuration files include a general JSON configuration file,
+a <code>.py</code> file usable to load user-specifc Python code at the
 start of each session and files needed to properly configure a
 <em>SuperCollider</em>/<em>SuperDirt</em> session. This architecture,
 despite its initial complexity, is being used to make Sardine more
@@ -308,15 +310,15 @@ information to the user, such as the state of the SuperCollider
 sub-process, of the event loop and <em>runners</em>, etc… Every other
 operation is directly handled by calls internal to a Sardine
 session.</p>
-<p>Not unlike other live coding tools, the reliance on any audio backend
-can / will require the boot of another application. For the time being,
-only <em>SuperCollider</em> and <em>SuperDirt</em> are natively
-supported by their own Sardine components. Even though the installation
-of these backends is still necessary for users willing to use them,
-integration is done in such a way that there is no need – later on – to
-actively take care and monitor manually any of these dependencies. A
-basic API to <em>SuperCollider</em> and <em>SuperDirt</em> is offered
-through the <code>SC.send()</code> function, allowing to run arbitrary
+<p>Reliance on any audio backend can / will require the boot of another
+application. For the time being, only <em>SuperCollider</em> and
+<em>SuperDirt</em> are natively supported by their own Sardine
+components. Even though the installation of these backends is still
+necessary for users willing to use them, integration is done in such a
+way that there is no need – later on – to actively take care and monitor
+manually any of these dependencies. A basic API to
+<em>SuperCollider</em> and <em>SuperDirt</em> is offered through the
+<code>SC.send()</code> function, allowing to run arbitrary
 <code>sclang</code> code in the subprocess session. The addition of more
 automatically-managed audio-backend <em>subprocesses</em> is actively
 planned and will be explored in the coming months (deeper
@@ -344,8 +346,8 @@ class="header-section-number">3.1</span> Event loop and scheduling
 System</h2>
 <h3 data-number="3.1.1" id="event-loop"><span
 class="header-section-number">3.1.1</span> Event loop</h3>
-<p><img src="images/event_loop_diagram.png" style="width:49.0%"
-alt="Event Loop Diagram" /> </p>
+<img src="images/event_loop.png" style="width:100.0%"
+alt="Event Loop Diagram" />`
 <p>Sardine is making use of the asynchronous programming features
 offered by Python. More specifically, Sardine takes advantage of the not
 well known <code>asyncio</code> REPL prototype introduced by Python
@@ -356,15 +358,15 @@ is also being used in order to speed up the scheduling of asynchronous
 calls. Several hot-patches to the asynchronous loop have been introduced
 by John Phan (<em>thegamecracks</em>) in order to make its behaviour
 consistent on every major OS platform. Sardine is laid out as a series
-of abstractions built on the <code>asyncio</code> event loop, making it
-aware of tempo and timing. Sardine <em>clock</em> (either the
-<code>internal</code> or <code>link</code>) clock automatically starts
-whenever the system is imported but pure asynchronous calls can still be
-handled even if the clock is being stopped, paused or switched.</p>
+of abstractions built on the base loop, making it aware of tempo and
+timing. Sardine <em>clock</em> (either the <code>internal</code> or
+<code>link</code>) clock automatically starts whenever the system is
+imported but pure asynchronous calls can still be handled even if the
+clock is being stopped.</p>
 <p>The consistency of the asynchronous clocks is being covered by tests
 (in the <code>tests/</code> folder) and has been checked to be
-<em>on-par</em> with the alternatives offered by other more widely used
-threaded clocks. Development of such a feature has proven to be a
+<em>on-par</em> with the alternatives offered by similar more widely
+used threaded clocks. Development of such a feature has proven to be a
 difficult technical challenge due to the specificity of the task and of
 the relatively obscure inner workings of internal OS’s schedulers.
 Threaded components are still used for various <em>I/O</em> operations
@@ -373,22 +375,29 @@ temporal cost of message processing. Note that many <em>Sardine</em>
 components are entirely optional and can be activated on demand by the
 user. Only the <code>clock</code>, <code>AsyncRunners</code> and
 <code>SleepHandler</code> constitute the core abstractions needed over
-Python <code>asyncio</code> loop.</p>
+Python <code>asyncio</code> loop. Basing the custom event loop on top of
+the Python asynchronous interpreter is allowing for the evaluation of
+any top-level asynchronous <code>await</code> instructions that would be
+forbidden by the main interpreter. It must be noted that Python
+<code>asyncio</code> features have their own logic for every major OS
+and that some differences can be noted when testing under different
+systems.</p>
 <h3 data-number="3.1.2" id="scheduling"><span
 class="header-section-number">3.1.2</span> Scheduling</h3>
-<p><img src="images/asyncrunner_diagram.png" style="width:50.0%"
-alt="Lifetime of an asynchronous ‘swimming’ function" /> </p>
-<p>Python is known for not supporting tail-call recursion <span
-class="citation" data-cites="guido1 guido2">(Rossum 2009b,
-2009a)</span>, making the infinite recursion of a function a delicate
-task. To properly support this central feature, a complex system based
-on John Phan’s <code>AsyncRunners</code> has been developed and is used
-as the basis for every repetitive operation (such as a pattern)
-scheduled with Sardine. In the spirit of the metaphor followed by the
-whole program, a temporal recursive function is called by the
-development team a <em>swimming function</em>, and is labelled in code
-as an <code>AsyncRunner</code>. A <em>swimming function</em> can be
-started using the <code>@swim</code> decorator<a href="#fn3"
+<img src="images/asyncrunner_diagram.png" style="width:51.0%"
+alt="Lifetime of an asynchronous ‘swimming’ function" /> 
+<p>Python is known to be a language that doesn’t have native support for
+tail-call recursion <span class="citation"
+data-cites="guido1 guido2">(Rossum 2009b, 2009a)</span>, making the
+infinite recursion of a function a delicate task. To properly support
+this central feature, a complex system based on John Phan’s
+<code>AsyncRunners</code> has been developed and is used as the basis
+for every repetitive operation (such as a pattern) scheduled with
+Sardine. In the spirit of the metaphor followed by the whole program, a
+temporal recursive function is called by the development team a
+<em>swimming function</em>, and is labelled in code as an
+<code>AsyncRunner</code>. A <em>swimming function</em> can be started
+using the <code>@swim</code> decorator<a href="#fn3"
 class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>,
 stopped using the <code>@die</code> decorator and can receive updates
 all along its lifetime on the scheduler.</p>
@@ -400,22 +409,32 @@ will be re-evaluated for every recursion cycle and state can be
 preserved either by passing arguments to a subsequent call or by relying
 on global state. <em>Swimming functions</em> are a powerful construct
 for building abstractions dealing with time, code re-evaluation and
-dynamic lifetime management of code components. For instance, iterators
-can be built by incrementing a variable passed as argument.</p>
-<p>Every other component of the <em>Sardine</em> system works on the
-assumption that its evaluation context will be the <em>swimming
-function</em>. <em>Swimming functions</em> can receive any arbitrary
-Python code and/or call the various players defined by the Sardine
-system to properly handle <em>I/O</em> operations. Thus, a complete
-prototype player function using the base model looks like:</p>
+dynamic lifetime management of code components. Iterators, for example,
+can be built by incrementing a variable passed as argument. Random
+generators can be built by calling a simple native random function whose
+result will be dynamically updated for each recursion.</p>
+<p><em>Swimming functions</em> will automatically start
+<em>on-the-beat</em>. The start of a function can target a specific
+point in musical time by specifying a special <code>snap</code> argument
+that is understood as an offset, in beats, from the beginning of the
+next bar. The <code>period</code> argument of a given function is the
+only required argument for a function to be considered as a valid
+<em>swimming function</em>. Every other component of the
+<em>Sardine</em> system works on the assumption that its evaluation
+context will be the <em>swimming function</em>. They can receive any
+arbitrary Python code and/or call the various players defined by the
+Sardine system to properly handle <em>I/O</em> operations. Thus, the
+prototype of a basic musical function using the base model looks
+like:</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span> <span class="co"># swimming decorator (swim or die): pushing to the scheduler</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> swimming_function(p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span><span class="dv">0</span>): <span class="co"># p (period), i (custom iterator)</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span> <span class="co"># swimming decorator (swim or die)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> swimming_function(p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span><span class="dv">0</span>): <span class="co"># p: (period), i (custom iterator)</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&#39;I am swimming in time.&#39;</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;bd, hh, cp, hh&#39;</span>, i<span class="op">=</span>i) <span class="co"># call to the &#39;Dirt&#39; SuperDirt interface.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ... <span class="co"># calls and logic</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    again(swimming_function, p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span>i<span class="op">+</span><span class="dv">1</span>) <span class="co"># recursion callback with argument passing</span></span></code></pre></div>
-<p>Abstractions can be built on top of the basic <em>swimming
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ... <span class="co"># user specified code</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    again(swimming_function, p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span>i<span class="op">+</span><span class="dv">1</span>) <span class="co"># recursion callback with argument passing</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove the call to again() to stop the recursion from happening, stopping the runner.</span></span></code></pre></div>
+<p>Multiple abstractions can be built on top of the basic <em>swimming
 function</em> mechanism, allowing for a terser user-facing syntax. We
 believe that building abstraction on top of the <em>swimming
 function</em> is helpful to allow newcomers to get a grasp on the

@@ -10,7 +10,7 @@ Joking aside, and for those of you who already know how to program, *swimming fu
 S('bd').out()
 ```
 
-This command will play a single bassdrum with the **SuperDirt** sound engine. We are not currently using a *swimming function*, this event is atomic and non-repeating. It is a one-shot event, a single instruction sent to the **Python** interpreter. We haven't learned anything yet, you don't know anything about **Senders**, *swimming functions*, etc... Just note that these one-letter objects are constantly and repeatedly used to trigger different types of messages. We will need to *pattern* them and to *arrange* or *compose* them in time. You can use **Sender** objects outside of a recursive function. It will work, but you will be *un-timed*, or *out-of-time*, just like your regular **Python** script that doesn't really care about time or about when or how things happen. 
+This command will play a single bassdrum with the **SuperDirt** sound engine. We are not currently using a *swimming function*, this event is atomic and non-repeating. It is a one-shot event, a single instruction sent to the **Python** interpreter. We haven't learned anything yet, you don't know anything about **Senders**, *swimming functions*, etc... Just note that these one-letter objects are constantly and repeatedly used to trigger different types of messages. We will need to *pattern* them and to *arrange* or *compose* them in time. You can use **Sender** objects outside of a recursive function. It will work, but you will be *un-timed*, or *out-of-time*, just like your regular **Python** script that doesn't really care about time or about when or how things happen.
 
 By using **Python** with **Sardine**, you will constantly run into things that either are *timed* or *un-timed*. It can help if you like manipulating only certain parts of your interactive programs with time constraints or if you like to store options and configuration in a part of your script, apart from your musical patterns.
 
@@ -22,9 +22,9 @@ def basic():
     print('I am swimming now!')
     again(basic)
 
-hush(basic) # or panic()
+silence(basic) # or panic()
 ```
-This is the most basic and iconic *swimming function* you can write. We could make a sweatshirt out of it. It is just like your regular **Python** function to the exception of two little details : 
+This is the most basic and iconic *swimming function* you can write. We could make a sweatshirt out of it. It is just like your regular **Python** function to the exception of two little details :
 
 - the `@swim` or `@die` decorators.
 
@@ -32,18 +32,18 @@ This is the most basic and iconic *swimming function* you can write. We could ma
 
 Behind the stage, the `@swim` decorator will provide all the necessary plumbing to properly handle time and repetition. The `again(...)` function is actually the same thing as `@swim`. It is how the recursion happens, where the function enters the infinite time loop defined by the clock. Updating the function with the `@die` decorator will stop the recursivity, ending the production of sound.
 
-Using `hush(function_name)` or just `hush()` will halt the function execution. There is also `panic()` which is a bit more extreme but needed in some cases where sound doesn't stop after running `hush()`. `hush()` will just stop the function / all functions while `panic()` will do the same but also violently stop every sound sample / synthesizer currently being used. This is useful if you feel that you are loosing control when playing with loud or very long samples.
+Using `silence(function_name)` or just `silence()` will halt the function execution. There is also `panic()` which is a bit more extreme but needed in some cases where sound doesn't stop after running `silence()`. `silence()` will just stop the function / all functions while `panic()` will do the same but also violently stop every sound sample / synthesizer currently being used. This is useful if you feel that you are loosing control when playing with loud or very long samples.
 
 
 ### Swimming with style
 
 ```python3
-@swim 
+@swim
 def basic(d=0.5, i=0):
     print('I am swimming now!')
     again(basic, d=0.5, i=i+1)
 
-hush(basic)
+silence(basic)
 ```
 
 This is a *swimming function* with some minor improvements. The function is passed a duration (`d`) and an iterator (`i`) as arguments. This is the function you will want/need to save as a snippet somewhere in your text editor. **Sardine** users write this skeleton constantly, mechanically, without even thinking about it.
@@ -55,28 +55,28 @@ This is a *swimming function* with some minor improvements. The function is pass
 ### Drowning in numbers
 
 ```python3
-@swim 
+@swim
 def basic(d=0.5, i=0, j=0, k=0):
     print(f'I am swimming with {i}, {j}, and {k}!')
     again(basic, d=0.5, i=i+1, j=j+2, k=P('r*10', i))
 
-hush(basic)
+silence(basic)
 ```
 
 A function with three different iterators. Why not? Notice how the iterator values are evolving independently. `i` is a basic increment, while `j` walks through even numbers. And `k` is randomized using the notation `P('r*10', i)`. To learn more about this, please refer to the section about Patterns and about the pattern Language. You will sometimes encounter features you don't know about yet while scrolling through these examples. Don't worry, they are covered somewhere!
- 
+
 ### Swimming with friends
 
 ```python3
 def calling_you():
     print('I hear you')
 
-@swim 
+@swim
 def basic():
     calling_you()
     again(basic)
 
-hush(basic)
+silence(basic)
 ```
 A swimming function can call a regular function (*i.e.* a function with no **Sardine** decorator). This example is boring as hell but it demonstrates one thing: **Sardine** is just regular **Python** with a twist. Be creative, import your favorite packages and make your computer crash in rhythm!
 
@@ -114,9 +114,9 @@ Exchanging data between *swimming functions* just like sardines playing waterpol
 
 ## II - Surfing: concise syntax
 
-There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library for **Python** created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). This technique is an *emulation* or *simulation* of **FoxDot** mode of operation. It uses the same syntax and the same philosophy of patterning but it relies on **Sardine**'s foundations. This mode of *swimming* is basically assigning **Senders** to an invisible *swimming function* that runs automatically behind your back. 
+There is an alternative jam-oriented way of using *swimming functions* inspired by [FoxDot](https://foxdot.org/), another very cool *live-coding* library for **Python** created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). This technique is an *emulation* or *simulation* of **FoxDot** mode of operation. It uses the same syntax and the same philosophy of patterning but it relies on **Sardine**'s foundations. This mode of *swimming* is basically assigning **Senders** to an invisible *swimming function* that runs automatically behind your back.
 
-!!! warning 
+!!! warning
 
     If you don't know yet what a **Sender** is, you better go consult the page about it first before reading this section.
 
@@ -127,7 +127,7 @@ By default, there are 48 `Players` ready for surfing. This is more than you will
 * `Pa.rate`: time spent on a single event in a linear sequence of events (step speed).
 * `Pa.dur`: duration of a single event in a linear sequence of events (step duration).
 
-While playing/patterning with *surfboards*, you will only ever need to deal with these three methods. All the rest is integrated with the rest of the **Sardine** ecosystem: 
+While playing/patterning with *surfboards*, you will only ever need to deal with these three methods. All the rest is integrated with the rest of the **Sardine** ecosystem:
 
 ```python
 # The sun is high, let's go surfing
@@ -135,7 +135,7 @@ Pa >> play('bd, ., hh')
 Pa.rate = 1
 
 # Ok, I'm done surfing for today.. Time to eat marshmallows..
-hush()
+silence()
 ```
 
 In addition to that, take note of the `play()` method used for assigning a **Sender** to **Players**. There is one method per available default **Sender**. It behaves **exactly like your typical senders**:
@@ -151,7 +151,7 @@ I repeat, these functions are basically senders with a different name! You will 
 
 ```python
 PB >> play('jvbass:r*8, ..., pluck, ...')
-PA >> play('bd, ., hh, sn, hh', 
+PA >> play('bd, ., hh, sn, hh',
         amp=0.4,
         legato='0.3~1', speed='1')
 ```
@@ -169,7 +169,7 @@ The `play_midi()` function is the good old `M()` **Sender**. The `note=` paramet
 
 ### How to stop surfing
 
-**Surfing** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `hush()` or `panic()` function just like for other *swimming functions*. You can also use direct the Player value to "None" (PB >> None). This will stop the output for that player - which is useful if you have multiple Players. To start again, just load the PB >> play() line again. 
+**Surfing** patterns are fully integrated with the rest of **Sardine**. You can shut them down by calling the `silence()` or `panic()` function just like for other *swimming functions*. You can also use direct the Player value to "None" (PB >> None). This will stop the output for that player - which is useful if you have multiple Players. To start again, just load the PB >> play() line again.
 ```python
 PA >> play('bd, ., hhh, .')
 PA.rate = 1
@@ -179,7 +179,7 @@ PB.dur = 0.5
 
 PB >> None # stops only the PB Player
 
-hush() # stops all Players
+silence() # stops all Players
 ```
 
 
@@ -191,28 +191,28 @@ This section requires a good understanding of general **Sardine** concepts. You 
 
 ```python
 
-@swim 
+@swim
 def fast(d=0.25, i=0):
     S('bd', speed='0.5,2', legato=0.1).out(i, div=4, rate=2)
-    S('hh, jvbass:0|8|4,', 
+    S('hh, jvbass:0|8|4,',
             pan='[0:1,0.1]',
             legato=0.1).out(i, div=8 if rarely()
                     else 5, rate=2)
     S('cp', legato=0.1).out(i, div=8)
     a(fast, d=1/8, i=i+1)
 ```
-**Sardine** *swimming functions* are usually slow (compared to the clock internal speed). However, you can speed up your recursion, the only hard limit being the speed at which the clock itself operates. It means that the faster you go, the better the rhythmic precision. The faster, the merrier! You will be able to have a finely grained control over time and events, with the ability to write more groovy or swinging code. It will also make your LFOs and signal-like patterns sing more. 
+**Sardine** *swimming functions* are usually slow (compared to the clock internal speed). However, you can speed up your recursion, the only hard limit being the speed at which the clock itself operates. It means that the faster you go, the better the rhythmic precision. The faster, the merrier! You will be able to have a finely grained control over time and events, with the ability to write more groovy or swinging code. It will also make your LFOs and signal-like patterns sing more.
 
 The recipe for *fast swimming* is the following:
 
 - Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
 
-- Play a lot with silences and with the arguments of `.out(iterator, div, rate)`. 
+- Play a lot with silences and with the arguments of `.out(iterator, div, rate)`.
 
 ### Fast swimming template
 
 ```python
-@swim 
+@swim
 def fast(d=0.5, i=0):
     # print("Damn, that's fast!")
     a(fast, d=1/32, i=i+1)
@@ -223,7 +223,7 @@ This is the template for a fast *swimming function*. You can skip the iterator i
 
 ```python
 
-@swim 
+@swim
 def fast(d=0.5, i=0):
     S('bd').out(i, div=8)
     a(fast, d=1/16, i=i+1)
@@ -239,7 +239,7 @@ The `.out()` method as well as the independant `P()` [object](#patterning-freely
 Let's illustrate. In the example below, we are playing with various divisors to generate an interesting rythmic pattern. Combine that with more interesting drumming and boom, you now have the secret recipe for an interesting [algorave](https://algorave.com/).
 
 ```python
-@swim 
+@swim
 def fast(d=0.5, i=0):
     S('bd').out(i, div=8)
     S('hh').out(i, div=7)
@@ -253,10 +253,10 @@ Of course we can. So far, we only used one patterning speed because every **send
 
 ```python
 c.bpm = 125
-@swim 
+@swim
 def there_is_a_light(d=0.5, i=0):
     S('drum', legato=1, speed='1').out(i, 8)
-    S('drum:[1,2,3,4]', legato=1, 
+    S('drum:[1,2,3,4]', legato=1,
         speed=P('1,2,3,4,5,1!2,4!4', i+1, 2, 0.5)).out(i, 4)
     a(there_is_a_light, d=1/8, i=i+1)
 ```

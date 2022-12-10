@@ -60,7 +60,7 @@ class Time(BaseHandler):
         return shift.get()
 
     @shift.setter
-    def shift(self, seconds: int):
+    def shift(self, seconds: float):
         shift.set(seconds)
 
     @contextlib.contextmanager

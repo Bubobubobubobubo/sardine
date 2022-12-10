@@ -153,9 +153,9 @@ href="https://tidalcycles.org">TidalCycles</a> rhythmical mininotation
 <span class="citation" data-cites="mclean2014making">(McLean
 2014)</span> or the <a href="https://sonic-pi.net/">Sonic Pi</a>
 imperative scheduling syntax <span class="citation"
-data-cites="aaron2016sonic">(Aaron 2016)</span>. Sardine is designed as
-a general <em>agnostic</em> framework for approaching live coding using
-Python. Thus, the library is aiming to support different writing
+data-cites="aaron2016sonic">(Sam Aaron 2016)</span>. Sardine is designed
+as a general <em>agnostic</em> framework for approaching live coding
+using Python. Thus, the library is aiming to support different writing
 paradigms and different approaches to live performance based on the
 manipulation of source code. The reliance on regular Python asynchronous
 functions for scheduling and music writing has for consequence that
@@ -250,7 +250,7 @@ environments.</p>
 collaborations and joint performances with the parisian <em>Cookie
 Collective</em> <span class="citation"
 data-cites="cookiewebsite">(Collective 2016)</span> and the Digital
-Audio Community from Lyon (<em>th4</em>, <em>ralt144MI</em>, etc..).
+Audio Community from Lyon (<em>th4</em>, <em>rAlt144MI</em>, etc..).
 Stemming from the <em>demoscene</em> and shader-coding scene, the
 <em>Cookie</em> is known for its complex multimedia performances, each
 member relying on bespoke hybrid audio-visual setups ranging from low
@@ -261,22 +261,22 @@ expectations. The need to adapt and customize the live coding interfaces
 already in use to the needs of each performance and each artist gave
 rise to the idea of creating a modular interface that could be used and
 mastered by every member of the collective, while allowing for jam-ready
-synchronisation with other musicians and live-coders. The splitting of
-Foxdot’s development into several competing branches reinforced the need
-for a central, customizable and easily editable Python interface, the
-software being particularly used in the french live coding community.
-Due to the open-ended nature of the development process, Sardine has
-been gradually shifting towards its current modular architecture,
-allowing each performer to refine the nature of the <em>inputs</em> and
-<em>outputs</em> controllable through the system, from simple MIDI note
-output to more convoluted custom Sysex and OSC message support. The
-invaluable help and expertise from John Phan has allowed for a complete
-deep rewrite of every base mechanism. With Sardine’s finalization of its
-new framework marks the beginning of a new stage in the development
-process, focused on introducing new features and improving existing
-ones. This process is managed in an <em>ad-hoc</em> manner, by
-encouraging users to propose ideas and contribute to an extensively
-documented codebase.</p>
+synchronisation with other musicians and live-coders. The recent
+splitting of Foxdot’s development into several scattered branches
+reinforced the need for a central, customizable and easily editable
+Python interface, the software being particularly used in the french
+live coding community. Due to the open-ended nature of the development
+process, Sardine has been gradually shifting towards its current modular
+architecture, allowing each performer to refine the nature of the
+<em>inputs</em> and <em>outputs</em> controllable through the system,
+from simple MIDI note output to more convoluted custom Sysex and OSC
+message support. The invaluable help and expertise from John Phan has
+allowed for a complete deep rewrite of every base mechanism. With
+Sardine’s finalization of its new framework marks the beginning of a new
+stage in the development process, focused on introducing new features
+and improving existing ones. This process is managed in an
+<em>ad-hoc</em> manner, by encouraging users to propose ideas and
+contribute to an extensively documented codebase.</p>
 <h1 data-number="3" id="sardine-implementation"><span
 class="header-section-number">3</span> Sardine implementation</h1>
 <img src="images/usage.png" alt="Sardine usage workflow" /><br />
@@ -364,19 +364,23 @@ little known <code>asyncio</code> REPL prototype introduced by Python
 3.8 <span class="citation" data-cites="asynciorepl">(Yuri Selivanov,
 n.d.)</span>. The UVLoop <span class="citation"
 data-cites="uvloop">(Yury Selivanov 2016)</span> drop-in replacement
-event loop is also being used in order to speed up the scheduling of
-asynchronous calls. Several hot-patches to the asynchronous loop have
-been introduced by John Phan (<em>thegamecracks</em>) in order to make
-its behaviour consistent on every major OS platform. Sardine is laid out
-as a series of abstractions built on the base loop, making it aware of
-tempo and timing. Sardine <em>clock</em> (either the
-<code>internal</code> or <code>link</code>) clock automatically starts
-whenever the system is imported but pure asynchronous calls can still be
-handled even if the clock is being stopped. The usage of the
-<code>LinkClock</code> will allow Sardine users to link their session to
-a global tempo shared by other users of the local network. Every clock
-provides the same interface, allowing the system to retrieve the current
-bar, beat and current position in <em>musical</em> time.</p>
+event loop is also being used – but not on Windows – in order to speed
+up the scheduling of asynchronous calls. Several hot-patches to the
+asynchronous loop have been introduced by John Phan
+(<em>thegamecracks</em>) in order to make its behaviour consistent on
+every major OS platform. Sardine is laid out as a series of abstractions
+built on the base loop, making it aware of tempo and timing. Sardine
+<em>clock</em> (either the <code>internal</code> or <code>link</code>)
+clock automatically starts whenever the system is imported but pure
+asynchronous calls can still be handled even if the clock is being
+stopped. The usage of the <code>LinkClock</code> will allow Sardine
+users to link their session to a global tempo shared by other users of
+the local network, allowing networked synchronisation of several Sardine
+or Link capable hardware/software. Every clock provides the same
+interface, allowing the system to retrieve the current bar, beat and
+current position in <em>musical</em> time. Time drift compensation and
+the time shifting needed by some functionalities is handled entirely by
+the low-level event loop system.</p>
 <p>The consistency of the asynchronous clocks is being covered by tests
 (in the <code>tests/</code> folder) and has been checked to be
 <em>on-par</em> with the alternatives offered by similar, more widely
@@ -394,8 +398,8 @@ the custom event loop on top of the Python asynchronous interpreter is
 allowing for the evaluation of any top-level asynchronous
 <code>await</code> instructions that would be forbidden by the main
 interpreter. It must be noted that Python <code>asyncio</code> features
-have their own logic for every major OS and that some differences can be
-noted when testing under different systems.</p>
+might behave differently on every major OS due to its binding with
+system-level mechanisms.</p>
 <h3 data-number="3.1.2" id="scheduling"><span
 class="header-section-number">3.1.2</span> Scheduling</h3>
 <img src="images/asyncrunner_diagram.png" style="width:51.0%"
@@ -406,7 +410,7 @@ data-cites="guido1 guido2">(Rossum 2009b, 2009a)</span>, making the
 infinite recursion of a function a delicate task. To properly support
 this central feature, a complex system based on John Phan’s
 <code>AsyncRunners</code> has been developed and is used as the basis
-for every repetitive operation (such as a pattern) scheduled with
+for every repetitive operation – such as a pattern – scheduled with
 Sardine. In the spirit of the metaphor followed by the whole program, a
 temporal recursive function is nicknamed a <em>swimming function</em> by
 the development team and is labelled in code as an
@@ -438,14 +442,14 @@ only required argument for a function to be considered as a valid
 context will be the <em>swimming function</em>. They can receive any
 arbitrary Python code and/or call the various players defined by the
 Sardine system to properly handle <em>I/O</em> operations. Thus, the
-prototype of a basic musical function using the base model looks like
-the following:</p>
+prototype of a basic musical function using the previously defined model
+looks like the following:</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span> <span class="co"># swimming decorator (swim or die)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> swimming_function(p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span><span class="dv">0</span>): <span class="co"># p: (period), i (custom iterator)</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&#39;I am swimming in time.&#39;</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;bd, hh, cp, hh&#39;</span>, i<span class="op">=</span>i) <span class="co"># call to the &#39;Dirt&#39; SuperDirt interface.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ... <span class="co"># user specified code</span></span>
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span>                                      <span class="co"># swimming decorator (swim or die)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> swimming_function(p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span><span class="dv">0</span>):         <span class="co"># p: (period), i (custom iterator)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&#39;I am swimming in time.&#39;</span>)        <span class="co"># genuine function call</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;bd, hh, cp, hh&#39;</span>, i<span class="op">=</span>i)               <span class="co"># call to the &#39;Dirt&#39; SuperDirt interface.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    ...                                    <span class="co"># other user specified code</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    again(swimming_function, p<span class="op">=</span><span class="fl">0.5</span>, i<span class="op">=</span>i<span class="op">+</span><span class="dv">1</span>) <span class="co"># recursion callback with argument passing</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># remove the call to again() to stop the recursion from happening, stopping the runner.</span></span></code></pre></div>
 <p>Multiple abstractions can be built on top of the basic <em>swimming
@@ -464,24 +468,28 @@ Sardine future versions are likely to include user-based modes of
 playing built upon the basic abstractions provided by the library.</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Pa <span class="op">&gt;&gt;</span> d(<span class="st">&#39;bd, hh, cp, hh&#39;</span>, p<span class="op">=</span><span class="fl">0.5</span>) <span class="co"># Terser version of the above swimming function.</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Pb <span class="op">&gt;&gt;</span> d(<span class="st">&#39;voodoo&#39;</span>, span<span class="op">=</span><span class="dv">2</span>)        <span class="co"># &#39;span&#39; extend the hidden swimming function duration </span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># to span over twice the duration of Pa.</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Pc <span class="op">&gt;&gt;</span> d(<span class="st">&#39;voodoo, tabla&#39;</span>, legato<span class="op">=</span><span class="fl">0.1</span>, span<span class="op">=</span><span class="dv">2</span>, p<span class="op">=</span><span class="st">&#39;1,2,3,4&#39;</span>) <span class="co"># duration values of Pc</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># will be fitted to the duration of the given timespan.</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>Pc <span class="op">&gt;&gt;</span> <span class="va">None</span>                       <span class="co"># alternative to @die</span></span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Pb <span class="op">&gt;&gt;</span> d(<span class="st">&#39;voodoo&#39;</span>, span<span class="op">=</span><span class="dv">2</span>)        <span class="co"># &#39;span&#39; extends the inner-hidden swimming </span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># function duration to span over twice the </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># duration of Pa.</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>Pc <span class="op">&gt;&gt;</span> d(<span class="st">&#39;voodoo, tabla&#39;</span>, legato<span class="op">=</span><span class="fl">0.1</span>, span<span class="op">=</span><span class="dv">2</span>, p<span class="op">=</span><span class="st">&#39;1,2,3,4&#39;</span>) </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># duration values of Pc will be fitted to the </span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># duration of the given timespan.</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Pc <span class="op">&gt;&gt;</span> <span class="va">None</span>                       <span class="co"># alternative to @die</span></span></code></pre></div>
 <p>Sardine’s <code>sleep()</code> method, worthy of note, has been
-redefined. It overrides the default Python <code>time.sleep()</code>
-function that doesn’t offer any precise timing guarantee. This special
-function will allow, inside of a <em>swimming function</em>, to defer
-the execution of any statement or expression defined thereafter to
-<em>x</em> beats in the future, even if these events take place after
-the next recursive call, a phenomenon known and labelled as
-<em>oversleeping</em>. Unlike <code>time.sleep()</code>, this function
-does not actually block the function from running. Instead, it
-temporarily affects the value of <code>clock.time</code> and extends the
-perceived time of methods using that property. This mechanism has been
-introduced to mimick the <code>sleep()</code> statement found in other
-live coding libraries such as Sonic Pi.</p>
+overriden from the default Python <code>time.sleep()</code> function
+that would, if used, block the event loop. This special function will
+allow, inside of a <em>swimming function</em>, to defer the execution of
+any statement or expression defined thereafter to <em>x</em> beats in
+the future, even if these events take place after the next recursive
+call, a phenomenon known and labelled as <em>oversleeping</em>. Unlike
+<code>time.sleep()</code>, this function does not actually block the
+function from running to its end. Instead, it temporarily affects the
+value of <code>clock.time</code> and extends the perceived time of
+methods using that property. This mechanism has been introduced to
+mimick the <code>sleep()</code> statement found in other live coding
+tools such as Sonic Pi <span class="citation"
+data-cites="aaron2014temporal">(Samuel Aaron, Orchard, and Blackwell
+2014)</span>.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sonorous_cake(p<span class="op">=</span><span class="dv">2</span>, i<span class="op">=</span><span class="dv">0</span>):</span>
@@ -556,9 +564,12 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a hr
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="st">&#39;C@penta, C.., G3&#39;</span>, velocity<span class="op">=</span><span class="st">&#39;80~100&#39;</span>, channel<span class="op">=</span><span class="st">&#39;[0:10]&#39;</span>, i<span class="op">=</span>i, r<span class="op">=</span><span class="dv">2</span>) </span></code></pre></div>
 <p>Similar <em>senders</em> or <em>handlers</em> can be implemented for
 various operations needing collaboration between multiple parts of the
-system. Given that each of these adhere to the <code>BaseHandler</code>,
+system. Given that each of these adhere to the <code>BaseHandler</code>
 abstract base class, adding a component to Sardine does not require any
-particulary complex addition or refactoring to the base system.</p>
+particulary complex addition or refactoring to the base system. Most of
+the internal critical components of Sardine work by taking advantage of
+interconnexion of every component, allowing one component to affect the
+behavior of the whole environment if ever needed.</p>
 <h2 data-number="3.3" id="sardine-pattern-language"><span
 class="header-section-number">3.3</span> Sardine Pattern Language</h2>
 <h3 data-number="3.3.1" id="sardine-default-pattern-language"><span
@@ -594,12 +605,21 @@ with lists of arbitrarily typed elements ranging from numbers to MIDI
 notes, samples or synthesizer names, OSC addresses, etc… The string
 input(s) composed by the user for each keyword argument provided to a
 <code>send</code> method is always ultimately resolved by the parser as
-final arbitrarily-nested list used for composing an output message.</p>
-<p>Consequently, extensive support has been dedicated to list-based
-operations for the composition of sequences. Every basic binary
-arithmetic operator such as <code>+</code>, <code>-</code>,
-<code>*</code> or <code>%</code>, can work either on single tokens or
-lists on both sides. List slicing and value extraction has been
+final arbitrarily-nested list used for composing an output message.
+Quite possibly, multiple instances to different parsers will be
+supported in future versions as a way to vary the idioms usable to
+compose patterns. For now, only one parser is supported in each instance
+of the <code>FishBowl</code>. Its usage is entirely optinal for users
+willing to operate using different methods.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Pat(<span class="st">&#39;1, 2, 3, 2~40, 5!4, C@fifths&#39;</span>, i<span class="op">=</span>i) <span class="co"># standalone call to the parser, yielding one value</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&#39;amencutup:[1,10]&#39;</span>, legato<span class="op">=</span><span class="st">&#39;0.1~0.8&#39;</span>, room<span class="op">=</span><span class="st">&#39;0.5&#39;</span>, dry<span class="op">=</span><span class="st">&#39;[0.1,0.5:0.05]&#39;</span>, i<span class="op">=</span>i) <span class="co"># several calls nested</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                                         <span class="co"># inside a more densely composed call to SuperDirt.</span></span></code></pre></div>
+<p>Extensive support has been dedicated to list-based operations for the
+composition of sequences. Every basic binary arithmetic operator such as
+<code>+</code>, <code>-</code>, <code>*</code> or <code>%</code>, can
+work either on single tokens or lists on both sides. Lists can be
+arbitrarily nested. List slicing and value extraction has been
 re-implemented in a fashion similar to that of its Python counterpart.
 Unary operators such as <code>abs()</code>, <code>sin()</code> or
 similar scientific calculation functions work in a similar way, with the
@@ -608,64 +628,68 @@ needed. Custom convenience operators have also been defined such as
 <code>x~y</code> (choosing a number in range), <code>x|y|z</code>
 (choosing between <em>x</em> elements). Other custom operators have been
 borrowed to similar pattern languages such as <em>Ziffers</em> or
-<em>TidalCycles</em>: <code>'</code> (octave up), <code>.</code> (octave
-down), <code>:</code> (sample choice) among many others. Music notation
-is handled through the conversion of specific tokens to single MIDI
-notes (<code>C#4</code> or <code>Do#4</code> parsed as <code>61</code>),
-list objects (<code>C@penta</code> parsed as
-<code>[60,62,64,67,69]</code>) with support for transposition, chord and
-structure inversion, etc… A complete list of all supported operations is
-provided to the user through Sardine’s documentation. Support for random
-and generative structures – even though fairly basic – has been
-implemented. Once more, the implementation of this feature has been
-facilitated by the definition of the <em>parser</em> as a component of
-the <code>FishBowl</code>. This allows the parser to query the
-environment through <code>bowl.clock</code> in search of semi-random
-number generators such as measure number (<code>m</code>), position in
-time (<code>$</code>).</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Middle-C MIDI Note with default velocity and channel (M, alias for midi.send)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="dv">60</span>)                         </span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># C major natural seventh chord with velocity in between 80 and 120, channel either 0, 1 or 2</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="st">&#39;&lt;C@maj7&gt;&#39;</span>, velocity<span class="op">=</span><span class="st">&#39;80~120&#39;</span>, channel<span class="op">=</span><span class="st">&#39;0|1|2&#39;</span>, i<span class="op">=</span>i) </span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SuperDirt call, picking samples &#39;0&#39; to &#39;20&#39; in order in the &#39;drum&#39; folder. Speed parameter</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ramping from 1 to 10 in increments of 2, shape is the sin function of current time divided by 2.</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20], speed=&#39;[1:10,2]&#39;, shape=&#39;sin($)/2&#39;, i=i)</span></span></code></pre></div>
+<em>TidalCycles</em>: <code>'</code> for octave up, <code>.</code> for
+octave down, <code>:</code> for sample choice, <code>!</code> for
+repetition; among many others. Basic music notation is handled through
+the conversion of specific tokens to single MIDI notes (<code>C#4</code>
+or <code>Do#4</code> parsed as <code>61</code>), silences (a dot
+<code>.</code> or multiple dots <code>...</code>), list objects
+(<code>C@penta</code> parsed as <code>[60,62,64,67,69]</code>) with
+support for transposition, chord and structure inversion, etc… A
+complete list of all supported operations is provided to the user
+through Sardine’s documentation. Support for random and generative
+structures – even though fairly basic – has been implemented. Once more,
+the implementation of this feature has been facilitated by the
+definition of the <em>parser</em> as a component of the
+<code>FishBowl</code>. This allows the parser to query the environment
+and <code>bowl.clock</code> in search of semi-random number generators
+such as the measure number (<code>m</code>) or current execution time
+given as clock time (<code>$</code>).</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Middle-C MIDI Note with default velocity and channel (M, alias for midi.send)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="dv">60</span>)                         </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># C major natural seventh chord with velocity in between 80 and 120, channel either 0, 1 or 2</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="st">&#39;&lt;C@maj7&gt;&#39;</span>, velocity<span class="op">=</span><span class="st">&#39;80~120&#39;</span>, channel<span class="op">=</span><span class="st">&#39;0|1|2&#39;</span>, i<span class="op">=</span>i) </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SuperDirt call, picking samples &#39;0&#39; to &#39;20&#39; in order in the &#39;drum&#39; folder. Speed parameter</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ramping from 1 to 10 in increments of 2, shape is the sin function of current time divided by 2.</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20], speed=&#39;[1:10,2]&#39;, shape=&#39;sin($)/2&#39;, i=i)</span></span></code></pre></div>
 <p>The querying of values in the multiple patterns defined in each
 <em>sender</em> is done by providing a single pattern-wide
 <em>iterator</em> (labelled as <code>i</code>) as an argument to each
 <code>send</code> function. Indexing errors are taken care of by making
 this index cyclical over the length of each pattern. The design of the
-iterator is entirely left to the care of the user. Hence, it is up to
-the user to choose the preferred method for browsing through the reduced
-list patterns: sequentially, in reverse, using a random number generator
-among many other methods. More arguments, namely <code>rate</code> and
+iterator is entirely left to the care of the user. Hence, the preferred
+method for browsing through the reduced list patterns can be chosen
+depending on context: sequentially, in reverse, using a random number
+generator, etc… More arguments, namely <code>rate</code> and
 <code>div</code>, can help to specify how the iterator will be applied
 to the gathered patterns, adding another layer of patterning – and
 complexity – on top of the base mechanism:</p>
 <ul>
 <li><code>rate</code> (aliased as <code>r</code>): <em>compress</em> or
 <em>extend</em> the number of iterations needed to move from a list
-index to the preceding/next.</li>
+index to the preceding/next. Used as an equivalent to <em>slowing
+down</em> or <em>speeding up</em> the iteration over patterns.</li>
 <li><code>div</code> (aliased as <code>d</code>): a modulo operation
 between the iteration count and <code>div</code> that will determine if
 the pattern will be played. This is mainly used to generate interesting
 rhythms by confronting <em>senders</em> calls with different
 <code>div</code>s.</li>
 </ul>
-<p>The iteration-based pattern system suits nicely to a system based on
-the concept of temporal recursion. Recursive operations are often used
-as iteration tools in functional approaches to programming. Multiple
-iterators can be used in the same pattern by playing around with the
-<code>Pat()</code> mechanism previously described. This allows for the
-creation of arbitrarily complex patterns composed of multiple values
-assigned to any parameters accessible through a given
-<em>sender</em>.</p>
+<p>In our opinion, the iteration-based pattern system suits nicely to a
+system based on the concept of temporal recursion. Recursive operations
+are often used as iteration tools in more functional approaches to
+programming. Multiple iterators can be used in the same pattern by
+playing around with the <code>Pat()</code> mechanism previously
+described. This allows for the creation of arbitrarily complex patterns
+composed of multiple values assigned to any parameters accessible
+through a given <em>sender</em>.</p>
 <p>Even though the list of features provided by the pattern language is
 dense, its overall architecture is not particularly complex and allows
-for quick customisation from a user willing to do so. This parser also
-provides a basic workaround for most patterning operations while waiting
-for new parsers to be integrated to Sardine in future versions.</p>
+for quick customisation and feature addition from a user willing to do
+so. This parser also provides a basic workaround for most <em>patterning
+duties</em> while awaiting for the inclusion of new parsers in future
+versions of the software.</p>
 <h3 data-number="3.3.2"
 id="planned-extensions-of-the-parser-mechanism"><span
 class="header-section-number">3.3.2</span> Planned extensions of the
@@ -699,44 +723,32 @@ pattern writing style typically found in other historical live coding
 libraries.</p>
 <h1 data-number="4" id="sardine-usage"><span
 class="header-section-number">4</span> Sardine usage</h1>
-<p>Basic facts about the usage of Sardine in various text editing
-environments + how to install and handle a Sardine installation.</p>
-<h2 data-number="4.1" id="algorave-and-performance"><span
-class="header-section-number">4.1</span> Algorave and performance</h2>
-<p>Zorba, Lorient, example code taken from performances.</p>
-<h2 data-number="4.2" id="controlling-legacy-midi-synthesizers"><span
-class="header-section-number">4.2</span> Controlling Legacy MIDI
-Synthesizers</h2>
-<p>Rémi Georges usage of Sardine: controlling legacy synthesizers along
-with TidalCycles, etc…</p>
-<h2 data-number="4.3" id="usage-of-sardine-at-the-ii-laboratory"><span
-class="header-section-number">4.3</span> Usage of Sardine at the II
-Laboratory</h2>
-<p>Projects involving the Magnetic Resonator Piano, Boids, etc…</p>
-<h1 data-number="5" id="project-directions"><span
-class="header-section-number">5</span> Project directions</h1>
-<h2 data-number="5.1" id="packaging-and-distribution"><span
-class="header-section-number">5.1</span> Packaging and distribution</h2>
-<p>Distribution and release for Python 3.11 with updated C++
-dependencies whenever possible. Distribution on Pypi when it’ll be bug
-free, etc…</p>
-<h2 data-number="5.2" id="opening-up-for-collaboration"><span
-class="header-section-number">5.2</span> Opening up for
-collaboration</h2>
-<p>Documenting, section about the website and integration of the
-Sardinopedia.</p>
-<h2 data-number="5.3" id="creation-and-performance"><span
-class="header-section-number">5.3</span> Creation and performance</h2>
-<h1 data-number="6" id="conclusion"><span
-class="header-section-number">6</span> Conclusion</h1>
+<img src="images/sardine_code_paper_fig.png"
+alt="Sardine in use at the Zorba" /><br />
+
+<p>Over its relatively short timespan, Sardine has already been used
+multiple times for various musical performances. Despite the danger
+arising from the usage of an unstable and unpolished software during
+live performances (REFERENCE), we believe that it is necessary to
+confront the development of such a software with a creation and
+performance driven approach which is seen as a way to confirm the
+relevance of the use of the system. Jams, unformal meetings and dialogue
+with the wider live coding community were also of the utmost importance
+to study the relevance and/or the inefficiency to integrate Sardine in
+often already pre-established musical contexts.</p>
+<h1 data-number="5" id="conclusion"><span
+class="header-section-number">5</span> Conclusion</h1>
 <p>Despite its relative youth, having started in summer 2022, the
 Sardine system project is already freely usable and modifiable by its
 users. The project is hosted on GitHub under the GNU General Public
 License v.3.0. We warmly encourage anyone interested to join us and
-collaborate in the collective creation of a new live coding system. A
-Discord server is used for communication by the Sardine community.</p>
-<h1 data-number="7" id="acknowledgments"><span
-class="header-section-number">7</span> Acknowledgments</h1>
+collaborate with the collective creation of a new live coding system. A
+Discord server and a TOPLAP <code>#sardine</code> channel are used for
+communication around the project. Sardine is by no mean complete or as
+fully featured as other existing softwares currently used by the
+community.</p>
+<h1 data-number="6" id="acknowledgments"><span
+class="header-section-number">6</span> Acknowledgments</h1>
 <p>I warmly thank my thesis supervisors Laurent Pottier and Alain
 Bonardi for their support and advice in the creation of this tool. I
 thank the doctoral school <em>3LA</em> from the University of Lyon for
@@ -751,6 +763,13 @@ role="doc-bibliography">
 Aaron, Sam. 2016. <span>“Sonic Pi–Performance in Education, Technology
 and Art.”</span> <em>International Journal of Performance Arts and
 Digital Media</em> 12 (2): 171–78.
+</div>
+<div id="ref-aaron2014temporal" class="csl-entry"
+role="doc-biblioentry">
+Aaron, Samuel, Dominic Orchard, and Alan F Blackwell. 2014.
+<span>“Temporal Semantics for a Live Coding Language.”</span> In
+<em>Proceedings of the 2nd ACM SIGPLAN International Workshop on
+Functional Art, Music, Modeling &amp; Design</em>, 37–47.
 </div>
 <div id="ref-cookiewebsite" class="csl-entry" role="doc-biblioentry">
 Collective, Cookie. 2016. <span>“Cookie Collective.”</span> <a

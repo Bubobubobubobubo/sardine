@@ -23,9 +23,9 @@ The hard part is not to install **Sardine** *per se*, which is just a regular Py
 
 **Sardine** can be installed like any other **Python** package using `pip`, the official package manager.
 
-!!! note "Installing and updating Python" 
+!!! note "Installing and updating Python"
     1) Install [Python](https://www.python.org/) for your operating system (>=3.10). **Update if needed**!
-   
+
     2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10.
 
 Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** or **Python 3.11** installation (can be `python`, `python3`, `python3.10` depending on the system you are currently using)..
@@ -36,12 +36,9 @@ You can now safely proceed to download and install **Sardine**:
 
     1) Install [Git](https://git-scm.com/) or [download the project](https://github.com/Bubobubobubobubo/sardine#:~:text=with%20GitHub%20Desktop-,Download%20ZIP,-Latest%20commit) from GitHub and place it wherever you like!
 
-    - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`'). 
+    - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`').
 
-     2) run: `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .`
-
-    
-    3) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e .` in the `sardine` folder. Be careful, there is a dot at the end of the command!
+    2) Using a `shell` or `cmd`, go to the `sardine` folder and run `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .`. This will install the sardine package with an external index providing prebuilt wheels for the `python-rtmidi` dependency. Remember to include the dot at the end of the command!
 
     - If you are using Linux or MacOS, use `sudo` to install with the highest priviledges. This is usually not recommended but it can help with the installation of other **Sardine** components.
 
@@ -68,7 +65,7 @@ You should now see a big bright `SARDINE` written on your screen. Congratulation
 
 !!! tip "SC3-plugins"
 
-    You might want to check out [SC3-plugins](https://github.com/supercollider/sc3-plugins). These plugins will dramatically increase the possibilities if you have planned to use sampling or the internal synthesis engine quite a lot! 
+    You might want to check out [SC3-plugins](https://github.com/supercollider/sc3-plugins). These plugins will dramatically increase the possibilities if you have planned to use sampling or the internal synthesis engine quite a lot!
 
 **SuperDirt** is the *optional* but very much recommended synthesis engine for **Sardine**. As a matter of fact, **Sardine** was initially built as an alternative client for **SuperDirt**. It is a well-known freen and open source piece of software used by live coders. **SuperDirt** is mostly developed by Julian Rohrhuber, and intended to be used initially for [TidalCycles](https://tidalcycles.org/), a truly great live coding library. It is meant to be used via a simple message-based syntax converted into SuperDirt instructions that can trigger samples, synthesizers and do many other things, taking care of the finicky details. Note that it also means that your **Sardine** configuration will be valid and portable to **TidalCycles** alternatively.
 
@@ -97,7 +94,7 @@ Please add the given location on your `PATH`.
     **Sardine** will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your `$PATH`. Everything should run just fine if you install it in the default folder for your platform. On some specific systems, you might need to locate the `sclang` executable and to add it to `$PATH`.
 
 The autoboot feature can cause trouble among newcomers and unexperienced live-coders. There is a bazillion ways **SuperCollider** and **SuperDirt** can refuse to boot, crash or cease to function all of the sudden. Consult the troubleshot page for more information about frequent issues. I recommend to boot **SuperCollider** and **Sardine** separately for new users so that they can keep an eye on both sides. To do so, turn off the autoboot feature and start **Sardine** and **SuperCollider** separately, each in their own window. Type `SuperDirt.start` to start the latter manually from the SuperCollider side. To start anew if any error arise, type `Server.killAll` to restart **SuperCollider** to a blank slate.
- 
+
 
 ## IV - Code Editor
 
@@ -134,7 +131,7 @@ Open a new interactive Sardine session by running `python3 -m fishery`. If every
 
 ![sardineboot](images/sardine_first_boot.png)
 
-If you have opted to use the **SuperDirt** audio backend, you can start checking if everything is fine by playing a *clap* or a *kickdrum*: 
+If you have opted to use the **SuperDirt** audio backend, you can start checking if everything is fine by playing a *clap* or a *kickdrum*:
 
 ```python
 S('cp').out()

@@ -1,20 +1,16 @@
 # Installation
 
-The installation of **Sardine** is done in two separate steps that you can go through in any order:
 
+!!! tips "Installing from Pypi or from a package manager"
+    Installation of **Sardine**  using Pypi is not yet available.
+
+The installation of **Sardine** is done in two separate steps that you can go through in any order:
 
 - **[MANDATORY]** Installing / configuring of the **Sardine** library and your text editor.
 
 - **[RECOMMENDED]** Installing / configuration the audio backend (**SuperDirt**).
 
-!!! warning "Installing Sardine"
-
-    **Sardine** is still an experimental software and it has not yet been fully packaged. You can be up and running in minutes if everything is going fine. Depending on your proficiency level with programming tools, you might find it to be a challenge to setup *Sardine* for the first time. For regular Unix users, programmers, and old-school users of the command line, the process will be a breeze. Most of the setup process is straightforward but some parts of it might need some caution and monitoring on your behalf. We are doing our best to make the installation process as **fast** and as **painless** as possible. This will take some time and efforts on our side!
-
-!!! tips "Installing from Pypi or from a package manager"
-    Installation of **Sardine**  using Pypi is not yet available. Of course, **Sardine** will be added when it will be ready for everyone to use! The first planned milestone is the **0.1** version that should be released later this year (2022). Until then, you should install it manually! The first released version will greatly simplify the installation process.
-
-**Sardine** by itself is just a program that does I/O (*Input*/*Output*) of various musical information. It is up to you to configure the rest so that it can make sound! The better part is that you can **configure it however you like** for whatever musical purpose you have in mind :) By installing everything correctly, you will be able to integrate **Sardine** with almost any musical application.
+**Sardine*  * by itself is just a program that does I/O (*Input*/*Output*) of various musical information. It is up to you to configure the rest so that it can make sound! The better part is that you can **configure it however you like** for whatever musical purpose you have in mind :) By installing everything correctly, you will be able to integrate **Sardine** with almost any musical application.
 
 !!! info "Sardine is a multi-layered 'lasagna-style' software"
     ![sardine_stack](images/sardine_stack.svg){ width="100%" }
@@ -25,22 +21,14 @@ The hard part is not to install **Sardine** *per se*, which is just a regular Py
 
 ## I - Library
 
-!!! warning "For Windows Users only"
-    **Sardine** is particularly tricky to install for users running Windows. This is due to the fact that **Sardine** depends on `rtmidi` (no wheels for Python 3.10) and `link` (relies on `pybind11`). These packages are bindings for existing C++ code used extensively for important chunks of the application. Without the proper development related tools, you might not be able to install **Sardine**. Please make sure that you install the following before proceeding with the installation:
-
-    - [MSVC Build Tools](https://visualstudio.microsoft.com/fr/downloads/?q=build+tools) (*Microsoft Visual Studio Code Build Tools*).
-
-    - [CMake](https://cmake.org/): a tool used to build, test and configure softwares.
-
 **Sardine** can be installed like any other **Python** package using `pip`, the official package manager.
-
 
 !!! note "Installing and updating Python" 
     1) Install [Python](https://www.python.org/) for your operating system (>=3.10). **Update if needed**!
+   
+    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10.
 
-    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10. Python 3.11 is not officially supported!
-
-Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** installation (can be `python`, `python3`, `python3.10` depending on the system you are currently using)..
+Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** or **Python 3.11** installation (can be `python`, `python3`, `python3.10` depending on the system you are currently using)..
 
 You can now safely proceed to download and install **Sardine**:
 
@@ -49,8 +37,11 @@ You can now safely proceed to download and install **Sardine**:
     1) Install [Git](https://git-scm.com/) or [download the project](https://github.com/Bubobubobubobubo/sardine#:~:text=with%20GitHub%20Desktop-,Download%20ZIP,-Latest%20commit) from GitHub and place it wherever you like!
 
     - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`'). 
+
+     2) run: `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .`
+
     
-    2) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e .` in the `sardine` folder. Be careful, there is a dot at the end of the command!
+    3) Using a `shell` or `cmd` (in admin-mode), run `python3 -m pip install -e .` in the `sardine` folder. Be careful, there is a dot at the end of the command!
 
     - If you are using Linux or MacOS, use `sudo` to install with the highest priviledges. This is usually not recommended but it can help with the installation of other **Sardine** components.
 
@@ -58,8 +49,9 @@ This command can take quite some time depending on your internet connexion, your
 
 Wait until the end of the process. To test if **Sardine** is installed properly, execute the following commands in your terminal:
 ```python3
-python3 -m asyncio
-from sardine import *
+fishery
+# alternatively, run
+python -m fishery
 ```
 
 You should now see a big bright `SARDINE` written on your screen. Congratulations! This is the indication that **Sardine** was able to start!
@@ -165,6 +157,8 @@ So far, we've used the fast boot method for **Sardine**:
 
 ```python
 python3 -m fishery
+# alternatively
+fishery
 ```
 
 Note that you can boot **Sardine** manually in a two-step process:
@@ -172,4 +166,3 @@ Note that you can boot **Sardine** manually in a two-step process:
 1) `python3 -m asyncio`: start the asyncio REPL
 
 2) `from sardine import **`: import **Sardine** library
-

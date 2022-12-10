@@ -38,6 +38,9 @@ dependencies = [
     "exceptiongroup>=1.0.4",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["fishery", "sardine"]
+
 [tool.hatch.version]
 path = "sardine/__init__.py"
 

@@ -61,6 +61,8 @@ class SleepHandler(BaseHandler):
             raise ValueError("SleepHandler must be added to a fish bowl")
         elif not self.env.is_running():
             raise RuntimeError("cannot use sleep until fish bowl has started")
+        elif self.env.clock.time >= deadline:
+            return self._wake_event.wait()
 
         clock = self.env.clock
 

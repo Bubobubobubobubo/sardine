@@ -1,4 +1,5 @@
 import functools
+import inspect
 from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, Union
 
 from .Messages import *
@@ -39,6 +40,12 @@ def get_snap_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
     next_bar = clock.get_bar_time(1)
     offset = clock.get_beat_time(offset_beats, sync=False)
     return clock.time + next_bar + offset
+
+
+async def maybe_coro(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
+    if inspect.iscoroutinefunction(func):
+        return await func(*args, **kwargs)
+    return func(*args, **kwargs)
 
 
 def plural(n: int, word: str, suffix: str = "s"):

@@ -11,7 +11,7 @@ from rich.panel import Panel
 
 from ..base import BaseClock
 from ..clock import Time
-from ..utils import MISSING
+from ..utils import MISSING, maybe_coro
 from .constants import MaybeCoroFunc
 from .errors import *
 
@@ -89,12 +89,6 @@ def _missing_kwargs(
 
     guessed_mapping = dict(zip(required + defaulted, args))
     return guessed_mapping
-
-
-async def _maybe_coro(func, *args, **kwargs):
-    if inspect.iscoroutinefunction(func):
-        return await func(*args, **kwargs)
-    return func(*args, **kwargs)
 
 
 @dataclass
@@ -597,7 +591,7 @@ class AsyncRunner:
         shift = self.defer_beats * self.clock.beat_duration - self._sleep_drift
         self.time.shift += shift
 
-        return await _maybe_coro(func, *args, **kwargs)
+        return await maybe_coro(func, *args, **kwargs)
 
     def _check_snap(self) -> None:
         if self.snap is not None and self.clock.time > self.snap:

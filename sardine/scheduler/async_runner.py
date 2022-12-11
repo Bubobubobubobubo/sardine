@@ -192,11 +192,10 @@ class AsyncRunner:
     _deferred_state_index: int
 
     _can_correct_interval: bool
-    _delta: float
     _expected_time: float
     _last_interval: float
+    _last_iteration_called: bool
     _last_state: Optional[FunctionState]
-    _sleep_drift: float
 
     def __init__(self, name: str):
         self.name = name
@@ -215,11 +214,10 @@ class AsyncRunner:
         self._deferred_state_index = 0
 
         self._can_correct_interval = False
-        self._delta = 0.0
         self._expected_time = 0.0
         self._last_interval = 0.0
+        self._last_iteration_called = False
         self._last_state = None
-        self._sleep_drift = 0.0
 
     def __repr__(self):
         cls_name = type(self).__name__
@@ -416,12 +414,11 @@ class AsyncRunner:
             RuntimeError: A function must be pushed before this can be used.
         """
         self.snap = deadline
-        # Unlike _correct_interval(), we don't need to worry about delta
-        # here. _get_corrected_interval() ignores the interval until the
-        # snap time has passed, at which point any sleep drift will be
-        # accounted by `get_beat_time()` as per normal operation.
-        with self.time.scoped_shift(deadline - self.clock.time):
-            self.interval_shift = self.clock.get_beat_time(period)
+        self.interval_shift = self.clock.get_beat_time(period, time=deadline)
+
+    def _check_snap(self, time: float):
+        if self.snap is not None and time + self._last_interval >= self.snap:
+            self.snap = None
 
     def _correct_interval(self, period: Union[float, int]):
         """Checks if the interval should be corrected.
@@ -437,8 +434,8 @@ class AsyncRunner:
         """
         interval = period * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
-            with self.time.scoped_shift(-self._delta):
-                self.interval_shift = self.clock.get_beat_time(period)
+            time = self._expected_time
+            self.interval_shift = self.clock.get_beat_time(period, time=time)
 
         self._last_interval = interval
         self._can_correct_interval = False
@@ -460,24 +457,25 @@ class AsyncRunner:
         Returns:
             float: The deadline for the next interval.
         """
-        snap_duration = self._get_snap_duration()
-        if snap_duration is not None:
-            return self.clock.time + snap_duration
+        # We only want to use the expected time if the last iteration
+        # ran its function normally - if the runner skipped the iteration,
+        # that means we haven't yet reached the deadline
+        if self._last_iteration_called:
+            time = self._expected_time
+        else:
+            time = self.clock.time
 
-        with self.time.scoped_shift(self.interval_shift - self._delta):
-            # If the interval was corrected, this should equal to:
-            #    `period * beat_duration`
-            expected_duration = self.clock.get_beat_time(period) - self._delta
-        return self.clock.time + expected_duration
+        self._check_snap(time)
+        if self.snap is not None:
+            return self.snap
 
-    def _get_snap_duration(self) -> Optional[float]:
-        """Returns the amount of time to wait for the snap, if any.
+        shifted_time = time + self.interval_shift
 
-        If the `snap` attribute is None, this returns None.
-        """
-        if self.snap is None:
-            return None
-        return max(0.0, self.snap - self.clock.time)
+        # If the interval was corrected, this should equal to:
+        #    `period * beat_duration`
+        expected_duration = self.clock.get_beat_time(period, time=shifted_time)
+
+        return time + expected_duration
 
     # Runner loop
 
@@ -504,10 +502,10 @@ class AsyncRunner:
             print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     def _prepare(self):
+        self._last_iteration_called = False
         self._last_state = self._get_state()
         self._swimming = True
         self._stop = False
-        self._delta = 0.0
 
         period = self._get_period(self._last_state)
         self._last_interval = period * self.clock.beat_duration
@@ -539,7 +537,7 @@ class AsyncRunner:
             if (
                 self.clock.time >= entry.deadline
                 or state is not None
-                and self._expected_time >= entry.deadline
+                and deadline >= entry.deadline
             ):
                 heapq.heappop(self.deferred_states)
                 arriving_states.append(entry)
@@ -555,20 +553,17 @@ class AsyncRunner:
                 latest_entry.deadline,
                 self._get_period(latest_entry.state),
             )
-            self.swim()
-            return
+            return self._skip_iteration()
         elif state is None:
             # Nothing to do until the next deferred state arrives
             deadline = self.deferred_states[0].deadline
             interrupted = await self._sleep_until(deadline)
-            self.swim()
-            return
+            return self._skip_iteration()
 
         # NOTE: duration will always be defined at this point
         interrupted = await self._sleep_until(deadline)
         if interrupted:
-            self.swim()
-            return
+            return self._skip_iteration()
 
         try:
             # Use copied context in function by creating it as a task
@@ -577,21 +572,18 @@ class AsyncRunner:
                 name=f"asyncrunner-func-{self.name}",
             )
         finally:
-            self._delta = self.clock.time - self._expected_time
-            self._check_snap()
+            self._last_iteration_called = True
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
         according to the `defer_beats` attribute.
         """
-        shift = self.defer_beats * self.clock.beat_duration - self._sleep_drift
-        self.time.shift += shift
+        if self.defer_beats:
+            delta = self.clock.time - self._expected_time
+            shift = self.defer_beats * self.clock.beat_duration - delta
+            self.time.shift += shift
 
         return await maybe_coro(func, *args, **kwargs)
-
-    def _check_snap(self) -> None:
-        if self.snap is not None and self.clock.time > self.snap:
-            self.snap = None
 
     @staticmethod
     def _get_period(state: Optional[FunctionState]) -> Union[float, int]:
@@ -631,16 +623,12 @@ class AsyncRunner:
         if self.clock.time >= deadline:
             return self._reload_event.is_set()
 
-        wait_task = asyncio.create_task(
-            self.env.sleeper.sleep_until(deadline - self._delta)
-        )
+        wait_task = asyncio.create_task(self.env.sleeper.sleep_until(deadline))
         reload_task = asyncio.create_task(self._reload_event.wait())
         done, pending = await asyncio.wait(
             (wait_task, reload_task),
             return_when=asyncio.FIRST_COMPLETED,
         )
-
-        self._sleep_drift = self.clock.time - self._expected_time
 
         for task in pending:
             task.cancel()
@@ -653,3 +641,7 @@ class AsyncRunner:
         if self.states:
             self.states.pop()
         self._has_reverted = True
+
+    def _skip_iteration(self) -> None:
+        self._last_iteration_called = False
+        self.swim()

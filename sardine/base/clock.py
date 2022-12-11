@@ -1,5 +1,4 @@
 import math
-import time
 from abc import ABC, abstractmethod
 from typing import Optional, Union
 
@@ -181,11 +180,20 @@ class BaseClock(BaseRunnerHandler, ABC):
         method = getattr(method, "__func__", method)
         return method is not BaseClock.sleep
 
-    def get_beat_time(self, n_beats: Union[int, float], *, sync: bool = True) -> float:
+    def get_beat_time(
+        self,
+        n_beats: Union[int, float],
+        *,
+        time: Optional[float] = None,
+        sync: bool = True,
+    ) -> float:
         """Determines the amount of time to wait for N beats to pass.
 
         Args:
             n_beats (Union[int, float]): The number of beats to wait for.
+            time (Optional[float]):
+                The exact time to use for calculations.
+                If not provided, this defaults to `shifted_time`.
             sync (bool):
                 If True, the duration will be synchronized to an interval
                 accounting for the current time (and influenced by time shift).
@@ -195,13 +203,16 @@ class BaseClock(BaseRunnerHandler, ABC):
         Returns:
             float: The amount of time to wait in seconds.
         """
+        if time is None:
+            time = self.shifted_time
+
         interval = self.beat_duration * n_beats
         if interval <= 0.0:
             return 0.0
         elif not sync:
             return interval
 
-        duration = interval - self.shifted_time % interval
+        duration = interval - time % interval
 
         # Due to potential rounding errors, we might get a duration
         # that should be, but isn't actually equal to the interval.
@@ -211,11 +222,20 @@ class BaseClock(BaseRunnerHandler, ABC):
 
         return duration
 
-    def get_bar_time(self, n_bars: Union[int, float], *, sync: bool = True) -> float:
+    def get_bar_time(
+        self,
+        n_bars: Union[int, float],
+        *,
+        time: Optional[float] = None,
+        sync: bool = True,
+    ) -> float:
         """Determines the amount of time to wait for N bars to pass.
 
         Args:
             n_bars (Union[int, float]): The number of bars to wait for.
+            time (Optional[float]):
+                The exact time to use for calculations.
+                If not provided, this defaults to `shifted_time`.
             sync (bool):
                 If True, the duration will be synchronized to an interval
                 accounting for the current time (and influenced by time shift).
@@ -226,7 +246,7 @@ class BaseClock(BaseRunnerHandler, ABC):
             float: The amount of time to wait in seconds.
 
         """
-        return self.get_beat_time(n_bars * self.beats_per_bar, sync=sync)
+        return self.get_beat_time(n_bars * self.beats_per_bar, time=time, sync=sync)
 
     async def sleep(self, duration: Union[float, int]) -> None:
         """Sleeps for the given duration.

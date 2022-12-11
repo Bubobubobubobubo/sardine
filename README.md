@@ -3,7 +3,7 @@
 </h2>
 <p align="center"><i>
   Python's missing algorave module.
-  Simple/hackable live coding tool for modern Python (< 3.10)
+  Simple/hackable live coding tool for modern Python (3.10+)
 </i></p>
 
 <p align="center">
@@ -55,7 +55,7 @@ and rhythmic patterns of any kind and to map them to any electronic instrument:
 
 Broadly speaking, **Sardine** can be said to have three main features:
 
-- A **Clock** system capable of syncing itself to other computers instruments.
+- A **Clock** system capable of syncing itself instruments on other computers.
   This clock is organizing your **Python** code so that it can be time / tempo aware.
   Using temporal recursion, **Sardine** is pretty good at describing looping processes,
   musical patterns, etc...
@@ -69,11 +69,11 @@ Broadly speaking, **Sardine** can be said to have three main features:
 
 ## Contributions
 
-There is no version number yet. We are still exploring what **Sardine** is and
-what it could be and you might see some things changing pretty quickly as a result.
-The first version, `0.0.1` is planned for release later this year. **Sardine**
-is looking for contributors! Anybody is welcome to contribute with
-code/documentation/thoughts, etc... You can contact the **Sardine** community
+Sardine is currently in the development phase. We are still exploring what
+**Sardine** is and what it could be and you might see some things changing
+pretty quickly as a result.
+**Sardine** is looking for contributors! Anybody is welcome to contribute with
+code / documentation / thoughts, etc... You can contact the **Sardine** community
 directly on **Discord** or **PM** me if you have specific questions.
 
 ### Documenting Sardine
@@ -85,8 +85,8 @@ It is a bunch of loosely organised Markdown files. You can contribute by editing
 these files and adding the missing bit of information you would like to see being
 updated or added.
 
-The code source lives in the `cli/`, `fishery/` and `sardine/` folders. Most
-functions are already documented but the architecture of **Sardine** needs some
-time to get used to. You can contact me directly if you would like to learn more
+The majority of the source code lives in the `sardine/` folder. Most functions
+are already documented but the architecture of **Sardine** needs some time to
+get used to. You can contact me directly if you would like to learn more
 about it. There are no contributions rules for the moment, and I will explore
 each and every request that you would like to propose!

@@ -37,9 +37,10 @@ def alias_param(name: str, alias: str):
 
 
 def get_snap_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
-    next_bar = clock.get_bar_time(1)
+    time = clock.shifted_time
+    next_bar = clock.get_bar_time(1, time=time)
     offset = clock.get_beat_time(offset_beats, sync=False)
-    return clock.time + next_bar + offset
+    return time + next_bar + offset
 
 
 async def maybe_coro(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:

@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, ParamSpec, TypeVar
 from ..base import BaseHandler
 from ..handlers.sender import Number, NumericElement, Sender
 from ..scheduler import AsyncRunner
-from ..utils import alias_param, get_snap_deadline
+from ..utils import alias_param, get_snap_deadline, lerp
 
 __all__ = ("Player",)
 
@@ -51,15 +51,11 @@ class Player(BaseHandler):
         that will phase out too easily.
         """
 
-        def _remap(x, in_min, in_max, out_min, out_max):
-            """Remap a value v from range (x, y) to range (x', y')"""
-            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
         if isinstance(period, (int, float)):
-            return _remap(period, 0, period, 0, timespan)
+            return lerp(period, 0, period, 0, timespan)
 
         period = self.env.parser.parse(period)
-        period = list(map(lambda x: _remap(x, 0, sum(period), 0, timespan), period))
+        period = list(map(lambda x: lerp(x, 0, sum(period), 0, timespan), period))
         return period
 
     @staticmethod

@@ -10,7 +10,8 @@ authors = [
     {name = "Raphaël Forment", email="raphael.forment@gmail.com"},
     {email = "raphael.forment@gmail.com"}
 ]
-license = {file = "LICENSE.txt"}
+license = "GPL-3.0-only"
+license-files = { paths = ["LICENSE.txt"] }
 readme = "README.md"
 requires-python = ">=3.10"
 

@@ -67,9 +67,10 @@ class OSCHandler(Sender):
             return
 
         pattern["address"] = address
+        deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["address"] is None:
                 continue
             address = message.pop("address")
             serialized = list(chain(*sorted(message.items())))
-            self._send(f"/{address}", serialized)
+            self.call_timed(deadline, self._send, f"/{address}", serialized)

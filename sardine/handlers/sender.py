@@ -1,9 +1,14 @@
+import asyncio
 from math import floor
-from typing import Generator, TypeVar, Union
+from typing import Callable, Generator, ParamSpec, TypeVar, Union
 
 from ..base import BaseHandler
+from ..utils import maybe_coro
 
 __all__ = ("Sender",)
+
+P = ParamSpec("P")
+T = TypeVar("T")
 
 Number = Union[float, int]
 ReducedElement = TypeVar("ReducedElement")
@@ -46,6 +51,30 @@ class Sender(BaseHandler):
     pattern_reduce: reduce a pattern to a dictionary of values corresponding to iterator
                     index.
     """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._timed_tasks: set[asyncio.Task] = set()
+
+    def call_timed(
+        self,
+        deadline: float,
+        func: Callable[P, T],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> None:
+        """Schedules the given (a)synchronous function to be called.
+
+        Senders should always use this method to properly account for time shift.
+        """
+
+        async def scheduled_func():
+            await self.env.sleeper.sleep_until(deadline)
+            await maybe_coro(func, *args, **kwargs)
+
+        task = asyncio.create_task(scheduled_func())
+        self._timed_tasks.add(task)
+        task.add_done_callback(self._timed_tasks.discard)
 
     @staticmethod
     def pattern_element(

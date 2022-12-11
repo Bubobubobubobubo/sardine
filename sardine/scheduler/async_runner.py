@@ -11,7 +11,7 @@ from rich.panel import Panel
 
 from ..base import BaseClock
 from ..clock import Time
-from ..utils import MISSING
+from ..utils import MISSING, maybe_coro
 from .constants import MaybeCoroFunc
 from .errors import *
 
@@ -89,12 +89,6 @@ def _missing_kwargs(
 
     guessed_mapping = dict(zip(required + defaulted, args))
     return guessed_mapping
-
-
-async def _maybe_coro(func, *args, **kwargs):
-    if inspect.iscoroutinefunction(func):
-        return await func(*args, **kwargs)
-    return func(*args, **kwargs)
 
 
 @dataclass
@@ -464,18 +458,17 @@ class AsyncRunner:
                 The number of beats in the interval.
 
         Returns:
-            float: The amount of time until the next interval is reached.
+            float: The deadline for the next interval.
         """
         snap_duration = self._get_snap_duration()
         if snap_duration is not None:
-            return snap_duration
+            return self.clock.time + snap_duration
 
         with self.time.scoped_shift(self.interval_shift - self._delta):
             # If the interval was corrected, this should equal to:
             #    `period * beat_duration`
-            expected_duration = self.clock.get_beat_time(period)
-            self._expected_time = self.clock.shifted_time + expected_duration
-        return expected_duration - self._delta
+            expected_duration = self.clock.get_beat_time(period) - self._delta
+        return self.clock.time + expected_duration
 
     def _get_snap_duration(self) -> Optional[float]:
         """Returns the amount of time to wait for the snap, if any.
@@ -517,7 +510,6 @@ class AsyncRunner:
         self._delta = 0.0
 
         period = self._get_period(self._last_state)
-        self._get_corrected_interval(period)  # sets `_expected_time`
         self._last_interval = period * self.clock.beat_duration
 
     async def _run_once(self):
@@ -538,8 +530,7 @@ class AsyncRunner:
             period = _extract_new_period(signature, state.kwargs)
 
             self._correct_interval(period)
-            duration = self._get_corrected_interval(period)
-            self._expected_time = self.clock.time + duration
+            deadline = self._get_corrected_interval(period)
 
         # Push any deferred states that have or will arrive onto the stack
         arriving_states: list[DeferredState] = []
@@ -569,13 +560,12 @@ class AsyncRunner:
         elif state is None:
             # Nothing to do until the next deferred state arrives
             deadline = self.deferred_states[0].deadline
-            duration = deadline - self.clock.time
-            interrupted = await self._sleep(duration)
+            interrupted = await self._sleep_until(deadline)
             self.swim()
             return
 
         # NOTE: duration will always be defined at this point
-        interrupted = await self._sleep(duration)
+        interrupted = await self._sleep_until(deadline)
         if interrupted:
             self.swim()
             return
@@ -597,7 +587,7 @@ class AsyncRunner:
         shift = self.defer_beats * self.clock.beat_duration - self._sleep_drift
         self.time.shift += shift
 
-        return await _maybe_coro(func, *args, **kwargs)
+        return await maybe_coro(func, *args, **kwargs)
 
     def _check_snap(self) -> None:
         if self.snap is not None and self.clock.time > self.snap:
@@ -628,8 +618,8 @@ class AsyncRunner:
                 print_panel(f"[yellow][Saving [red]{self.name}[/red] from crash]")
                 self._has_reverted = False
 
-    async def _sleep(self, duration: Union[float, int]) -> bool:
-        """Sleeps for the given duration or until the runner is reloaded.
+    async def _sleep_until(self, deadline: Union[float, int]) -> bool:
+        """Sleeps until the given deadline or until the runner is reloaded.
 
         Args:
             duration (Union[float, int]): The amount of time to sleep.
@@ -637,10 +627,13 @@ class AsyncRunner:
         Returns:
             bool: True if the runner was reloaded, False otherwise.
         """
-        if duration <= 0:
+        self._expected_time = deadline
+        if self.clock.time >= deadline:
             return self._reload_event.is_set()
 
-        wait_task = asyncio.create_task(self.env.sleep(duration))
+        wait_task = asyncio.create_task(
+            self.env.sleeper.sleep_until(deadline - self._delta)
+        )
         reload_task = asyncio.create_task(self._reload_event.wait())
         done, pending = await asyncio.wait(
             (wait_task, reload_task),

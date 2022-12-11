@@ -213,12 +213,13 @@ class MidiHandler(Sender):
             "channel": channel,
             "duration": duration,
         }
+        deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["note"] is None:
                 continue
             for k in ("note", "velocity", "channel"):
                 message[k] = int(message[k])
-            self.send_midi_note(**message)
+            self.call_timed(deadline, self.send_midi_note, **message)
 
     @alias_param(name="value", alias="val")
     @alias_param(name="control", alias="ctrl")
@@ -244,12 +245,13 @@ class MidiHandler(Sender):
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
+        deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["control"] is None:
                 continue
             for k, v in message.items():
                 message[k] = int(v)
-            self._control_change(**message)
+            self.call_timed(deadline, self._control_change, **message)
 
     @alias_param(name="number", alias="num")
     @alias_param(name="channel", alias="chan")
@@ -268,9 +270,10 @@ class MidiHandler(Sender):
             return
 
         pattern = {"channel": channel, "program": number}
+        deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["channel"] is None:
                 continue
             for k, v in message.items():
                 message[k] = int(v)
-            self._program_change(**message)
+            self.call_timed(deadline, self._program_change, **message)

@@ -97,8 +97,9 @@ class SuperDirtHandler(Sender):
             self.env.clock.bar * self.env.clock.beats_per_bar
         ) + self.env.clock.beat
 
+        deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["sound"] is None:
                 continue
             serialized = list(chain(*sorted(message.items())))
-            self._dirt_play(serialized)
+            self.call_timed(deadline, self._dirt_play, serialized)

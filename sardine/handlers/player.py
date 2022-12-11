@@ -19,7 +19,7 @@ class PatternInformation:
     args: tuple[Any]
     kwargs: dict[str, Any]
     period: NumericElement
-    iterator: Number
+    iterator: Optional[Number]
     divisor: NumericElement
     rate: NumericElement
     snap: Number
@@ -40,18 +40,9 @@ class Player(BaseHandler):
         super().__init__()
         self._name = name
         self.runner = AsyncRunner(name=name)
-        self._iteration_span: int = 1
+        self.iterator: Number = 0
+        self._iteration_span: Number = 1
         self._period: int | float = 1.0
-
-    @property
-    def iterator(self) -> int:
-        """Internal iterator stored by the Player instance"""
-        return self._iteration_span
-
-    @iterator.setter
-    def iterator(self, value: int) -> None:
-        """Internal iterator stored by the Player instance"""
-        self._iteration_span = value
 
     def fit_period_to_timespan(self, period: NumericElement, timespan: float):
         """
@@ -83,7 +74,7 @@ class Player(BaseHandler):
         *args: P.args,
         timespan: Optional[float] = None,
         period: NumericElement = 1,
-        iterator: Number = 0,
+        iterator: Optional[Number] = None,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
         snap: Number = 0,
@@ -120,7 +111,7 @@ class Player(BaseHandler):
         """Get period value for the current cycle"""
         for message in pattern.sender.pattern_reduce(
             {"period": pattern.period},
-            pattern.iterator,
+            self.iterator,
             pattern.divisor,
             pattern.rate,
             use_divisor_to_skip=False,
@@ -134,16 +125,19 @@ class Player(BaseHandler):
         p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
+        if pattern.iterator is not None:
+            self.iterator = pattern.iterator
+            pattern.iterator = None
 
         pattern.send_method(
             *pattern.args,
             **pattern.kwargs,
-            iterator=pattern.iterator,
+            iterator=self.iterator,
             divisor=pattern.divisor,
             rate=pattern.rate,
         )
 
-        pattern.iterator += self._iteration_span
+        self.iterator += self._iteration_span
         period = self.get_new_period(pattern)
         self.again(pattern=pattern, p=period)
 
@@ -156,6 +150,9 @@ class Player(BaseHandler):
         # This is a local equivalent to the silence() function.
         if pattern is None:
             return self.env.scheduler.stop_runner(self.runner)
+        elif not self.runner.is_running():
+            # Assume we are queuing the first state
+            self.iterator = 0
 
         # Forcibly reset the interval shift back to 0 to make sure
         # the new pattern can be synchronized

@@ -52,7 +52,7 @@ class SleepHandler(BaseHandler):
         deadline = self.env.clock.time + duration
         return await self.sleep_until(deadline)
 
-    async def sleep_until(self, deadline: NUMBER):
+    async def sleep_until(self, deadline: NUMBER) -> None:
         """Sleeps until the given time has been reached.
 
         The deadline is based on the fish bowl clock's time.
@@ -62,7 +62,8 @@ class SleepHandler(BaseHandler):
         elif not self.env.is_running():
             raise RuntimeError("cannot use sleep until fish bowl has started")
         elif self.env.clock.time >= deadline:
-            return self._wake_event.wait()
+            await self._wake_event.wait()
+            return
 
         clock = self.env.clock
 

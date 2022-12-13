@@ -66,7 +66,7 @@ bowl.add_handler(midi)
 
 # OSC Loop: handles processing OSC messages
 osc_loop = OSCLoop()
-bowl.add_handler(osc_loop) # NOTE: always keep this loop running for OSC handlers
+bowl.add_handler(osc_loop)  # NOTE: always keep this loop running for OSC handlers
 
 # OSC Handler: dummy OSC handler, mostly used for test purposes
 dummy_osc = OSCHandler(
@@ -96,7 +96,8 @@ for player in player_names:
 
 
 #######################################################################################
-# BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
+# BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
+
 
 @overload
 def swim(

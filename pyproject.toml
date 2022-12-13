@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = "Python's missing algorave module"
 authors = [
     {name = "Raphaël Forment", email="raphael.forment@gmail.com"},
+    {email="raphael.forment@gmail.com"},
     {name = "thegamecracks"},
 ]
 license = "GPL-3.0-only"
@@ -51,8 +52,9 @@ dependencies = [
     "exceptiongroup>=1.0.4",
 ]
 
-[tool.hatch.build.targets.wheel]
+[tool.hatch.build.targets.sdist]
 packages = ["fishery", "sardine"]
+only-include = ["sardine/", "fishery/", "tests/"]
 
 [tool.hatch.version]
 path = "sardine/__init__.py"

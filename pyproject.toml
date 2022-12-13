@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Python's missing algorave module"
 authors = [
     {name = "Raphaël Forment", email="raphael.forment@gmail.com"},
-    {email = "raphael.forment@gmail.com"}
+    {name = "thegamecracks"},
 ]
 license = "GPL-3.0-only"
 license-files = { paths = ["LICENSE.txt"] }

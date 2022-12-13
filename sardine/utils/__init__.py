@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 T = TypeVar("T")
 
+Number = Union[float, int]
+
 MISSING = object()
 
 
@@ -41,6 +43,17 @@ def get_snap_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
     next_bar = clock.get_bar_time(1, time=time)
     offset = clock.get_beat_time(offset_beats, sync=False)
     return time + next_bar + offset
+
+
+def lerp(
+    x: Number,
+    in_min: Number,
+    in_max: Number,
+    out_min: Number,
+    out_max: Number,
+) -> float:
+    """Linearly interpolates a value v from range (x, y) to range (x', y')."""
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
 async def maybe_coro(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:

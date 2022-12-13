@@ -81,6 +81,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 class="title">Sardine: a Modular Python Live Coding Environment</h1>
 <ul id="authorlist">
 <li>true</li>
+<li>true</li>
 </ul>
 </div>
 
@@ -227,7 +228,7 @@ similarly featured Python-based live-coding libraries such as <a
 href="https://foxdot.org">FoxDot</a>, <a
 href="https://github.com/ideoforms/isobar">Isobar</a> or the very recent
 <a href="https://github.com/tidalcycles/vortex">TidalVortex</a> <span
-class="citation" data-cites="vortex">(McLean et al. 2022)</span>. At it
+class="citation" data-cites="vortex">(McLean et al. 2022)</span>. At its
 inception, the Sardine project was thought as an attempt to provide a
 functional but barebones live coding library for demonstration purposes
 in a dissertation manuscript; a library capable enough for showing the
@@ -683,13 +684,12 @@ programming. Multiple iterators can be used in the same pattern by
 playing around with the <code>Pat()</code> mechanism previously
 described. This allows for the creation of arbitrarily complex patterns
 composed of multiple values assigned to any parameter accessible through
-a given <em>sender</em>.</p>
-<p>Even though the list of features provided by the pattern language is
-dense, its overall architecture is not particularly complex and allows
-for quick customisation and feature addition from a user willing to do
-so. This parser also provides a basic workaround for most <em>patterning
-duties</em> while awaiting for the inclusion of new parsers in future
-versions of the software.</p>
+a given <em>sender</em>. Even though the list of features provided by
+the pattern language is dense, its overall architecture is not
+particularly complex and allows for quick customisation and feature
+addition from a user willing to do so. This parser also provides a basic
+workaround for most <em>patterning duties</em> while awaiting for the
+inclusion of new parsers in future versions of the software.</p>
 <h3 data-number="3.3.2"
 id="planned-extensions-of-the-parser-mechanism"><span
 class="header-section-number">3.3.2</span> Planned extensions of the
@@ -710,7 +710,7 @@ mentioned <em>surfboards</em>, relying on the low-level scheduling
 mechanism. This will allow to test the ease of inclusion of new
 patterning and live coding paradigms to the Sardine system while opening
 new ways to write complex melodies and harmonic content. A refactoring
-of the basic parser is also currently being worked on. Even though the
+of the basic parser is also currently being worked on. Although the
 pattern language currently supports the definition of custom operators
 and the function calls with an arbitrary number of arguments, we do not
 consider that the language is advanced enough to support all the
@@ -726,8 +726,8 @@ class="header-section-number">4</span> Sardine usage</h1>
 <img src="images/sardine_code_paper_fig.png"
 alt="Sardine in use at the Zorba" /><br />
 
-<p>Over its relatively short timespan, from october 2022 to december
-2022, Sardine has already been used multiple times for public music
+<p>Over its relatively short timespan, from september to december 2022,
+Sardine has already been used multiple times for public music
 performance. The thrill and danger arising from using an unstable and
 unpolished software has constituted an obstacle as well as an appealing
 perspective for most users <span class="citation"
@@ -810,48 +810,46 @@ address more urgent concerns. To help keeping track of the current state
 of the system, tests have recently been introduced. However, better code
 coverage is still much needed to track each specific component and their
 mutual interaction. Only time critical parts of the system are currently
-extensively covered by tests. Most of the rewrite work for
-<code>v.0.2.0</code> has been focused on improvements to the temporal
-model and component handling. Although very promising, it remains
-fragile and requires careful and time-consuming testing to keep track of
-regressions and possible issues brought by additions to the model.
-Regular updates are being provided to increase the <em>playability</em>
-of the system.</p>
-<p>Sardine still need more coverage and documentation focused on new and
-unexperienced users. The installation process, despite being now more
-accessible than ever, still requires the manual configuration of a
-suitable text editor and the installation of a full Python runtime.
-While the documentation currently provides a thorough tour and
-exploration of the system, friendly video and text tutorials are
-currently lacking. As a temporary solution, we actively provide the code
-used by performers in a special <code>Demo</code> section included on
-the Sardine website. Automatic documentation of the codebase is also
-planned to help with the process of maintaining good and up-to-date
-documentation. Every part of the source code is extensively documented
-for contributors, but this is currently unavailable to surface users not
-willing to deep dive into the source code.</p>
-<p>The modularity of Sardine can be considered as its major strength and
-weakness. The first configuration of the software can be quite
-intimidating for newcomers that doesn’t yet know what task they wish to
-accomplish using Sardine (MIDI, OSC, SuperDirt, etc..). Most options are
-disabled by default and must be added manually to configure a
-session.</p>
+extensively covered. Most of the rewrite work for <code>v.0.2.0</code>
+has been focused on improvements to the temporal model and component
+handling. Although very promising, it remains fragile and requires
+careful and time-consuming testing to keep track of regressions and
+possible issues brought by additions to the model. Regular updates are
+being provided to increase the <em>playability</em> of the system.</p>
+<p>Sardine is in dire need of documentation focused on new and
+unexperienced users. The installation process – despite being now more
+accessible than ever – still requires the manual configuration of a
+suitable text editor and the installation of a full Python runtime. The
+documentation currently only provides a thorough tour and exploration of
+the system but lacks friendly videos, text tutorials and contents that
+could lead to the adoption of Sardine by more users. As a temporary
+solution for demonstrating the capabilities of the system, we actively
+provide the code used by performers in a special <code>Demo</code>
+section included on the website. Automatic documentation of the codebase
+is planned to help with the process of maintaining good technical
+documentation, liberating time to focus on user-focused contents. Every
+part of the source code is extensively documented for contributors, but
+currently unavailable to surface users not willing to deep dive into the
+source code. The modularity of Sardine can be considered as its major
+strength and weakness. The first configuration of the software can be
+quite intimidating for newcomers that doesn’t yet know what task they
+wish to accomplish using Sardine (MIDI, OSC, SuperDirt, etc..). Most
+options are disabled by default and must be added manually to configure
+a session.</p>
 <h2 data-number="5.2" id="learning-contributing-testing"><span
 class="header-section-number">5.2</span> Learning, contributing,
 testing</h2>
-<p>Despite its relative youth, having started in summer 2022, the
-Sardine system project is already freely usable and modifiable by its
-users. The project is hosted on GitHub under the GNU General Public
+<p>The Sardine system project is already freely usable and modifiable by
+its users. It is currently hosted on GitHub under the GNU General Public
 License v.3.0. We warmly encourage anyone interested to actively try
-this experimental system in order to chase down bugs, add bespoke
-features and/or collectively build this new live coding system. A
-Discord server and a TOPLAP <code>#sardine</code> channel are used for
-communication around the project. Sardine is by no mean as complete or
-as fully featured as other existing softwares currently used by the
-community. We are still in the process of catching up with other
-alternatives, thinking as Sardine as a way to extend or collaborate with
-other musicians and visualists using different live coding
-environments.</p>
+this experimental system in order to help us with chasing bugs and/or
+collectively build this new live coding system. A Discord server and a
+TOPLAP <code>#sardine</code> channel are used for communication around
+the project. Sardine is currently by no mean as complete or as fully
+featured as other existing propositions used by the community. We are
+still in the process of catching up with known alternatives, thinking as
+Sardine as a way to extend or collaborate with other musicians and
+visualists using different live coding environments.</p>
 <h1 data-number="6" id="acknowledgments"><span
 class="header-section-number">6</span> Acknowledgments</h1>
 <p>I warmly thank my thesis supervisors Laurent Pottier and Alain

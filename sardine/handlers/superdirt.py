@@ -23,7 +23,6 @@ class SuperDirtHandler(Sender):
         super().__init__()
         self._name = name
         self.loop = loop
-        loop.add_child(self)
 
         # Opening a new OSC Client to talk with it
         self._osc_client = osc_udp_client(
@@ -36,6 +35,8 @@ class SuperDirtHandler(Sender):
             "dirt_play": self._dirt_play,
             "panic": self._dirt_panic,
         }
+
+        loop.add_child(self, setup=True)
 
     def __repr__(self) -> str:
         return f"<SuperDirt: {self._name} nudge: {self._ahead_amount}>"

@@ -24,13 +24,14 @@ class OSCHandler(Sender):
     ):
         super().__init__()
         self.loop = loop
-        loop.add_child(self)
 
         # Setting up OSC Connexion
         self._ip, self._port, self._name = (ip, port, name)
         self._ahead_amount = ahead_amount
         self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
         self._events = {"send": self._send}
+
+        loop.add_child(self, setup=True)
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} {self._name} ip={self._ip!r} port={self._port}>"

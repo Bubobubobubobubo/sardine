@@ -31,10 +31,11 @@ class OSCInHandler(BaseHandler):
     ):
         super().__init__()
         self.loop = loop
-        loop.add_child(self)
 
         self._ip, self._port, self._name = ip, port, name
         self._watched_values = {}
+
+        loop.add_child(self, setup=True)
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} {self._name} ip={self._ip!r} port={self._port}>"

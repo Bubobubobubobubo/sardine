@@ -125,11 +125,12 @@ class BaseHandler:
 
     # Public methods
 
-    def add_child(self, handler: "BaseHandler"):
+    def add_child(self, handler: "BaseHandler", *, setup: bool = False):
         """Adds another handler as a child of this handler.
 
         If the parent handler is already added to a fish bowl, this
-        method will *not* add the child handler to the same fish bowl.
+        method will only add the child handler to the same fish bowl
+        if `setup` is True.
         The child handler can still be added to the parent's fish bowl
         before or after this is called.
 
@@ -143,6 +144,10 @@ class BaseHandler:
 
         Args:
             handler (BaseHandler): The handler being added.
+            setup (bool):
+                If the parent handler has been added to a fish bowl,
+                enabling this will add the child handler to the same
+                fish bowl.
 
         Raises:
             ValueError:
@@ -164,11 +169,14 @@ class BaseHandler:
         handler._parent = self  # pylint: disable=protected-access
         self._children.append(handler)
 
-    def remove_child(self, handler: "BaseHandler"):
+        if setup and handler.env is None and self.env is not None:
+            self.env.add_handler(handler)
+
+    def remove_child(self, handler: "BaseHandler", *, teardown: bool = False):
         """Removes an existing child handler from this handler.
 
-        If the child handler was already set up, this method will *not*
-        remove the child handler from the fish bowl.
+        If the child handler was already set up, this method will only
+        remove the child handler from the fish bowl if `teardown` is True.
 
         After a handler has been removed, it can be re-used in new fish bowls.
 
@@ -177,6 +185,9 @@ class BaseHandler:
 
         Args:
             handler (BaseHandler): The child handler to remove.
+            teardown (bool):
+                If the child handler was set up, this will remove
+                the handler from the fish bowl.
         """
         try:
             i = self._children.index(handler)
@@ -190,6 +201,9 @@ class BaseHandler:
 
         handler._parent = None  # pylint: disable=protected-access
         self._children.pop(i)
+
+        if teardown and handler.env is not None:
+            handler.env.remove_handler(handler)
 
     def register(self, event: Optional[str]):
         """Registers the handler for the given event.

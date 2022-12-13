@@ -7,7 +7,7 @@ Joking aside, and for those of you who already know how to program, *swimming fu
 ### Out-of-time
 
 ```python3
-S('bd').out()
+D('bd')
 ```
 
 This command will play a single bassdrum with the **SuperDirt** sound engine. We are not currently using a *swimming function*, this event is atomic and non-repeating. It is a one-shot event, a single instruction sent to the **Python** interpreter. We haven't learned anything yet, you don't know anything about **Senders**, *swimming functions*, etc... Just note that these one-letter objects are constantly and repeatedly used to trigger different types of messages. We will need to *pattern* them and to *arrange* or *compose* them in time. You can use **Sender** objects outside of a recursive function. It will work, but you will be *un-timed*, or *out-of-time*, just like your regular **Python** script that doesn't really care about time or about when or how things happen.
@@ -39,16 +39,16 @@ Using `silence(function_name)` or just `silence()` will halt the function execut
 
 ```python3
 @swim
-def basic(d=0.5, i=0):
+def basic(p=0.5, i=0):
     print('I am swimming now!')
-    again(basic, d=0.5, i=i+1)
+    again(basic, p=0.5, i=i+1)
 
 silence(basic)
 ```
 
-This is a *swimming function* with some minor improvements. The function is passed a duration (`d`) and an iterator (`i`) as arguments. This is the function you will want/need to save as a snippet somewhere in your text editor. **Sardine** users write this skeleton constantly, mechanically, without even thinking about it.
+This is a *swimming function* with some minor improvements. The function is passed a period (`p`) and an iterator (`i`) as arguments. This is the function you will want/need to save as a snippet somewhere in your text editor. **Sardine** users write this skeleton constantly, mechanically, without even thinking about it.
 
-- The `d` parameter is the function's **duration**,  the `0.5` value representing half of a beat.  
+- The `p` parameter is the function's **period**,  the `0.5` value representing half of a beat.  
 
 - The `i` parameter is an hand-crafted **iterator**, progressively incremented by recursion. Don't be scared by all this jargon. It just means that the value increases by one each time the function is repeated.
 
@@ -56,9 +56,9 @@ This is a *swimming function* with some minor improvements. The function is pass
 
 ```python3
 @swim
-def basic(d=0.5, i=0, j=0, k=0):
+def basic(p=0.5, i=0, j=0, k=0):
     print(f'I am swimming with {i}, {j}, and {k}!')
-    again(basic, d=0.5, i=i+1, j=j+2, k=P('r*10', i))
+    again(basic, p=0.5, i=i+1, j=j+2, k=P('r*10', i))
 
 silence(basic)
 ```
@@ -97,18 +97,18 @@ A *swimming function* calling another one, which will call back the first one in
 
 ```python3
 @swim
-def first(d=0.5, rng=0):
+def first(p=0.5, rng=0):
     print(f"Received: {rng}")
     rng = randint(1,10)
     print(f"Sending: {rng}")
-    again(second, d=0.5, rng=rng)
+    again(second, p=0.5, rng=rng)
 
 # evaluate me first
-def second(d=0.5, rng=0):
+def second(p=0.5, rng=0):
     print(f"Received: {rng}")
     rng = randint(1,10)
     print(f"Sending: {rng}")
-    again(first, d=0.5, rng=rng)
+    again(first, p=0.5, rng=rng)
 ```
 Exchanging data between *swimming functions* just like sardines playing waterpolo. This is just an extension of some on the materials depicted above. There is no limit to the things you can do by recursion. It will only gradually cause more headaches as you go along.
 
@@ -160,9 +160,9 @@ By using the `play()` method and combining it with regular patterns, you can mor
 ### Surfing on MIDI Cables
 
 ```python
-PA >> play_midi('<C@maj7>', dur='1~8')
+PA >> play_midi('<C@maj7>', period='1~8')
 PA.dur = 3
-PB >> play_midi("C.., C|C'|C''", dur='1~8')
+PB >> play_midi("C.., C|C'|C''", period='1~8')
 PB.rate = 2
 ```
 The `play_midi()` function is the good old `M()` **Sender**. The `note=` parameter has been promoted to an *arg* in this mode in order to save you from having to type 5 more letters :)
@@ -175,7 +175,7 @@ PA >> play('bd, ., hhh, .')
 PA.rate = 1
 
 PB >> play('cp')
-PB.dur = 0.5
+PB.period = 0.5
 
 PB >> None # stops only the PB Player
 
@@ -192,14 +192,16 @@ This section requires a good understanding of general **Sardine** concepts. You 
 ```python
 
 @swim
-def fast(d=0.25, i=0):
-    S('bd', speed='0.5,2', legato=0.1).out(i, div=4, rate=2)
-    S('hh, jvbass:0|8|4,',
+def fast(p=0.25, i=0):
+    D('bd', speed='0.5,2', legato=0.1, i=i, d=4, rate=2)
+    D('hh, jvbass:0|8|4,',
             pan='[0:1,0.1]',
-            legato=0.1).out(i, div=8 if rarely()
-                    else 5, rate=2)
-    S('cp', legato=0.1).out(i, div=8)
-    a(fast, d=1/8, i=i+1)
+            legato=0.1,
+            i=i,
+            d=8 if rarely() else 5,
+            rate=2)
+    D('cp', legato=0.1, i=I, d=8)
+    a(fast, p=1/8, i=i+1)
 ```
 **Sardine** *swimming functions* are usually slow (compared to the clock internal speed). However, you can speed up your recursion, the only hard limit being the speed at which the clock itself operates. It means that the faster you go, the better the rhythmic precision. The faster, the merrier! You will be able to have a finely grained control over time and events, with the ability to write more groovy or swinging code. It will also make your LFOs and signal-like patterns sing more.
 
@@ -207,15 +209,15 @@ The recipe for *fast swimming* is the following:
 
 - Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
 
-- Play a lot with silences and with the arguments of `.out(iterator, div, rate)`.
+- Play a lot with silences and with the arguments `iterator, div, rate`.
 
 ### Fast swimming template
 
 ```python
 @swim
-def fast(d=0.5, i=0):
+def fast(p=0.5, i=0):
     # print("Damn, that's fast!")
-    a(fast, d=1/32, i=i+1)
+    a(fast, p=1/32, i=i+1)
 ```
 This is the template for a fast *swimming function*. You can skip the iterator if you don't need it or if you wish to use another iteration tool (such as **amphibian variables**). This function is really fast. Uncomment the `print` statement to notice how fast it is. To learn how to control it efficiently, take a look at the following paragraphs about *divisors* and the *rate* factor.
 
@@ -224,15 +226,15 @@ This is the template for a fast *swimming function*. You can skip the iterator i
 ```python
 
 @swim
-def fast(d=0.5, i=0):
-    S('bd').out(i, div=8)
-    a(fast, d=1/16, i=i+1)
+def fast(p=0.5, i=0):
+    D('bd', i=i, d=8)
+    a(fast, p=1/16, i=i+1)
 ```
-The `.out()` method as well as the independant `P()` [object](#patterning-freely-p) can take up to three arguments:
+The `D()` [object](#patterning-freely-p) can take up to three arguments:
 
 - `i` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. This **iterator** is the index of the values extracted from your linear list-like patterns. How this index will be interpreted will depend on the next two arguments.
 
-- `div` (*int*): **a timing divisor**. It is very much alike a modulo operation. If `div=4`, the event will hit once every 4 iterations. The default is `div=1`, where every event is a hit! Be careful not to set a `div=1` on a very fast *swimming function* as it could result in catastrophic failure / horrible noises. There is no parachute out in the open sea.
+- `d` (*int*): **a timing divisor**. It is very much alike a modulo operation. If `d=4`, the event will hit once every 4 iterations. The default is `d=1`, where every event is a hit! Be careful not to set a `d=1` on a very fast *swimming function* as it could result in catastrophic failure / horrible noises. There is no parachute out in the open sea.
 
 - `rate` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the iteration speed, the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a rate of `0.5`, the result will be perceptually similar to `1, 1, 2, 2, 3, 3`.
 
@@ -240,11 +242,11 @@ Let's illustrate. In the example below, we are playing with various divisors to 
 
 ```python
 @swim
-def fast(d=0.5, i=0):
-    S('bd').out(i, div=8)
-    S('hh').out(i, div=7)
-    S('sd').out(i, div=16)
-    a(fast, d=1/16, i=i+1)
+def fast(p=0.5, i=0):
+    D('bd', i=i, d=8)
+    D('hh', i=i, d=7)
+    D('sd', i=i, d=16)
+    a(fast, p=1/16, i=i+1)
 ```
 
 ### Can we do more?
@@ -254,11 +256,12 @@ Of course we can. So far, we only used one patterning speed because every **send
 ```python
 c.bpm = 125
 @swim
-def there_is_a_light(d=0.5, i=0):
-    S('drum', legato=1, speed='1').out(i, 8)
-    S('drum:[1,2,3,4]', legato=1,
-        speed=P('1,2,3,4,5,1!2,4!4', i+1, 2, 0.5)).out(i, 4)
-    a(there_is_a_light, d=1/8, i=i+1)
+def there_is_a_light(p=0.5, i=0):
+    D('drum', legato=1, speed='1', i=i, d=8)
+    D('drum:[1,2,3,4]', legato=1,
+        speed=P('1,2,3,4,5,1!2,4!4', i+1, 2, 0.5),
+        i=i, d=8)
+    a(there_is_a_light, p=1/8, i=i+1)
 ```
 Go slow, read line after line and you will eventually get it!
 
@@ -273,15 +276,15 @@ Take a *swimming function*, make it long enough, use our very special `sleep()` 
 
 ```python
 @swim
-def sonorous_cake(d=0.5, i=0):
-    S('bd').out()
+def sonorous_cake(p=0.5, i=0):
+    D('bd')
     sleep(0.5)
-    S('hh').out()
+    D('hh')
     sleep(0.5)
-    S('bd').out()
+    D('bd')
     sleep(0.5)
-    S('sn').out()
-    a(sonorous_cake, d=2, i=i+1)
+    D('sn')
+    a(sonorous_cake, p=2, i=i+1)
 ```
 
 ### Declarative style
@@ -289,7 +292,7 @@ def sonorous_cake(d=0.5, i=0):
 Make your *swimming functions* very dense, write using a mostly declarative style. Spice it up with the patterning system if you'd like:
 ```python
 @swim
-def one_line(d=0.5, i=0):
-    S('bd, drum, sn, drum:2').out(i)
-    a(one_line, d=0.5, i=i+1)
+def one_line(p=0.5, i=0):
+    D('bd, drum, sn, drum:2', i=i)
+    a(one_line, p=0.5, i=i+1)
 ```

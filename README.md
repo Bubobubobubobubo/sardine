@@ -45,48 +45,31 @@ and rhythmic patterns of any kind and to map them to any electronic instrument:
     reactive toolbox.
   - Watch values as they change and propagate them to your musical patterns or code.
 - **Synchronise with other computers / other musical instruments**
-  - **MIDI Clock** In and Out.
-  - **Link Protocol** support.
+  - **MIDI Clock** Out.
+  - **Link Protocol** synchronization.
 - **Make Python code time-aware**
   - Using temporal recursion, you can make any Python code time and tempo aware.
   - Launch any sync or async function precisely in time,
     with results falling back on time.
-  - Hack your own **Senders** or **Receivers** to turn **Sardine** to your liking!
-
-Broadly speaking, **Sardine** can be said to have three main features:
-
-- A **Clock** system capable of syncing itself instruments on other computers.
-  This clock is organizing your **Python** code so that it can be time / tempo aware.
-  Using temporal recursion, **Sardine** is pretty good at describing looping processes,
-  musical patterns, etc...
-- A **Pattern language** that lives inside **Sardine**, designed to make musical
-  sequences/patterns easier and fun to write. This is a language focused on
-  generative/algorithmic music making, capable of matching your typical sequencer.
-- **Senders** dispatching your patterns to variouts **outputs** (**MIDI**, **OSC**,
-  **SuperCollider**). The list is centered around what I am using but adding a
-  **Sender** is fairly easy to do. There is a plan to support more (**DMX**,
-  other audio engines, etc.).
+  - Hack your own **Senders** or **Receivers** to pattern whatever you see fit!
 
 ## Contributions
 
-Sardine is currently in the development phase. We are still exploring what
-**Sardine** is and what it could be and you might see some things changing
-pretty quickly as a result.
-**Sardine** is looking for contributors! Anybody is welcome to contribute with
-code / documentation / thoughts, etc... You can contact the **Sardine** community
-directly on **Discord** or **PM** me if you have specific questions.
+Sardine is currently in the early development phase. We are looking for contributors! 
+Anybody is welcome to contribute with code / documentation / thoughts, etc... You can 
+contact the **Sardine** community directly on **Discord** or **PM** me if you have 
+specific questions.
 
 ### Documenting Sardine
 
-**Sardine** is a **Python** library that you learn to use as a musical instrument.
-For this reason, documentation is of paramount importance so that others can
-learn your cool tricks too :). The documentation resides in the `docs/` folder.
-It is a bunch of loosely organised Markdown files. You can contribute by editing
-these files and adding the missing bit of information you would like to see being
-updated or added.
+**Sardine** is a **Python** library that you learn to use as a musical instrument. For
+this reason, documentation is of paramount importance so that others can learn your cool
+tricks too :). The documentation resides in the `docs/` folder. It is a bunch of loosely
+organised Markdown files. You can contribute by editing these files and adding the 
+missing bit of information you would like to see being updated or added.
 
-The majority of the source code lives in the `sardine/` folder. Most functions
-are already documented but the architecture of **Sardine** needs some time to
-get used to. You can contact me directly if you would like to learn more
-about it. There are no contributions rules for the moment, and I will explore
-each and every request that you would like to propose!
+Source code is contained to the `sardine/` and `fishery/` folder. Most functions are 
+already documented but the architecture of **Sardine** needs some time to get used to.
+You can contact me directly if you would like to learn more about it. There are no
+contributions rules for the moment, and I will explore each and every request that you 
+would like to propose!

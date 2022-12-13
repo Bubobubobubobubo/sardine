@@ -78,9 +78,9 @@ profile = [
 ]
 
 [project.urls]
-homepage = "https://sardine.raphaelforment.fr"
-documentation = "https://sardine.raphaelforment.fr"
-repository = "https://github.com/Bubobubobubobubo/sardine"
+Homepage = "https://sardine.raphaelforment.fr"
+Documentation = "https://sardine.raphaelforment.fr"
+"Source Code" = "https://github.com/Bubobubobubobubo/sardine"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]

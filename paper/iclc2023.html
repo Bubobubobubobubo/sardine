@@ -362,11 +362,11 @@ alt="Event Loop Diagram" />`
 <p>Sardine is making use of the asynchronous programming features
 offered by Python. More specifically, Sardine takes advantage of the
 little known <code>asyncio</code> REPL prototype introduced by Python
-3.8 <span class="citation" data-cites="asynciorepl">(Yuri Selivanov,
+3.8 <span class="citation" data-cites="asynciorepl">(Selivanov,
 n.d.)</span>. The UVLoop <span class="citation"
-data-cites="uvloop">(Yury Selivanov 2016)</span> drop-in replacement
-event loop is also being used – but not on Windows – in order to speed
-up the scheduling of asynchronous calls. Several hot-patches to the
+data-cites="uvloop">(Selivanov 2016)</span> drop-in replacement event
+loop is also being used – but not on Windows – in order to speed up the
+scheduling of asynchronous calls. Several hot-patches to the
 asynchronous loop have been introduced by John Phan
 (<em>thegamecracks</em>) in order to make its behaviour consistent on
 every major OS platform. Sardine is laid out as a series of abstractions
@@ -541,7 +541,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a hr
 id="case-study-of-a-component-the-midi-sender"><span
 class="header-section-number">3.2.2</span> Case-study of a component:
 the MIDI sender</h3>
-<p>In the previoous code example, a MIDI handler was added to the
+<p>In the previous code example, a MIDI handler was added to the
 <code>FishBowl</code>, giving access to a new MIDI output.
 <em>Senders</em> are one type of Sardine modular components which
 requires the collaboration of multiple parts of the system to function
@@ -653,7 +653,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a hr
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>M(note<span class="op">=</span><span class="st">&#39;&lt;C@maj7&gt;&#39;</span>, velocity<span class="op">=</span><span class="st">&#39;80~120&#39;</span>, channel<span class="op">=</span><span class="st">&#39;0|1|2&#39;</span>, i<span class="op">=</span>i) </span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SuperDirt call, picking samples &#39;0&#39; to &#39;20&#39; in order in the &#39;drum&#39; folder. Speed parameter</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ramping from 1 to 10 in increments of 2, shape is the sin function of current time divided by 2.</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20], speed=&#39;[1:10,2]&#39;, shape=&#39;sin($)/2&#39;, i=i)</span></span></code></pre></div>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20]&quot;</span>, speed<span class="op">=</span><span class="st">&#39;[1:10,2]&#39;</span>, shape<span class="op">=</span><span class="st">&#39;sin($)/2&#39;</span>, i<span class="op">=</span>i)</span></code></pre></div>
 <p>The querying of values in the multiple patterns defined in each
 <em>sender</em> is done by providing a single pattern-wide
 <em>iterator</em> (labelled as <code>i</code>) as an argument to each
@@ -677,7 +677,7 @@ the pattern will be played. This is mainly used to generate interesting
 rhythms by confronting <em>senders</em> calls with different
 <code>div</code>s.</li>
 </ul>
-<p>In our opinion, the iteration-based pattern system suits nicely to a
+<p>In our opinion, the iteration-based pattern system is suited to a
 system based on the concept of temporal recursion. Recursive operations
 are often used as iteration tools in functional approaches to
 programming. Multiple iterators can be used in the same pattern by
@@ -723,10 +723,10 @@ pattern writing style typically found in other historical live coding
 libraries.</p>
 <h1 data-number="4" id="sardine-usage"><span
 class="header-section-number">4</span> Sardine usage</h1>
-<img src="images/sardine_code_paper_fig.png"
+<img src="images/sardine_code_paper_fig.png" style="width:100.0%"
 alt="Sardine in use at the Zorba" /><br />
 
-<p>Over its relatively short timespan, from september to december 2022,
+<p>Over its relatively short timespan, from September to December 2022,
 Sardine has already been used multiple times for public music
 performance. The thrill and danger arising from using an unstable and
 unpolished software has constituted an obstacle as well as an appealing
@@ -765,6 +765,9 @@ codebase, having been proved useful in the context of live performances
 This experience also proved the usefulness of adding better support for
 the definition of custom-fit <em>senders</em> and output/patterning
 interfaces.</p>
+<p><img src="images/tolvera.jpg" style="width:49.0%"
+alt="Tölvera artificial life simulation run inside a Sardine @swim function." /><br />
+</p>
 <p>At the Intelligent Instruments Lab in Reykjavík, Jack Armitage has
 been using Sardine to live code the Magnetic Resonator Piano (MRP) <span
 class="citation"
@@ -787,15 +790,15 @@ examples of Sardine being used for visual output. In this case, the
 Taichi numerical simulation library was able to run its animation frame
 loop as a <code>@swim</code> function, with Sardine’s recursion
 occurring fast enough to give 60fps graphics<a href="#fn6"
-class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.
-These early examples showed the diversity of approaches that are
-possible in the Python ecosystem, and they also usefully highlighted
-usability pain points and performance bottlenecks with Sardine. As a
-result, substantial rewriting efforts have been taking place to
-accommodate these needs. Motivation for the rewrite process was found in
-the perspective to support more of these creative endeavours that would
-be hard to undertake in more closed or less configurable live coding
-systems.</p>
+class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>
+(see Figure 11). These early examples showed the diversity of approaches
+that are possible in the Python ecosystem, and they also usefully
+highlighted usability pain points and performance bottlenecks with
+Sardine. As a result, substantial rewriting efforts have been taking
+place to accommodate these needs. Motivation for the rewrite process was
+found in the perspective to support more of these creative endeavours
+that would be hard to undertake in more closed or less configurable live
+coding systems.</p>
 <h1 data-number="5" id="conclusion"><span
 class="header-section-number">5</span> Conclusion</h1>
 <h2 data-number="5.1" id="current-issues-and-shortcomings"><span
@@ -939,15 +942,15 @@ Rossum, Guido Van. 2009a. <span>“Final Word on Tail Calls.”</span> Blog.
 <div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
 ———. 2009b. <span>“Tail Recursion Elimination.”</span> Blog.
 </div>
-<div id="ref-asynciorepl" class="csl-entry" role="doc-biblioentry">
-Selivanov, Yuri. n.d. <span>“Implement Asyncio REPL.”</span> <a
-href="https://github.com/python/cpython/issues/81209"
-class="uri">https://github.com/python/cpython/issues/81209</a>.
-</div>
 <div id="ref-uvloop" class="csl-entry" role="doc-biblioentry">
 Selivanov, Yury. 2016. <span>“UVLoop.”</span> <em>GitHub
 Repository</em>. <a href="https://github.com/MagicStack/uvloop"
 class="uri">https://github.com/MagicStack/uvloop</a>; GitHub.
+</div>
+<div id="ref-asynciorepl" class="csl-entry" role="doc-biblioentry">
+———. n.d. <span>“Implement Asyncio REPL.”</span> <a
+href="https://github.com/python/cpython/issues/81209"
+class="uri">https://github.com/python/cpython/issues/81209</a>.
 </div>
 <div id="ref-SorensenTemporal" class="csl-entry" role="doc-biblioentry">
 Sorensen, Andrew. 2013. <span>“The Many Faces of a Temporal

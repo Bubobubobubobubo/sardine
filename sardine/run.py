@@ -3,9 +3,7 @@ import sys
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-
 from rich import print
-
 from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
@@ -14,7 +12,9 @@ from .utils import config_line_printer, get_snap_deadline, sardine_intro
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
 
-# Reading user configuration (taken from sardine-config)
+#######################################################################################
+# READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
+
 config = read_user_configuration()
 clock = LinkClock if config.link_clock else InternalClock
 
@@ -22,7 +22,10 @@ clock = LinkClock if config.link_clock else InternalClock
 print(sardine_intro)
 print(config_line_printer(config))
 
-# Load user config
+
+#######################################################################################
+# LOADING USER CONFIGURATION
+
 if Path(f"{config.user_config_path}").is_file():
     spec = importlib.util.spec_from_file_location(
         "user_configuration", config.user_config_path
@@ -39,7 +42,9 @@ bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
 )
 
-# Opening SuperColliderXSuperDirt subprocess. Dissociated from the SuperDirt handlers.
+#######################################################################################
+# OPENING SUPERCOLLIDER/SUPERDIRT SUBPROCESS. DISSOCIATED FROM THE SUPERDIRT HANDLERS.
+
 config = read_user_configuration()
 if config.boot_supercollider:
     try:
@@ -52,24 +57,26 @@ if config.boot_supercollider:
     except OSError as Error:
         print(f"[red]SuperCollider could not be found: {Error}![/red]")
 
-# Basic handlers initialization
+#######################################################################################
+# HANDLERS INITIALIZATION. YOU CAN ADD YOUR MODULAR COMPONENTS HERE.
 
 # MIDI Handler: matching with the MIDI port defined in the configuration file
 midi = MidiHandler(port_name=str(config.midi))
 bowl.add_handler(midi)
 
 # OSC Loop: handles processing OSC messages
-osc_loop_obj = OSCLoop()
+osc_loop = OSCLoop()
+bowl.add_handler(osc_loop) # NOTE: always keep this loop running for OSC handlers
 
-# # OSC Handler: dummy OSC handler, mostly used for test purposes
-# my_osc_connexion = OSCHandler(
-#     ip="127.0.0.1",
-#     port=12345,
-#     name="Custom OSC Connexion",
-#     ahead_amount=0.0,
-#     loop=my_osc_loop,
-# )
-# Ocustom = my_osc_connexion.send
+# OSC Handler: dummy OSC handler, mostly used for test purposes
+dummy_osc = OSCHandler(
+    ip="127.0.0.1",
+    port=12345,
+    name="Custom OSC Connexion",
+    ahead_amount=0.0,
+    loop=osc_loop,
+)
+O = dummy_osc.send
 
 # # OSC Listener Handler: dummy OSCIn handler, used for test purposes
 # my_osc_listener = OSCInHandler(
@@ -78,10 +85,7 @@ osc_loop_obj = OSCLoop()
 
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
-    dirt = SuperDirtHandler(loop=osc_loop_obj)
-
-# NOTE: always keep this loop running for user-made OSC handlers
-bowl.add_handler(osc_loop_obj)
+    dirt = SuperDirtHandler(loop=osc_loop)
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
@@ -90,6 +94,9 @@ for player in player_names:
     globals()[player] = p
     bowl.add_handler(p)
 
+
+#######################################################################################
+# BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
 
 @overload
 def swim(
@@ -326,7 +333,8 @@ class Delay:
             sleep(self.duration)
 
 
-# Aliases!
+#######################################################################################
+# DEFINITION OF ALIASES
 
 clock = bowl.clock
 
@@ -357,5 +365,7 @@ if config.superdirt_handler:
         return play(dirt, dirt.send, *args, **kwargs)
 
 
-# Clock start
+#######################################################################################
+# CLOCK START: THE SESSION IS NOW LIVE
+
 bowl.start()

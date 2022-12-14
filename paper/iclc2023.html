@@ -154,9 +154,9 @@ href="https://tidalcycles.org">TidalCycles</a> rhythmical mininotation
 <span class="citation" data-cites="mclean2014making">(McLean
 2014)</span> or the <a href="https://sonic-pi.net/">Sonic Pi</a>
 imperative scheduling syntax <span class="citation"
-data-cites="aaron2016sonic">(Sam Aaron 2016)</span>. Sardine is designed
-as a general <em>agnostic</em> framework for approaching live coding
-using Python. Thus, the library is aiming to support different writing
+data-cites="aaron2016sonic">(Aaron 2016)</span>. Sardine is designed as
+a general <em>agnostic</em> framework for approaching live coding using
+Python. Thus, the library is aiming to support different writing
 paradigms and different approaches to live performance based on the
 manipulation of source code. The reliance on regular Python asynchronous
 functions for scheduling and music writing has for consequence that
@@ -250,34 +250,35 @@ environments.</p>
 <p>The development of Sardine began initially in a period of frantic
 collaborations and joint performances with the parisian <em>Cookie
 Collective</em> <span class="citation"
-data-cites="cookiewebsite">(Collective 2016)</span> and the Digital
-Audio Community from Lyon (<em>th4</em>, <em>rAlt144MI</em>, etc..).
-Stemming from the <em>demoscene</em> and shader-coding scene, the
-<em>Cookie</em> is known for its complex multimedia performances, each
-member relying on bespoke hybrid audio-visual setups ranging from low
-end computing devices to complex synthesizers and circuit-bended video
-mixers. It is also known for working in an improvised manner,
-customising its setup for each venue depending on the audience needs and
-expectations. The need to adapt and customize the live coding interfaces
-already in use to the needs of each performance and each artist gave
-rise to the idea of creating a modular interface that could be used and
-mastered by every member of the collective, while allowing for jam-ready
-synchronisation with other musicians and live-coders. The recent
-splitting of Foxdot’s development into several scattered branches
-reinforced the need for a central, customizable and easily editable
-Python interface, the software being particularly used in the french
-live coding community. Due to the open-ended nature of the development
-process, Sardine has been gradually shifting towards its current modular
-architecture, allowing each performer to refine the nature of the
-<em>inputs</em> and <em>outputs</em> controllable through the system,
-from simple MIDI note output to more convoluted custom Sysex and OSC
-message support. The invaluable help and expertise from John Phan has
-allowed for a complete deep rewrite of every base mechanism. With
-Sardine’s finalization of its new framework marks the beginning of a new
-stage in the development process, focused on introducing new features
-and improving existing ones. This process is managed in an
-<em>ad-hoc</em> manner, by encouraging users to propose ideas and
-contribute to an extensively documented codebase.</p>
+data-cites="cookiewebsite">(<span>“Cookie Collective”</span>
+2016)</span> and the Digital Audio Community from Lyon (<em>th4</em>,
+<em>rAlt144MI</em>, etc..). Stemming from the <em>demoscene</em> and
+shader-coding scene, the <em>Cookie</em> is known for its complex
+multimedia performances, each member relying on bespoke hybrid
+audio-visual setups ranging from low end computing devices to complex
+synthesizers and circuit-bended video mixers. It is also known for
+working in an improvised manner, customising its setup for each venue
+depending on the audience needs and expectations. The need to adapt and
+customize the live coding interfaces already in use to the needs of each
+performance and each artist gave rise to the idea of creating a modular
+interface that could be used and mastered by every member of the
+collective, while allowing for jam-ready synchronisation with other
+musicians and live-coders. The recent splitting of Foxdot’s development
+into several scattered branches reinforced the need for a central,
+customizable and easily editable Python interface, the software being
+particularly used in the french live coding community. Due to the
+open-ended nature of the development process, Sardine has been gradually
+shifting towards its current modular architecture, allowing each
+performer to refine the nature of the <em>inputs</em> and
+<em>outputs</em> controllable through the system, from simple MIDI note
+output to more convoluted custom Sysex and OSC message support. The
+invaluable help and expertise from John Phan has allowed for a complete
+deep rewrite of every base mechanism. With Sardine’s finalization of its
+new framework marks the beginning of a new stage in the development
+process, focused on introducing new features and improving existing
+ones. This process is managed in an <em>ad-hoc</em> manner, by
+encouraging users to propose ideas and contribute to an extensively
+documented codebase.</p>
 <h1 data-number="3" id="sardine-implementation"><span
 class="header-section-number">3</span> Sardine implementation</h1>
 <img src="images/usage.png" alt="Sardine usage workflow" /><br />
@@ -362,8 +363,8 @@ alt="Event Loop Diagram" />`
 <p>Sardine is making use of the asynchronous programming features
 offered by Python. More specifically, Sardine takes advantage of the
 little known <code>asyncio</code> REPL prototype introduced by Python
-3.8 <span class="citation" data-cites="asynciorepl">(Selivanov,
-n.d.)</span>. The UVLoop <span class="citation"
+3.8 <span class="citation" data-cites="asynciorepl">(Selivanov
+2019)</span>. The UVLoop <span class="citation"
 data-cites="uvloop">(Selivanov 2016)</span> drop-in replacement event
 loop is also being used – but not on Windows – in order to speed up the
 scheduling of asynchronous calls. Several hot-patches to the
@@ -407,9 +408,9 @@ class="header-section-number">3.1.2</span> Scheduling</h3>
 alt="Lifetime of an asynchronous ‘swimming’ function" /> 
 <p>Python is known to be a language that doesn’t have native support for
 tail-call recursion <span class="citation"
-data-cites="guido1 guido2">(Rossum 2009b, 2009a)</span>, making the
-infinite recursion of a function a delicate task. To properly support
-this central feature, a complex system based on John Phan’s
+data-cites="guido1 guido2">(Guido Van Rossum 2009a, 2009b)</span>,
+making the infinite recursion of a function a delicate task. To properly
+support this central feature, a complex system based on John Phan’s
 <code>AsyncRunners</code> has been developed and is used as the basis
 for every repetitive operation – such as a pattern – scheduled with
 Sardine. In the spirit of the metaphor followed by the whole program, a
@@ -488,8 +489,8 @@ end. Instead, it temporarily affects the value of
 <code>clock.time</code> and extends the perceived time of methods using
 that property. This mechanism has been introduced to mimick the
 <code>sleep()</code> statement found in other live coding tools such as
-Sonic Pi <span class="citation" data-cites="aaron2014temporal">(Samuel
-Aaron, Orchard, and Blackwell 2014)</span>.</p>
+Sonic Pi <span class="citation" data-cites="aaron2014temporal">(Aaron,
+Orchard, and Blackwell 2014)</span>.</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sonorous_cake(p<span class="op">=</span><span class="dv">2</span>, i<span class="op">=</span><span class="dv">0</span>):</span>
@@ -596,22 +597,22 @@ pattern evolving through time in the context of a <em>swimming
 function</em>. Patterns play an important role in the workflow of
 audio/visual live coders, allowing them to define rich evolving
 structures spanning over time <span class="citation"
-data-cites="magnusson2018performing">(Magnusson and McLean,
-n.d.)</span>. A generic interface – named <code>Pat()</code> – is also
-made available to Sardine users in order to increase the
-<em>patternability</em> of any given Python code or function call done
-in the context of recursive <em>swimming</em> calls. This basic test
-pattern language is best defined as a rich and terse interface dealing
-with lists of arbitrarily typed elements ranging from numbers to MIDI
-notes, samples or synthesizer names, OSC addresses, etc… The string
-input(s) composed by the user for each keyword argument provided to a
-<code>send</code> method is always ultimately resolved by the parser as
-final arbitrarily-nested list used for composing an output message.
-Quite possibly, multiple instances to different parsers will be
-supported in future versions as a way to vary the idioms usable to
-compose patterns. For now, only one parser is supported in each instance
-of the <code>FishBowl</code>. Its use is entirely optional for users
-willing to work with different methods.</p>
+data-cites="magnusson2018performing">(Magnusson and McLean 2018)</span>.
+A generic interface – named <code>Pat()</code> – is also made available
+to Sardine users in order to increase the <em>patternability</em> of any
+given Python code or function call done in the context of recursive
+<em>swimming</em> calls. This basic test pattern language is best
+defined as a rich and terse interface dealing with lists of arbitrarily
+typed elements ranging from numbers to MIDI notes, samples or
+synthesizer names, OSC addresses, etc… The string input(s) composed by
+the user for each keyword argument provided to a <code>send</code>
+method is always ultimately resolved by the parser as final
+arbitrarily-nested list used for composing an output message. Quite
+possibly, multiple instances to different parsers will be supported in
+future versions as a way to vary the idioms usable to compose patterns.
+For now, only one parser is supported in each instance of the
+<code>FishBowl</code>. Its use is entirely optional for users willing to
+work with different methods.</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>Pat(<span class="st">&#39;1, 2, 3, 2~40, 5!4, C@fifths&#39;</span>, i<span class="op">=</span>i) <span class="co"># standalone call to the parser, yielding one value</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&#39;amencutup:[1,10]&#39;</span>, legato<span class="op">=</span><span class="st">&#39;0.1~0.8&#39;</span>, room<span class="op">=</span><span class="st">&#39;0.5&#39;</span>, dry<span class="op">=</span><span class="st">&#39;[0.1,0.5:0.05]&#39;</span>, i<span class="op">=</span>i) <span class="co"># several calls nested</span></span>
@@ -867,9 +868,9 @@ more from the online Sardine chat channels.</p>
 <div id="refs" class="references csl-bib-body hanging-indent"
 role="doc-bibliography">
 <div id="ref-aaron2016sonic" class="csl-entry" role="doc-biblioentry">
-Aaron, Sam. 2016. <span>“Sonic Pi–Performance in Education, Technology
-and Art.”</span> <em>International Journal of Performance Arts and
-Digital Media</em> 12 (2): 171–78.
+Aaron, Samuel. 2016. <span>“Sonic Pi, Performance in Education,
+Technology and Art.”</span> <em>International Journal of Performance
+Arts and Digital Media</em> 12 (2): 171–78.
 </div>
 <div id="ref-aaron2014temporal" class="csl-entry"
 role="doc-biblioentry">
@@ -879,22 +880,38 @@ Aaron, Samuel, Dominic Orchard, and Alan F Blackwell. 2014.
 Functional Art, Music, Modeling &amp; Design</em>, 37–47.
 </div>
 <div id="ref-agential" class="csl-entry" role="doc-biblioentry">
-Armitage, Jack. 2022. <span>“Agential Scores.”</span> <a
-href="https://iil.is/research/agential-scores"
-class="uri">https://iil.is/research/agential-scores</a>.
+Armitage, Jack. 2022. <span>“Agential Scores.”</span> <em>Intelligent
+Instruments Lab</em>. <a href="https://iil.is/research/agential-scores"
+class="uri">https://iil.is/research/agential-scores</a> (Last Accessed:
+2022-12-14).
 </div>
 <div id="ref-cookiewebsite" class="csl-entry" role="doc-biblioentry">
-Collective, Cookie. 2016. <span>“Cookie Collective.”</span> <a
+<span>“Cookie Collective.”</span> 2016. <em>Collective Website</em>. <a
 href="https://cookie.paris/all/"
-class="uri">https://cookie.paris/all/</a>.
+class="uri">https://cookie.paris/all/</a> (Last Accessed: 2022-12-14).
 </div>
 <div id="ref-goltz2018ableton" class="csl-entry" role="doc-biblioentry">
 Goltz, Florian. 2018. <span>“Ableton Link–a Technology to Synchronize
 Music Software.”</span> In <em>Proceedings of the Linux Audio
 Conference</em>, 39–42.
 </div>
+<div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
+Guido Van Rossum. 2009a. <span>“NeoPythonic, Tail Recursion
+Elimination.”</span> <em>Personal Blog</em>. <a
+href="https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html"
+class="uri">https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html</a>
+(Last Accessed : 2022-12-14).
+</div>
+<div id="ref-guido2" class="csl-entry" role="doc-biblioentry">
+———. 2009b. <span>“NeoPythonic, Final Word on Tail Calls.”</span>
+<em>Personal Blog</em>. <a
+href="http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html"
+class="uri">http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html</a>
+(Last Accessed: 2022-12-14).
+</div>
 <div id="ref-isobar" class="csl-entry" role="doc-biblioentry">
-Jones, Daniel John. n.d. <span>“Isobar.”</span> <a
+Jones, Daniel John. n.d. <span>“Isobar.”</span> <em>GitHub
+Repository</em>. <a
 href="https://github.com/ideoforms/isobar">https://github.com/ideoforms/isobar</a>.
 </div>
 <div id="ref-kirkbride2016foxdot" class="csl-entry"
@@ -905,8 +922,11 @@ Conference on Live Interfaces</em>, 194–98.
 </div>
 <div id="ref-magnusson2018performing" class="csl-entry"
 role="doc-biblioentry">
-Magnusson, Thor, and Alex McLean. n.d. <span>“Performing with Patterns
-of Time.”</span>
+Magnusson, Thor, and Alex McLean. 2018. <span>“<span
+class="nocase">245Performing with Patterns of Time</span>.”</span> In
+<em><span class="nocase">The Oxford Handbook of Algorithmic
+Music</span></em>. Oxford University Press. <a
+href="https://doi.org/10.1093/oxfordhb/9780190226992.013.21">https://doi.org/10.1093/oxfordhb/9780190226992.013.21</a>.
 </div>
 <div id="ref-mclean2014making" class="csl-entry" role="doc-biblioentry">
 McLean, Alex. 2014. <span>“Making Programming Languages to Dance to:
@@ -933,14 +953,11 @@ and Aesthetic Influence in Computer Music Languages.”</span>
 <em>Organised Sound</em> 25 (1): 53–63.
 </div>
 <div id="ref-roberts2018" class="csl-entry" role="doc-biblioentry">
-Roberts, Charlie, and Graham Wakefield. 2018. <span>“Tensions and
-Techniques in Live Coding Performance.”</span>
-</div>
-<div id="ref-guido2" class="csl-entry" role="doc-biblioentry">
-Rossum, Guido Van. 2009a. <span>“Final Word on Tail Calls.”</span> Blog.
-</div>
-<div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
-———. 2009b. <span>“Tail Recursion Elimination.”</span> Blog.
+Roberts, Charlie, and Graham Wakefield. 2018. <span>“<span
+class="nocase">Tensions and Techniques in Live Coding
+Performance</span>.”</span> In <em><span class="nocase">The Oxford
+Handbook of Algorithmic Music</span></em>. Oxford University Press. <a
+href="https://doi.org/10.1093/oxfordhb/9780190226992.013.20">https://doi.org/10.1093/oxfordhb/9780190226992.013.20</a>.
 </div>
 <div id="ref-uvloop" class="csl-entry" role="doc-biblioentry">
 Selivanov, Yury. 2016. <span>“UVLoop.”</span> <em>GitHub
@@ -948,39 +965,42 @@ Repository</em>. <a href="https://github.com/MagicStack/uvloop"
 class="uri">https://github.com/MagicStack/uvloop</a>; GitHub.
 </div>
 <div id="ref-asynciorepl" class="csl-entry" role="doc-biblioentry">
-———. n.d. <span>“Implement Asyncio REPL.”</span> <a
+———. 2019. <span>“Implement Asyncio REPL.”</span> <a
 href="https://github.com/python/cpython/issues/81209"
 class="uri">https://github.com/python/cpython/issues/81209</a>.
 </div>
 <div id="ref-SorensenTemporal" class="csl-entry" role="doc-biblioentry">
 Sorensen, Andrew. 2013. <span>“The Many Faces of a Temporal
 Recursion.”</span> <a
-href="http://extempore.moso.com.au/temporal_recursion.html">http://extempore.moso.com.au/temporal_recursion.html</a>.
+href="http://extempore.moso.com.au/temporal_recursion.html"
+class="uri">http://extempore.moso.com.au/temporal_recursion.html</a>
+(Last Accessed: 2022-12-14).
 </div>
 </div>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Some videos of this older system can be found on…<a
-href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Some videos of this older system can be found on
+Raphaël’s YouTube channel: <a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p><em>Read, Eval, Print, Loop</em>: mechanism used by most
 interpreted languages to quickly process user input from the command
 line.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>The process for setting up various interfaces is
-extensively detailed on <a
-href="https://sardine.raphaelforment.fr">Sardine Website</a><a
-href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Decorators in Python are used to add a behaviour to an
-object without modifying the base object itself.<a href="#fnref4"
+extensively detailed on Sardine’s <a
+href="https://sardine.raphaelforment.fr">Website</a>.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Decorators in Python are used to add a behaviour to an
+object – such as a function – without modifying the base object
+itself.<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>Python codebase for the Magnetic Resonator Piano: <a
 href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>Code from this experiment can be found on the
-<em>Tölvera</em> GitHub repository:
-https://github.com/Intelligent-Instruments-Lab/iil-python-tools<a
-href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<em>Tölvera</em> GitHub repository: <a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </body>

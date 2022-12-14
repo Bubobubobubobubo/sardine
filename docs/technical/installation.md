@@ -27,14 +27,9 @@ Being aware of your installed **Python** versions is of tremendous importance. Y
 
 You can now safely proceed to download and install **Sardine**:
 
-!!! note "Automatic installation method"
-
-    1) Using a `shell` or `cmd`, type: `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ sardine-system`! You will sometimes have to type `python -m pip [command]` to install on your up-to-date Python.
-
-    2) Check that `sardine-config` and `fishery` are available by typing these commands. That's all you need to do!
-
-
-!!! note "Manually fishing a Sardine"
+```sh
+pip install sardine-system --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+```
 
 This will install the [sardine-system](https://pypi.org/project/sardine-system/) package from PyPI
 with an external index providing prebuilt wheels for the `python-rtmidi` dependency.
@@ -49,7 +44,9 @@ Alternatively, if you want to install the **development version**, follow the st
    If you are planning to contribute, you should clone the repository
    using [Git](https://git-scm.com/):
 
-These commands can take quite some time depending on your internet connexion, your computer specifications, etc... They will install **Sardine** as well as all the packages and libraries needed to get it running. This is likely the step where you will start noticing crashes, errors and sometimes some truly cryptic messages. Please watch carefully, and do not let an error pass without notice. This might result in a broken / uncomplete installation of **Sardine**.
+   ```shell
+   git clone https://github.com/Bubobubobubobubo/Sardine
+   ```
 
    Otherwise if you don't have Git installed, you can click
    the green *Code* button instead, download it as a zip, and unpack it.
@@ -71,7 +68,7 @@ These commands can take quite some time depending on your internet connexion, yo
    privileges. This is usually not recommended but it can help with the
    installation of other **Sardine** components.
 
-This command can take quite some time depending on your internet connection,
+The above commands can take quite some time depending on your internet connection,
 your computer specifications, etc... It will install **Sardine** as well as all
 the packages and libraries needed to get it running. This is likely the step
 where you will start noticing crashes, errors and sometimes some truly cryptic
@@ -115,7 +112,7 @@ This is the indication that **Sardine** was able to start!
 
 !!! important "SuperDirt is not enabled by default"
 
-    **Sardine** is perfectly capable of booting both **SuperCollider** and **SuperDirt** by itself. However, this mechanism is disabled by default because **I can't assume that you will have it installed and configured properly!** You can turn on the *SuperDirt autoboot* feature by tweaking the configuration. 
+    **Sardine** is perfectly capable of booting both **SuperCollider** and **SuperDirt** by itself. However, this mechanism is disabled by default because **I can't assume that you will have it installed and configured properly!** You can turn on the *SuperDirt autoboot* feature by tweaking the configuration.
 
 Open up the configuration tool by typing:
 ```shell

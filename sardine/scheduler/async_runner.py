@@ -474,7 +474,7 @@ class AsyncRunner:
         # If the interval was corrected, this should equal to:
         #    `period * beat_duration`
         expected_duration = self.clock.get_beat_time(period, time=shifted_time)
-        # print('wait for', expected_duration, 'time:', time, 'shift:', self.interval_shift)
+
         return time + expected_duration
 
     # Runner loop

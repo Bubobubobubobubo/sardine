@@ -57,14 +57,15 @@ Alternatively, if you want to install the **development version**, follow the st
 
 1) Download the repository from [GitHub](https://github.com/Bubobubobubobubo/sardine):
 
-   - If you are planning to contribute, you should clone the repository
-     using [Git](https://git-scm.com/):
+   If you are planning to contribute, you should clone the repository
+   using [Git](https://git-scm.com/):
 
-       ```shell
-       git clone https://github.com/Bubobubobubobubo/Sardine
-       ```
-   - Otherwise if you don't have Git installed, you can click
-     the green *Code* button instead, download it as a zip, and unpack it.
+   ```shell
+   git clone https://github.com/Bubobubobubobubo/Sardine
+   ```
+
+   Otherwise if you don't have Git installed, you can click
+   the green *Code* button instead, download it as a zip, and unpack it.
 
 2) Using a `shell` or `cmd`, go to the `sardine` folder you downloaded
    and run the command:

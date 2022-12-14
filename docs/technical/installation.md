@@ -1,9 +1,5 @@
 # Installation
 
-
-!!! tips "Installing from Pypi or from a package manager"
-    Installation of **Sardine**  using Pypi is not yet available.
-
 The installation of **Sardine** is done in two separate steps
 that you can go through in any order:
 
@@ -47,25 +43,42 @@ They sometimes end up piling up. Find the command that will summon your
 
 You can now safely proceed to download and install **Sardine**:
 
-!!! note "Fishing a Sardine"
+```sh
+pip install sardine-system --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+```
 
-    1) Install [Git](https://git-scm.com/)
-       or [download the project](https://github.com/Bubobubobubobubo/sardine#:~:text=with%20GitHub%20Desktop-,Download%20ZIP,-Latest%20commit)
-       from GitHub and place it wherever you like!
+This will install the [sardine-system](https://pypi.org/project/sardine-system/) package from PyPI
+with an external index providing prebuilt wheels for the `python-rtmidi` dependency.
+Right now, [python-rtmidi](https://pypi.org/project/python-rtmidi/#files)
+does not have prebuilt wheels for 3.10 and 3.11. Installing sardine without the
+external index will require C++ build tools in order to compile the RtMidi library.
 
-    - If you take the *Git* route, clone Sardine with the following command:
+Alternatively, if you want to install the **development version**, follow the steps below:
 
-      `git clone https://github.com/Bubobubobubobubo/Sardine`
+1) Download the repository from [GitHub](https://github.com/Bubobubobubobubo/sardine):
 
-    2) Using a `shell` or `cmd`, go to the `sardine` folder and run
-       `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .`.
-       This will install the sardine package with an external index providing
-       prebuilt wheels for the `python-rtmidi` dependency.
-       Remember to include the dot at the end of the command!
+   - If you are planning to contribute, you should clone the repository
+     using [Git](https://git-scm.com/):
 
-    - If you are using Linux or MacOS, use `sudo` to install with the highest
-      privileges. This is usually not recommended but it can help with the
-      installation of other **Sardine** components.
+       ```shell
+       git clone https://github.com/Bubobubobubobubo/Sardine
+       ```
+   - Otherwise if you don't have Git installed, you can click
+     the green *Code* button instead, download it as a zip, and unpack it.
+
+2) Using a `shell` or `cmd`, go to the `sardine` folder you downloaded
+   and run the command:
+
+   ```shell
+   pip install --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .
+   ```
+
+   The [`-e/--editable`](https://setuptools.pypa.io/en/latest/userguide/development_mode.html)
+   flag allows you to make changes to the source code after you've already installed the package.
+
+   If you are using Linux or MacOS, use `sudo` to install with the highest
+   privileges. This is usually not recommended but it can help with the
+   installation of other **Sardine** components.
 
 This command can take quite some time depending on your internet connection,
 your computer specifications, etc... It will install **Sardine** as well as all

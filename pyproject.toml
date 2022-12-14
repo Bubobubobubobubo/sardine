@@ -52,11 +52,11 @@ dependencies = [
     "exceptiongroup>=1.0.4",
 ]
 
-[tool.hatch.build.targets.wheel]
+[tool.hatch.build]
 packages = ["fishery", "sardine"]
 
 [tool.hatch.build.targets.sdist]
-only-include = ["sardine/", "fishery/", "tests/"]
+packages = ["sardine", "fishery", "tests"]
 
 [tool.hatch.version]
 path = "sardine/__init__.py"
@@ -80,9 +80,9 @@ profile = [
 ]
 
 [project.urls]
-homepage = "https://sardine.raphaelforment.fr"
-documentation = "https://sardine.raphaelforment.fr"
-repository = "https://github.com/Bubobubobubobubo/sardine"
+Homepage = "https://sardine.raphaelforment.fr"
+Documentation = "https://sardine.raphaelforment.fr"
+"Source Code" = "https://github.com/Bubobubobubobubo/sardine"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]

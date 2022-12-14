@@ -10,9 +10,9 @@
   <img src=https://img.shields.io/discord/1029399269574193203 />
   <img src=https://img.shields.io/github/license/Bubobubobubobubo/sardine />
   <img src=https://img.shields.io/github/stars/Bubobubobubobubo/sardine />
-  <img src=https://img.shields.io/pypi/wheel/sardine-system">
-  <img src=https://img.shields.io/pypi/v/sardine-system">
-  <img src=https://img.shields.io/pypi/status/sardine-system">
+  <img src=https://img.shields.io/pypi/wheel/sardine-system>
+  <img src=https://img.shields.io/pypi/v/sardine-system>
+  <img src=https://img.shields.io/pypi/status/sardine-system>
 </p>
 
 <p align="center">

@@ -70,8 +70,11 @@ Alternatively, if you want to install the **development version**, follow the st
    and run the command:
 
    ```shell
-   pip install --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .
+   pip install . --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
    ```
+
+   The period denotes the current directory of your shell, which should be
+   where you've downloaded your package.
 
    The [`-e/--editable`](https://setuptools.pypa.io/en/latest/userguide/development_mode.html)
    flag allows you to make changes to the source code after you've already installed the package.

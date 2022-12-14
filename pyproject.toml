@@ -52,9 +52,11 @@ dependencies = [
     "exceptiongroup>=1.0.4",
 ]
 
-[tool.hatch.build.targets.sdist]
+[tool.hatch.build]
 packages = ["fishery", "sardine"]
-only-include = ["sardine/", "fishery/", "tests/"]
+
+[tool.hatch.build.targets.sdist]
+packages = ["sardine", "fishery", "tests"]
 
 [tool.hatch.version]
 path = "sardine/__init__.py"

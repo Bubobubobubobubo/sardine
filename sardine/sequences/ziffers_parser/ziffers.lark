@@ -1,0 +1,8 @@
+?start: pattern
+
+?pitch_class: NUMBER          -> pc
+
+%import common.LETTER -> LETTER
+%import common.DIGIT  -> DIGIT
+%import common.WS_INLINE
+%ignore WS_INLINE

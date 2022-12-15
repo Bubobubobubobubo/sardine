@@ -160,13 +160,13 @@ Python. Thus, the library is aiming to support different writing
 paradigms and different approaches to live performance based on the
 manipulation of source code. The reliance on regular Python asynchronous
 functions for scheduling and music writing has for consequence that
-Sardine is particulary suited to let each developer-musician follow
+Sardine is particularly suited to let each developer-musician follow
 their own personal coding style, providing a blank slate for
 experimentation on live coding interface building. Furthermore, Sardine
 design has been strongly influenced by Andrew Mc Pherson’s and Koray
 Tahiroğlu concerns about the <em>idiomatic patterns</em> <span
 class="citation" data-cites="mcpherson2020idiomatic">(McPherson and
-Tahıroğlu 2020)</span> of usage enforced by computer music softwares,
+Tahıroğlu 2020)</span> of usage enforced by computer music software,
 pushing users to repeat and strictly follow prefered patterns of usage.
 Sardine focuses on laying out the base infrastructure needed to support
 live coding in Python and wishes to encourage users to imagine diverse
@@ -178,7 +178,7 @@ handling.</p>
 <p>The version hereby presented – labelled as <code>v0.2.0</code> – is
 offering a first look into the complete intended design for the library.
 It features a near complete rewrite over the <code>0.1.0</code> version
-previously used by members of the french live coding scene and by the
+previously used by members of the French live coding scene and by the
 first global Sardine users. It features two different clock
 implementations, multiple handlers for <em>I/O</em>
 (<strong>MIDI</strong>, <strong>OSC</strong>,
@@ -188,11 +188,11 @@ previously introduced by FoxDot <span class="citation"
 data-cites="kirkbride2016foxdot">(Kirkbride 2016)</span>. Sardine
 originality lies in its temporal model, strongly anchored in Python’s
 default mechanisms for asynchronous programming. Sardine also features a
-modular overall architecture allowing it to be integrated in any live
+modular overall architecture allowing it to be integrated into any live
 coding tooling and setup, capable of handling most Python-based
-scheduling duties or to be integrated in a larger mixed platform setup.
-It has been developed collectively with the help of John Phan based on
-user requests and feedback gathered during a first period of
+scheduling duties or to be integrated into a larger mixed platform
+setup. It has been developed collectively with the help of John Phan
+based on user requests and feedback gathered during a first period of
 experimentation that saw Sardine being used or integrated by musicians
 for several algoraves, network-based jams and musical performances.</p>
 <p>Sardine has been developed using exclusively the Python programming
@@ -200,7 +200,7 @@ language with few libraries depending on C++ code through bindings to
 external libraries. Despite the known shortcomings of Python for
 interpreted conversational real time programming (incomplete support of
 dynamic programming, slowness relative to other interpreted languages),
-we do believe that this language is suitable for the implementation of a
+we believe that this language is suitable for the implementation of a
 live coding library. The large collection of available librairies and
 modules and the popularity of the language ensures the affordance of
 good tooling and rich customization and integration options for
@@ -245,10 +245,10 @@ our goal, has quickly evolved after the first initial public tests. It
 has been decided to aim for an increased modularity of the system in
 order to support and maximise the <em>input</em> and <em>output</em>
 options offered by Sardine. This has allowed for the quick integration
-of the tool with other neighbor interfaces and live coding
+of the tool with other neighbour interfaces and live coding
 environments.</p>
 <p>The development of Sardine began initially in a period of frantic
-collaborations and joint performances with the parisian <em>Cookie
+collaborations and joint performances with the Parisian <em>Cookie
 Collective</em> <span class="citation"
 data-cites="cookiewebsite">(<span>“Cookie Collective”</span>
 2016)</span> and the Digital Audio Community from Lyon (<em>th4</em>,
@@ -266,7 +266,7 @@ collective, while allowing for jam-ready synchronisation with other
 musicians and live-coders. The recent splitting of Foxdot’s development
 into several scattered branches reinforced the need for a central,
 customizable and easily editable Python interface, the software being
-particularly used in the french live coding community. Due to the
+particularly used in the French live coding community. Due to the
 open-ended nature of the development process, Sardine has been gradually
 shifting towards its current modular architecture, allowing each
 performer to refine the nature of the <em>inputs</em> and
@@ -350,7 +350,7 @@ released on <code>Pypi</code>, allowing any Python user to install it
 using the <code>pip install sardine-system</code> command. Work has been
 done to properly ensure that every C++ dependency is served on our own
 and that <code>wheels</code> – binary distribution of compiled packages
-– are available for every major platform. This has solved a long lasting
+– are available for every major platform. This has solved a long-lasting
 issue that prevented users from installing Sardine on the recently
 released Python 3.11 version.</p>
 <h2 data-number="3.1" id="event-loop-and-scheduling-system"><span
@@ -408,9 +408,9 @@ class="header-section-number">3.1.2</span> Scheduling</h3>
 alt="Lifetime of an asynchronous ‘swimming’ function" /> 
 <p>Python is known to be a language that doesn’t have native support for
 tail-call recursion <span class="citation"
-data-cites="guido1 guido2">(Guido Van Rossum 2009a, 2009b)</span>,
-making the infinite recursion of a function a delicate task. To properly
-support this central feature, a complex system based on John Phan’s
+data-cites="guido1 guido2">(Rossum 2009a, 2009b)</span>, making the
+infinite recursion of a function a delicate task. To properly support
+this central feature, a complex system based on John Phan’s
 <code>AsyncRunners</code> has been developed and is used as the basis
 for every repetitive operation – such as a pattern – scheduled with
 Sardine. In the spirit of the metaphor followed by the whole program, a
@@ -478,7 +478,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                                 <span class="co"># duration of the given timespan.</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Pc <span class="op">&gt;&gt;</span> <span class="va">None</span>                       <span class="co"># alternative to @die</span></span></code></pre></div>
 <p>Sardine’s <code>sleep()</code> method, worthy of note, has been
-overriden from the default Python <code>time.sleep()</code> function
+overridden from the default Python <code>time.sleep()</code> function
 that would, if used, block the event loop. This special function will
 allow to defer the execution of any statement or expression defined
 thereafter to <em>x</em> beats in the future even if these events take
@@ -744,9 +744,9 @@ with other systems. Hybridations between multiple live coding
 environments, such as <em>Sardine</em>/<em>TidalCycles</em> and
 <em>Sardine</em>/<em>Sonic Pi</em> have been tried successfully. Initial
 failures mostly arised from improper or careless implementations of the
-synchronization mechanism. Documentation pertaining to the
+synchronisation mechanism. Documentation pertaining to the
 implementation of live-coding oriented musical clocks and
-synchronization mechanism is scarce and most of it had to be inferred
+synchronisation mechanism is scarce and most of it had to be inferred
 from the inner workings of similar open-source libraries. In order to
 help with the collective effort of documenting live coding practices, we
 hope to upload a very thorough explanation of the system on the Sardine
@@ -895,20 +895,6 @@ Goltz, Florian. 2018. <span>“Ableton Link–a Technology to Synchronize
 Music Software.”</span> In <em>Proceedings of the Linux Audio
 Conference</em>, 39–42.
 </div>
-<div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
-Guido Van Rossum. 2009a. <span>“NeoPythonic, Tail Recursion
-Elimination.”</span> <em>Personal Blog</em>. <a
-href="https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html"
-class="uri">https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html</a>
-(Last Accessed : 2022-12-14).
-</div>
-<div id="ref-guido2" class="csl-entry" role="doc-biblioentry">
-———. 2009b. <span>“NeoPythonic, Final Word on Tail Calls.”</span>
-<em>Personal Blog</em>. <a
-href="http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html"
-class="uri">http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html</a>
-(Last Accessed: 2022-12-14).
-</div>
 <div id="ref-isobar" class="csl-entry" role="doc-biblioentry">
 Jones, Daniel John. n.d. <span>“Isobar.”</span> <em>GitHub
 Repository</em>. <a
@@ -923,7 +909,7 @@ Conference on Live Interfaces</em>, 194–98.
 <div id="ref-magnusson2018performing" class="csl-entry"
 role="doc-biblioentry">
 Magnusson, Thor, and Alex McLean. 2018. <span>“<span
-class="nocase">245Performing with Patterns of Time</span>.”</span> In
+class="nocase">Performing with Patterns of Time</span>.”</span> In
 <em><span class="nocase">The Oxford Handbook of Algorithmic
 Music</span></em>. Oxford University Press. <a
 href="https://doi.org/10.1093/oxfordhb/9780190226992.013.21">https://doi.org/10.1093/oxfordhb/9780190226992.013.21</a>.
@@ -958,6 +944,20 @@ class="nocase">Tensions and Techniques in Live Coding
 Performance</span>.”</span> In <em><span class="nocase">The Oxford
 Handbook of Algorithmic Music</span></em>. Oxford University Press. <a
 href="https://doi.org/10.1093/oxfordhb/9780190226992.013.20">https://doi.org/10.1093/oxfordhb/9780190226992.013.20</a>.
+</div>
+<div id="ref-guido1" class="csl-entry" role="doc-biblioentry">
+Rossum, Guido Van. 2009a. <span>“NeoPythonic, Tail Recursion
+Elimination.”</span> <em>Personal Blog</em>. <a
+href="https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html"
+class="uri">https://neopythonic.blogspot.com/2009/04/tail-recursion-elimination.html</a>
+(Last Accessed : 2022-12-14).
+</div>
+<div id="ref-guido2" class="csl-entry" role="doc-biblioentry">
+———. 2009b. <span>“NeoPythonic, Final Word on Tail Calls.”</span>
+<em>Personal Blog</em>. <a
+href="http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html"
+class="uri">http://neopythonic.blogspot.com/2009/04/final-words-on-tail-calls.html</a>
+(Last Accessed: 2022-12-14).
 </div>
 <div id="ref-uvloop" class="csl-entry" role="doc-biblioentry">
 Selivanov, Yury. 2016. <span>“UVLoop.”</span> <em>GitHub

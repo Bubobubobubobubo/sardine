@@ -232,13 +232,13 @@ If you have opted to use the **SuperDirt** audio backend, you can start checking
 if everything is fine by playing a *clap* or a *kickdrum*:
 
 ```python
-S('cp').out()
+D('cp')
 ```
 
 If you want to play a note on your MIDI Synth, use this command instead:
 
 ```python
-M().out()
+N()
 ```
 
 If you hear the clap or the note you were expecting, you are good to go! Have fun!

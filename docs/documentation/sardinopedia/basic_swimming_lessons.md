@@ -209,7 +209,7 @@ The recipe for *fast swimming* is the following:
 
 - Use a very fast recursion speed (`1/8`, `1/16`, `1/32`), usually constant (no patterning).
 
-- Play a lot with silences and with the arguments `iterator, div, rate`.
+- Play a lot with silences and with the arguments `iterator, divisor, rate`.
 
 ### Fast swimming template
 

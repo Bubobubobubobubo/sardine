@@ -8,6 +8,7 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, sardine_intro
+from .sequences import ZiffersParser, ListParser
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
@@ -17,6 +18,7 @@ T = TypeVar("T")
 
 config = read_user_configuration()
 clock = LinkClock if config.link_clock else InternalClock
+parser = ZiffersParser if config.parser == "ziffers" else ListParser
 
 # Printing banner and some infos about setup/config
 print(sardine_intro)
@@ -40,6 +42,7 @@ else:
 # Initialisation of the FishBowl (the environment holding everything together)
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
+    parser=parser,
 )
 
 #######################################################################################

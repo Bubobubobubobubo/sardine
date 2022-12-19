@@ -45,7 +45,7 @@ th, td {
 }
 </style>
 
-## SuperDirt 
+## SuperDirt
 
 
 **SuperDirt** documentation is rather scarce and most of it needs to be inferred by looking at the source code. However, the behavior of most parameters is well known -- usually from experience -- by live coders. Moreover, **SuperDirt** can be customised freely to add custom effects and synthesizers. I'm working hard on gathering information about each and every parameter I can find :) Some of them are rather arcane. They are probably not meant to be used directly. Keep in mind that not all of them are useful and that you will likely find better options by building your own environment.
@@ -60,7 +60,7 @@ th, td {
 |**`midinote`**     |Pitch around given MIDI note                                |0 - 127       |
 |**`note`**         |Pitch around given note                                     |???           |
 |**`octave`**       |Pitch up or down depending on octave number                 |0 -> x        |
-|**`sound`**        |**Implicit** (first argument of `S()`)                      |--------------|
+|**`sound`**        |**Implicit** (first argument of `D()`)                      |--------------|
 |**`begin`**        |Start position of audio playback                            |0 -> 1        |
 |**`end`**          |End position of audio playback                              |0 -> 1        |
 |**`speed`**        |Sample playback, impacts pitch. Negative will play reverse  |-x -> 0 -> x  |
@@ -89,13 +89,13 @@ th, td {
 |**`dry`**          |Dry/Wet balance                                             |0 -> 1        |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('hh', amp=1, 
-            room='s($.S)', 
-            dry=0.1, 
-            size='s($)').out()
-    a(test_fx, d=0.25)
+@swim
+def test_fx(p=0.25):
+    D('hh', amp=1,
+            room='s($.S)',
+            dry=0.1,
+            size='s($)')
+    a(test_fx, p=0.25)
 ```
 
 ##### Delay
@@ -110,14 +110,14 @@ The `delay` effect is initially built for Tidal, which is based on a cyclical ti
 
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('hh', 
-            speed='1|2|4',
+@swim
+def test_fx(p=0.25):
+    D('hh',
+            speep='1|2|4',
             delay=1/2, delaytime=1/(2/3),
             delayfeedback='0.5+(r/4)',
-            amp=1).out() 
-    a(test_fx, d=0.25)
+            amp=1)
+    a(test_fx, p=0.25)
 ```
 
 ##### Phaser
@@ -130,13 +130,13 @@ Not functioning as it should?
 |**`phaserdepth`**  |Modulation amount                                           |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('jvbass', 
+@swim
+def test_fx(p=0.25):
+    D('jvbass',
             midinote='C|Eb|G|Bb',
-            phaserrate='1:10', 
-            phaserdepth='s($*2)', amp=1).out() 
-    a(test_fx, d=0.5)
+            phaserrate='1:10',
+            phaserdepth='s($*2)', amp=1)
+    a(test_fx, p=0.5)
 ```
 
 ##### Leslie
@@ -151,11 +151,11 @@ This is a simple emulation of a Leslie rotating speaker typically used in music 
 |**`lsize`**        |Wooden cabinet size (in meters)                             |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('jvbass', amp=1, leslie=0.9,
-            lrate=0.1, lsize='0.1+r*2').out()
-    a(test_fx, d=0.25)
+@swim
+def test_fx(p=0.25):
+    D('jvbass', amp=1, leslie=0.9,
+            lrate=0.1, lsize='0.1+r*2')
+    a(test_fx, p=0.25)
 ```
 
 ##### Tremolo
@@ -169,12 +169,13 @@ A simple tremolo effect.
 
 
 ```python
-@swim 
-def test_fx(d=0.25, i=0):
-    S('amencutup:[1:20]', 
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]',
             tremolorate='16|32',
-            tremolodepth='[0:1,0.25]').out(i)
-    a(test_fx, d=0.5, i=i+1)
+            tremolodepth='[0:1,0.25]',
+            i=i)
+    a(test_fx, p=0.5, i=i+1)
 ```
 
 ##### Granular weirdness
@@ -187,12 +188,13 @@ This is a weird granular effect probably intended to serve as a building block f
 |**`psdisp`**       |Pitch-shift dispersion                                      |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25, i=0):
-    S('amencutup:[1:20]', 
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]',
             psrate='2',
-            psdisp='[0:1,0.5]').out(i)
-    a(test_fx, d=0.5, i=i+1)
+            psdisp='[0:1,0.5]',
+            i=i)
+    a(test_fx, p=0.5, i=i+1)
 ```
 
 #### Filters
@@ -206,12 +208,12 @@ def test_fx(d=0.25, i=0):
 |**`bandqf`**       |Bandpass resonance                                          |0 -> x             |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('jvbass', 
+@swim
+def test_fx(p=0.25):
+    D('jvbass',
             midinote='C.|C|Eb|G|Bb',
-            cutoff='r*7000', resonance='r/2', amp=1).out() 
-    a(test_fx, d=0.5)
+            cutoff='r*7000', resonance='r/2', amp=1)
+    a(test_fx, p=0.5)
 ```
 
 #### Distortion
@@ -226,12 +228,12 @@ Will distort your signal, combination of multiple effects put together. It works
 
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('tabla:r*200', cut=1, 
+@swim
+def test_fx(p=0.25):
+    D('tabla:r*200', cut=1,
             squiz='0|2|4|8',
-            midinote='C|F|Bb|E5b', amp=1).out() 
-    a(test_fx, d=0.5)
+            midinote='C|F|Bb|E5b', amp=1)
+    a(test_fx, p=0.5)
 ```
 
 ##### Triode
@@ -243,15 +245,15 @@ Very gentle distortion. I actually have no idea about how the `triode` parameter
 |**`triode`**       |Distortion amount                                           |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('tabla:r*200', cut=1, 
+@swim
+def test_fx(p=0.25):
+    D('tabla:r*200', cut=1,
             triode='r', # comment me
-            midinote='C|F|Bb|E5b', amp=1).out() 
-    a(test_fx, d=0.5)
+            midinote='C|F|Bb|E5b', amp=1)
+    a(test_fx, p=0.5)
 ```
 
-##### Distort 
+##### Distort
 
 Heavy distortion that will/can wildly change the spectrum of your sound.
 
@@ -260,15 +262,15 @@ Heavy distortion that will/can wildly change the spectrum of your sound.
 |**`distort`**      |Distortion amount                                           |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25):
-    S('sd:r*200', cut=1, 
+@swim
+def test_fx(p=0.25):
+    D('sd:r*200', cut=1,
             distort='0|0.5',
-            midinote='C|G', amp=1).out() 
-    a(test_fx, d=0.5)
+            midinote='C|G', amp=1)
+    a(test_fx, p=0.5)
 ```
 
-##### Shaping 
+##### Shaping
 
 Shape is an amplifier that can enter distortion territory but with a gentle curve. It will naturally
 make your sound louder the more you ramp up the value.
@@ -278,10 +280,10 @@ make your sound louder the more you ramp up the value.
 |**`shape`**        |Amplification amount                                        |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25, i=0):
-    S('amencutup:[1:20]', shape='[0:1,0.1]').out(i)
-    a(test_fx, d=0.5, i=i+1)
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]', shape='[0:1,0.1]', i=i)
+    a(test_fx, p=0.5, i=i+1)
 ```
 ##### Crush
 
@@ -292,10 +294,10 @@ A very agressive bit crushing effect. Works only when you input multiples of 2. 
 |**`crush`**        |Crushing factor                                             |0 -> x        |
 
 ```python
-@swim 
-def test_fx(d=0.25, i=0):
-    S('bd, sn, hh, sn', crush=4).out(i)
-    a(test_fx, d=0.5, i=i+1)
+@swim
+def test_fx(p=0.25, i=0):
+    D('bd, sn, hh, sn', crush=4, i=i)
+    a(test_fx, p=0.5, i=i+1)
 ```
 
 ##### Ring Modulation

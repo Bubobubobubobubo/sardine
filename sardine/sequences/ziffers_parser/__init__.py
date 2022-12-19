@@ -1,1 +1,1 @@
-from ziffers_parser import *
+from .ziffers_parser import *

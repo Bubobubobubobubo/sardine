@@ -17,8 +17,6 @@ T = TypeVar("T")
 # READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
 
 config = read_user_configuration()
-clock = LinkClock if config.link_clock else InternalClock
-parser = ZiffersParser if config.parser == "ziffers" else ListParser
 
 # Printing banner and some infos about setup/config
 print(sardine_intro)
@@ -40,9 +38,12 @@ else:
     print(f"[red]No user provided configuration file found...")
 
 # Initialisation of the FishBowl (the environment holding everything together)
+
+clock = LinkClock if config.link_clock else InternalClock
+parser = ZiffersParser if config.parser == "ziffers" else ListParser
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
-    parser=parser,
+    parser=parser(),
 )
 
 #######################################################################################

@@ -1,0 +1,2188 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Raphaël Forment">
+      
+      
+        <link rel="canonical" href="https://sardine.raphaelforment.fr/documentation/tutorial/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Tutorial - Sardine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karla:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Karla";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#practical-philosophy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Sardine" class="md-header__button md-logo" aria-label="Sardine" data-md-component="logo">
+      
+  <img src="../../images/sardine_logo_single.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sardine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tutorial
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Bubobubobubobubo/sardine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../showcase/" class="md-tabs__link">
+      Showcase
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../technical/installation/" class="md-tabs__link">
+        Installation / Configuration
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../sardinopedia/introduction/" class="md-tabs__link md-tabs__link--active">
+        Documentation
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../about/" class="md-tabs__link">
+      About
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sardine" class="md-nav__button md-logo" aria-label="Sardine" data-md-component="logo">
+      
+  <img src="../../images/sardine_logo_single.svg" alt="logo">
+
+    </a>
+    Sardine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Bubobubobubobubo/sardine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../showcase/" class="md-nav__link">
+        Showcase
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Installation / Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation / Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Installation / Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/installation/" class="md-nav__link">
+        Installing Sardine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/configuration/" class="md-nav__link">
+        Configuration tools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/troubleshot/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1" type="checkbox" id="__nav_4_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1">
+          Sardinopedia
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sardinopedia" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_1">
+          <span class="md-nav__icon md-icon"></span>
+          Sardinopedia
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_2" type="checkbox" id="__nav_4_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_2">
+          Learning
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Learning" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Learning
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/basic_swimming_lessons/" class="md-nav__link">
+        Swimming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/senders/" class="md-nav__link">
+        Senders
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/patterning/" class="md-nav__link">
+        Patterns
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/pattern_language/" class="md-nav__link">
+        Language
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/supercollider/" class="md-nav__link">
+        SuperDirt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/clock/" class="md-nav__link">
+        Clock
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_3" type="checkbox" id="__nav_4_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_3">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/rhythm/" class="md-nav__link">
+        Rhythm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sardinopedia/melody/" class="md-nav__link">
+        Melody
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_4" type="checkbox" id="__nav_4_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_4">
+          Demos
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Demos" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Demos
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/zorba_in_belleville/" class="md-nav__link">
+        Zorba in Belleville
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/dumpster_dive/" class="md-nav__link">
+        Dumpster Dive
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/PMA5/" class="md-nav__link">
+        Tribute to Jules Cipher
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/artificial_life/" class="md-nav__link">
+        Artificial Life
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Tutorial
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practical-philosophy" class="md-nav__link">
+    Practical Philosophy
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Philosophy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-you-can-do" class="md-nav__link">
+    What you can do
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-you-do-it" class="md-nav__link">
+    How you do it
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sardine-clock" class="md-nav__link">
+    Sardine Clock
+  </a>
+  
+    <nav class="md-nav" aria-label="Sardine Clock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#midi-clock" class="md-nav__link">
+    MIDI Clock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ableton-link-clock" class="md-nav__link">
+    Ableton Link Clock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latency-and-sync" class="md-nav__link">
+    Latency and sync
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#more-info-about-clocks" class="md-nav__link">
+    More info about clocks
+  </a>
+  
+    <nav class="md-nav" aria-label="More info about clocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-meaning-of-sleep" class="md-nav__link">
+    The meaning of sleep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swimming-functions" class="md-nav__link">
+    Swimming functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-sound-sending-information" class="md-nav__link">
+    Making sound / sending information
+  </a>
+  
+    <nav class="md-nav" aria-label="Making sound / sending information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sender-objects" class="md-nav__link">
+    Sender objects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#superdirt-output" class="md-nav__link">
+    SuperDirt output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delayed-messages" class="md-nav__link">
+    Delayed messages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#orbits" class="md-nav__link">
+    Orbits
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#midi-output" class="md-nav__link">
+    MIDI Output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osc-output" class="md-nav__link">
+    OSC output
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composing-patterns" class="md-nav__link">
+    Composing patterns
+  </a>
+  
+    <nav class="md-nav" aria-label="Composing patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composing-a-pattern" class="md-nav__link">
+    Composing a pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns-are-lists" class="md-nav__link">
+    Patterns are lists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pattern-object" class="md-nav__link">
+    The Pattern Object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-types" class="md-nav__link">
+    Value types
+  </a>
+  
+    <nav class="md-nav" aria-label="Value types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variable-values" class="md-nav__link">
+    Variable values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#musical-notes" class="md-nav__link">
+    Musical notes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regular-names" class="md-nav__link">
+    Regular names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osc-addresses" class="md-nav__link">
+    OSC Addresses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#math-but-funnier" class="md-nav__link">
+    Math but funnier
+  </a>
+  
+    <nav class="md-nav" aria-label="Math but funnier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-arithmetics" class="md-nav__link">
+    Basic Arithmetics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-functions" class="md-nav__link">
+    Basic functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-ranges" class="md-nav__link">
+    Number ranges
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-ramps" class="md-nav__link">
+    Number ramps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeat-operator" class="md-nav__link">
+    Repeat operator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overflow-protection" class="md-nav__link">
+    Overflow protection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-notes" class="md-nav__link">
+    Dealing with notes
+  </a>
+  
+    <nav class="md-nav" aria-label="Dealing with notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notes-are-integers" class="md-nav__link">
+    Notes are integers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#note-qualifiers" class="md-nav__link">
+    Note qualifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#midi" class="md-nav__link">
+    MIDI
+  </a>
+  
+    <nav class="md-nav" aria-label="MIDI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#midi-out" class="md-nav__link">
+    MIDI Out
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#midi-in" class="md-nav__link">
+    MIDI In
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osc" class="md-nav__link">
+    OSC
+  </a>
+  
+    <nav class="md-nav" aria-label="OSC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-method" class="md-nav__link">
+    Manual method
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-oscsender-object" class="md-nav__link">
+    Using the OSCSender object
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-about-crashes" class="md-nav__link">
+    What about crashes?
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practical-philosophy" class="md-nav__link">
+    Practical Philosophy
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Philosophy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-you-can-do" class="md-nav__link">
+    What you can do
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-you-do-it" class="md-nav__link">
+    How you do it
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sardine-clock" class="md-nav__link">
+    Sardine Clock
+  </a>
+  
+    <nav class="md-nav" aria-label="Sardine Clock">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#midi-clock" class="md-nav__link">
+    MIDI Clock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ableton-link-clock" class="md-nav__link">
+    Ableton Link Clock
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#latency-and-sync" class="md-nav__link">
+    Latency and sync
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#more-info-about-clocks" class="md-nav__link">
+    More info about clocks
+  </a>
+  
+    <nav class="md-nav" aria-label="More info about clocks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-meaning-of-sleep" class="md-nav__link">
+    The meaning of sleep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#swimming-functions" class="md-nav__link">
+    Swimming functions
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#making-sound-sending-information" class="md-nav__link">
+    Making sound / sending information
+  </a>
+  
+    <nav class="md-nav" aria-label="Making sound / sending information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sender-objects" class="md-nav__link">
+    Sender objects
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#superdirt-output" class="md-nav__link">
+    SuperDirt output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delayed-messages" class="md-nav__link">
+    Delayed messages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#orbits" class="md-nav__link">
+    Orbits
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#midi-output" class="md-nav__link">
+    MIDI Output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osc-output" class="md-nav__link">
+    OSC output
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composing-patterns" class="md-nav__link">
+    Composing patterns
+  </a>
+  
+    <nav class="md-nav" aria-label="Composing patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composing-a-pattern" class="md-nav__link">
+    Composing a pattern
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#patterns-are-lists" class="md-nav__link">
+    Patterns are lists
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-pattern-object" class="md-nav__link">
+    The Pattern Object
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#value-types" class="md-nav__link">
+    Value types
+  </a>
+  
+    <nav class="md-nav" aria-label="Value types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variable-values" class="md-nav__link">
+    Variable values
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#musical-notes" class="md-nav__link">
+    Musical notes
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regular-names" class="md-nav__link">
+    Regular names
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#osc-addresses" class="md-nav__link">
+    OSC Addresses
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#math-but-funnier" class="md-nav__link">
+    Math but funnier
+  </a>
+  
+    <nav class="md-nav" aria-label="Math but funnier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-arithmetics" class="md-nav__link">
+    Basic Arithmetics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-functions" class="md-nav__link">
+    Basic functions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-ranges" class="md-nav__link">
+    Number ranges
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#number-ramps" class="md-nav__link">
+    Number ramps
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repeat-operator" class="md-nav__link">
+    Repeat operator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overflow-protection" class="md-nav__link">
+    Overflow protection
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dealing-with-notes" class="md-nav__link">
+    Dealing with notes
+  </a>
+  
+    <nav class="md-nav" aria-label="Dealing with notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notes-are-integers" class="md-nav__link">
+    Notes are integers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#note-qualifiers" class="md-nav__link">
+    Note qualifiers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#midi" class="md-nav__link">
+    MIDI
+  </a>
+  
+    <nav class="md-nav" aria-label="MIDI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#midi-out" class="md-nav__link">
+    MIDI Out
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#midi-in" class="md-nav__link">
+    MIDI In
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#osc" class="md-nav__link">
+    OSC
+  </a>
+  
+    <nav class="md-nav" aria-label="OSC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-method" class="md-nav__link">
+    Manual method
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-oscsender-object" class="md-nav__link">
+    Using the OSCSender object
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-about-crashes" class="md-nav__link">
+    What about crashes?
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/Bubobubobubobubo/sardine/edit/master/docs/documentation/tutorial.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+  <h1>Tutorial</h1>
+
+<div class="admonition danger">
+<p class="admonition-title">The tutorial is not up to date</p>
+<p>Sardine was updated quite a lot recently. The tutorial has not been fully updated to reflect changes. Please rely on the <em>Sardinopedia</em> for now, until I fix this long-form article :)</p>
+</div>
+<p>At last! You have now installed and configured Sardine. You are up and running but you still don't know how to use <strong>Sardine</strong>! You might not really understand what it is either. This tutorial will hopefully help you to understand what <strong>Sardine</strong> is and what it does. I will not dive deep into technical details but this will serve as an in-depth exploration of the different components of <strong>Sardine</strong>.</p>
+<h2 id="practical-philosophy">Practical Philosophy</h2>
+<p><img alt="epictete" src="../images/practical_dither.png" />
+<em>This is Epictetus, no links with Sardine but he was teaching practical philosophy too...</em></p>
+<h3 id="what-you-can-do">What you can do</h3>
+<p>To be clear once and for all, <strong>Sardine</strong> is:</p>
+<ul>
+<li>strictly speaking, a music <em>live coding</em> library (<em>eg.</em> TidalCycles, FoxDot, Gibber)</li>
+</ul>
+<p>but more trivially, it is:</p>
+<ul>
+<li>
+<p>a musical instrument that you gradually learn to master and to tune to your liking</p>
+</li>
+<li>
+<p>a control tool for external audio/video devices, instruments and softwares</p>
+</li>
+<li>
+<p>an environment for improvising algorithmic music live by coding with Python</p>
+</li>
+<li>
+<p>a blank canevas for exploring musical ideas (rhythms, textures and pitch) on-the-fly</p>
+</li>
+</ul>
+<p>On the contrary, <strong>Sardine</strong> is not (or not <em>really</em>):</p>
+<ul>
+<li>
+<p>a <strong>Digital Audio Workstation</strong>: no timeline, no click and play process, no ready-to-use patterns or presets, no way to save and recall sessions with pre-configured parameters, no way to record, process and master songs, tracks or beats. <strong>Sardine</strong> is meant to be used in <strong>parallel</strong> with such tools :)</p>
+</li>
+<li>
+<p>a compositional environment to write scores or to deal programatically with traditional score notation (<em>à la</em> <strong>Finale</strong>, <strong>Sibelius</strong>, <strong>Lilypond</strong>, etc...). <strong>Sardine</strong> is not meant for <em>writing</em>, but for <em>playing</em>. This would be the same thing as to ask a piano to print a musical score while you play.</p>
+</li>
+</ul>
+<p>This doesn't mean that you can't compose things with <strong>Sardine</strong> to play them later. It just means that it doesn't deal with the traditional scoring system. If your intent is to prepare for an art installation, a techno/house gig or an experimental music recital, you can do it just fine!</p>
+<h3 id="how-you-do-it">How you do it</h3>
+<p><strong>Sardine</strong> is an instrument/tool that you control by programming live. Your keyboard will be your main musical interface, which is pretty unusual compared to other musical practices. <strong>Sardine</strong> is a tool made to explore various <em>live coding</em> techniques, and a tool made to integrate with other live coding softwares and environments. For people unfamiliar with it, <em>live coding</em> could be said to be three distinct things:</p>
+<ul>
+<li>
+<p>a <strong>programming technique</strong>: the art of manipulating, redefining or altering software while it runs. A technique exploring processes of <em>hot swapping</em>, <em>reloading</em> or <em>re-compiling</em> parts of a software stack without interruption, as part of the way the software is meant to be used.</p>
+</li>
+<li>
+<p>an <strong>artistic practice</strong>: promoting artistic expression throughout the use of computer code. Turning programming into a gestural and expressive act, usually meant to be shared with an audience.</p>
+</li>
+<li>
+<p>a <strong>subculture</strong>: a niche in the larger world of computer and electronic music. <em>Live coding</em> has always been there. You can trace its origins way back to the 70s if you are really looking for it :) Nowadays, <em>live coding</em> is mostly promoted by <em>algoravers</em> or by the <strong>TOPLAP</strong> collective.</p>
+</li>
+</ul>
+<p>Try to read about it. It's a fascinating world of people happily <em>hacking</em> and sharing software, usually free and open source. The goal is to find the right tool for the nail you want to hammer, and build from there, turning your computer into an environment for personal artistic expression. For our case, it means that <strong>Sardine</strong> is meant to be extended, modified, specialised for what you need to do :)</p>
+<h2 id="sardine-clock">Sardine Clock</h2>
+<h3 id="midi-clock">MIDI Clock</h3>
+<p>The most crucial information to know about <strong>Sardine</strong> is that everything happens because of the <strong>clock</strong>. When <strong>Sardine</strong> is imported using the command <code>from sardine import *</code>, an instance of the <code>Clock</code> class will automatically start to run in the background and will be referenced by the variable <code>c</code>. <code>Clock</code> is the main MIDI Clock. By default, if you haven't touched to the configuration, the clock will be running in <code>active</code> mode: it will send a <strong>MIDI</strong> clock signal for every tick on the default MIDI port. The default MIDI port will either be a virtual port named <code>Sardine</code> if your OS supports virtual MIDI ports or the first available MIDI Port declared by your OS. It can also be <code>passive</code> and made to listen to the default MIDI port if you prefer. Never override the <code>c</code> variable. You won't have to worry a lot about the internals. Never override any variable that is one letter long! You will likely find the following commands interesting:</p>
+<ul>
+<li><code>c.bpm</code>: current tempo in beats per minute.</li>
+<li><code>c.ppqn</code>: current <a href="https://en.wikipedia.org/wiki/Pulses_per_quarter_note">PPQN</a> (Pulses per Quarter Note, used by MIDI gear).</li>
+<li>be careful. The tempo might fluctuate based on the PPQN you choose. Assume that 24 is a default sane PPQN for most synthesizers/drum machines.</li>
+<li><code>c.accel</code>: an acceleration factor for the clock, from <code>0</code> to <code>100</code> (double tempo) %. </li>
+<li><code>c.nudge</code>: nudge the clock forward in time by the given amount. Usually pinged randomly until you fall back on the external click track you wish to follow. </li>
+</ul>
+<h3 id="ableton-link-clock">Ableton Link Clock</h3>
+<p>The <strong>Link</strong> protocol is a novel open source protocol released by <strong>Ableton</strong> which allows users to synchronise their musical tempo seamlessly on a local network. While still pretty new, this method of synchronisation is now supported by a fair amount of by music software and apps, including other live coding libraries.</p>
+<p><strong>Sardine</strong> can be made to start or follow an <strong>Ableton Link</strong> Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the <code>c.link()</code> method. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. <strong>Link</strong> is a collaborative clocking protocol, and there is no "main" tempo originating somewhere and followed by everyone, unlike MIDI. To resume the regular behavior of the clock, use the command <code>c.unlink()</code>. The <code>c.link_log()</code> function can be used to monitor the <strong>Ableton Link</strong> Clock state. </p>
+<div class="admonition info">
+<p class="admonition-title">Weirdness of Link Clock</p>
+<p>The <strong>Link Clock</strong> is a bit weird. It will disrupt the regular behavior of the <strong>Sardine</strong> Clock. It will stop emitting a MIDI clock signal because it cannot ensure that the clock signal will be steady. <strong>MIDI</strong> Clocks and <strong>Link Clock</strong> does not go hand in hand. It is preferable to kill every running pattern before attempting the switch from regular time to Link time.</p>
+</div>
+<h3 id="latency-and-sync">Latency and sync</h3>
+<p>There are many possible reasons that could explain why your computer is not perfectly in sync with another one. To tackle this issue, <strong>Sardine</strong> is proposing a set of variables you can play with to finetune the latency of various parts of the system. If you ever encounter a synchronisation issue, try to play an event on the first beat of the bar on each computer and to play around with the following values:</p>
+<ul>
+<li>
+<p><code>c.midi_nudge</code>: in miliseconds. Nudge value for the MIDI Sender (MIDI).</p>
+</li>
+<li>
+<p><code>c.superdirt_nudge</code>: in milliseconds. Nudge value for the SuperDirt Sender (Sound).</p>
+</li>
+<li>
+<p><code>c.nudge</code>: in milliseconds. General nudge for the <strong>Sardine</strong> clock.</p>
+</li>
+</ul>
+<p>There is also an additional nudge value you can configure directly in your <strong>SuperDirt</strong> configuration. Finding the right configuration is usually just a matter of exploring and finding the right values for you and the other computer you are trying to synchronise with. Be careful not to override hard limits. Your computer needs some time to process information.</p>
+<h3 id="more-info-about-clocks">More info about clocks</h3>
+<ul>
+<li>
+<p>Sardine will not behave nicely if no external clock is running while in <code>passive</code> mode. Time is simply frozen and events will not trigger, suspended somewhere in time.</p>
+</li>
+<li>
+<p>You can introspect the current state of the clock using clock attributes or using the very verbose <code>debug</code> mode. Be careful, your terminal will be flooded by messages. After running <code>c.debug = True</code>, you should see something that looks like:</p>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">...</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.001726</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">495</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.001729</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">496</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.001475</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">497</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.000634</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">498</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.000614</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">499</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">BPM</span><span class="p">:</span> <span class="mf">130.0</span><span class="p">,</span> <span class="n">PHASE</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="n">DELTA</span><span class="p">:</span> <span class="mf">0.001333</span> <span class="o">||</span> <span class="n">TICK</span><span class="p">:</span> <span class="mi">500</span> <span class="n">BAR</span><span class="p">:</span><span class="mi">2</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="o">...</span>
+</code></pre></div>
+<ul>
+<li>Some interesting clock attributes can be accessed:<ul>
+<li><code>c.beat</code>: current clock beat since start.</li>
+<li><code>c.tick</code>: current clock tick since start.</li>
+<li><code>c.bar</code>: current clock bar since start (<code>4/4</code> bars by default).</li>
+<li><code>c.phase</code>: current phase.</li>
+</ul>
+</li>
+</ul>
+<p>These clock attributes are used everywhere in <strong>Sardine</strong> as they provide the most basic interface to the clock for every component in the system. You can use them if you wish to compose more complex pieces and sequences. They are still really useful tools to craft conditionals and random number generators even though there are better and more controlled ways to access them (for instance, <em>via</em> the <em>patterning system</em>).</p>
+<h4 id="the-meaning-of-sleep">The meaning of sleep</h4>
+<p>If you are already familiar with <em>Python</em>, you might have heard about or used the <code>sleep()</code> function. This function will halt the execution of a program for a given amount of time and resume immediately after. <strong>Sardine</strong> does not rely on Python's <code>sleep</code> because it is <em>unreliable</em> for musical purposes! Your OS can decide to introduce micro-delays, to resume the execution too late or even not sleep for the precise duration you wanted. </p>
+<p><strong>Sardine</strong> proposes an alternative to regular Python <code>sleep</code>, backed by the clock system previously described, crafted by @thegamecracks. The <code>sleep()</code> function has been overriden to allow you to have a safe and sane, similarly working alternative for musical contexts. You can use it to stop and resume a <strong>swimming function</strong> while keeping synchronization and timing accuracy.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">def</span> <span class="nf">sleeping_demo</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Doing something...&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Doing something else...&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">again</span><span class="p">(</span><span class="n">sleeping_demo</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nd">@swim</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">def</span> <span class="nf">limping</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;hh&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="n">again</span><span class="p">(</span><span class="n">limping</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div>
+<p>The <strong>swimming function</strong> <code>sleeping_demo()</code> will recurse after a delay of <code>2</code>. Think of the time you have in-between a recursion as spare time you can use and consume using <code>sleep()</code>. You can use that time sending the instructions that compose your swimming function. You can also do nothing for most of your time just like in <code>limping()</code>. You can write code in an imperative fashion, something that you might have already encountered in live coding systems such as <a href="https://sonic-pi.net/">Sonic Pi</a> or <strong>SuperCollider</strong> <code>Tdefs</code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Oversleeping is a thing</p>
+<p><strong>Be careful</strong>! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your <strong>swimming functions</strong>:   </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">def</span> <span class="nf">oversleep</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;hh&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">again</span><span class="p">(</span><span class="n">oversleep</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span> <span class="c1"># Changed the value to oversleep</span>
+</code></pre></div>
+</div>
+<p>If you are not yet familiar with the concept of recursion, or with the meaning of some of the facts presented here, keep patience. The meaning of all this will become clear after a few sections and some tests on your side :)</p>
+<h4 id="swimming-functions">Swimming functions</h4>
+<p>&nbsp;
+&nbsp;
+&nbsp;</p>
+<p><img alt="recursion" src="../images/recursion.png" width="100%" />
+<em>To understand recursion, you must understand recursion says the old and not so funny joke...</em></p>
+<p>We have already used the term <strong>swimming function</strong> in the sections above without taking enough time to explain what it means precisely! In <strong>Sardine</strong> parlance, a <strong>swimming function</strong> is a function that is scheduled to be repeated by recursion. The function will call itself when it ends, and again and again. Usually, in computer science manuals, you learn that recursion always needs to end, that there must be a case where the function will exit. We have this in <strong>Sardine</strong> too but we usually want the function to continue indefinitely, as a way to generate rhythms and to build a musical groove.</p>
+<p>A <strong>swimming function</strong> will call itself, and again, and again... This is a way computer scientists and <strong>sardinists</strong> alike like to think about loops and structures like lists. To define a function as a <strong>swimming function</strong>, use the <code>@swim</code> decorator. The opposite of the <code>@swim</code> decorator is the <code>@die</code> decorator that will release a function from this dreadful recursive temporal loop.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@swim</span> <span class="c1"># replace me by &#39;die&#39;</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">def</span> <span class="nf">bd</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="sd">&quot;&quot;&quot;Loud bassdrum&quot;&quot;&quot;</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">again</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># again == anew == cs</span>
+</code></pre></div>
+<p>If you don't manually add the recursion to the designated <strong>swimming function</strong>, the function will run once and stop. Recursion must be explicit and you should not forget about it! Forgetting the recursion loop call is another way to make a <strong>swimming function</strong> stop but not the recommended one!</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Boring</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nd">@swim</span> 
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">def</span> <span class="nf">bd</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+</code></pre></div>
+<p>The recursion can (and should) be used to update your arguments between each call of the <strong>swimming function</strong>. Here is an example of a very simple iterator:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nd">@swim</span> <span class="c1"># or die </span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nb</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="sd">&quot;&quot;&quot;A simple recursive iterator&quot;&quot;&quot;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nb</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">again</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nb</span><span class="o">=</span><span class="n">nb</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># 0</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># 1</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># 2</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c1"># 3</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># 4</span>
+</code></pre></div>
+<p>This is an incredibly useful feature to keep track of state between each call of your function. <strong>Swimming functions</strong> and its handling of arguments are the most basic thing you have to learn in order to use <strong>Sardine</strong> proficiently. This is the base to improvise music with variation, nuance and finesse. Temporal recursion makes it very easy to manually code LFOs, musical sequences, randomisation, etc... It will gradually become like a second nature for you to write them.</p>
+<p><strong>Swimming functions</strong> are great but they have one <strong>BIG</strong> difference compared to a classic recursion: they are <em>temporal</em> recursive. They must be given a <code>delay</code> argument. The <code>delay</code> argument is actually <code>d</code> (shorter is better). If you don't provide it, Sardine will assume that your function uses <code>d=1</code>. If you forget it on one side while using it on the other side, <strong>Sardine</strong> will jump up to your neck and try to kill you. If you ever try to give a delay of <code>0</code>, your function will immediately stop and an error message will be printed in your terminal. Not waiting is simply not an option, otherwise we would equally be able to travel back in time :)</p>
+<h3 id="making-sound-sending-information">Making sound / sending information</h3>
+<h4 id="sender-objects">Sender objects</h4>
+<p>Sender objects are the most frequent objects you will be interacting with while playing with <strong>Sardine</strong>. Senders are objects that compose a single message that can be sent out using the <code>.out(iter=0)</code> method. They are your main interface to the outside world (<em>SuperCollider</em>/<em>SuperDirt</em>, <em>MIDI</em> or <em>OSC</em>). These objects can receive various and/or arbitrary parameters depending on their purpose and specialty. These arguments can be <em>integers</em> (<code>1</code>, <code>2</code>), <em>floats</em> (<code>1.23</code>, <code>0.123123</code>) or <em>strings</em> (<code>"baba"</code>, <code>"dada/43/baba/"</code>):</p>
+<ul>
+<li><em>int</em>/<em>float</em>: parameters are sent as is, they are numbers!</li>
+<li><em>string</em> : interpreted by <strong>Sardine</strong> and transformed into a pattern of values.</li>
+</ul>
+<p>When you import <strong>Sardine</strong>, <code>MIDISender</code>, <code>SuperDirtSender</code> and <code>OSCSender</code> will already be available under the name <code>M()</code> (for <strong>MIDI</strong>),  <code>S()</code> (for <strong>sound</strong> or <em>SuperDirt</em>) and <code>O()</code> (for <strong>OSC</strong>). These objects are preconfigured objects that must be prefered to custom senders you can declare yourself (more on this later). <code>M</code>, <code>O</code> and <code>S</code> are three ways of interacting with the synthesis engine, your synths or other equipment/softwares.</p>
+<h4 id="superdirt-output">SuperDirt output</h4>
+<p>The easiest way to trigger a sound with <strong>Sardine</strong> is to send an OSC message to <strong>SuperDirt</strong>. <strong>SuperDirt</strong> is designed as a tool that will convert control messages into the an appropriate action without having to deal with <strong>SuperCollider</strong> itself. Most people will use the <strong>SuperDirt</strong> output instead of plugging multiple synthesizers along with <strong>Sardine</strong>, or craft musical patches listening to OSC messages. The interface to <strong>SuperDirt</strong> is crude but fully functional. People already familiar with <a href="https://tidalcycles.org/"><strong>TidalCycles</strong></a> will feel at home using the <code>S()</code> (for <code>SuperDirt</code>) object. The syntax is extremely similar for the purpose is similar, and names often match between the two systems:  </p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># A bassdrum (sample 0 from folder &#39;bd&#39;)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span> 
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># Fourth sample, way louder!</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span> 
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Patterning a parameter (read the appropriate section) </span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">amp</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="s1">&#39;1,0.5&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> 
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Introducing some Python in our parameters</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">randint</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span> <span class="k">if</span> <span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span> <span class="k">else</span> <span class="s1">&#39;hh&#39;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span> 
+</code></pre></div>
+<h4 id="delayed-messages">Delayed messages</h4>
+<p>You can pre-declare a sound before sending it out. This allows you to build your messages incrementely before sending them out using the <code>.out()</code> method.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">def</span> <span class="nf">delayed</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">sound</span> <span class="o">=</span> <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">)</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">if</span> <span class="n">sometimes</span><span class="p">():</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">sound</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="n">sound</span><span class="o">.</span><span class="n">speed</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">sound</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="n">again</span><span class="p">(</span><span class="n">delayed</span><span class="p">)</span>
+</code></pre></div>
+<p>Do not use the assign operator (<code>=</code>). Call the attribute directly (eg: <code>amp()</code>). Any attribute can be set but they are not checked for validity. This is an useful feature if you prefer to write your code in an imperative fashion. There are other things to know about delayed composition:</p>
+<ul>
+<li>attributes can be chained: <code>S('cp').speed('1 2').room(0.5).out()</code></li>
+<li>attributes <strong>will</strong> be parsed. You can write patterns just like you do when you send the objet out directly.</li>
+</ul>
+<p>Attributes are not checked for validity. You can really write anything so be careful: spell out the <em>SuperDirt</em> attribute names correctly.</p>
+<p>This technique is also really interesting if you like to pre-compose things before playing them. You can write some additional code to store libraries of prepared audio samples matching with some custom parameters.</p>
+<h4 id="orbits">Orbits</h4>
+<p>You will soon find out that you can assign effects to audio samples played using <code>S()</code> such as a reverb, a low-pass filter or a bitcrusher. Some of these effects are <strong>local</strong>. They only affect the sound you are currently playing. Some other effects are <strong>global</strong>. They will affect all the sounds running through the same audio bus. This is an important distinction to keep in mind! To specify which bus you would like to use for a given sound, use the <code>orbit</code> argument.</p>
+<p><code>orbit</code> is a very important argument. Actually, it is the only argument that is specified by default. You can run a sound through a very heavy and long-tailed reverb while having, concurrently, another dry sound by switching orbits:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;clap&#39;</span><span class="p">,</span> <span class="n">room</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">dry</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">orbit</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">orbit</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+</code></pre></div></p>
+<p>The number of orbits at your disposition is declared on the <strong>SuperDirt</strong> side in your configuration file. More on this later on! In the meantime, check out the <strong>SuperDirt</strong> GitHub repository if you would like to learn more about it.</p>
+<h4 id="midi-output">MIDI Output</h4>
+<p>The <code>MIDISender</code> object is structurally similar to the <code>SuperDirtSender</code> object. It is specialized in writing/sending MIDI notes and MIDI notes only. Other MIDI events are handled differently by specific methods such as <code>cc()</code> (for control changes) or <code>pgch()</code> (for program changes). MIDI Notes messages need a duration, a velocity, a note number and a channel:</p>
+<ul>
+<li><strong>duration</strong> (<code>seconds</code>): time between a <em>note-on</em> and <em>note-off</em> event (pressing a key on an imaginary keyboard).</li>
+<li><strong>velocity</strong> (<code>0-127</code>): think of it as the volume amplitude of a note.</li>
+<li><strong>channel</strong> (<code>0-16</code>): the MIDI channel to send that note to on your default MIDI port.</li>
+<li><strong>note</strong> (<code>0-127</code>): note from the lowest possible octave on a keyboard to the highest.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">M</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>.out()</code> method is still used to carry a note out and to inform the sender of the value you would like to select in a pattern (see patterning). All of these values have a given default. If you don't specify anything (<code>M()</code>), you will hear a very loud middle-C on channel 0. See the <code>MIDI</code> section to learn more about sending out other message types such as <em>control changes</em> or <em>program changes</em>.</p>
+<h4 id="osc-output">OSC output</h4>
+<p>The <code>OSCSender</code> is the weirdest of all the senders. It behaves and works just like the other ones but will require more work from your part. By default, the object cannot assume what OSC connexion you would like to use. For that reason, you will need to feed him one with an aditional parameter. Likewise, the sender cannot assume what address you would like to carry your message to. You will need to feed the object an address everytime you wish to send a message out. There is no default OSC connexion (except for the one used by <strong>SuperDirt</strong> and <strong>Sardine</strong> internally).</p>
+<p>To use the <code>OSCSender</code> object, you will have to open manually an OSC connexion before feeding it into the object:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">my_osc</span> <span class="o">=</span> <span class="n">OSC</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span> <span class="mi">12000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;super_connexion&quot;</span><span class="p">,</span> <span class="n">ahead_amount</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">O</span><span class="p">(</span><span class="n">my_osc</span><span class="p">,</span> <span class="s1">&#39;loulou&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;1,2,3,4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+</code></pre></div></p>
+<p>Argument names do not matter when composing OSC messages. You can name arguments, but this will only make it easier for you to name and find values in your code. The message being caried out will not feature the name of the argument you specified. I'm still pondering if that is a nice thing or if I should find another system. If you have an opinion about it, please voice it!</p>
+<h3 id="composing-patterns">Composing patterns</h3>
+<p><img alt="blackandwhite" src="../images/pattern_black_and_white.png" width="100%" /></p>
+<p><strong>Sardine</strong> features an <strong>embedded programming language</strong> dedicated to the generation of musical patterns. <strong>Python code</strong> and <strong>pattern code</strong> go hand in hand to compose a successful and musical <em>swimming function</em>. This is, by far, the most intriguing aspect of <strong>Sardine</strong>. These patterns can be used to generate rhythms, streams of notes, OSC addresses, numbers, random values, etc... They can be used just anywhere a regular Python value would be expected. They replace fixed values with dynamic values, regular variables by mutating variables, etc... </p>
+<p>Think of this pattern-oriented programming language as a glorified <em>time-dependant</em> calculator that can also do some arithmetics on lists, with new operators such as <code>_</code>, <code>!</code> or <code>:</code>. The pattern syntax can be used for things like summoning musical scales, musical chords and applying some funny musical transformations (such as <code>.disco</code> or <code>.explosion</code>). All of this is <em>maïeutic</em>, aka meant to fuel your imagination and let you explore a world of dynamic algorithmic musical patterns.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>To be precise, the <strong>pattern syntax</strong> is a fully-fleged programming language. It is distinct from Python. This programming language is <strong>embedded within Sardine</strong>. It has its own rules, its own operations, its own syntax. However, you will soon see that the syntax is much simpler than the one used by Python.</p>
+</div>
+<p>There is a certain amount of communication and inter-operability between the pattern syntax and the Python code. Some variables and some iterators are shared. Information about the clock can also be accessed both in Python code and in pattern code. You will soon learn that playing around with semi-random values can generate very fruitful musical results.</p>
+<h4 id="composing-a-pattern">Composing a pattern</h4>
+<p>Patterns as written as strings of values separated by commas: <code>1,2,3,4</code>, <code>dada, baba, lala</code>, <code>synth/freq, synth/mod</code>, <code>[1:2,0.2], 5*4, s(2)</code>, etc... It is recommended to use double quotes for your patterns, because the single quotation mark is an operator used by the pattern syntax.</p>
+<h4 id="patterns-are-lists">Patterns are lists</h4>
+<p>Fundamentally, a pattern will always yield a list as a result. The most complicated pattern generation expression you can imagine will always result in a goold old Python list that you need to iterate through using an index. Senders can always receive an index, directly as the first argument of their <code>.out()</code> method: <code>S('hh:[1:10], legato='r', pan='r, 1', speed='s($)*4').out(i)</code>.</p>
+<p>To pattern, you always need an iterator and a pattern. There are multiple ways to generate iterators, whether you want to use shorthand iterators (<code>i.i</code>) or more complex iterators generated by recursion:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">a</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>You will see people leaning more towards a technique or another. It is of paramount importance to master the usage of iterators. You can for instance limit the range of an iterator by using a modulo operation to only iterate over a few chosen values in your pattern:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">100</span><span class="p">])</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="o">%</span><span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">a</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>You can also suddenly decide to iterate by decrementing and not by incrementing to reverse your pattern:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">i</span><span class="o">.</span><span class="n">i</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">100</span><span class="p">])</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">i</span> <span class="o">%</span> <span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    <span class="n">a</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</code></pre></div>
+<p>You can be really creative with how you handle your iterators, giving you another way to create more complex patterns.</p>
+<h4 id="the-pattern-object">The Pattern Object</h4>
+<p>There is a method called <code>P()</code>, that can be used to write a pattern outside of a sender. This method will need two arguments: the pattern itself followed by the iterator. You can use it to introduce <strong>Sardine</strong> patterns in regular Python code. It can be particularly useful to pattern the recursion delay of your <em>swimming functions</em>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">def</span> <span class="nf">iter</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;bd&#39;</span><span class="p">,</span> <span class="n">speed</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">100</span><span class="p">])</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">i</span> <span class="o">%</span> <span class="mi">8</span><span class="p">)</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">a</span><span class="p">(</span><span class="nb">iter</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">P</span><span class="p">(</span><span class="s1">&#39;0.5!8, 0.25!4&#39;</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</code></pre></div>
+<p>There is nothing more to know about it really. It can be particularly convenient to explore patterns by combining it with a <code>print()</code> statement.</p>
+<h4 id="value-types">Value types</h4>
+<p>The first important thing to learn is what the <em>atomic</em> values are. Atomic values are the absolute basics. They denote something that can be transformed or something upon which you can build a calculation. There are three fundamental basic <em>types</em> of values that can be used to compose a <strong>Sardine</strong> pattern:</p>
+<ul>
+<li>
+<p><strong>notes</strong> : musical notes. Symbolic names referring to a particular pitch.</p>
+</li>
+<li>
+<p><strong>names</strong> : names denoting an OSC address or an audio sample file name.</p>
+</li>
+<li>
+<p><strong>numbers</strong>: floating-point numbers or integers.</p>
+<ul>
+<li>numbers can also be information coming from the clock, shared iterators and shared variables (<em>eg.</em> see the next section).</li>
+</ul>
+</li>
+</ul>
+<p>All these values, even if not of the same type, can interact with one another, which means that you can write a scale and transpose it by a given factor just by doing math on it: <code>C-&gt;penta + 2</code>. The main design principle <strong>Sardine</strong> is trying to follow is not to impose any limits to what you can do with values you interact with. Giving the possibility to assign things to other things freely is one way not to hinder  the user and to encourage creativity.</p>
+<h5 id="variable-values">Variable values</h5>
+<p>There are some values you can summon, which cannot yield a deterministic result. If you wish to add 2 to the current number of beats elapsed in the bar, the result will likely differ depending on the beat number during which the calculation takes place. Likely, you can ask <strong>Sardine</strong> what is the current value of a variable, or what the current year number is. These values are based on <strong>Sardine</strong> clock time. Depending on the moment where your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a predictible moment in time.</p>
+<ul>
+<li>
+<p><code>$</code>: <em>tick</em>, the tick number since the clock started.</p>
+</li>
+<li>
+<p><code>r</code>: <em>random</em>, between 0 and 1.</p>
+</li>
+<li>
+<p><code>p</code>: <em>phase</em>, a number between 0 and your c.ppqn.</p>
+</li>
+<li>
+<p><code>m</code>: measure, the measure since the clock started.</p>
+</li>
+</ul>
+<p>There are other temporal values to be accessed, but these will not be referring to <strong>Sardine</strong> time. They are just extrapolated from the current absolute time on your OS:</p>
+<ul>
+<li><code>$.Y</code>: year, the current year.</li>
+<li><code>$.M</code>: month, the current month.</li>
+<li><code>$.D</code>: day, the current day.</li>
+<li><code>$.H</code>: hour, the current hour.</li>
+<li><code>$.m</code>: minute, the current minute.</li>
+<li><code>$.S</code>: second, the current second.</li>
+<li><code>$.µ</code>: microsecond, the current microsecond.</li>
+</ul>
+<p>Some other values are variables that can be freely altered both from the Python side and from the pattern side. They can be two things:</p>
+<ul>
+<li><strong>iterators</strong>: <code>i.a</code> ... <code>i.z</code> and <code>i.A</code> ... <code>i.Z</code>, one for each letter of the latin alphabet both lowercase and uppercase.</li>
+<li><strong>variables</strong>: <code>v.a</code> ... <code>v.z</code> and <code>v.A</code> ... <code>v.Z</code>, one for each letter of the latin alphabet both lowercase and uppercase.</li>
+</ul>
+<p><strong>Iterators</strong> will yield a different result each time you call them. That is because they are <em>counters</em>. They increment or decrement each time they are activated by a given step. To change the current step of an <strong>iterator</strong>, you must provide them a new base value and step value as a list : <code>i.a = [0, 5]</code>. This example will make the iterator start from 0 and increment by 5 everytime. Iterators can also be resetted globally or invidually. The method to do so is specific to which side you are currently manipulating them (pattern or Python):</p>
+<ul>
+<li><strong>Python</strong>: <code>i.reset("a")</code></li>
+<li><strong>Pattern</strong>: <code>i.a.reset</code></li>
+</ul>
+<p>You can also set your iterator to a given value:</p>
+<ul>
+<li><strong>Python</strong>: <code>i.a = 5</code></li>
+<li><strong>Pattern</strong>: <code>i.a = 5</code> </li>
+</ul>
+<p><strong>Variables</strong> are based on the same principle. The main difference is that they don't increment everytime you call them. They are just good old values you can use and manipulate both on the Python and pattern side. The syntax for their usage is strictly similar to the one used by <strong>iterators</strong>.</p>
+<h5 id="musical-notes">Musical notes</h5>
+<p>You can write notes in patterns. Notes will be converted to some MIDI value used by <strong>SuperDirt</strong>. It means that notes are numbers too and that you can do math on them if you wish to. The syntax to write notes is the following. The steps 2 and 3 can be omitted:</p>
+<ul>
+<li>1) capital letter indicating the note name: <code>C</code>,<code>D</code>,<code>E</code>,<code>F</code>,<code>G</code>,<code>A</code>,<code>B</code></li>
+<li>2) flat or sharp: <code>#</code>, <code>b</code></li>
+<li>3) octave number: <code>0</code>..<code>9</code></li>
+</ul>
+<h5 id="regular-names">Regular names</h5>
+<p>Names are just... good old names. There are some rules to know but it is really easy to remember:</p>
+<ul>
+<li>a single letter is not a name.</li>
+<li>a name cannot start with a number.</li>
+</ul>
+<p>Here is a list of some valid names you could use: <code>dada</code>, <code>kqsdlkj321</code> or <code>hellyearhsardineiscool2</code>. Most of the time, these names will correspond to a given sample name in your library. Be sure to name your sample folders accordingly to respect these rules.</p>
+<h5 id="osc-addresses">OSC Addresses</h5>
+<p>Addresses and names are really similar, but they can also be composite names, aka. two or more names separated by a right-angled slash <code>/</code>. They are used to write OSC addresses, which usually adhere to this principle. Some valid addresses would look like: <code>synth/freq/mod</code> or <code>robot/arm/pinky</code>.</p>
+<h4 id="math-but-funnier">Math but funnier</h4>
+<p>The pattern syntax started out by being a very simple calculator on integers. It then spreaded out to be able to pattern a lot of things. The pattern syntax is still pretty new and I don't expect it to be final before at least a year or even more. You can safely expect that some things will change in the following days or months. In the meantime, it works and you can do really interesting things with it. It is already pretty capable of being helpful to generate the objects you expect to find in an electronic instrument: LFOs, ramps, melodic generators, etc..</p>
+<h5 id="basic-arithmetics">Basic Arithmetics</h5>
+<p>The pattern syntax includes some basic arithmetic operations that you expect to find such as <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> (floor division) , <code>%</code> (modulo). They work on almost any type of values. Of course, names and addresses do not support arithmetics very well, so don't even try to do it, it will likely crash. However, you can do arithmetics on just the numeric part of a name: <code>dada:(2+2)</code>. The result of this operation will be <code>dada:4</code>. While being really useful for a lot of things, arithmetics become particularly fun when you start patterning random or moving values such as the tick number: <code>$/20</code>.</p>
+<h5 id="basic-functions">Basic functions</h5>
+<p>The typical functions you can access on a scientific calculator are present in <strong>Sardine</strong>:</p>
+<ul>
+<li><code>sin</code> and <code>cos</code>: <strong>sinus</strong> and <strong>cosinus</strong> functions used to compute periodc phenomenons (how convenient, just like sound).</li>
+<li><code>tan</code>: tangent function.</li>
+</ul>
+<p>They are extremely useful for generating signal-like patterns, even though the resolution is not the greatest due to how <strong>Sardine</strong> operates. </p>
+<h5 id="number-ranges">Number ranges</h5>
+<p>As a shorthand, you can use the <code>1:10</code> syntax to generate a number between <code>1</code> and <code>10</code>. This is also working for floating point numbers! </p>
+<h5 id="number-ramps">Number ramps</h5>
+<p>You can generate ramps by surrounding two numbers with curly braces: <code>[1:10]</code>. This syntax will yield the following result: <code>[1, 2, 3, 4, 5, ..., 10]</code>. You can generate lists ramping up and down. You can also generate a ramp with a floating point range by specifying it as the third argument: <code>[1:10,0.1]</code>. This is really useful if you are looking to generate linear LFOs.</p>
+<h5 id="repeat-operator">Repeat operator</h5>
+<p>The <code>!</code> operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the <code>!!</code> operator from the same family. This operator is a bit special and will be detailed later.</p>
+<h5 id="overflow-protection">Overflow protection</h5>
+<p>Some values such as notes need to be confined in the usual range of MIDI notes, defined on 8 bytes, from <code>0</code> to <code>127</code>. Math operations on notes that should result in overflowing that limit will be wrapped around. 128 will be changed into 0, etc...  Most arithmetic operations are wrapped around. If you think that it makes no sense, I feel the same too but I am waiting to find a better solution to this problem. I could probably just lock the value to its bounds. More on this in later versions.</p>
+<h4 id="dealing-with-notes">Dealing with notes</h4>
+<p>The support for traditional notes is still very basic. You can write very basic melodies with <strong>Sardine</strong>, but there is no good syntax for algorithmic composition like the one you could find in a tool such as <strong>SuperCollider</strong>. This is likely to change in the future, but dealing with musical objects is always extra difficult just like in any other computer music software. There are many ways to approach this, and it can be hard to decide which one is the right one or even to impose a vision about the way to deal with traditional musical objects such as chords and notes.</p>
+<h5 id="notes-are-integers">Notes are integers</h5>
+<p>Notes in <strong>Sardine</strong> are values just any other. It means that the whole range of arithmetic operations is available to you. Internally, a note becomes a number as soon as it is parsed by the system (based on a MIDI Note to integer conversion).</p>
+<h5 id="note-qualifiers">Note qualifiers</h5>
+<p>A <strong>Sardine</strong> note can receive a specific quality. Having a quality means being chosen as the base note for building a collection (chord, scale, structure). You can print the list of available qualifiers by using the <code>print_scales()</code> function. To qualify a note, the right arrow operator must be used: <code>-&gt;</code>. The list of available qualities is subject to change and additions. I will not reproduce it here. Here are some examples of the qualification of a note: <code>D3b-&gt;penta</code>, <code>E5#-&gt;fifths</code>, <code>G4-&gt;messiaen1</code>.</p>
+<h2 id="midi">MIDI</h2>
+<p><strong>Sardine</strong> supports all the basic messages one can send and receive through MIDI. It will likely support every possible MIDI message in the future. By default, <strong>Sardine</strong> is always associated to a default MIDI port. It can both send and receive information from that port. If the clock is <code>active</code>, you already learned that clock messages will be forwarded to the default port and thus to all your connected softwares/gear. You can also open arbitrary MIDI ports as long as you know their precise name on your system. There is no function to facilitate this for now. I will not enter into the topic of finding / creating / managing virtual MIDI ports. This subject is outside the scope of what <strong>Sardine</strong> offers and you are on your own to deal with this.</p>
+<h3 id="midi-out">MIDI Out</h3>
+<p>Here is an example of a <strong>swimming function</strong> sending a constant MIDI Note:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">def</span> <span class="nf">hop</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    <span class="n">M</span><span class="p">(</span><span class="n">dur</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> 
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>            <span class="n">velocity</span><span class="o">=</span><span class="mi">127</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">a</span><span class="p">(</span><span class="n">hop</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>The default MIDI output is accessible through the <code>M()</code> syntax (contrary to <code>S</code>, it is not an object!). MIDI still need some work to support all messages coming out from the use of the same object. Note that the channel count starts at <code>0</code>, covering a range from <code>0</code> to <code>15</code>. This is unfortunate but that it how MIDI interfaces are built. The duration for each and every note should be written in milliseconds (<code>ms</code>) because MIDI is handling MIDI Notes as two separate messages (one for the <code>note_on</code> and one for the <code>note_off</code>). Following the MIDI standard, note and velocity values are expressed in the range from <code>0</code> to <code>127</code>.</p>
+<p>Let's go further and make an arpeggio using the pattern system:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">def</span> <span class="nf">hop</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">M</span><span class="p">(</span><span class="n">dur</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="s1">&#39;C,E,G,B&#39;</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">127</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">anew</span><span class="p">(</span><span class="n">hop</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>A similar function exists for sending MIDI CC messages. Let's combine it with our arpeggio:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nd">@swim</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">def</span> <span class="nf">hop</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="n">M</span><span class="p">(</span><span class="n">dur</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">note</span><span class="o">=</span><span class="s1">&#39;60 46 50 67&#39;</span><span class="p">,</span> 
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>            <span class="n">velocity</span><span class="o">=</span><span class="mi">127</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>    <span class="n">cc</span><span class="p">(</span><span class="n">channel</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">control</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">P</span><span class="p">(</span><span class="s1">&#39;r*127&#39;</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">v</span><span class="p">))</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>    <span class="n">a</span><span class="p">(</span><span class="n">hop</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="midi-in">MIDI In</h3>
+<p>MIDI Input is supported through the use of a special object, the <code>MidiListener</code> object. This object will open a connexion listening to incoming MIDI messages. There are only a few types of messages you should be able to listen to:</p>
+<ul>
+<li>MIDI Notes through the <code>NoteTarget</code> object</li>
+<li>MIDI CC through the <code>ControlTarget</code> object</li>
+</ul>
+<p>Additionally, you can listen to incoming Clock messages (<code>ClockListener</code>) but you must generally let <strong>Sardine</strong> handle this alone. There are currently no good or valid reasons to do this!</p>
+<p>Every <code>MidiListener</code> is expecting a target. You must declare one and await on it using the following syntax:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">a</span> <span class="o">=</span> <span class="n">MidiListener</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">ControlTarget</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nd">@swim</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="k">def</span> <span class="nf">pluck</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">0.25</span><span class="p">):</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="n">S</span><span class="p">(</span><span class="s1">&#39;pluck&#39;</span><span class="p">,</span> <span class="n">midinote</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">get</span><span class="p">())</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="n">a</span><span class="p">(</span><span class="n">pluck</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+</code></pre></div>
+<p>In this example, we are listening on CC n°<code>20</code> on the first midi channel (<code>0</code>), on the default MIDI port. Sardine cannot assert the value of a given MIDI Control before it receives a first message therefore the initial value will be assumed to be <code>0</code>.</p>
+<p>You can fine tune your listening object by tweaking the parameters:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># picking a different MIDI Port</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">a</span> <span class="o">=</span> <span class="n">MidiListener</span><span class="p">(</span><span class="s1">&#39;other_midi_port&#39;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">ControlTarget</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</code></pre></div>
+<h2 id="osc">OSC</h2>
+<p>You can send <strong>OSC</strong> (<strong>Open Sound Control</strong>) messages by declaring your own <strong>OSC</strong> connexion and sending custom messages. It is rather easy to do and should work without causing you any trouble.</p>
+<h3 id="manual-method">Manual method</h3>
+<p>The following example details the simplest way to send an OSC message using Sardine. It is very crude and <strong>really not recommended at all</strong> to follow this route for there is a better one:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Open a new OSC connexion</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="n">my_osc</span> <span class="o">=</span> <span class="n">OSC</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>        <span class="n">port</span><span class="o">=</span> <span class="mi">23000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bibu&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>        <span class="n">ahead_amount</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="c1"># Recursive function sending OSC</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="nd">@swim</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="k">def</span> <span class="nf">custom_osc</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="n">my_osc</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;/coucou&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)])</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>    <span class="n">anew</span><span class="p">(</span><span class="n">custom_osc</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="c1"># Closing and getting rid of the connexion</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="n">cr</span><span class="p">(</span><span class="n">custom_osc</span><span class="p">)</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a><span class="k">del</span> <span class="n">my_osc</span>
+</code></pre></div>
+<p>Note that you <strong>always</strong> need to provide the clock as the first argument of the <code>send()</code> method. It is probably better to write a dedicated function to avoid having to specify the address everytime you want to send something at a specific address:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="k">def</span> <span class="nf">coucou</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span> <span class="n">my_osc</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;/coucou&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="using-the-oscsender-object">Using the OSCSender object</h3>
+<p>Prefer the <code>OscSender</code> object, aliased to <code>O()</code>. The syntax is similar but you gain the ability to name your OSC parameters and you can use patterns to play around with them. Compared to <code>S()</code> and <code>M()</code>, <code>O()</code> requires one additional parameter: the <code>OSC</code> connexion previously defined.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Open a new OSC connexion</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">my_osc</span> <span class="o">=</span> <span class="n">OSC</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">23000</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bibu&quot;</span><span class="p">,</span> <span class="n">ahead_amount</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># Simple address</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="n">O</span><span class="p">(</span><span class="n">my_osc</span><span class="p">,</span> <span class="s1">&#39;loulou&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;1, 2, 3, 4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="n">O</span><span class="p">(</span><span class="n">my_osc</span><span class="p">,</span> <span class="s1">&#39;loulou/yves&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s1">&#39;1, 2, 3, 4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">()</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="nd">@swim</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="k">def</span> <span class="nf">lezgo</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>    <span class="n">O</span><span class="p">(</span><span class="n">my_osc</span><span class="p">,</span> <span class="s1">&#39;loulou/blabla&#39;</span><span class="p">,</span> 
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>        <span class="n">value</span><span class="o">=</span><span class="s1">&#39;1, 2, 3, 4&#39;</span><span class="p">,</span> 
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>        <span class="n">otherv</span><span class="o">=</span><span class="s1">&#39;1, 2|4, r*2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>    <span class="n">anew</span><span class="p">(</span><span class="n">lezgo</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="what-about-crashes">What about crashes?</h2>
+<p>If you already know how to program, you know that 90% of your time is usually spent debugging code that doesn't run. You will not be a better programmer when using <strong>Sardine</strong>. Crashes will happen too, but they are handled and taken care of so that the musical flow is never truly interrupted. If you write something wrong inside a <strong>swimming function</strong>, the following will happen: </p>
+<ul>
+<li>if the function crashes and has never looped, it will not be recovered.</li>
+<li>if the function is already running and has already looped, the last valid function will be rescheduled and the current error message will be printed so that you can debug.</li>
+</ul>
+<p>It means that once you start playing something, it will never stop until you want it to. You can make music without fearing interruption because of a crash. Some mistakes might be harder than other to recover from but most of the time, you shouldn't really hear or feel any interruption in the musical flow. If that is the case, please report the bug along with a way to reproduce it easily.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../demos/artificial_life/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Artificial Life" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Artificial Life
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../reference/" class="md-footer__link md-footer__link--next" aria-label="Next: Reference" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Reference
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/Bubobubobubobubo/sardine" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/RaphBubo" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.prune", "navigation.top"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+    
+    
+  </body>
+</html>

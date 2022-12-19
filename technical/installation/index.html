@@ -1,0 +1,1375 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Raphaël Forment">
+      
+      
+        <link rel="canonical" href="https://sardine.raphaelforment.fr/technical/installation/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+    
+    
+      
+        <title>Installing Sardine - Sardine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.975780f9.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#000000">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karla:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Karla";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="black" data-md-color-accent="orange">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#installation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Sardine" class="md-header__button md-logo" aria-label="Sardine" data-md-component="logo">
+      
+  <img src="../../images/sardine_logo_single.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sardine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Installing Sardine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Bubobubobubobubo/sardine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../showcase/" class="md-tabs__link">
+      Showcase
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="./" class="md-tabs__link md-tabs__link--active">
+        Installation / Configuration
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../documentation/sardinopedia/introduction/" class="md-tabs__link">
+        Documentation
+      </a>
+    </li>
+  
+
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../about/" class="md-tabs__link">
+      About
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sardine" class="md-nav__button md-logo" aria-label="Sardine" data-md-component="logo">
+      
+  <img src="../../images/sardine_logo_single.svg" alt="logo">
+
+    </a>
+    Sardine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Bubobubobubobubo/sardine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../showcase/" class="md-nav__link">
+        Showcase
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Installation / Configuration
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Installation / Configuration" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Installation / Configuration
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Installing Sardine
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Installing Sardine
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#i-library" class="md-nav__link">
+    I - Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ii-audio-engine" class="md-nav__link">
+    II - Audio engine
+  </a>
+  
+    <nav class="md-nav" aria-label="II - Audio engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation_1" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iii-configuration" class="md-nav__link">
+    III - Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="III - Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#words-of-caution" class="md-nav__link">
+    Words of caution
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iv-code-editor" class="md-nav__link">
+    IV - Code Editor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trivia" class="md-nav__link">
+    Trivia
+  </a>
+  
+    <nav class="md-nav" aria-label="Trivia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alternative-boot-methods" class="md-nav__link">
+    Alternative boot methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        Configuration tools
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshot/" class="md-nav__link">
+        Troubleshooting
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Documentation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Documentation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1" type="checkbox" id="__nav_4_1" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1">
+          Sardinopedia
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Sardinopedia" data-md-level="2">
+        <label class="md-nav__title" for="__nav_4_1">
+          <span class="md-nav__icon md-icon"></span>
+          Sardinopedia
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/introduction/" class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_2" type="checkbox" id="__nav_4_1_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_2">
+          Learning
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Learning" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_2">
+          <span class="md-nav__icon md-icon"></span>
+          Learning
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/basic_swimming_lessons/" class="md-nav__link">
+        Swimming
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/senders/" class="md-nav__link">
+        Senders
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/patterning/" class="md-nav__link">
+        Patterns
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/pattern_language/" class="md-nav__link">
+        Language
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/supercollider/" class="md-nav__link">
+        SuperDirt
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/clock/" class="md-nav__link">
+        Clock
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_3" type="checkbox" id="__nav_4_1_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_3">
+          Examples
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Examples" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_3">
+          <span class="md-nav__icon md-icon"></span>
+          Examples
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/rhythm/" class="md-nav__link">
+        Rhythm
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/sampling/" class="md-nav__link">
+        Sampling
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/sardinopedia/melody/" class="md-nav__link">
+        Melody
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4_1_4" type="checkbox" id="__nav_4_1_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4_1_4">
+          Demos
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Demos" data-md-level="3">
+        <label class="md-nav__title" for="__nav_4_1_4">
+          <span class="md-nav__icon md-icon"></span>
+          Demos
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/demos/zorba_in_belleville/" class="md-nav__link">
+        Zorba in Belleville
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/demos/dumpster_dive/" class="md-nav__link">
+        Dumpster Dive
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/demos/PMA5/" class="md-nav__link">
+        Tribute to Jules Cipher
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/demos/artificial_life/" class="md-nav__link">
+        Artificial Life
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/tutorial/" class="md-nav__link">
+        Tutorial
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../documentation/reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#i-library" class="md-nav__link">
+    I - Library
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ii-audio-engine" class="md-nav__link">
+    II - Audio engine
+  </a>
+  
+    <nav class="md-nav" aria-label="II - Audio engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installation_1" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iii-configuration" class="md-nav__link">
+    III - Configuration
+  </a>
+  
+    <nav class="md-nav" aria-label="III - Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#words-of-caution" class="md-nav__link">
+    Words of caution
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iv-code-editor" class="md-nav__link">
+    IV - Code Editor
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    Conclusion
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trivia" class="md-nav__link">
+    Trivia
+  </a>
+  
+    <nav class="md-nav" aria-label="Trivia">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#alternative-boot-methods" class="md-nav__link">
+    Alternative boot methods
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/Bubobubobubobubo/sardine/edit/master/docs/technical/installation.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="installation">Installation</h1>
+<p>The installation of <strong>Sardine</strong> is done in two separate steps
+that you can go through in any order:</p>
+<ul>
+<li>
+<p><strong>[MANDATORY]</strong> Installing / configuring of the <strong>Sardine</strong> library and your text editor.</p>
+</li>
+<li>
+<p><strong>[RECOMMENDED]</strong> Installing / configuring the audio backend (<strong>SuperDirt</strong>).</p>
+</li>
+</ul>
+<p><strong>Sardine</strong> by itself is just a program that does I/O (<em>Input</em>/<em>Output</em>) of
+various musical information. It is up to you to configure the rest so that it
+can make sound! The better part is that you can <strong>configure it however you like</strong>
+for whatever musical purpose you have in mind :)
+By installing everything correctly, you will be able to integrate <strong>Sardine</strong>
+with almost any musical application.</p>
+<div class="admonition info">
+<p class="admonition-title">Sardine is a multi-layered 'lasagna-style' software</p>
+<p><img alt="sardine_stack" src="../images/sardine_stack.svg" width="100%" /></p>
+</div>
+<p>The hard part is not to install <strong>Sardine</strong> <em>per se</em>, which is just a regular
+Python program. The hard part is to setup the whole stack: sound engine,
+synchronization libraries, etc...</p>
+<h2 id="i-library">I - Library</h2>
+<p><strong>Sardine</strong> can be installed like any other <strong>Python</strong> package using <code>pip</code>,
+the official package manager.</p>
+<div class="admonition note">
+<p class="admonition-title">Installing and updating Python</p>
+<p>1) Install <a href="https://www.python.org/">Python</a> for your operating system (&gt;=3.10).
+   <strong>Update if needed</strong>!</p>
+<p>2) Open a terminal and type <code>python</code> or <code>python3</code> for extra safety.
+   A prompt will open telling you what version you currently default to.
+   Please make sure that you are running at least Python 3.10.</p>
+</div>
+<p>Being aware of your installed <strong>Python</strong> versions is of tremendous importance.
+You can have multiple versions of Python running on your system, some being
+required by your operating system, some being installed by other applications.
+They sometimes end up piling up. Find the command that will summon your
+<strong>Python 3.10</strong> or <strong>Python 3.11</strong> installation which can be <code>python</code>,
+<code>python3</code>, <code>python3.10</code> depending on the system you are currently using.</p>
+<p>You can now safely proceed to download and install <strong>Sardine</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip install sardine-system --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+</code></pre></div>
+<p>This will install the <a href="https://pypi.org/project/sardine-system/">sardine-system</a> package from PyPI
+with an external index providing prebuilt wheels for the <code>python-rtmidi</code> dependency.
+Right now, <a href="https://pypi.org/project/python-rtmidi/#files">python-rtmidi</a>
+does not have prebuilt wheels for 3.10 and 3.11. Installing sardine without the
+external index will require C++ build tools in order to compile the RtMidi library.</p>
+<p>Alternatively, if you want to install the <strong>development version</strong>, follow the steps below:</p>
+<p>1) Download the repository from <a href="https://github.com/Bubobubobubobubo/sardine">GitHub</a>:</p>
+<p>If you are planning to contribute, you should clone the repository
+   using <a href="https://git-scm.com/">Git</a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git clone https://github.com/Bubobubobubobubo/Sardine
+</code></pre></div>
+<p>Otherwise if you don't have Git installed, you can click
+   the green <em>Code</em> button instead, download it as a zip, and unpack it.</p>
+<p>2) Using a <code>shell</code> or <code>cmd</code>, go to the <code>sardine</code> folder you downloaded
+   and run the command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip install . --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+</code></pre></div>
+<p>The period denotes the current directory of your shell, which should be
+   where you've downloaded your package.</p>
+<p>The <a href="https://setuptools.pypa.io/en/latest/userguide/development_mode.html"><code>-e/--editable</code></a>
+   flag allows you to make changes to the source code after you've already installed the package.</p>
+<p>If you are using Linux or MacOS, use <code>sudo</code> to install with the highest
+   privileges. This is usually not recommended but it can help with the
+   installation of other <strong>Sardine</strong> components.</p>
+<p>This command can take quite some time depending on your internet connection,
+your computer specifications, etc... It will install <strong>Sardine</strong> as well as all
+the packages and libraries needed to get it running. This is likely the step
+where you will start noticing crashes, errors and sometimes some truly cryptic
+messages. Please watch carefully, and do not let an error pass without notice.
+This might result in a broken / incomplete installation of <strong>Sardine</strong>.</p>
+<p>Wait until the end of the process. To test if <strong>Sardine</strong> is installed properly,
+execute the following commands in your terminal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>fishery
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># or alternatively:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python -m fishery
+</code></pre></div>
+<p>You should now see a big bright <code>SARDINE</code> written on your screen. Congratulations!
+This is the indication that <strong>Sardine</strong> was able to start!</p>
+<h2 id="ii-audio-engine">II - Audio engine</h2>
+<h3 id="installation_1">Installation</h3>
+<div class="admonition note">
+<p class="admonition-title">Installing SuperCollider and SuperDirt</p>
+<ul>
+<li>Refer to the <a href="https://github.com/musikinformatik/SuperDirt">SuperDirt</a>
+  installation guide for your platform. It will guide you through the
+  installation of <a href="https://supercollider.github.io/">SuperCollider</a> and
+  <strong>SuperDirt</strong>. It is usually a three step process:<ul>
+<li>install <a href="https://supercollider.github.io/">SuperCollider</a>.</li>
+<li>run <code>Quarks.install("SuperDirt")</code> in the SCIDE window.</li>
+<li>run <code>SuperDirt.start</code> to start the engine.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">SC3-plugins</p>
+<p>You might want to check out <a href="https://github.com/supercollider/sc3-plugins">SC3-plugins</a>.
+These plugins will dramatically increase the possibilities if you are
+planning to use sampling or the internal synthesis engine a lot!</p>
+</div>
+<p><strong>SuperDirt</strong> is the <em>optional</em> but very much recommended synthesis engine for <strong>Sardine</strong>.
+As a matter of fact, <strong>Sardine</strong> was initially built as an alternative client for <strong>SuperDirt</strong>.
+It is a well-known free and open source piece of software used by live coders.
+<strong>SuperDirt</strong> is mostly developed by Julian Rohrhuber, and intended to be used
+initially for <a href="https://tidalcycles.org/">TidalCycles</a>, a truly great live coding library.
+This means that your <strong>Sardine</strong> configuration will be portable with <strong>TidalCycles</strong>.
+It is meant to be used via a simple message-based syntax converted into SuperDirt
+instructions that can trigger samples, synthesizers and do many other things,
+taking care of the finicky details.</p>
+<h2 id="iii-configuration">III - Configuration</h2>
+<p><strong>Sardine</strong> is perfectly capable of booting both <strong>SuperCollider</strong> and <strong>SuperDirt</strong> by itself.
+However, this mechanism is disabled by default because <strong>I can't assume that you
+will have it installed and configured properly!</strong> You can turn on the
+<em>SuperDirt autoboot</em> feature by tweaking the configuration.
+Open up the configuration tool by typing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>sardine-config
+</code></pre></div>
+<p><img alt="configuration_screen" src="../images/configuration_screen.png" /></p>
+<p>Follow the menus to configure <strong>Sardine</strong> to your liking but remember to turn on
+the <em>autoboot</em> feature if you need it. Explore the menus a bit to understand all
+the things you can configure, we will come back to it later on.
+<strong>Sardine</strong> is very modular, you can enable or disable features very easily.</p>
+<p>If the <code>sardine-config</code> utility tool is missing, try reinstalling <strong>Sardine</strong> in
+admnistrator mode (<code>sudo</code> on Unix systems). If Python returns a message such as:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="s2">&quot;WARNING: The scripts sardine-config, sardine-config-python and sardine-config-superdirt are installed in &#39;/opt/local/Library/Frameworks/Python.framework/Versions/3.10/bin&#39; which is not on PATH.&quot;</span>
+</code></pre></div>
+<p>Please add the given location on your <code>PATH</code>.</p>
+<h3 id="words-of-caution">Words of caution</h3>
+<div class="admonition warning">
+<p class="admonition-title">About the autoboot feature</p>
+<p><strong>Sardine</strong> will assume that <code>SuperCollider</code> (and more specifically <code>sclang</code>)
+is accessible on your <code>$PATH</code>. Everything should run just fine if you install
+it in the default folder for your platform.
+On some specific systems, you might need to locate the <code>sclang</code> executable
+and to add it to <code>$PATH</code>.</p>
+</div>
+<p>The autoboot feature can cause trouble among newcomers and unexperienced live-coders.
+There are a bazillion ways <strong>SuperCollider</strong> and <strong>SuperDirt</strong> can refuse to boot,
+crash or cease to function all of the sudden. Consult the troubleshot page for more
+information about frequent issues.
+I recommend to boot <strong>SuperCollider</strong> and <strong>Sardine</strong> separately for new users
+so that they can keep an eye on both sides. To do so, turn off the autoboot feature
+and start <strong>Sardine</strong> and <strong>SuperCollider</strong> separately, each in their own window.
+Type <code>SuperDirt.start</code> to start the latter manually from the SuperCollider side.
+To start anew if any error arises, type <code>Server.killAll</code> to restart <strong>SuperCollider</strong>
+to a blank slate.</p>
+<h2 id="iv-code-editor">IV - Code Editor</h2>
+<p>Pick the editor you prefer from the following list.
+All of them have been tested with Sardine! It's only a matter of preference.</p>
+<div class="admonition note">
+<p class="admonition-title">Text editors compatible with Sardine</p>
+<ul>
+<li><a href="https://code.visualstudio.com/">VSCode</a>: great for everyone, from newcomers to exprienced users.</li>
+<li><a href="https://www.vim.org/">Vim</a>: fast, powerful, ubiquitous. Modal editor that requires some learning.</li>
+<li><a href="https://neovim.io/">Neovim</a>: the modernized version of Vim, configurable using Lua.</li>
+<li><a href="https://www.gnu.org/software/emacs/">Emacs</a>: Emacs is everything and can do anything.</li>
+<li><a href="https://jupyter.org/">Jupyter Notebook</a>: A data-science oriented tool that can support <strong>Sardine</strong>.</li>
+</ul>
+</div>
+<p>Working and making music with <strong>Sardine</strong> is usually done following the same
+method for all editors:</p>
+<ul>
+<li>
+<p>1) Opening a new blank <code>.py</code> file (no need to save).</p>
+</li>
+<li>
+<p>2) Launching a terminal in the same coding environment</p>
+</li>
+<li>
+<p>3) Sending lines of code from the code buffer to the terminal buffer.</p>
+</li>
+</ul>
+<p>If you already know how to do that for you, great! If you don't, please head
+to the configuration section where additional help concerning your editor of
+choice will be written.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>You should now have <strong>Sardine</strong> (and possibly <strong>SuperDirt</strong>) installed.
+You can fine-tune your <strong>Sardine</strong> installation by running the configuration client:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sardine-config
+</code></pre></div>
+<p>This is the main configuration tool for <strong>Sardine</strong>. We will come back to it later.
+If the command is not found or if nothing happens, <strong>Sardine</strong> might not be installed correctly.
+Please worry and review the preceding steps!</p>
+<p>You might get a message saying that you have no configuration file.
+Take for a guarantee that <strong>Sardine</strong> is installed! This is perfectly normal.
+By default, there is no configuration file until it is created the first time you start <strong>Sardine</strong>.</p>
+<p>Open a new interactive Sardine session by running <code>python3 -m fishery</code>.
+If everything is alright, some popup messages will be printed and you will be
+left on a prompt (<code>&gt;&gt;&gt;</code>) waiting for your input:</p>
+<p><img alt="sardineboot" src="../images/sardine_first_boot.png" /></p>
+<p>If you have opted to use the <strong>SuperDirt</strong> audio backend, you can start checking
+if everything is fine by playing a <em>clap</em> or a <em>kickdrum</em>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">D</span><span class="p">(</span><span class="s1">&#39;cp&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>If you want to play a note on your MIDI Synth, use this command instead:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">N</span><span class="p">()</span>
+</code></pre></div>
+<p>If you hear the clap or the note you were expecting, you are good to go! Have fun!</p>
+<h2 id="trivia">Trivia</h2>
+<h3 id="alternative-boot-methods">Alternative boot methods</h3>
+<p>So far, we've used the fast boot method for <strong>Sardine</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">fishery</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># alternatively</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">fishery</span>
+</code></pre></div>
+<p>Note that you can boot <strong>Sardine</strong> manually in a two-step process:</p>
+<p>1) <code>python3 -m asyncio</code>: start the asyncio REPL</p>
+<p>2) <code>from sardine import **</code>: import <strong>Sardine</strong> library</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            Back to top
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../../showcase/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Showcase" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Showcase
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../configuration/" class="md-footer__link md-footer__link--next" aria-label="Next: Configuration tools" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Configuration tools
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/Bubobubobubobubo/sardine" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+    </a>
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/RaphBubo" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.prune", "navigation.top"], "search": "../../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      
+    
+    
+  </body>
+</html>

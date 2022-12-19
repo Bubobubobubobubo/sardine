@@ -8,7 +8,7 @@ from .base import BaseClock, BaseHandler, BaseParser
 from .clock import InternalClock, Time
 from .handlers import SleepHandler
 from .scheduler import Scheduler
-from .sequences import Iterator, ListParser, Variables
+from .sequences import Iterator, ListParser, Variables, ZiffersParser
 
 __all__ = ("FishBowl",)
 

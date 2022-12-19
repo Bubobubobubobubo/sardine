@@ -191,6 +191,12 @@ class FishBowl:
         self.add_handler(clock)
         self.resume()
         self.dispatch("clock_swap", clock)
+        
+    def swap_parser(self, parser: "BaseParser"):
+        """Hot-swap the current parser for a different one (eg. base -> ziffers)."""
+        self.remove_handler(self.parser)
+        self.add_handler(parser)
+        self.dispatch("parser_swap", parser)
 
     ## HANDLERS ############################################################
 

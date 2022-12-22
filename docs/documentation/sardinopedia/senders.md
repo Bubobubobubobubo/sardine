@@ -1,47 +1,101 @@
-The second most important aspect of **Sardine** is the concept of **Senders**. **Senders** are the main objects used to communicate with the outside world. There are three basic **senders**:
+# Handler and Senders: Sardine environment
 
-- **Sound Sender**: play sounds/synths using **SuperCollider** and the **SuperDirt** engine.
+Sardine is a modular live-coding library. You can add and substract modular components to the system. Each component is responsible of one thing and one thing only such as sending MIDI notes or receiving incoming OSC messages. These components are referred to as `Handlers`. Among these handlers, some are specialised in sending messages and communicating with the outside world. These are called `Senders`. There is one piece of software holding everything together: the `FishBowl`. As you might expect from the name, a `FishBowl` is gathering all the components of the Sardine system.
+
+## The FishBowl
+
+The `FishBowl` is central to the **Sardine** system. It is composed of **hard** dependencies and **soft** dependencies. **Hard** dependencies are things like the **Clock** or the **Parser**. They are needed pretty much everywhere. As such, you can't really remove them or everything would fall apart. **Soft** dependencies are the various inputs or outputs you need to perform or to make anything meaningful with **Sardine**. By default, some of them will be added depending on what you have specified in your configuration file. This is just for convenience and to help newcomers.
+
+### Hard dependencies
+
+Core components cannot be removed from the `FishBowl`. However, they can be swapped! It means that you can all of the sudden rip off the current clock and switch to a new one. The system might hiccup a bit but it will recover! To do so, note that you can use two important methods: 
+
+- `bowl.swap_clock(clock: "BaseClock")`: there are currently two clocks available: `InternalClock()` and `LinkClock()`. The latter is used for synchronisation with every device capable of using the `Link` protocol.
+
+- `bowl.swap_parser(parser: "BaseParser")`: switch from a parser to another parser. There is no reason to do that because there is only one parser for the moment but it might be useful in the future.
+
+### Soft dependencies
+
+This is where the fun begins. Pretty much everything in the **Sardine** system is a modular component that can be added or removed. Take a look at the `run.py` file if you want to see how the system is first initialized. By default, Sardine is proposing a small collection of `Handlers` that will allow you to send or receive `MIDI`, `OSC` or `SuperDirt` messages. Some other `Handlers` are used for various internal functions that you might not care about. Take a look at the following code detailing how to add modular components:
+
+```python
+# Adding a MIDI Out handler: sending MIDI notes
+# control changes, program changes, etc...
+midi = MidiHandler(port_name=str(config.midi)) # new instance of the Handler
+bowl.add_handler(midi) # adding the handler to the FishBowl
+
+# OSC Loop: internal component used for handling OSC messages
+osc_loop = OSCLoop() # new instance of the Handler
+bowl.add_handler(osc_loop)  # adding the handler to the FishBowl
+
+# OSC Handler: dummy OSC handler
+dummy_osc = OSCHandler(
+    ip="127.0.0.1",
+    port=12345,
+    name="My OSC sender",
+    ahead_amount=0.0,
+    loop=osc_loop,
+)
+
+# Aliasing some methods from the handlers for later :)
+M = midi.send
+CC = midi.send_control_changes
+PC = midi.send_program_changes
+O = dummy_osc.send
+```
+
+Please take note of the `bowl.add_handler` method. If you don't add your component to the `FishBowl`, your component will inevitably crash! This is a fairly common mistake, especially if you are working in a hurry. 
+
+### Messaging system
+
+What is the `FishBowl` doing? It allows component to talk with each other by sharing a reference to the `bowl`. It means that any component can send a message to any other component. It helps to make the system really reactive to any potential event that you would like to take into account. The messages are sent using the `bowl.dispatch(message_type: str, *args)` method. 
+
+This is how `bowl.('pause')`, `bowl.('resume')`, `bowl.('stop')` and `bowl.('play')` are working. They are messages dispatched to the `FishBowl`, making the clock aware that an event occured.
+
+## The default Senders
+
+**Sardine** is proposing various senders by default, allowing you to:
+
+- **SuperDirt Sender**: play sounds/synths using **SuperCollider** and the **SuperDirt** engine.
 
 - **MIDI Sender**: trigger/control MIDI capable software / hardware.
 
 - **OSC Sender**: send or receive *Open Sound Control* messages.
 
-Naturally, people are thinking about adding more and more senders. Hopefully, **Sardine** will make integrating new **senders** easier as time goes by. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights.
+Naturally, people are thinking about adding more and more senders. The best ones will be added to the base library. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights. 
 
-You will see that learning how to *swim* was kind of the big deal. Things will now be easier to learn. **Senders** and *swimming functions* are enough to already make pretty interesting music. The rest is just me sprinkling goodies all around :)
+Now that all of this is explained, you will see that learning how to *swim* was kind of the big deal. Learning will be funnier because you will now experiment with code! **Senders** and *swimming functions* are enough to already make pretty interesting music. The rest is just me sprinkling goodies all around :)
 
 ## I - Anatomy of Senders
 
-A **Sender** is an *event generator*. It describes one event. This event can mutate depending on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender can be arbitrarily long depending on the precision you want to give to each event. This object will only take **one method**: `.out()`. Wait? A long object, and a tail method? Does it ring a bell? It looks... just like a sardine.
+A **Sender** is an *event generator*. It describes an event. This event can mutate depending on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender can be arbitrarily long depending on the precision you want to give to each event.
 
 ```
        /`-._                          /`-._
      _/,.._/                        _/,.._/
   ,-'   ,  `-:,.-')        _     ,-'   ,  `-:,.-')        _
- : S(...):';  _  {    .out(_)   : M(...):';  _  {    .out(_)    ... and more
+ : S(...):';  _  {              : M(...):';  _  {               ... and more
   `-.  `' _,.-\`-.)        +     `-.  `' _,.-\`-.)        +
      `\\``\,.-'                     `\\``\,.-'
                                
 ```
 
-### Writing the body
+### Args and kwargs arguments
 
-Every sender (`M()`, `O()`, `S()`) is an object taking *arguments* and *keyword arguments*. **Arguments are mandatory**, and keyword arguments optional. These arguments will define your event:
+Every sender (`D()`, `CC()`, `PC()`, custom OSC sender) is an object taking *arguments* and *keyword arguments*. **Arguments are mandatory**, and keyword arguments optional. These arguments will define your event:
 
 ```python
-S('bd', speed='[1:2,0.5]', legato=1, shape=0.5) # Heavy drumbass
-M(note='C@min7^1', dur=2, channel=0)            # Short MIDI chord
+D('bd', speed='[1:2,0.5]', legato=1, shape=0.5) # Heavy drumbass
+N(note='<C@min7^1>', dur=2, channel=0)          # Short MIDI chord
 ```
 
-You will have to learn what *arguments* each sender can receive. They all have a speciality. Despite the fact that they look and behave similarly, the event they describe is very different in nature depending on the type. 
+You will have to learn what *arguments* each sender can receive. They all have their specialty. Despite the fact that they look and behave similarly, the event they describe is often different in nature. If you are interested in the default **SuperDirt** output, take a look at the **Reference** section in the menubar.
 
-!!! warning
+### Patterning the body
 
-    Note that **Sardine** is still missing some pieces. There is currently no way to easily pattern some very common **MIDI** messages such as *control changes*, *program changes*, etc... Don't worry! You can still pattern all of this very easily by doing `cc(control=P('0,1,2',i), value=P('1~127'))`. It's a just a bit more verbose compared to what it could be if ever I was feeling like adding this to the codebase! It will eventually happen, I promise!
+When using a **sender**, you usually describe a static event composed of multiple parameters. Live-coders tend to avoid using static events as they get repetitive very quickly. You will gradually search for ways to avoid strict repetition and vary some if not all of the parameters automatically.
 
-### Precising the tail
 
-The tail of a sender is always the `.out()` method. Without it, no message is sent. We have already seen the tail in the *swimming functions* section. If you are here because of it, you've found the right place to look at! The `.out()` method takes three arguments:
 
 - `i` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. This **iterator** is the index of the values extracted from your linear list-like patterns (your **arguments** and **keyword arguments**). How this index will be interpreted will depend on the next two arguments.
 

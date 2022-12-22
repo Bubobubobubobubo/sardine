@@ -1,4 +1,4 @@
-# Handler and Senders: Sardine environment
+# Handler and Senders: Sardine environment
 
 Sardine is a modular live-coding library. You can add and substract modular components to the system. Each component is responsible of one thing and one thing only such as sending MIDI notes or receiving incoming OSC messages. These components are referred to as `Handlers`. Among these handlers, some are specialised in sending messages and communicating with the outside world. These are called `Senders`. There is one piece of software holding everything together: the `FishBowl`. As you might expect from the name, a `FishBowl` is gathering all the components of the Sardine system.
 
@@ -48,13 +48,11 @@ Please take note of the `bowl.add_handler` method. If you don't add your compone
 
 ### Messaging system
 
-What is the `FishBowl` doing? It allows component to talk with each other by sharing a reference to the `bowl`. It means that any component can send a message to any other component. It helps to make the system really reactive to any potential event that you would like to take into account. The messages are sent using the `bowl.dispatch(message_type: str, *args)` method. 
+You might wonder what the `FishBowl` is actually doing behind the scene. Factually, it allows component to talk with each other by sharing a reference to the `bowl`. It means that any component can send a message to any other component. It also means that this same component can promptly react to any event dispatched through the `FishBowl`. Internal messages are sent using the `bowl.dispatch(message_type: str, *args)` method. This is how messages such as `bowl.('pause')`, `bowl.('resume')`, `bowl.('stop')` and `bowl.('play')` are able to stop and resume everything when needed. They are messages dispatched to the `FishBowl` making everyone aware that a major event occured.
 
-This is how `bowl.('pause')`, `bowl.('resume')`, `bowl.('stop')` and `bowl.('play')` are working. They are messages dispatched to the `FishBowl`, making the clock aware that an event occured.
+## Default senders: Where Music is Made
 
-## The default Senders
-
-**Sardine** is proposing various senders by default, allowing you to:
+When you install **Sardine**, you also install a set of default **Senders** that will allow you to:
 
 - **SuperDirt Sender**: play sounds/synths using **SuperCollider** and the **SuperDirt** engine.
 
@@ -62,13 +60,13 @@ This is how `bowl.('pause')`, `bowl.('resume')`, `bowl.('stop')` and `bowl.('pla
 
 - **OSC Sender**: send or receive *Open Sound Control* messages.
 
-Naturally, people are thinking about adding more and more senders. The best ones will be added to the base library. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights. 
+Naturally, **Sardine** users are thinking about adding more and more senders. Some are planned, some have never seen the light, and the best ones will be surely be added to the base library in the future. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights. 
 
-Now that all of this is explained, you will see that learning how to *swim* was kind of the big deal. Learning will be funnier because you will now experiment with code! **Senders** and *swimming functions* are enough to already make pretty interesting music. The rest is just me sprinkling goodies all around :)
+You will soon figure out that learning how to *swim* was kind of the big deal. The rest is much easier to learn because you will now play with code quite a lot! **Senders** and *swimming functions* are enough to already make pretty interesting music. The rest is just me sprinkling goodies all around :)
 
-## I - Anatomy of Senders
+## I - Anatomy of Senders
 
-A **Sender** is an *event generator*. It describes an event. This event can mutate depending on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender can be arbitrarily long depending on the precision you want to give to each event.
+A **Sender** is an *event generator*. It is a method call describing an event. This event can mutate based on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender call can be arbitrarily long depending on the precision you want to give to each event. It can sometimes happen that a sender will receive ten arguments or more.  
 
 ```
        /`-._                          /`-._
@@ -82,7 +80,8 @@ A **Sender** is an *event generator*. It describes an event. This event can muta
 
 ### Args and kwargs arguments
 
-Every sender (`D()`, `CC()`, `PC()`, custom OSC sender) is an object taking *arguments* and *keyword arguments*. **Arguments are mandatory**, and keyword arguments optional. These arguments will define your event:
+
+Every sender (`D()`, `CC()`, `PC()`) is an object taking *arguments* and *keyword arguments*. **Arguments are mandatory**, and keyword arguments are optional. These arguments will help to define your event:
 
 ```python
 D('bd', speed='[1:2,0.5]', legato=1, shape=0.5) # Heavy drumbass
@@ -93,70 +92,55 @@ You will have to learn what *arguments* each sender can receive. They all have t
 
 ### Patterning the body
 
-When using a **sender**, you usually describe a static event composed of multiple parameters. Live-coders tend to avoid using static events as they get repetitive very quickly. You will gradually search for ways to avoid strict repetition and vary some if not all of the parameters automatically.
-
-
+When using a **sender**, you usually describe a static event composed of multiple parameters. Live-coders tend to avoid using static events as they get repetitive very quickly. You will gradually seek ways to avoid strict repetition by varying some if not all of the parameters involved in a sender. The best way to bring some variation to a pattern is to rely on the pattern mechanisms allowing you to modify how your string keyword arguments are parsed:
 
 - `i` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. This **iterator** is the index of the values extracted from your linear list-like patterns (your **arguments** and **keyword arguments**). How this index will be interpreted will depend on the next two arguments.
 
-- `div` (*int*): **a timing divisor**. It is very much alike a modulo operation. If `div=4`, the event will be emitted once every 4 iterations. The default is `div=1`, where every event is a hit! Be careful not to set a `div=1` on a very fast *swimming function* as it could result in catastrophic failure / horrible noises. There is no parachute out in the open sea.
+- `div` (*int*): **a timing divisor**, that can be aliased to `d`. It is very much alike a modulo operation. If `div=4`, the event will be emitted once every 4 iterations. The default is `div=1`, where every event is a hit! Be careful not to set a `div=1` on a very fast *swimming function* as it could result in catastrophic failure / horrible noises. There is no parachute out in the open sea.
 
-- `rate` (*float*): a speed factor for iterating over pattern values. It will slow down or speed up the iteration speed, the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a rate of `0.5`, the result will be perceptually similar to `1, 1, 2, 2, 3, 3`.
+- `rate` (*float*): a speed factor for iterating over pattern values. It can be aliased by `r`. It will slow down or speed up the iteration speed, the speed at which the pattern values are indexed on. For the pattern `1, 2, 3` and a rate of `0.5`, the result will be perceptually similar to `1, 1, 2, 2, 3, 3`.
 
-I know, it doesn't make any sense written like so.. That's something you have to see represented differently. Take a look at `tail` arguments values. Notice how different values will produce different iteration speeds:
+It is quite tricky to understand, and I am not sure that all Sardine users are actually able to grasp what these arguments do. That's something you have to see represented differently. Take a look at the three arguments on the right in the following diagram. Note how different values will produce different iteration speeds:
 
 ![outmethod](images/sardine_out_method.png){align=center}
 
 Now, try exploring this idea using this dummy pattern:
 ```python
 @swim
-def ocean_periodicity(d=0.5, i=0):
-    S('bd, hhh, sn, hhh', speed='1,2', freq='r*800').out(i, 2, 0.5)
-    a(ocean_periodicity, d=0.5, i=i+1)
+def ocean_periodicity(p=0.5, i=0):
+    D('bd, hhh, sn, hhh', speed='1,2', freq='r*800', i=i, d=2, r=0.5)
+    again(ocean_periodicity, p=0.5, i=i+1)
 ```
-Don't touch to the pattern itself, just change values in the `.out()` method. Try to be more familiar with it. You can change the recursion speed to notice more clearly how the pattern will evolve with time.
+Don't touch to the pattern itself, just change `i`, `r` or `d`. Try to get more familiar with this system. You can change the recursion speed to notice more clearly how the pattern will evolve with time.
 
-### Tips for writing Senders
+### Tips for writing Senders
 
-Python is *extremely* flexible and expressive. The language makes it a breeze to compose arguments and keyword arguments in very fun and creative ways. I don't even have to code anything to support this and I'm very grateful that the language takes care of everything for me! Let's take an example. You can for instance store parameters common to multiple messages in a list/dictionary before sticking them to your patterns using the `*` and `**` idiom:
+Python is an *extremely* flexible and expressive programming language. It is actually a breeze to compose arguments and keyword arguments in very fun and creative ways. Let's take some examples of some things you might want to do in the future! You can for instance store parameters common to multiple messages in a list/dictionary before sticking them to your patterns using the `*` and `**` idiom:
 
 ```python
 params = {'loud': {'amp': 2, 'shape': 0.9}, 'soft': {'amp': 0.1, 'legato': 0.1}}
-S('bd', **params['loud'])
+D('bd', **params['loud'])
 ```
 
-There is also a hidden benefit to separating the `.out()` method from the object initialisation. You can store events somewhere without having to send them immediately. :
-```python
-drumkit = {'bass': S('bd'), 'hat': S('hhh'), 'snare': S('sn')}
-drumkit['bass'].out()
-```
+## II - The Dirt Sender (D)
 
-These examples look very verbose, but try to imagine cases where *they will save you from an even more verbose situation*. It can happen very quickly when you try to play with many events at the same time, or when you will start imagining grouping sounds together or modifying multiple parameters in different events at the same time.
+The **Dirt** or **SuperDirt** sender is a sender specialised in talking with **SuperCollider** and more specifically with **SuperDirt**, a great sound engine made for live-coding. This piece of software was initially written by [Julian Rohrhuber](https://www.rsh-duesseldorf.de/en/institutes/institute-for-music-and-media/faculty/rohrhuber-julian/) for TidalCycles but many people also use it as is. It is very stable, very flexible and highly-configurable. 
 
-
-## II - The Sound Sender
-
-The **Sound** or **SuperDirt** sender is a sender specialised in talking with **SuperCollider** and more specifically with the sound engine used by [TidalCycles](https://tidalcycles.org). I'm using the synthesis / sampling backend written and supported by [Julian Rohrhuber](https://www.rsh-duesseldorf.de/en/institutes/institute-for-music-and-media/faculty/rohrhuber-julian/) that many live-coders worldwide are also using. It is very stable, very flexible and highly-configurable. 
-
-This sender is the most complex you will have to interact with and it is entirely optional if you wish to use **Sardine** only to sequence MIDI and OSC messages. If we dive into its architecture, we will soon find out that this sender is a specialised OSC sender that talks exclusively with **SuperDirt** using special timestamped messages.
-
-The body of the sender is always: 
+This sender is the most complex you will have to interact with and it is entirely optional if you wish to use **Sardine** only to sequence MIDI and OSC messages. This sender is actually not so different from a specialised OSC sender that talks exclusively with **SuperDirt** using special timestamped messages. The sender is always used like so:
 
 ```python
-S('sound', keyword=value_or_pattern, keyword2=value_or_pattern)
+D('sound', keyword=value_or_pattern, keyword2=value_or_pattern, i=iterator, d=div, r=rate)
 ```
 
-The first argument defining the sound or synthesizer you are willing to trigger is not optional. Without it, you can be sure that the sender will crash because it cannot apply parameters to something that is not defined. The keyword parameters are the names of your **SuperDirt** parameters. It can be standard parameters, orbit parameters (audio bus) or parameters related to the synthesizer you are using. You will find more about this in the Reference section that is listing pretty much all of them!
-
-You will feel a bit lost at first but this is a case where you learn a lot by doing and from experience. Take a look at the following examples.
+The first argument defines the sound or synthesizer you want to trigger and it is **not optional**. Without it, you can be sure that the sender will crash because it cannot apply parameters to a sound that is undefined. The keyword parameters are the names of your **SuperDirt** parameters. It can be standard parameters, orbit parameters (audio bus) or parameters related to the synthesizer you are using. You will find more about this in the Reference section that is listing pretty much all of them! It takes some experience to know what meaningful parameters are but you will get it after practicing for a while! You will feel a bit lost at first but this is a case where you learn a lot by experimenting. Take a look at the following examples.
 
 ### Simple Bassdrum
 
 ```python3
 @swim
-def bd(d=0.5):
-    S('bd').out()
-    again(bd, d=0.5)
+def bd(p=0.5):
+    D('bd')
+    again(bd, p=0.5)
 ```
 A simple bassdrum playing on every half-beat. This is the most basic sound-making function you can write. 
 
@@ -164,9 +148,9 @@ A simple bassdrum playing on every half-beat. This is the most basic sound-makin
 
 ```python3
 @swim
-def bd(d=0.5):
-    S('bd', speed='r*4', legato='r', cutoff='100+0~4000').out()
-    again(bd, d=0.25)
+def bd(p=0.5):
+    D('bd', speed='r*4', legato='r', cutoff='100+0~4000')
+    again(bd, p=0.25)
 ```
 A simple bassdrum but some parameters have been tweaked to add some randomness to the result. See how patterns can be used to make your keyword arguments more dynamic. The additional parameters are :
 
@@ -178,77 +162,82 @@ A simple bassdrum but some parameters have been tweaked to add some randomness t
 
 ```python3
 @swim
-def bd(d=0.5, i=0):
-    S('amencutup:0~20').out(i)
-    again(bd, d=0.25, i=i+1)
+def bd(p=0.5, i=0):
+    D('amencutup:0~20', i=i)
+    again(bd, p=0.25, i=i+1)
 ```
-Picking a random sample in a folder containing slices of the classic [amen break](https://en.wikipedia.org/wiki/Amen_break). You could have a successful career doing this in front of audiences. Once again, the *magic* happens with the `sample:r*X` notation, which randomizes which sample is read on each execution, making it unpredictable.
+Picking a random sample in a folder containing slices of the classic [amen break](https://en.wikipedia.org/wiki/Amen_break). You could have a successful career doing this in front of audiences. Once again, the *magic* happens with the `sample:r*X` notation, which randomizes which sample is read on each execution, making it unpredictable. Note the use of an iterator. Without it, you would actually play the first sample again and again.
 
 ### Sample sequencing
 
 ```python3
 @swim
-def bd(d=0.5, i=0):
-    S('bd,hh,sn,hh').out(i)
-    again(bd, d=0.5, i=i+1)
+def bd(p=0.5, i=0):
+    D('bd,hh,sn,hh', i=i)
+    again(bd, p=0.5, i=i+1)
 ```
-Your classic four-on-the-floor written on one line. One sound is played after the other. All arguments and keyword arguments can be patterned. 
+Your classic four-on-the-floor. 
 
 ### Piling up / Polyphony
 
 ```python3
 @swim
-def pluck(d=0.5, i=0):
-    S('pluck').out(i)
-    S('pluck:1').out(i)
-    S('pluck:2').out(i)
-    S('pluck:3').out(i)
-    again(pluck, d=0.5, i=i+1)
+def pluck(p=0.5, i=0):
+    D('pluck')
+    D('pluck:1')
+    D('pluck:2').out(i)
+    D('pluck:3').out(i)
+    again(pluck, p=0.5, i=i+1)
 ```
 
-You can stack events easily by just calling `S()` multiple times. In the above example, it happens that `pluck` samples are nicely order and are generating a chord if you struck them in parallel. How cool! But wait, there is more to it:
+You can stack events easily by just calling `D()` multiple times. In the above example, it happens that `pluck` samples are nicely order and are generating a chord if you struck them at the same time. How cool! But wait, there is more to it:
 
 ```python3
 @swim
-def pluck(d=0.5, i=0):
-    S('<pluck:[0:4]>', octave=6).out(i)
-    again(pluck, d=0.5, i=i+1)
+def pluck(p=0.5, i=0):
+    D('<pluck:[0:4]>', octave=6)
+    again(pluck, p=0.5, i=i+1)
 ```
 
 You can also stack sounds by using polyphony. With **Sardine**, polyphony is not a concept reserved to notes. Every pattern can be polyphonic (sample names, speeds, adresses, etc...).
 
-### More examples...
+## II - MIDI Senders
 
-Check out the `Demos` section to find out how people are using the **S** sender. 
+MIDI is supported by the default `MidiHandler`. This handler is a bit special because it is defining multiple ways to send out MIDI information and not just notes or whatever. Every MIDI message can theorically be supported but the most important only are defined as of now. Send me a message if you would like to see support for other messages. This default MIDI sender works by defining a bunch of different `send` methods: 
 
-## II - MIDI Sender
+- `midi.send`: sending MIDI notes. Aliased as `N()` in the default setup.
 
-The **MIDI** or **M** sender is a sender specialised for emitting **MIDI** *note-on* and *note-off* messages just like on a music tracker or DAW. It does not have a lot of arguments, and if you have some degree of familiarity with the **MIDI** protocol, you will feel at home pretty quickly:
+- `midi.send_control`: sending control changes (CC Messages), aliased as `CC()` in the default setup.
 
-- **note**: your note number, between `0` and `127`. You can of course use patterns, and patterns can be patterns of notes (special syntax for writing chords, scales, notes, etc...). Values are clamped. If you enter an incredibly big number, it will be clamped to `127`. The same thing goes for small or negative numbers that will be brought back to `0`.
+- `midi.send_program`: sending program changes, aliased as `PC()` in the default setup.
 
-- **channel**: your **MIDI** channel from `0` to `15` (`1` to `16` in human parlance).
+### Note Sender
 
-- **velocity**: amplitude of your note, between `0` and `127`.
+The **Note** or **N** sender is a sender specialised for emitting **MIDI** *note-on* and *note-off* messages just like on a music tracker or DAW. It does not have a lot of arguments, and if you have some degree of familiarity with the **MIDI** protocol, you will feel at home pretty quickly:
 
-- **dur**: duration of your note. Time between the *note-on* and *note-off* messages. This time, unlike almost everything else, is calculated in **clock ticks**. `dur=40` means that the *note-off* will only come after 40 clock ticks, which can be a long time or a very short time depending on your current timing context. You will notice that the **Link** clock is ticking really fast compared to the **MIDI** one.
+- **note** (argument): your note number, between `0` and `127`. You can of course use patterns, and patterns can be patterns of notes (special syntax for writing chords, scales, notes, etc...). Values are clamped. If you enter an incredibly big number, it will be clamped to `127`. The same thing goes for small or negative numbers that will be brought back to `0`.
 
-That's it! You might wonder: where are my other MIDI messages? We got them covered too and you can pattern them of course. For now, the syntax is a bit old school and each MIDI message will have its own function but it won't last long :)
+- **channel** or **chan**: your **MIDI** channel from `0` to `15` (`1` to `16` in human parlance).
 
-- `cc(channel: int, control: int, value: int)`: control change message.
-- `pgch(channel: int, program: int)`: program change message.
-- `pwheel(channel: int, pitch: int)`: pitch wheel message.
-- `sysex(data: list)`: custom SYSEX message.
+- **velocity** or **vel**: amplitude of your note, between `0` and `127`.
 
-My plan is to cover all of the messages. The page will be updated later with a new `MM()` **Sender** specialised in custom MIDI messages.
+- **duration** or **dur**: duration of your note. Time between the *note-on* and *note-off* messages. This time is calculated in seconds. `dur=0.4` means that your note will be a little bit less than half a second.
+
+## Control change and Program Change Sender
+
+Study the preceding example. The Control Change and Program Change senders are rather similar. They only take some other keyword arguments to properly function:
+
+- `control` (between `0` and `127`): the MIDI control number you would like to target.
+- `value` (between `0` and `127`): the MIDI value for that control.
+- `program` (between `0` and `127`): the MIDI program to select.
 
 ### Sending a note
 
 ```python3
 @swim
-def midi(d=0.5, i=0):
-    M().out()
-    again(midi, d=0.5, i=i+1)
+def midi(p=0.5, i=0):
+    N().out()
+    again(midi, p=0.5, i=i+1)
 ```
 No argument required to send a **MIDI** Note (`60`) at full velocity (`127`) on the first default **MIDI** channel. Arguments are only used to specify further or to override default values.
 
@@ -256,9 +245,9 @@ No argument required to send a **MIDI** Note (`60`) at full velocity (`127`) on 
 
 ```python3
 @swim
-def midi(d=0.5, i=0):
-    M(note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
-    again(midi, d=0.5, i=i+1)
+def midi(p=0.5, i=0):
+    N(note='C5,D5,E5,G5,E5,D5,G5,C5', i=i)
+    again(midi, p=0.5, i=i+1)
 ```
 Playing a little melody by tweaking the `note` argument.
 
@@ -266,12 +255,12 @@ Playing a little melody by tweaking the `note` argument.
 
 ```python3
 @swim
-def midi(d=0.5, i=0):
-    M(channel='0,1,2,3',
-      velocity='20 + (r*80)',
-      dur=0.4,
-      note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
-    again(midi, d=0.5, i=i+1)
+def midi(p=0.5, i=0):
+    N(chan='0,1,2,3',
+      vel='20 + (r*80)',
+      dur=0.4, i=i,
+      note='C5,D5,E5,G5,E5,D5,G5,C5')
+    again(midi, p=0.5, i=i+1)
 ```
 The same melody spreaded out on three **MIDI** channels (one per note) with random velocity.
 
@@ -279,80 +268,90 @@ The same melody spreaded out on three **MIDI** channels (one per note) with rand
 
 ```python3
 @swim
-def midi(d=0.5, i=0):
-    M(channel='0,1,2,3',
+def midi(p=0.5, i=0):
+    D(channel='0,1,2,3',
       velocity='20 + (r*80)',
-      dur=0.4,
-      note='C5,D5,E5,G5,E5,D5,G5,C5').out(i)
-    pgch(P('1,2,3,4', i)) # switching
-    cc(channel=0, control=20, value=50) # control
-    again(midi, d=0.5, i=i+1)
+      dur=0.4, i=i,
+      note='C5,D5,E5,G5,E5,D5,G5,C5')
+    PC(program='1,2,3,4', i=i)
+    CC(chan=0, control=20, val=50, i=i)
+    again(midi, p=0.5, i=i+1)
 ```
 Switching between program `1`, `2`, `3` and `4` on your MIDI Synth. Sending a control change on channel `0`, number `20` for a value of `50`.
 
-### More examples...
+## III - OSC Sender
 
-Check out the `Demos` section to find out how people are using the **M** sender. 
-
-## III - OSC Sender
-
-The **OSC** Sender is the most complex and generic of all. It is a **sender** specialised for the *Open Sound Control* protocol. This is not because there are a lot of arguments and keyword arguments to learn but because using it relies on linking the **sender** to some other objects that will handle incoming or outgoing messages. It has the same body-tail architecture as the others but the arguments are a bit different:
+The **OSC** Sender is the most complex and generic of all. It is a **sender** specialised for the *Open Sound Control* protocol. It is not complex because there are a lot of arguments and keyword arguments to learn but because using it relies on instanciating the **sender** and adding it to the bowl before being able to do anything:
 
 ```python
-O(osc_connexion, address, keyword=value_or_pattern, ...)
+output_one = OSCHandler(
+    ip="127.0.0.1", port=12345,
+    name="A first test connexion",
+    ahead_amount=0.0, loop=osc_loop, # The default OSC loop, don't ask why! 
+)
+bowl.add_handler(output_one)
+
+output_two = OSCHandler(
+    ip="127.0.0.1", port=12346,
+    name="A second test connexion",
+    ahead_amount=0.0, loop=osc_loop,
+)
+bowl.add_handler(output_two)
+
+# Look who's here, the send functions as usual
+one = output_one.send
+two = output_two.send
 ```
 
-We always need to feed an OSC output port and an address. It perfeclty makes perfect sense if you are already familiar with OSC. You can pattern everything except the osc connexion. If you are clever enough, this won't stop you for long though. You will notice that you can do this if you really need to:
+You can now use the methods `one` and `two` as OSC senders just like `D()` or `N()`.  
 
 ```python
-gigantic_gundam = {
-    '0': left_arm_connexion,
-    '1': right_arm_connexion,
-    '2': left_leg_connexion,
-    '3': right_leg_connexion,
-    '4': head_connexion,
-}
-O(osc_connexion[P('0~4', i)], 'x_pos', value=50)
+@swim
+def one_two_test(p=0.5, i=0):
+    """This is a dummy swimming function sending OSC."""
+    one('random/address', value='1,2,3')
+    again(one_two_test, p=0.5, i=i+1)
 ```
 
+If you'd like, you can also make a **Player** (see *surfboards* in the preceding section) out of it by using the following technique:
 
-### Sending OSC
-
-```python3
-my_osc = OSC(ip="127.0.0.1", port=23000, name="Bibu", ahead_amount=0.25)
-```
-
-This is the command you must use if you would like to create a new OSC client. The `ahead_amount` parameter is used to form the timetamp attached to your OSC message. If you are wondering, this is exactly the same value as the one you can tweak using `c._superdirt_nudge` when configuring your **S** sender.  It can be useful for synchronisation purposes.
-
-Once this is done, you can use `O()` for sending OSC messages to that address:
 ```python
-# Simple address
-O(my_osc, 'loulou', value='1,2,3,4').out()
+def osc_player(*args, **kwargs):
+    """Partial function to add a new OSC player :)"""
+    return play(
+        output_one, 
+        output_one.send, 
+        *args, **kwargs
+    )
 
-# Composed address (_ equals /)
-O(my_osc, 'loulou/yves', value='1,2,3,4').out()
-
+Pa >> osc_player('random/address', value='1,2,3')
 ```
-Note how `O()` takes an additional argument compared to other senders. You must provide a valid OSC client for it to work because you can have multiple senders sending at different addresses. Everything else is patternable like usual.
 
 ### Receiving OSC
 
 You can also receive and track incoming OSC values. In fact, you can even attach callbacks to incoming OSC messages and turn **Sardine** into a soundbox so let's do it!
 
 ```python
-info = Receiver(25000)
+# Making a new OSC-In Handler
+listener = OSCInHandler(
+    ip="127.0.0.1", 
+    port=44444, 
+    name="Listener", 
+    loop=osc_loop
+)
+
+# Adding the listener to the bowl
+bowl.add_handler(listener)
+
 def funny_sound():
-    S('bip', shape=0.9, room=0.9).out()
-info.attach('/bip/', funny_sound)
+    D('bip', shape=0.9, room=0.9)
+
+listener.attach('/bip/', funny_sound)
 ```
 
-Yeah, that's everything you need! In the above example, we are declaring a new `Receiver` object that maps to a given port on the given IP address (with `localhost` being the default). All we have to do next is to map a function to every message being received at that address and poof. We now have a working soundbox. Let's break this down and take a look at all the features you can do when receiving OSC.
+That's everything you need! In the above example, we are declaring a new `OSCInHandler` object that maps to a given port on the given IP address (with `127.0.0.1` being `localhost`). All we have to do next is to map a function to every message being received at that address and poof. We now have a working soundbox. Let's break this down and take a look at all the features you can do when receiving OSC.
 
-Let's take a look at the `Receiver`:
-```python
-info = Receiver(port, ip, name)
-```
-You will find your usual suspects: `port`, `ip` and `name` (that is not used for anything useful really). There are three methods you can call on your `Receiver` object:
+There are three methods you can call on your `OSCInHandler` object:
 
 - `.attach(address: str, function: Callable, watch: bool)` : attach a callback to a given address. It must be a function. Additionally, you can set `watch` to `True` (`False` by default) to also run the `.watch` method automatically afterhands.
 
@@ -365,14 +364,13 @@ You will find your usual suspects: `port`, `ip` and `name` (that is not used for
 If you are receiving something, you can now use it in your patterns to map a captor, a sensor or a controller to a **Sardine** pattern. If you combo this with [amphibian-variables](#amphibian-variables), you can now contaminate your patterns with values coming from your incoming data:
 
 ```python
-info = Receiver(25000)
-info.watch('/sitar/speed/')
+listener.watch('/sitar/speed/')
 
 @swim 
-def contamination(d=0.5, i=0):
-    v.a = info.get('/sitar/speed/')['args'][0]
-    S('sitar', speed='v.a').out()
-    a(contamination, d=0.5, i=i+1)
+def contamination(p=0.5, i=0):
+    v.a = listener.get('/sitar/speed/')['args'][0]
+    D('sitar', speed='v.a')
+    again(contamination, p=0.5, i=i+1)
 ```
 
 This opens up the way for environmental reactive patterns that can be modified on-the-fly and that will blend code and human interaction. Handling data received from **OSC** can be a bit tricky at first:

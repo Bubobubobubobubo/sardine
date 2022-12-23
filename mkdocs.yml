@@ -18,11 +18,8 @@ nav:
         - Sardine Pattern Language: 'documentation/sardinopedia/pattern_language.md'
         - SuperCollider & SuperDirt: 'documentation/sardinopedia/supercollider.md'
         - Clock: 'documentation/sardinopedia/clock.md'
-      - Examples:
-        - Rhythm: 'documentation/sardinopedia/rhythm.md'
-        - Sampling: 'documentation/sardinopedia/sampling.md'
-        - Melody: 'documentation/sardinopedia/melody.md'
       - Demos:
+        - Solstice : 'documentation/demos/solstice.md'
         - Zorba in Belleville : 'documentation/demos/zorba_in_belleville.md'
         - Dumpster Dive: 'documentation/demos/dumpster_dive.md'
         - Tribute to Jules Cipher: 'documentation/demos/PMA5.md'

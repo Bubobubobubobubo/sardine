@@ -4,9 +4,9 @@
 
 If you have installed **Sardine** alongside **SuperCollider** and **SuperDirt**, you know that **Sardine** can boot its own **SuperDirt** session, etc.. If you haven't been *live coding* for several years, all of this might seem a little bit shady. We assume that things are working properly but we never detail the underlying infrastructure. Let's break it down:
 
-- **Sardine** is doing the patterning, it is your control library.
+- **Sardine** is doing the patterning and the scheduling. It is your top-level control and playing library.
 
-- **SuperCollider** is the general audio engine. It is almighty.
+- **SuperCollider** is the almighty audio engine.
 
 - **SuperDirt** makes it easy to talk with **SuperCollider** in a live-coding context. It was originally designed to work hands-in-hands with [TidalCycles](https://tidalcycles.org) but of course you can hijack it which is what **Sardine** is doing.
 
@@ -16,7 +16,7 @@ If you have installed **Sardine** alongside **SuperCollider** and **SuperDirt**,
 
 **Sardine** is not designed to handle the *digital signal processing* or the reality of scheduling / generating / controlling audio signals. **Python** is not an efficient or particularly optimised language (although things are changing a little bit nowadays..). **Sardine** is already performing a lot of weird tricks to stay afloat in an *almost real-time* context. It is not perfect but hopefully it will evolve and reach perfect stability.
 
-**Sardine** was initially conceived in a music studio on a small laptop surrounded by audio equipment waiting for instructions. The idea was to delegate the audio processing to external hardware / softwares and to fully focus on live control / live sequencing. I would love to keep it that way because  there is a lof of exciting solutions to explore for sound / audio design such as [Faust](https://faust.grame.fr/), [SuperCollider](https://supercollider.github.io/), [CSound](https://csound.com/), and [the list goes on and on](https://github.com/ciconia/awesome-music). You can emulate part of the signal logic with patterns but it will never be as good compared to what a **DSP** language can offer.
+**Sardine** was initially conceived in a music studio on a small laptop surrounded by audio equipment waiting for instructions. The idea was to delegate the audio processing to external hardware / softwares and to fully focus on live control / live sequencing. I would love to keep it that way because there is a lof of exciting solutions to explore for sound / audio design such as [Faust](https://faust.grame.fr/), [SuperCollider](https://supercollider.github.io/), [CSound](https://csound.com/), and [the list goes on and on](https://github.com/ciconia/awesome-music). You can emulate part of the signal logic with patterns but it will never be as good compared to what a **DSP** language can offer.
 
 ## II - Talking to SuperDirt / SuperCollider
 
@@ -64,5 +64,3 @@ SC.send('a={SinOsc.ar(200) * 0.1}; b = a.play;')
 # Freing the synth
 SC.send('b.free')
 ```
-
-

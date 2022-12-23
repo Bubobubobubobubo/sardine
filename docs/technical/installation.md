@@ -4,7 +4,7 @@ The installation of **Sardine** is done in two separate steps that you can go th
 
 - **[MANDATORY]** Installing / configuring of the **Sardine** library and your text editor.
 
-- **[RECOMMENDED]** Installing / configuration the audio backend (**SuperDirt**).
+- **[RECOMMENDED]** Installing / configuring the audio backend (**SuperDirt**).
 
 **Sardine** by itself is just a program that does I/O (*Input*/*Output*) of various musical information. It is up to you to configure the rest so that it can make sound! The better part is that you can **configure it however you like** for whatever musical purpose you have in mind :) By installing everything correctly, you will be able to integrate **Sardine** with almost any musical application.
 
@@ -16,9 +16,12 @@ The installation of **Sardine** is done in two separate steps that you can go th
 **Sardine** can be installed like any other **Python** package using `pip`, the official package manager. It is now also hosted on `Pypi`, the Python package manager. You don't have to download anything manually!
 
 !!! note "Installing and updating Python"
-    1) Install [Python](https://www.python.org/) for your operating system (>=3.10). **Update if needed**!
+    1) Install [Python](https://www.python.org/) for your operating system (>=3.10).
+       **Update if needed**!
 
-    2) Open a terminal and type `python` or `python3` for extra safety. A prompt will open telling you what version you currently default to. Please make sure that you are running at least Python 3.10.
+    2) Open a terminal and type `python` or `python3` for extra safety.
+       A prompt will open telling you what version you currently default to.
+       Please make sure that you are running at least Python 3.10.
 
 Being aware of your installed **Python** versions is of tremendous importance. You can have multiple versions of Python running on your system, some being required by your operating system, some being installed by other applications. They sometimes end up piling up. Find the command that will summon your **Python 3.10** or **Python 3.11** installation (can be `python`, `python3`, `python3.10`, `python3.11` depending on the system you are currently using)..
 
@@ -33,38 +36,78 @@ You can now safely proceed to download and install **Sardine**:
 
 !!! note "Manually fishing a Sardine"
 
-    1) Install [Git](https://git-scm.com/) or [download the project](https://github.com/Bubobubobubobubo/sardine#:~:text=with%20GitHub%20Desktop-,Download%20ZIP,-Latest%20commit) from GitHub and place it wherever you like!
+This will install the [sardine-system](https://pypi.org/project/sardine-system/) package from PyPI
+with an external index providing prebuilt wheels for the `python-rtmidi` dependency.
+Right now, [python-rtmidi](https://pypi.org/project/python-rtmidi/#files)
+does not have prebuilt wheels for 3.10 and 3.11. Installing sardine without the
+external index will require C++ build tools in order to compile the RtMidi library.
 
-    - If you take the *Git* route, clone Sardine ('`git clone https://github.com/Bubobubobubobubo/Sardine`').
+Alternatively, if you want to install the **development version**, follow the steps below:
 
-    2) Using a `shell` or `cmd`, go to the `sardine` folder and run `pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ .`. This will install the sardine package with an external index providing prebuilt wheels for the `python-rtmidi` dependency. Remember to include the dot at the end of the command!
+1) Download the repository from [GitHub](https://github.com/Bubobubobubobubo/sardine):
 
-    - If you are using Linux or MacOS, use `sudo` to install with the highest priviledges. This is usually not recommended but it can help with the installation of other **Sardine** components.
+   If you are planning to contribute, you should clone the repository
+   using [Git](https://git-scm.com/):
 
 These commands can take quite some time depending on your internet connexion, your computer specifications, etc... They will install **Sardine** as well as all the packages and libraries needed to get it running. This is likely the step where you will start noticing crashes, errors and sometimes some truly cryptic messages. Please watch carefully, and do not let an error pass without notice. This might result in a broken / uncomplete installation of **Sardine**.
 
-Wait until the end of the process. To test if **Sardine** is installed properly, execute the following commands in your terminal:
-```python3
+   Otherwise if you don't have Git installed, you can click
+   the green *Code* button instead, download it as a zip, and unpack it.
+
+2) Using a `shell` or `cmd`, go to the `sardine` folder you downloaded
+   and run the command:
+
+   ```shell
+   pip install . --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+   ```
+
+   The period denotes the current directory of your shell, which should be
+   where you've downloaded your package.
+
+   The [`-e/--editable`](https://setuptools.pypa.io/en/latest/userguide/development_mode.html)
+   flag allows you to make changes to the source code after you've already installed the package.
+
+   If you are using Linux or MacOS, use `sudo` to install with the highest
+   privileges. This is usually not recommended but it can help with the
+   installation of other **Sardine** components.
+
+This command can take quite some time depending on your internet connection,
+your computer specifications, etc... It will install **Sardine** as well as all
+the packages and libraries needed to get it running. This is likely the step
+where you will start noticing crashes, errors and sometimes some truly cryptic
+messages. Please watch carefully, and do not let an error pass without notice.
+This might result in a broken / incomplete installation of **Sardine**.
+
+Wait until the end of the process. To test if **Sardine** is installed properly,
+execute the following commands in your terminal:
+
+```shell
 fishery
-# alternatively, run
+# or alternatively:
 python -m fishery
 ```
 
-You should now see a big bright `SARDINE` written on your screen. Congratulations! This is the indication that **Sardine** was able to start!
+You should now see a big bright `SARDINE` written on your screen. Congratulations!
+This is the indication that **Sardine** was able to start!
 
 ## II - Audio engine
 
 ### Installation
 
 !!! note "Installing SuperCollider and SuperDirt"
-    - Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt) installation guide for your platform. It will guide you through the installation of [SuperCollider](https://supercollider.github.io/) and **SuperDirt**. It is usually a three step process:
+    - Refer to the [SuperDirt](https://github.com/musikinformatik/SuperDirt)
+      installation guide for your platform. It will guide you through the
+      installation of [SuperCollider](https://supercollider.github.io/) and
+      **SuperDirt**. It is usually a three step process:
         * install [SuperCollider](https://supercollider.github.io/).
         * run `Quarks.install("SuperDirt")` in the SCIDE window.
         * run `SuperDirt.start` to start the engine.
 
 !!! tip "SC3-plugins"
 
-    You might want to check out [SC3-plugins](https://github.com/supercollider/sc3-plugins). These plugins will dramatically increase the possibilities if you have planned to use sampling or the internal synthesis engine quite a lot!
+    You might want to check out [SC3-plugins](https://github.com/supercollider/sc3-plugins).
+    These plugins will dramatically increase the possibilities if you are
+    planning to use sampling or the internal synthesis engine a lot!
 
 **SuperDirt** is the *optional* but very much recommended synthesis engine for **Sardine**. As a matter of fact, **Sardine** was initially built as an alternative client for **SuperDirt**. It is a well-known free and open source piece of software used by live coders. **SuperDirt** is mostly developed by Julian Rohrhuber, and intended to be used initially for [TidalCycles](https://tidalcycles.org/), a truly great live coding library. SuperDirt is triggered by simple OSC messages converted into SuperDirt instructions that will start audio amples, synthesizers and do many other things, taking care of the finicky details. Note that it also means that your **Sardine** configuration will be valid and portable to **TidalCycles**.
 
@@ -90,25 +133,29 @@ Please add the given location on your `PATH`.
 ### Words of caution
 
 !!! warning "About the autoboot feature"
-    **Sardine** will assume that `SuperCollider` (and more specifically `sclang`) is accessible on your `$PATH`. Everything should run just fine if you install it in the default folder for your platform. On some specific systems, you might need to locate the `sclang` executable and to add it to `$PATH`.
-
-The autoboot feature can cause trouble among newcomers and unexperienced live-coders. There is a bazillion ways **SuperCollider** and **SuperDirt** can refuse to boot, crash or cease to function all of the sudden. Consult the troubleshot page for more information about frequent issues. I recommend to boot **SuperCollider** and **Sardine** separately for new users so that they can keep an eye on both sides. To do so, turn off the autoboot feature and start **Sardine** and **SuperCollider** separately, each in their own window. Type `SuperDirt.start` to start the latter manually from the SuperCollider side. To start anew if any error arise, type `Server.killAll` to restart **SuperCollider** to a blank slate.
+    **Sardine** will assume that `SuperCollider` (and more specifically `sclang`)
+    is accessible on your `$PATH`. Everything should run just fine if you install
+    it in the default folder for your platform.
+    On some specific systems, you might need to locate the `sclang` executable
+    and to add it to `$PATH`.
 
 Since Sardine `v.0.2.1`, some error messages from SuperCollider are also mirrored in Sardine to help you keep track of things going wrong on both sides :)
 
 
 ## IV - Code Editor
 
-Pick the editor you prefer from the following list. All of them have been tested with Sardine! It's only a matter of preference.
+Pick the editor you prefer from the following list.
+All of them have been tested with Sardine! It's only a matter of preference.
 
-!!! note "List of Sardine compatible text editors"
+!!! note "Text editors compatible with Sardine"
     - [VSCode](https://code.visualstudio.com/): great for everyone, from newcomers to exprienced users.
     - [Vim](https://www.vim.org/): fast, powerful, ubiquitous. Modal editor that requires some learning.
     - [Neovim](https://neovim.io/): the modernized version of Vim, configurable using Lua.
     - [Emacs](https://www.gnu.org/software/emacs/): Emacs is everything and can do anything.
     - [Jupyter Notebook](https://jupyter.org/): A data-science oriented tool that can support **Sardine**.
 
-Working and making music with **Sardine** is usually done following the same method for all editors:
+Working and making music with **Sardine** is usually done following the same
+method for all editors:
 
 - 1) Opening a new blank `.py` file (no need to save).
 
@@ -116,32 +163,44 @@ Working and making music with **Sardine** is usually done following the same met
 
 - 3) Sending lines of code from the code buffer to the terminal buffer.
 
-If you already know how to do that for you, great! If you don't, please head to the configuration section where additional help concerning your editor of choice will be written.
+If you already know how to do that for you, great! If you don't, please head
+to the configuration section where additional help concerning your editor of
+choice will be written.
 
 ## Conclusion
 
-You should now have **Sardine** (and possibly **SuperDirt**) installed. You can fine-tune your **Sardine** installation by running the configuration client:
+You should now have **Sardine** (and possibly **SuperDirt**) installed.
+You can fine-tune your **Sardine** installation by running the configuration client:
 
-```
+```shell
 sardine-config
 ```
 
-This is the main configuration tool for **Sardine**. We will come back to it later. If the command is not found or if nothing happens, **Sardine** might not be installed correctly. Please, worry and review the preceding steps! You might get a message saying that you have no configuration file. Take for a guarantee that **Sardine** is installed! This is perfectly normal. By default, there is no configuration file until it is created the first time you start **Sardine**.
+This is the main configuration tool for **Sardine**. We will come back to it later.
+If the command is not found or if nothing happens, **Sardine** might not be installed correctly.
+Please worry and review the preceding steps!
 
-Open a new interactive Sardine session by running `python3 -m fishery`. If everything is alright, some popup messages will be printed and you will be left on a prompt (`>>> `) waiting for your input:
+You might get a message saying that you have no configuration file.
+Take for a guarantee that **Sardine** is installed! This is perfectly normal.
+By default, there is no configuration file until it is created the first time you start **Sardine**.
+
+Open a new interactive Sardine session by running `python3 -m fishery`.
+If everything is alright, some popup messages will be printed and you will be
+left on a prompt (`>>> `) waiting for your input:
 
 ![sardineboot](images/sardine_first_boot.png)
 
-If you have opted to use the **SuperDirt** audio backend, you can start checking if everything is fine by playing a *clap* or a *kickdrum*:
+If you have opted to use the **SuperDirt** audio backend, you can start checking
+if everything is fine by playing a *clap* or a *kickdrum*:
 
 ```python
-S('cp').out()
+D('cp')
 ```
 
 If you want to play a note on your MIDI Synth, use this command instead:
 
 ```python
-M().out()
+N()
 ```
 
 If you hear the clap or the note you were expecting, you are good to go! Have fun!

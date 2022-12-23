@@ -19,7 +19,7 @@ You can write numbers (both *integers* and *floating point numbers*) and use co
 
 **Let's stop for a moment and try to remember the following**: you can apply arithmetics to numbers but also to lists! You can for instance write an addition between a number and a list, between two lists, between a number and a note, between a chord and a list, etc.. All of this is supported by the language. Incidentally, it means that functions that work on lists can also work on single tokens. It also means that functions that are supposed to work for single numbers will work for lists, because the function will be mapped to every element in the list. It turns the act of composing patterns into a rather organic process.
 
-#### a1) Time-dependant numbers 
+#### a1) Time-dependant numbers
 
 ```python3
 @swim
@@ -28,7 +28,7 @@ def number(p=0.5, i=0):
     again(number, p=0.5, i=i+1)
 ```
 
-Some number tokens are clock-time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a tiny and predictible moment in time. 
+Some number tokens are clock-time dependant (based on **Sardine** clock time) and refer to a moment in time. Depending on the moment your recursion takes place, you might see some values recurring because you are not polling continuously but polling just a tiny and predictible moment in time.
 
 - `$`: **tick**, the tick number since the clock started.
 - `$.p`: **phase**, a number between `0` and your `c.ppqn`.
@@ -271,11 +271,11 @@ The **size** of a polyphonic event -- meaning the number of messages sent for on
 1) [1,2,3,4]
 2) [0,1]
 
-RESULT: 
+RESULT:
 1) [1,2,3,4]
 2) [0,1,0,1]
     | | | |
-   POLYPHONY 
+   POLYPHONY
 ```
 ```python
 @swim 
@@ -298,13 +298,13 @@ def poly(p=0.5, i=0):
     D('bd', shape=0.5).out(i, 4)
     again(poly, p=0.5/2, i=i+1)
 ```
-Everything can become polyphonic. Just wrap anything between `<` and `>` and you will return `x` events, one for each value. It allows you to be very creative with patterns. 
+Everything can become polyphonic. Just wrap anything between `<` and `>` and you will return `x` events, one for each value. It allows you to be very creative with patterns.
 
 ### C) Names
 
 ```python3
 @swim
-def nameD(p=0.5, i=0):
+def name(p=0.5, i=0):
     D('bd, pluck, bd, pluck:2+4', i=i)
     again(names, p=0.5, i=i+1)
 ```
@@ -314,7 +314,7 @@ You are using name patterns since you first started to read the **Sardinopedia**
 ### D) Addresses
 
 ```python3
-O(osc_client, "an/address, another/address", value=1, other_value=2).out()
+O(osc_client, "an/address, another/address", value=1, other_value=2)
 ```
 
 Addresses are just like names except that they can contain a `/` separator just like any other typical OSC address out there. They are not really distinct from a name. The difference is only conceptual and in the usage of your strings.
@@ -459,18 +459,18 @@ It is impossible to write a *parametric silence* composed only of silences. It d
 ### A) Amphibian variables
 
 ```python
-v.s = 60 # this is an amphibian variable
+V.s = 60 # this is an amphibian variable
 
-@swim 
+@swim
 def fun():
     # Calling it and setting it to v.s + 5
     N(note='v.s = v.s + 5')
     if random() > 0.8:
-        v.s = 60 # resetting so it doesn't go too high
+        V.s = 60 # resetting so it doesn't go too high
     again(fun)
 ```
 
-There is a group of variables called *amphibian variables* that are both valid inside and outside the pattern notation. They are defined by `v` followed by a letter from the alphabet (uppercase or lowercase) : `v.a`, `v.A`, `v.Z`, `v.j`. These variables can be freely manipulated from the Python side or from the pattern side. They are totally transparent.
+There is a group of variables called *amphibian variables* that are both valid inside and outside the pattern notation. They are defined by `v` followed by a letter from the alphabet (uppercase or lowercase) : `V.a`, `V.A`, `V.Z`, `V.j`. These variables can be freely manipulated from the Python side or from the pattern side. They are totally transparent.
 
 ```python
 @swim 
@@ -488,9 +488,9 @@ There is a finite list of actions you can perform on *amphibian variables*:
 
 - using them (just by calling them)
 
-- setting them (`v.i = 5`)
+- setting them (`V.i = 5`)
 
-- resetting them to 0 (`v.i.reset`)
+- resetting them to 0 (`V.i.reset`)
 
 ### B) Amphibian iterators
 
@@ -503,7 +503,7 @@ def amphi_iter(p=0.25):
     again(amphi_iter, p=0.25)
 ```
 
-Similarly to *amphibian variables*, there is a thing called *amphibian iterators* that are valid on both sides. They are defined by `i` followed by a letter from the alphabet (uppercase or lowercase) : `i.a`, `i.A`, `i.Z`, `i.j`. They can be use as substitutes for your regular manual recursive iterators. In the example above, I am using an *amphibian iterator* to summon a breakbeat.
+Similarly to *amphibian variables*, there is a thing called *amphibian iterators* that are valid on both sides. They are defined by `I` followed by a letter from the alphabet (uppercase or lowercase) : `I.a`, `I.A`, `I.Z`, `I.j`. They can be use as substitutes for your regular manual recursive iterators. In the example above, I am using an *amphibian iterator* to summon a breakbeat.
 
 ```python
 @swim
@@ -518,7 +518,7 @@ These iterators can be reset or set on the pattern side!
 @swim
 def amphi_iter(p=0.25):
     if random() > 0.8:
-        i.i = [1, 5]
+        I.i = [1, 5]
     else:
         i.i = [1, 2]
     D('amencutup:[1:10]', speed='i.v|i.v=[1,2]', i=i.i)
@@ -560,12 +560,12 @@ I want to explore how far you can go by introducing functional concepts to handl
 ### D) Musical functions
 
 * `disco(x)`: Disco function. Every pair note down an octave.
-* `adisco(x)`: Anti-disco function. Every pair note up an octave. 
+* `adisco(x)`: Anti-disco function. Every pair note up an octave.
 * `bass(x)`: The first note of list is down an octave (not very useful).
 * `sopr(x)`: The last note of list is up an octave (not very useful).
 * `quant(x, y)`: The last note of list is up an octave (not very useful).
 
-### E) Voice Leading 
+### E) Voice Leading
 
 These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
 

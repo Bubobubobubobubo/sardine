@@ -94,7 +94,7 @@ You will have to learn what *arguments* each sender can receive. They all have t
 
 When using a **sender**, you usually describe a static event composed of multiple parameters. Live-coders tend to avoid using static events as they get repetitive very quickly. You will gradually seek ways to avoid strict repetition by varying some if not all of the parameters involved in a sender. The best way to bring some variation to a pattern is to rely on the pattern mechanisms allowing you to modify how your string keyword arguments are parsed:
 
-- `i` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. This **iterator** is the index of the values extracted from your linear list-like patterns (your **arguments** and **keyword arguments**). How this index will be interpreted will depend on the next two arguments.
+- `iterator (i for short)` (*int*): the iterator for patterning. **Mandatory** for the two other arguments to work properly. This **iterator** is the index of the values extracted from your linear list-like patterns (your **arguments** and **keyword arguments**). How this index will be interpreted will depend on the next two arguments.
 
 - `div` (*int*): **a timing divisor**, that can be aliased to `d`. It is very much alike a modulo operation. If `div=4`, the event will be emitted once every 4 iterations. The default is `div=1`, where every event is a hit! Be careful not to set a `div=1` on a very fast *swimming function* as it could result in catastrophic failure / horrible noises. There is no parachute out in the open sea.
 
@@ -142,7 +142,7 @@ def bd(p=0.5):
     D('bd')
     again(bd, p=0.5)
 ```
-A simple bassdrum playing on every half-beat. This is the most basic sound-making function you can write. 
+A simple bassdrum playing on every half-beat. This is the most basic sound-making function you can write.
 
 ### Complex Bassdrum
 
@@ -375,7 +375,7 @@ def contamination(p=0.5, i=0):
 
 This opens up the way for environmental reactive patterns that can be modified on-the-fly and that will blend code and human interaction. Handling data received from **OSC** can be a bit tricky at first:
 
-- if you wish to carefully take care of the data you receive, please use the `.attach()` method to attach a callback to every message received and properly handle the data yourself. Use the form `callback(*args, **kwargs)` and examine what data you receive in the *args* and *kwargs*. Map this to global variables, etc... 
+- if you wish to carefully take care of the data you receive, please use the `.attach()` method to attach a callback to every message received and properly handle the data yourself. Use the form `callback(*args, **kwargs)` and examine what data you receive in the *args* and *kwargs*. Map this to global variables, etc...
 
 - if you don't care and just want to watch values as they go, please use the `.watch()` value but you will have to resort to using dictionnary  key access just like I do in the example above. You will have to handle cases where no data is received or cases where the received value is not of the right type. There is no memory of old messages, only the most recent one is kept in memory!
 

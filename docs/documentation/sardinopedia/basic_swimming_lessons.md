@@ -10,7 +10,7 @@ Joking aside, and for those of you who already know how to program, **swimming f
 D('bd')
 ```
 
-This command will play a single bassdrum with the **SuperDirt** sound engine. We are not currently using a *swimming function*, this event is atomic and non-repeating. It is a one-shot event, a single instruction sent to the **Python** interpreter. We haven't learned anything yet, you don't know anything about **Senders**, *swimming functions*, etc... Just note that these one-letter objects are constantly and repeatedly used to trigger different types of messages. We will need to *pattern* them and to *arrange* or *compose* them in time. You can use **Sender** objects outside of a recursive function. It will work, but you will be *un-timed*, or *out-of-time*, just like your regular **Python** script that doesn't really care about time or about when or how things happen. 
+This command will play a single bassdrum with the **SuperDirt** sound engine. We are not currently using a *swimming function*, this event is atomic and non-repeating. It is a one-shot event, a single instruction sent to the **Python** interpreter. We haven't learned anything yet, you don't know anything about **Senders**, *swimming functions*, etc... Just note that these one-letter objects are constantly and repeatedly used to trigger different types of messages. We will need to *pattern* them and to *arrange* or *compose* them in time. You can use **Sender** objects outside of a recursive function. It will work, but you will be *un-timed*, or *out-of-time*, just like your regular **Python** script that doesn't really care about time or about when or how things happen.
 
 By using **Python** with **Sardine**, you will constantly run into things that either are *timed* or *un-timed*. It can help if you like manipulating only certain parts of your interactive programs with time constraints or if you like to store options and configuration in a part of your script, apart from your musical patterns.
 
@@ -64,14 +64,14 @@ silence(basic)
 ```
 
 A function with three different iterators. Why not? Notice how the iterator values are evolving independently. `i` is a basic increment, while `j` walks through even numbers. And `k` is randomized using the notation `P('r*10', i)`. To learn more about this, please refer to the section about Patterns and about the pattern Language. You will sometimes encounter features you don't know about yet while scrolling through these examples. Don't worry, they are covered somewhere!
- 
+
 ### Swimming with friends
 
 ```python3
 def calling_you():
     print('I hear you')
 
-@swim 
+@swim
 def basic():
     calling_you()
     again(basic)

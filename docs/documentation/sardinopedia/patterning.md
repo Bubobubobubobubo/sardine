@@ -2,7 +2,7 @@
 
 By nature, *swimming functions* are repetitive. Almost everything you play with is falling into a time loop. Strict repetition can be come pretty boring after a while, and you need to find a way to define events that will gradually change in time, whether it is because they are sequence of events, random events, mutating events, etc... Sequencing and patterning is the big deal for *live-coders*. That's how they think about composition / improvisation, that's how they write interesting music by patterning synthesizers, audio samples, custom events and much more. If you go down the rabbit hole, you can also pattern your patterns. You can also pattern the functions altering your patterns. There is no limit to it, only what you are trying to define and play with.
 
-Thinking about music being composed with patterns, recursion and time loops is a deparature from the timeline / score model we are used to when thinking about music being written on scores or being recorded on tape. By patterning and thinking about loops, we enter into a different relationship with sound materials and the management of musical information. 
+Thinking about music being composed with patterns, recursion and time loops is a deparature from the timeline / score model we are used to when thinking about music being written on scores or being recorded on tape. By patterning and thinking about loops, we enter into a different relationship with sound materials and the management of musical information.
 
 It would have been weird to design **Sardine** without taking into account the fact that **patterning** is as much needed as control over the temporal execution of code. **Sardine** is taking some inspiration from [ORCA](https://github.com/hundredrabbits/Orca) (Devine Lu Linvega), [FoxDot](https://github.com/Qirky/FoxDot) (Ryan Kirkbride) and [TidalCycles](https://tidalcycles.org) (Alex McLean and colaborators). These systems, among others, have been designed just like **Sardine** around the idea of patterning values in musical time. They all choose a different route to do so, and come up in exchange with interesting concepts about what an event or even what time is in a musical improvisation system. **Sardine** is proposing its own flavor of patterning that you will soon discover :)
 
@@ -88,7 +88,7 @@ def boom(p=0.5, i=0):
 
 It can even be more extreme than this but it all depends on what you are trying to achieve! You already saw that the tail method of your *sender* also have additional parameters that you can use to further refine the message composition.
 
-## IV - Iterators are cool 
+## IV - Iterators are cool
 
 ```python3
 @swim

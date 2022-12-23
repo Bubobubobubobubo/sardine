@@ -11,6 +11,7 @@ nav:
   - Documentation:
     - Sardinopedia:
       - Introduction: 'documentation/sardinopedia/introduction.md'
+      - Survival Kit: 'documentation/survival_kit.md'
       - Learning:
         - Timing and Scheduling: 'documentation/sardinopedia/basic_swimming_lessons.md'
         - Senders & Handlers: 'documentation/sardinopedia/senders.md'
@@ -24,7 +25,7 @@ nav:
         - Dumpster Dive: 'documentation/demos/dumpster_dive.md'
         - Tribute to Jules Cipher: 'documentation/demos/PMA5.md'
         - Artificial Life: 'documentation/demos/artificial_life.md'
-    - Tutorial: 'documentation/tutorial.md'
+    - Old School Tutorial: 'documentation/tutorial.md'
     - Reference: 'documentation/reference.md'
   - About: about.md
 theme:

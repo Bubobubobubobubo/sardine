@@ -223,12 +223,19 @@ def euclidian_rhythm(
             cycle(
                 euclid(pulses[0], steps[0], rotation[0] if rotation is not None else 0)
             ),
-            len(collection),
+            len(collection) if len(collection) >= steps[0] else steps[0],
         )
     )
     new_collection = []
+
+    # Masking values
+    collection = list(islice(cycle(collection), steps[0]))
     for item, mask in zip(collection, boolean_mask):
-        new_collection.append(item if mask == 1 else [None])
+        if mask == 1:
+            new_collection.append(item)
+        else:
+            new_collection.append(None)
+
     return new_collection
 
 

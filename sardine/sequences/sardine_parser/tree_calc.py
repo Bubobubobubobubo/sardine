@@ -430,6 +430,7 @@ class CalculateTree(Transformer):
             "aspeed": funclib.anti_speed,
             # Boolean mask operations
             "euclid": funclib.euclidian_rhythm,
+            "eu": funclib.euclidian_rhythm,
             "mask": funclib.mask,
             "vanish": funclib.remove_x,
             "expand": funclib.expand,

@@ -1,8 +1,8 @@
 # Solstice
 
-2 performances were made with Sardine during the TidalCycles Annual Solstice Stream. One by bubobubobubobubo and one by Ralt144MI
+2 performances were made with Sardine during the TidalCycles Annual Solstice Stream. The former by Bubobubo, the latter by Ralt144MI.
 
-# BUBO
+# Bubo
 
 ## Description
 
@@ -420,8 +420,7 @@ panic()
 
 ## Description
 
-Sardine with all my sound and visual setup, just a lot of synths controlled,
-An organ yamaha electone c35, and a marimba midi controller, and a Korg MS2000R, and a Yamaha TX7, and a behringer Model D, and a Roland PMA-5, and an Alesis MIDIVERB 3, and a Marantz CP130, and a circuit bent Panasonic Ave5, and a bespoke microphone scubamask, and a livecodind keyboard, and a shitty berhinger mixing console, a lot of audio and composite cables, 3 webcams, and one analog video to digital converter. 
+Playing with Sardine with all my gear and visual setup. I'm controlling a lot of synths through MIDI: A Yamaha Electone c35, Marimba MIDI Controller, Korg MS2000R, Yamaha TX7, Behringer Model D, Roland PMA-5, Alesis MIDIVERB 3, Marantz CP130, a circuit bent Panasonic Ave5, bespoke scuba-diving mask repurposed as a microphone, a very special **livecodinD** keyboard, a shitty Behringer mixing console, lots of audio and composite cables, three webcams and an analog video to digital converter. 
 
 ## Performance
 

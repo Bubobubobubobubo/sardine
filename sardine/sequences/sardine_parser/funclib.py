@@ -265,6 +265,8 @@ def mask(collection: list, mask: list) -> list:
     return a silence.
     """
     new_collection = []
+
+    collection = list(islice(cycle(collection), len(mask)))
     for item, mask in zip(collection, mask):
         new_collection.append(item if mask == 1 else [None])
     return new_collection
@@ -521,6 +523,33 @@ def shuffle(*collection) -> list:
     random.shuffle(collection)
     return collection
 
+def always(*x) -> list:
+    """Return 100% of the pattern elements"""
+    return list(x)
+
+def almostAlways(*x) -> list:
+    """Return 90% of the pattern elements"""
+    return list(map(lambda x: x if random.random() > 0.1 else None, x))
+
+def often(*x) -> list:
+    """Return 75% of the pattern elements"""
+    return list(map(lambda x: x if random.random() > 0.25 else None, x))
+
+def sometimes(*x) -> list:
+    """Return 50% of the pattern elements"""
+    return list(map(lambda x: x if random.random() > 0.5 else None, x))
+
+def rarely(*x) -> list:
+    """Return 25% of the pattern elements"""
+    return list(map(lambda x: x if random.random() > 0.75 else None, x))
+
+def almostNever(*x) -> list:
+    """Return 10% of the pattern elements"""
+    return list(map(lambda x: x if random.random() > 0.90 else None, x))
+
+def never(*x) -> list:
+    """Return nothing"""
+    return list(map(lambda x: x if random.random() > 2 else None, x))
 
 def cosinus(*x) -> list:
     """Basic cosinus function

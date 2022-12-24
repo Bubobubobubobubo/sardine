@@ -428,6 +428,14 @@ class CalculateTree(Transformer):
             "sopr": funclib.soprano,
             "invert": funclib.invert,
             "aspeed": funclib.anti_speed,
+            # Probability functions
+            "always": funclib.always,
+            "almostAlways": funclib.almostAlways,
+            "often": funclib.often,
+            "sometimes": funclib.sometimes,
+            "rarely": funclib.rarely,
+            "almostNever": funclib.almostNever,
+            "never": funclib.never,
             # Boolean mask operations
             "euclid": funclib.euclidian_rhythm,
             "eu": funclib.euclidian_rhythm,

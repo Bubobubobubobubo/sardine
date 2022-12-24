@@ -523,6 +523,10 @@ def shuffle(*collection) -> list:
     random.shuffle(collection)
     return collection
 
+def prob(prob: list, *x) -> list:
+    """Return the pattern specified as second argument with probability"""
+    return list(map(lambda x: x if random.random()*100 < prob[0] else None, x))
+
 def always(*x) -> list:
     """Return 100% of the pattern elements"""
     return list(x)

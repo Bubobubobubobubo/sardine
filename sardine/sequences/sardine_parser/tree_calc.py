@@ -436,6 +436,7 @@ class CalculateTree(Transformer):
             "rarely": funclib.rarely,
             "almostNever": funclib.almostNever,
             "never": funclib.never,
+            "prob": funclib.prob,
             # Boolean mask operations
             "euclid": funclib.euclidian_rhythm,
             "eu": funclib.euclidian_rhythm,

@@ -415,7 +415,17 @@ class CalculateTree(Transformer):
 
         return map_binary_function(_simple_association, name, value)
 
-    def function_call(self, func_name, *args):
+    def function_condition_call(self, func_name, *args):
+        """Conditional function application"""
+        function_name = func_name
+        arguments = args[:-1]
+        condition = args[-1]
+        print(function_name, arguments, condition)
+
+    def function_call(self, func_name, *args, cond=None):
+        """Function application"""
+        print(cond)
+
         modifiers_list = {
             # Voice leading operations
             "dmitri": funclib.dmitri,

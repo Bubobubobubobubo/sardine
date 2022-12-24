@@ -55,6 +55,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | SILENCE+                                            -> silence
      | "(" sum ")"
      | NAME "(" sum ("," sum)* ")"                         -> function_call
+     | NAME "(" sum ("," sum)* "):" NAME                   -> function_condition_call
 
 
 ///////////////////////////////////////////////////////////////////////////////

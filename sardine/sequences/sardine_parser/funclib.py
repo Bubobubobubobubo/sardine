@@ -267,8 +267,12 @@ def mask(collection: list, mask: list) -> list:
     new_collection = []
 
     collection = list(islice(cycle(collection), len(mask)))
+    print(collection, mask)
     for item, mask in zip(collection, mask):
-        new_collection.append(item if mask == 1 else [None])
+        if mask == 1:
+            new_collection.append(item)
+        else:
+            new_collection.append(None)
     return new_collection
 
 

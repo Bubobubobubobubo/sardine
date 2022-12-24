@@ -31,7 +31,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | "$"                                                 -> get_time
      | "$" "." "m"                                         -> get_measure
      | "$" "." "p"                                         -> get_phase
-     | "r"                                                 -> get_random_number
+     | "rand"                                              -> get_random_number
      | "I" "." LETTER                                      -> get_iterator
      | "I" "." LETTER "=" sum                              -> set_iterator
      | "I" "." LETTER "=" "[" sum "," sum "]"              -> set_iterator_step

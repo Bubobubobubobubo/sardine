@@ -421,13 +421,22 @@ class CalculateTree(Transformer):
     def easy_choice(self, *args):
         return random.choice(args)
 
+    def is_equal(self, left, right):
+        return [1] if left[0] == right[0] else [0]
+
+    def is_greater(self, left, right):
+        return [1] if left[0] > right[0] else [0]
+
+    def is_smaller(self, left, right):
+        return [1] if left[0] < right[0] else [0]
+
     def function_call(self, func_name, *args):
         """
         Function application: supports arguments and keyword arguments just like the 
         basic Python syntax. There are a few special keys you can use for conditional
         application of the function:
 
-        - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
+        - do: apply the function only if boolean (represented by 1/0) is True. Condi-
           tions can be chained as well for weirder chance / probability based operations
 
         """
@@ -448,9 +457,6 @@ class CalculateTree(Transformer):
                 else:
                     skip_mode = True
 
-            # We continue if we are in skip mode because we are not interested in 
-            # getting values. We just want to fast-track until we reach the next 
-            # token.
             if skip_mode:
                 continue
 
@@ -477,14 +483,6 @@ class CalculateTree(Transformer):
             "sopr": self.library.soprano,
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
-            # Probability functions
-            "almostAlways": self.library.almostAlways,
-            "often": self.library.often,
-            "sometimes": self.library.sometimes,
-            "rarely": self.library.rarely,
-            "almostNever": self.library.almostNever,
-            "never": self.library.never,
-            "prob": self.library.prob,
             # Boolean mask operations
             "euclid": self.library.euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,

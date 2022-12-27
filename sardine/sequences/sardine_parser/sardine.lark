@@ -14,6 +14,9 @@ pattern: sum ("," sum?)* -> return_pattern
     | product "%" sum                  -> modulo
 
 ?product: atom
+     | product "==" atom               -> is_equal
+     | product ">" atom                -> is_greater
+     | product "<" atom                -> is_smaller 
      | product "*" atom                -> multiplication
      | product "/" atom                -> division
      | product "//" atom               -> floor_division

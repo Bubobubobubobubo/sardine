@@ -25,6 +25,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | product "&" atom                -> get_slice
 
 ?atom: NUMBER                                              -> number
+     | function
      | col
      | patname
      | "-" atom                                            -> negation
@@ -54,11 +55,14 @@ pattern: sum ("," sum?)* -> return_pattern
      | "<" sum ("," sum)* ","? ">"                         -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
-     | NAME "(" sum ("," sum)* ")"                         -> function_call
-     | NAME "(" sum ("," sum)* "):" NAME                   -> function_condition_call
+     | "{" sum ("," sum)* (":" NAME)? "}"                  -> easy_choice
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+// Rules functions ////////////////////////////////////////////////////////////
+
+?function: NAME "(" sum* ("," sum)* ("," NAME "=" sum)* ")"         -> function_call
 
 // Rules concerning names /////////////////////////////////////////////////////
 
@@ -117,6 +121,7 @@ NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."
+COND: "@"
 
 %import common.LCASE_LETTER
 %import common.UCASE_LETTER

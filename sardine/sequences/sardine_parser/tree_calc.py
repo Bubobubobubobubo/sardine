@@ -1,6 +1,6 @@
 import datetime
 import random
-from itertools import count, cycle, takewhile
+from itertools import count, cycle, takewhile, groupby, chain
 from time import time
 from typing import Any, Union
 
@@ -22,6 +22,9 @@ class CalculateTree(Transformer):
         self.iterators = iterators
         self.variables = variables
         self.memory = {}
+        self.library = funclib.FunctionLibrary(
+                clock=self.clock
+        )
 
     def number(self, number):
         try:
@@ -159,11 +162,11 @@ class CalculateTree(Transformer):
 
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return funclib.chordify(*sum(args, start=[]))
+        return self.library.chordify(*sum(args, start=[]))
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""
-        return funclib.invert(notes, [int(inversion[0])])
+        return self.library.invert(notes, [int(inversion[0])])
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
@@ -197,7 +200,8 @@ class CalculateTree(Transformer):
         quali = "".join([str(x) for x in quali])
         try:
             return map_binary_function(
-                lambda x, y: x + y, note, funclib.qualifiers[str(quali)]
+                lambda x, y: x + y, note, self.library.qualifiers[
+                    str(quali)]
             )
         except KeyError:
             return note
@@ -415,68 +419,93 @@ class CalculateTree(Transformer):
 
         return map_binary_function(_simple_association, name, value)
 
-    def function_condition_call(self, func_name, *args):
-        """Conditional function application"""
-        function_name = func_name
-        arguments = args[:-1]
-        condition = args[-1]
-        print(function_name, arguments, condition)
+    def easy_choice(self, *args):
+        return random.choice(args)
 
-    def function_call(self, func_name, *args, cond=None):
+    def prob_function_call(self, *args):
+        print("On est là")
+
+    def function_call(self, func_name, *args):
         """Function application"""
-        print(cond)
+
+        # Splitting between arguments and keyword arguments
+        current_keyname = ""
+        arguments = []
+        keyword_arguments = {}
+        for _ in args:
+            if isinstance(_, Token):
+                current_keyname = str(_)
+                keyword_arguments[current_keyname] = []
+
+            if current_keyname == "":
+                arguments.append(_)
+            else:
+                if not isinstance(_, Token):
+                    keyword_arguments[current_keyname].append(_)
+
+        # Cleaning keyword_arguments so they form clean lists
+        keyword_arguments = {k: list(chain(*v)) for k, v in keyword_arguments.items()}
+
+
+        print(f'Arguments: {arguments}')
+        print(f'Keyword arguments: {keyword_arguments}')
 
         modifiers_list = {
+            # Test and debug functions
+            "hasard": self.library.hasard,
+            "dummy": self.library.dummy,
             # Voice leading operations
-            "dmitri": funclib.dmitri,
-            "voice": funclib.find_voice_leading,
-            "sopr": funclib.soprano,
-            "quant": funclib.quantize,
-            "disco": funclib.disco,
-            "adisco": funclib.antidisco,
-            "bass": funclib.bassify,
-            "sopr": funclib.soprano,
-            "invert": funclib.invert,
-            "aspeed": funclib.anti_speed,
+            "dmitri": self.library.dmitri,
+            "voice": self.library.find_voice_leading,
+            "sopr": self.library.soprano,
+            "quant": self.library.quantize,
+            "disco": self.library.disco,
+            "adisco": self.library.antidisco,
+            "bass": self.library.bassify,
+            "sopr": self.library.soprano,
+            "invert": self.library.invert,
+            "aspeed": self.library.anti_speed,
             # Probability functions
-            "always": funclib.always,
-            "almostAlways": funclib.almostAlways,
-            "often": funclib.often,
-            "sometimes": funclib.sometimes,
-            "rarely": funclib.rarely,
-            "almostNever": funclib.almostNever,
-            "never": funclib.never,
-            "prob": funclib.prob,
+            "always": self.library.always,
+            "almostAlways": self.library.almostAlways,
+            "often": self.library.often,
+            "sometimes": self.library.sometimes,
+            "rarely": self.library.rarely,
+            "almostNever": self.library.almostNever,
+            "never": self.library.never,
+            "prob": self.library.prob,
             # Boolean mask operations
-            "euclid": funclib.euclidian_rhythm,
-            "eu": funclib.euclidian_rhythm,
-            "mask": funclib.mask,
-            "vanish": funclib.remove_x,
-            "expand": funclib.expand,
-            "pal": funclib.palindrome,
-            "apal": funclib.alternative_palindrome,
-            "rev": funclib.reverse,
-            "leave": funclib.leave,
-            "inp": funclib.insert_pair,
-            "in": funclib.insert,
-            "inprot": funclib.insert_pair_rotate,
-            "inrot": funclib.insert_rotate,
-            "shuf": funclib.shuffle,
+            "euclid": self.library.euclidian_rhythm,
+            "eu": self.library.euclidian_rhythm,
+            "mask": self.library.mask,
+            "vanish": self.library.remove_x,
+            "expand": self.library.expand,
+            "pal": self.library.palindrome,
+            "apal": self.library.alternative_palindrome,
+            "rev": self.library.reverse,
+            "leave": self.library.leave,
+            "inp": self.library.insert_pair,
+            "in": self.library.insert,
+            "inprot": self.library.insert_pair_rotate,
+            "inrot": self.library.insert_rotate,
+            "shuf": self.library.shuffle,
             # Math functions
-            "clamp": funclib.clamp,
-            "sin": funclib.sinus,
-            "cos": funclib.cosinus,
-            "tan": funclib.tangent,
-            "abs": funclib.absolute,
-            "max": funclib.maximum,
-            "min": funclib.minimum,
-            "mean": funclib.mean,
-            "scale": funclib.scale,
-            "filt": funclib.custom_filter,
-            "quant": funclib.quantize,
+            "clamp": self.library.clamp,
+            "sin": self.library.sinus,
+            "cos": self.library.cosinus,
+            "tan": self.library.tangent,
+            "abs": self.library.absolute,
+            "max": self.library.maximum,
+            "min": self.library.minimum,
+            "mean": self.library.mean,
+            "scale": self.library.scale,
+            "filt": self.library.custom_filter,
+            "quant": self.library.quantize,
         }
         try:
-            return modifiers_list[func_name](*args)
+            return modifiers_list[func_name](
+                    *list(chain(arguments)), 
+                    **(keyword_arguments))
         except Exception as e:
             # Fail safe
             print(

@@ -282,11 +282,10 @@ class AsyncRunner:
 
         last_state = self.states[-1]
 
-        # Transfer arguments from last state if possible
-        # (`_runner()` will discard excess arguments later)
-        args = args + last_state.args[len(args) :]
-        kwargs = last_state.kwargs | kwargs
-        self.states.append(FunctionState(func, args, kwargs))
+        new_state = FunctionState(func, args, kwargs)
+        self._merge_states(last_state, new_state)
+
+        self.states.append(new_state)
 
     def push_deferred(
         self, deadline: Union[float, int], func: "MaybeCoroFunc", *args, **kwargs
@@ -343,6 +342,10 @@ class AsyncRunner:
         or when a new function is pushed to the runner.
         """
         self._reload_event.set()
+
+    def _merge_states(self, old: FunctionState, new: FunctionState) -> None:
+        new.args = new.args + old.args[len(new.args) :]
+        new.kwargs = old.kwargs | new.kwargs
 
     # Lifecycle control
 
@@ -540,6 +543,12 @@ class AsyncRunner:
                 and deadline >= entry.deadline
             ):
                 heapq.heappop(self.deferred_states)
+
+                # Transfer any arguments from previous function if any
+                # (similar to what `push()` does)
+                if state is not None:
+                    self._merge_states(state, entry.state)
+
                 arriving_states.append(entry)
             else:
                 break

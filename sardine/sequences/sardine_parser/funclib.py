@@ -5,11 +5,11 @@ from functools import partial
 from itertools import chain, cycle, islice
 from math import cos, sin, tan
 from random import shuffle
-from typing import Callable, Optional, Union
+from typing import Optional, Union
 
 from ..sequence import euclid
 from .chord import Chord
-from .utils import map_binary_function, map_unary_function, zip_cycle
+from .utils import map_binary_function, map_unary_function
 
 class FunctionLibrary():
 
@@ -120,12 +120,6 @@ class FunctionLibrary():
     # Conditional application stuff
     # ============================================================================ #
 
-    def hasard(self, value):
-        """Do nothing function. For test purposes only"""
-        haz = random.random() * 100 > value[0]
-        print(f"Résultat: {haz}")
-        return haz
-
     def modbeat(self, value):
         return self.clock.beat % value[0] == 0
 
@@ -153,7 +147,6 @@ class FunctionLibrary():
     def cond_never(self):
         return False
 
-    
     def almostAlways(
             self,
             *x
@@ -548,7 +541,7 @@ class FunctionLibrary():
         return map_unary_function(expand_number, collection)
     
     
-    def disco( self, *collection, **kwargs) -> list:
+    def disco(self, *args, **kwargs) -> list:
         """Takes every other note down an octave
     
         Args:
@@ -558,39 +551,16 @@ class FunctionLibrary():
             list: A list of integers
         """
         depth = kwargs.get('depth', 1)
-        depth = depth[0] if isinstance(depth, list) else int(depth)
-        print(depth)
-        collection = list(chain(*collection))
+        collection = list(chain(*args))
         offsets = cycle([0, -12 * depth])
-        return [
-            x + offset if x is not None else None
-            for (x, offset) in zip(collection, offsets)
-        ]
-    
-    
-    def antidisco(
-            self, 
-            *collection
-    ) -> list:
-        """Takes every other note up an octave
-    
-        Args:
-            collection (list): A list generated through a qualifier
-    
-        Returns:
-            list: A list of integers
-        """
-        collection = list(chain(*collection))
-        offsets = cycle([0, +12])
-        return [
-            x + offset if x is not None else None
-            for (x, offset) in zip(collection, offsets)
-        ]
+        return [x + offset if x is not None else None for (
+            x, offset) in zip(collection, offsets)]
     
     
     def palindrome(
             self, 
-            *collection
+            *collection,
+            **kwargs,
     ) -> list:
         """Make a palindrome out of a newly generated collection
     
@@ -602,26 +572,11 @@ class FunctionLibrary():
             collection
         """
         collection = list(chain(*collection))
-        return collection + list(reversed(collection))
-    
-    
-    def alternative_palindrome(
-            self, 
-            *collection
-    ) -> list:
-        """Make a palindrome out of a newly generated collection.
-        Don't repeat the last element of the first list when going
-        the opposite direction.
-    
-        Args:
-            collection (list): A list generated through a qualifier
-    
-        Returns:
-            list: palindromed list of integers from qualifier's based
-            collection
-        """
-        collection = list(chain(*collection))
-        return collection + list(reversed(collection))[1:]
+        cut = kwargs.get('cut', None)
+        if cut is not None:
+            return collection + list(reversed(collection))
+        else:
+            return collection + list(reversed(collection))[1:]
     
     
     def reverse(
@@ -716,55 +671,6 @@ class FunctionLibrary():
     ) -> list:
         """Return the pattern specified as second argument with probability"""
         return list(map(lambda x: x if random.random()*100 < prob[0] else None, x))
-    
-    def always(
-            self, 
-            *x,
-    ) -> list:
-        """Return 100% of the pattern elements"""
-        return list(x)
-    
-    def almostAlways(
-            self,
-            *x
-    ) -> list:
-        """Return 90% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.1 else None, x))
-    
-    def often(
-            self,
-            *x
-    ) -> list:
-        """Return 75% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.25 else None, x))
-    
-    def sometimes(
-            self,
-            *x
-    ) -> list:
-        """Return 50% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.5 else None, x))
-    
-    def rarely(
-            self,
-            *x
-    ) -> list:
-        """Return 25% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.75 else None, x))
-    
-    def almostNever(
-            self, 
-            *x
-    ) -> list:
-        """Return 10% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.90 else None, x))
-    
-    def never(
-            self, 
-            *x
-    ) -> list:
-        """Return nothing"""
-        return list(map(lambda x: x if random.random() > 2 else None, x))
     
 
     def cosinus(

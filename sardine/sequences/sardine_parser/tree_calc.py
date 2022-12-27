@@ -1,6 +1,7 @@
 import datetime
 import random
 from itertools import count, cycle, takewhile, groupby, chain
+from collections.abc import Iterable
 from time import time
 from typing import Any, Union
 
@@ -426,47 +427,62 @@ class CalculateTree(Transformer):
         print("On est là")
 
     def function_call(self, func_name, *args):
-        """Function application"""
+        """
+        Function application: supports arguments and keyword arguments just like the 
+        basic Python syntax. There are a few special keys you can use for conditional
+        application of the function:
+
+        - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
+          tions can be chained as well for weirder chance / probability based operations
+
+        """
 
         # Splitting between arguments and keyword arguments
-        current_keyname = ""
-        arguments = []
-        keyword_arguments = {}
+        current_keyname, past_keywords, skip_mode = "", [], False
+        arguments, kwarguments = [], {}
+
         for _ in args:
+            # print(f'Token: {_} (type: {type(_)})')
+            # We need to determine if we are currently looking at a keyword and its
+            # value. If we have a repeating keyword, we will do our best to completely
+            # ignore it.
             if isinstance(_, Token):
-                current_keyname = str(_)
-                keyword_arguments[current_keyname] = []
+                if not _ in past_keywords:
+                    current_keyname = str(_)
+                    kwarguments[current_keyname] = []
+                else:
+                    skip_mode = True
+
+            # We continue if we are in skip mode because we are not interested in 
+            # getting values. We just want to fast-track until we reach the next 
+            # token.
+            if skip_mode:
+                continue
 
             if current_keyname == "":
                 arguments.append(_)
             else:
                 if not isinstance(_, Token):
-                    keyword_arguments[current_keyname].append(_)
+                    kwarguments[current_keyname].append(_)
 
         # Cleaning keyword_arguments so they form clean lists
-        keyword_arguments = {k: list(chain(*v)) for k, v in keyword_arguments.items()}
-
-
-        print(f'Arguments: {arguments}')
-        print(f'Keyword arguments: {keyword_arguments}')
+        kwarguments = {
+                k: list(chain(*v))
+                for k, v in kwarguments.items()
+        }
 
         modifiers_list = {
-            # Test and debug functions
-            "hasard": self.library.hasard,
-            "dummy": self.library.dummy,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,
             "sopr": self.library.soprano,
             "quant": self.library.quantize,
             "disco": self.library.disco,
-            "adisco": self.library.antidisco,
             "bass": self.library.bassify,
             "sopr": self.library.soprano,
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
             # Probability functions
-            "always": self.library.always,
             "almostAlways": self.library.almostAlways,
             "often": self.library.often,
             "sometimes": self.library.sometimes,
@@ -481,7 +497,6 @@ class CalculateTree(Transformer):
             "vanish": self.library.remove_x,
             "expand": self.library.expand,
             "pal": self.library.palindrome,
-            "apal": self.library.alternative_palindrome,
             "rev": self.library.reverse,
             "leave": self.library.leave,
             "inp": self.library.insert_pair,
@@ -502,10 +517,15 @@ class CalculateTree(Transformer):
             "filt": self.library.custom_filter,
             "quant": self.library.quantize,
         }
+
         try:
-            return modifiers_list[func_name](
-                    *list(chain(arguments)), 
-                    **(keyword_arguments))
+            if kwarguments.get('cond') >= [1] or not 'cond' in kwarguments.keys():
+                return modifiers_list[func_name](
+                        *list(chain(arguments)), 
+                        **(kwarguments)
+                )
+            else:
+                return list(arguments)
         except Exception as e:
             # Fail safe
             print(

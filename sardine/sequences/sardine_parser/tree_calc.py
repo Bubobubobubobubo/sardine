@@ -1,9 +1,7 @@
 import datetime
 import random
-from itertools import count, cycle, takewhile, groupby, chain
-from collections.abc import Iterable
+from itertools import count, takewhile, chain
 from time import time
-from typing import Any, Union
 
 from lark import Transformer, v_args
 from lark.lexer import Token
@@ -423,9 +421,6 @@ class CalculateTree(Transformer):
     def easy_choice(self, *args):
         return random.choice(args)
 
-    def prob_function_call(self, *args):
-        print("On est là")
-
     def function_call(self, func_name, *args):
         """
         Function application: supports arguments and keyword arguments just like the 
@@ -519,7 +514,7 @@ class CalculateTree(Transformer):
         }
 
         try:
-            if kwarguments.get('cond') >= [1] or not 'cond' in kwarguments.keys():
+            if kwarguments.get('cond', [1]) >= [1] or not 'cond' in kwarguments.keys():
                 return modifiers_list[func_name](
                         *list(chain(arguments)), 
                         **(kwarguments)

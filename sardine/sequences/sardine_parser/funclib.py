@@ -113,87 +113,9 @@ class FunctionLibrary():
     def __init__(self, clock):
         self.clock = clock
 
-    def dummy(self):
-        pass
-
-    # ============================================================================ #
-    # Conditional application stuff
-    # ============================================================================ #
-
-    def modbeat(self, value):
-        return self.clock.beat % value[0] == 0
-
-    def modbar(self, value):
-        return self.clock.bar % value[0] == 0
-
-    def cond_always(self):
-        return True
-
-    def cond_almostAlways(self):
-        return random.random()*100 > 10
-
-    def cond_often(self):
-        return random.random()*100 > 25
-
-    def cond_sometimes(self):
-        return random.random()*100 > 50
-
-    def cond_rarely(self):
-        return random.random()*100 > 75
-
-    def cond_almostNever(self):
-        return random.random()*100 > 90
-
-    def cond_never(self):
-        return False
-
-    def almostAlways(
-            self,
-            *x
-    ) -> list:
-        """Return 90% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.1 else None, x))
-    
-    def often(
-            self,
-            *x
-    ) -> list:
-        """Return 75% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.25 else None, x))
-    
-    def sometimes(
-            self,
-            *x
-    ) -> list:
-        """Return 50% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.5 else None, x))
-    
-    def rarely(
-            self,
-            *x
-    ) -> list:
-        """Return 25% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.75 else None, x))
-    
-    def almostNever(
-            self, 
-            *x
-    ) -> list:
-        """Return 10% of the pattern elements"""
-        return list(map(lambda x: x if random.random() > 0.90 else None, x))
-    
-    def never(
-            self, 
-            *x
-    ) -> list:
-        """Return nothing"""
-        return list(map(lambda x: x if random.random() > 2 else None, x))
-
-    
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
     # ============================================================================ #
-    
     
     def dmitri_tymoczko_algorithm(
             self, 
@@ -269,19 +191,15 @@ class FunctionLibrary():
         return Chord(*x)
     
     
-    def anti_speed(self, *x) -> list:
+    def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""
-        x = list(chain(*x))
-        list_of_silences = [[None] * x for x in range(0, len(x))]
-        return list(zip(x, list_of_silences))
+        args = list(chain(*args))
+        list_of_silences = [[None] * x for x in range(0, len(args))]
+        return list(zip(args, list_of_silences))
     
     
-    def invert(
-            self,
-            x: list,
-            how_many: list = [0]
-    ) -> list:
-        """Chord inversion"""
+    def invert(self, x: list, how_many: list = [0]) -> list:
+        """Chord inversion algorithm"""
         x = list(reversed(x)) if how_many[0] < 0 else x
         for _ in range(abs(how_many[0])):
             x[_ % len(x)] += -12 if how_many[0] <= 0 else 12
@@ -648,10 +566,7 @@ class FunctionLibrary():
         return [i for x in collection for i in (next(rotation), x)][:-1]
     
     
-    def shuffle(
-            self, 
-            *collection
-    ) -> list:
+    def shuffle(self, *args, **kwargs) -> list:
         """Shuffle a newly generated collection
     
         Args:
@@ -660,7 +575,7 @@ class FunctionLibrary():
         Returns:
             list: A shuffled list of integers
         """
-        collection = list(chain(*collection))
+        collection = list(chain(*args))
         random.shuffle(collection)
         return collection
     

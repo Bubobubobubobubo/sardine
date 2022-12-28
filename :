@@ -124,30 +124,18 @@ class CalculateTree(Transformer):
         Returns:
             int: A MIDI Note (fourth octave)
         """
-        if note in ["Cb", "Dob"]:
-            return -1 + 12 + 12 * 4
-        elif note in ["C", "Do", "B#", "Si#"]:
+        if note in ["C", "Do"]:
             return 0 + 12 + 12 * 4
-        elif note in ["C#", "Db", "Do#", "Réb", "Reb"]:
-            return 1 + 12 + 12 * 4
         elif note in ["D", "Re", "Ré"]:
             return 2 + 12 + 12 * 4
-        elif note in ["D#", "Ré#", "Re#", "Eb", "Mib"]:
-            return 3 + 12 + 12 * 4
         elif note in ["E", "Mi"]:
             return 4 + 12 + 12 * 4
         elif note in ["F", "Fa"]:
             return 5 + 12 + 12 * 4
-        elif note in ["F#", "Fa#", "Gb", "Solb"]:
-            return 6 + 12 + 12 * 4
         elif note in ["G", "Sol"]:
             return 7 + 12 + 12 * 4
-        elif note in ["G#", "Sol#", "Ab", "Lab"]:
-            return 8 + 12 + 12 * 4
         elif note in ["A", "La"]:
             return 9 + 12 + 12 * 4
-        elif note in ["Bb", "A#", "Sib", "La#"]:
-            return 10 + 12 + 12 * 4
         elif note in ["B", "Si", "Ti"]:
             return 11 + 12 + 12 * 4
 

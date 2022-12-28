@@ -16,7 +16,9 @@ pattern: sum ("," sum?)* -> return_pattern
 ?product: atom
      | product "==" atom               -> is_equal
      | product ">" atom                -> is_greater
+     | product ">=" atom               -> is_greater_or_equal
      | product "<" atom                -> is_smaller 
+     | product "<=" atom               -> is_smaller_or_equal
      | product "*" atom                -> multiplication
      | product "/" atom                -> division
      | product "//" atom               -> floor_division
@@ -121,10 +123,10 @@ pattern: sum ("," sum?)* -> return_pattern
 // Notes start with an uppercase letter, other names start with a lower case letter.
 // This helps disambiguating the syntax.
 NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
+    | "Cb"|"Db"|"Eb"|"Fb"|"Gb"|"Ab"|"Bb"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."
-COND: "@"
 
 %import common.LCASE_LETTER
 %import common.UCASE_LETTER

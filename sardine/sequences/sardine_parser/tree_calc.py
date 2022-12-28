@@ -388,6 +388,8 @@ class CalculateTree(Transformer):
         return random.choice([left, right])
 
     def random_in_range(self, left, right):
+        left = min([left, right])
+        right = max([left, right])
         def my_random(low, high):
             if isinstance(low, int) and isinstance(high, int):
                 return random.randint(low, high)

@@ -189,8 +189,24 @@ class FunctionLibrary():
     def chordify(self, *x) -> list:
         """Turn a list into a chord"""
         return Chord(*x)
+
+    def beat(self, *args, **kwargs):
+        """Return True if we are on the desired beat. Multiple beats are supported"""
+        return [1] if int(
+                self.clock.beat % self.clock.beats_per_bar
+        ) in list(map(lambda x: int(x), list(chain(*args)))) else [0]
+
+
+    def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
+        """If the condition is True, play pattern A, else play pattern B"""
+        return pattern_a if condition[0] >= 1 else pattern_b
+
+
+    def while_condition(self, condition, pattern=[None], **kwargs):
+        """While loop that returns nothing is the condition is not met"""
+        return pattern if condition[0] >= 1 else [None]
     
-    
+
     def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""
         args = list(chain(*args))

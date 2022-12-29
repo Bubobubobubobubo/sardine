@@ -11,8 +11,10 @@ __all__ = ("ZiffersParser",)
 class ParserError(Exception):
     pass
 
+
 grammar_path = Path(__file__).parent
 grammar = grammar_path / "ziffers.lark"
+
 
 class ZiffersParser(BaseParser):
     def __init__(
@@ -21,8 +23,8 @@ class ZiffersParser(BaseParser):
         debug: bool = False,
     ):
         """
-        ZiffersParser is an alternative supported parser for Sardine. It is  based on 
-        Miika Alonen's work (https://github.com/amiika/ziffers). We are aiming for 
+        ZiffersParser is an alternative supported parser for Sardine. It is  based on
+        Miika Alonen's work (https://github.com/amiika/ziffers). We are aiming for
         complete support of the Ziffers syntax in future releases.
         """
         super().__init__()

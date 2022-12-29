@@ -6,6 +6,7 @@ from ..handlers.sender import Number, NumericElement, Sender
 from ..scheduler import AsyncRunner
 from ..utils import alias_param, get_snap_deadline, lerp
 
+
 @dataclass
 class PatternInformation:
     sender: Sender
@@ -18,6 +19,7 @@ class PatternInformation:
     rate: NumericElement
     snap: Number
     timespan: Optional[float]
+
 
 class ZifferPlayer(BaseHandler):
 
@@ -33,7 +35,6 @@ class ZifferPlayer(BaseHandler):
         self._iteration_span: Number = 1
         self._period: int | float = 1.0
 
-
     def __rshift__(self, pattern: Optional[PatternInformation]) -> None:
         ...
 
@@ -45,7 +46,6 @@ class ZifferPlayer(BaseHandler):
         """Central swimming function defined by the player"""
         ...
         self.again(pattern=pattern, p=p)
-
 
     def push(self, pattern: Optional[PatternInformation]):
         """

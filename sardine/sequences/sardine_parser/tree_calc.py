@@ -21,9 +21,7 @@ class CalculateTree(Transformer):
         self.iterators = iterators
         self.variables = variables
         self.memory = {}
-        self.library = funclib.FunctionLibrary(
-                clock=self.clock
-        )
+        self.library = funclib.FunctionLibrary(clock=self.clock)
 
     def number(self, number):
         try:
@@ -211,8 +209,7 @@ class CalculateTree(Transformer):
         quali = "".join([str(x) for x in quali])
         try:
             return map_binary_function(
-                lambda x, y: x + y, note, self.library.qualifiers[
-                    str(quali)]
+                lambda x, y: x + y, note, self.library.qualifiers[str(quali)]
             )
         except KeyError:
             return note
@@ -390,6 +387,7 @@ class CalculateTree(Transformer):
     def random_in_range(self, left, right):
         left = min([left, right])
         right = max([left, right])
+
         def my_random(low, high):
             if isinstance(low, int) and isinstance(high, int):
                 return random.randint(low, high)
@@ -441,7 +439,7 @@ class CalculateTree(Transformer):
     def is_greater(self, left, right):
         return [1] if left[0] > right[0] else [0]
 
-    def is_greater_or_equal (self, left, right):
+    def is_greater_or_equal(self, left, right):
         return [1] if left[0] >= right[0] else [0]
 
     def is_smaller(self, left, right):
@@ -452,7 +450,7 @@ class CalculateTree(Transformer):
 
     def function_call(self, func_name, *args):
         """
-        Function application: supports arguments and keyword arguments just like the 
+        Function application: supports arguments and keyword arguments just like the
         basic Python syntax. There are a few special keys you can use for conditional
         application of the function:
 
@@ -466,10 +464,10 @@ class CalculateTree(Transformer):
         arguments, kwarguments = [], {}
 
         for _ in args:
-            # print(f'Token: {_} (type: {type(_)})')
-            # We need to determine if we are currently looking at a keyword and its
-            # value. If we have a repeating keyword, we will do our best to completely
-            # ignore it.
+            # print(f'Token: {_} (type: {type(_)})')
+            # We need to determine if we are currently looking at a keyword and its
+            # value. If we have a repeating keyword, we will do our best to completely
+            # ignore it.
             if isinstance(_, Token):
                 if not _ in past_keywords:
                     current_keyname = str(_)
@@ -487,10 +485,7 @@ class CalculateTree(Transformer):
                     kwarguments[current_keyname].append(_)
 
         # Cleaning keyword_arguments so they form clean lists
-        kwarguments = {
-                k: list(chain(*v))
-                for k, v in kwarguments.items()
-        }
+        kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
 
         modifiers_list = {
             # Pure conditions
@@ -536,10 +531,9 @@ class CalculateTree(Transformer):
         }
 
         try:
-            if kwarguments.get('do', [1]) >= [1] or not 'do' in kwarguments.keys():
+            if kwarguments.get("do", [1]) >= [1] or not "do" in kwarguments.keys():
                 return modifiers_list[func_name](
-                        *list(chain(arguments)), 
-                        **(kwarguments)
+                    *list(chain(arguments)), **(kwarguments)
                 )
             else:
                 return list(arguments)

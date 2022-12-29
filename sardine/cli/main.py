@@ -5,11 +5,10 @@ from InquirerPy import inquirer
 from rich.panel import Panel
 from pathlib import Path
 from rich import print
-from appdirs import * # Wildcard used in docs
+from appdirs import *  # Wildcard used in docs
 import click
 import json
 import mido
-
 
 
 FUNNY_TEXT = """
@@ -233,6 +232,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     )
     return config_file
 
+
 def _select_parser(config_file: dict) -> dict:
     """Select the default parser to be used"""
     parser = inquirer.select(
@@ -245,6 +245,7 @@ def _select_parser(config_file: dict) -> dict:
     ).execute()
     config_file["parser"] = parser
     return config_file
+
 
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
@@ -343,6 +344,7 @@ def main():
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)
+
 
 if __name__ == "__main__":
     main()

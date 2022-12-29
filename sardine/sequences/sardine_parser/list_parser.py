@@ -7,8 +7,10 @@ from rich import print
 
 __all__ = ("ListParser", "Pat")
 
+
 class ParserError(Exception):
     pass
+
 
 grammar_path = Path(__file__).parent
 grammar = grammar_path / "sardine.lark"
@@ -23,7 +25,7 @@ class ListParser(BaseParser):
 
         """
         ListParser is the main interface to the basic patterning langauge used in a very
-        basic Sardine setup. ListParser is a programming language capable of handling 
+        basic Sardine setup. ListParser is a programming language capable of handling
         notes, names, samples, OSC addresses, etc... It can be used for some basic
         patterning.
         """

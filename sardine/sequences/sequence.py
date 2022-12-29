@@ -12,10 +12,11 @@ dice = lambda x: randint(0, 6) in x
 
 
 ########################################################################################
-# EUCLIDIAN RHYTHM IMPLEMENTATION 
+# EUCLIDIAN RHYTHM IMPLEMENTATION
 # Found here: https://github.com/tsmorrill/Sweepings/blob/main/python3/euclid_descent.py
 # Paper: https://arxiv.org/pdf/2206.12421.pdf
 ########################################################################################
+
 
 def _starts_descent(list, index):
     length = len(list)
@@ -35,20 +36,25 @@ def euclidian_rhythm(pulses: int, length: int, rotate: int = 0):
 
     return rotation([1 if x is True else 0 for x in bool_list], rotate)
 
+
 euclid = euclidian_rhythm
+
 
 def E(step: int, maximum: int, index: int) -> bool:
     """Euclidian rhythms at the Python level"""
     pattern = euclid(step, maximum)
     return True if pattern[index % len(pattern)] == 1 else False
 
+
 def mod(mod: int, i: int) -> bool:
     """Modulo using iterators"""
     return True if i % mod == 0 else False
 
+
 def imod(mod: int, i: int) -> bool:
     """Inverse of the modulo using iterators"""
     return True if i % mod == 0 else False
+
 
 def pick(*args) -> list:
     """Alternative function to use random.choice. More terse"""

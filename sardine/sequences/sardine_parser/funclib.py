@@ -175,7 +175,7 @@ class FunctionLibrary:
 
         return chords
 
-    def dmitri(self, collection: list, chord_len: list = [4]) -> list:
+    def dmitri(self, collection: list, chord_len: list = [4], **kwargs) -> list:
         voiced = self.dmitri_tymoczko_algorithm(collection, chord_len[0])
         return voiced
 
@@ -206,7 +206,7 @@ class FunctionLibrary:
         list_of_silences = [[None] * x for x in range(0, len(args))]
         return list(zip(args, list_of_silences))
 
-    def invert(self, x: list, how_many: list = [0]) -> list:
+    def invert(self, x: list, how_many: list = [0], **kwargs) -> list:
         """Chord inversion algorithm"""
         x = list(reversed(x)) if how_many[0] < 0 else x
         for _ in range(abs(how_many[0])):
@@ -224,6 +224,7 @@ class FunctionLibrary:
         imax: list,
         omin: list = [0],
         omax: list = [1],
+        **kwargs,
     ) -> list:
         """User-facing scaling function"""
         return list(
@@ -238,6 +239,7 @@ class FunctionLibrary:
         pulses: list,
         steps: list,
         rotation: Optional[list] = None,
+        **kwargs,
     ) -> list:
         """
         Apply an euclidian rhythm as a boolean mask on values from the collection.
@@ -288,12 +290,20 @@ class FunctionLibrary:
             new_progression.append(new_chord)
         return new_progression
 
-    def mask(self, collection: list, mask: list) -> list:
+    def mask(self, collection: list, mask: list, **kwargs) -> list:
         """
         Apply a boolean mask on values from the collection.
         True values will return the value itself, others will
         return a silence.
         """
+        invert = kwargs.get('invert', 0)
+        invert = True if invert == 1 else False
+
+        if invert:
+            for index, _ in enumerate(mask):
+                if _ == 1: mask[index] = 0
+                if _ == 0: mask[index] = 1
+
         new_collection = []
 
         collection = list(islice(cycle(collection), len(mask)))
@@ -304,7 +314,7 @@ class FunctionLibrary:
                 new_collection.append(None)
         return new_collection
 
-    def clamp(self, collection: list, low_boundary: list, high_boundary: list) -> list:
+    def clamp(self, collection: list, low_boundary: list, high_boundary: list, **kwargs) -> list:
         """
         Simple clamp function, restraining collection to a given range.
         """
@@ -314,7 +324,7 @@ class FunctionLibrary:
 
         return list(map(_work, collection, low_boundary, high_boundary))
 
-    def remove_x(self, collection: list, percentage) -> list:
+    def remove_x(self, collection: list, percentage, **kwargs) -> list:
         """
         Replacing x % of the collection by silences
         """
@@ -325,7 +335,7 @@ class FunctionLibrary:
             collection[shuffled_indexes[_]] = [None]
         return collection
 
-    def custom_filter(self, collection: list, elements: list) -> list:
+    def custom_filter(self, collection: list, elements: list, **kwargs) -> list:
         """Equivalent of the filter function from functional languages..."""
 
         def cond(thing) -> bool:
@@ -333,19 +343,19 @@ class FunctionLibrary:
 
         return list(filter(cond, collection))
 
-    def bassify(self, *collection):
+    def bassify(self, *collection, **kwargs):
         """Drop the first note down an octave"""
         collection = list(chain(*collection))
         collection[0] -= 12
         return collection
 
-    def soprano(self, *collection) -> list:
+    def soprano(self, *collection, **kwargs) -> list:
         """Last note up an octave"""
         collection = list(chain(*collection))
         collection[len(collection) - 1] += 12
         return collection
 
-    def _quantize(self, val, to_values):
+    def _quantize(self, val, to_values, **kwargs):
         """Quantize a value with regards to a set of allowed values.
 
         Examples:
@@ -374,7 +384,7 @@ class FunctionLibrary:
                 best_match_diff = diff
         return best_match
 
-    def quantize(self, collection: list, quant_reference: list):
+    def quantize(self, collection: list, quant_reference: list, **kwargs):
         """
         Quantize function. It takes a collection as left argument and a reference
         to a quantifier or an arbitrary collection as right argument. Will quanti-
@@ -403,7 +413,7 @@ class FunctionLibrary:
             lambda value: self._quantize(value, extended_reference), collection
         )
 
-    def expand(self, collection: list, factor: list) -> list:
+    def expand(self, collection: list, factor: list, **kwargs) -> list:
         """
         Chance-based operation. Apply a random octave transposition process
         to every note in a given collection. There is an optional factor
@@ -488,20 +498,20 @@ class FunctionLibrary:
         """
         return list(chain(*zip(*args)))
 
-    def insert_pair(self, collection: list, element: list) -> list:
+    def insert_pair(self, collection: list, element: list, **kwargs) -> list:
         """Insert function to insert a fixed element as pair element of each list"""
         return [i for x in collection for i in (x, element)][:-1]
 
-    def insert(self, collection: list, element: list) -> list:
+    def insert(self, collection: list, element: list, **kwargs) -> list:
         """Insert function to insert a fixed element as odd element of each list"""
         return [i for x in collection for i in (element, x)][:-1]
 
-    def insert_pair_rotate(self, collection: list, element: list) -> list:
+    def insert_pair_rotate(self, collection: list, element: list, **kwargs) -> list:
         """Insert function to insert a fixed element as odd element of each list"""
         rotation = cycle(element)
         return [i for x in collection for i in (next(rotation), x)][:-1]
 
-    def insert_rotate(self, collection: list, element: list) -> list:
+    def insert_rotate(self, collection: list, element: list, **kwargs) -> list:
         """Insert function to insert a fixed element as odd element of each list"""
         rotation = cycle(element)
         return [i for x in collection for i in (next(rotation), x)][:-1]
@@ -519,7 +529,7 @@ class FunctionLibrary:
         random.shuffle(collection)
         return collection
 
-    def prob(self, prob: list, *x) -> list:
+    def prob(self, prob: list, *x, **kwargs) -> list:
         """Return the pattern specified as second argument with probability"""
         return list(map(lambda x: x if random.random() * 100 < prob[0] else None, x))
 

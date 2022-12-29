@@ -489,6 +489,7 @@ class CalculateTree(Transformer):
 
         modifiers_list = {
             # Pure conditions
+            "not": self.library.not_condition,
             "if": self.library.simple_condition,
             "while": self.library.while_condition,
             "beat": self.library.beat,

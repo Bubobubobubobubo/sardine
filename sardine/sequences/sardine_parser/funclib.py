@@ -200,6 +200,10 @@ class FunctionLibrary:
         """While loop that returns nothing is the condition is not met"""
         return pattern if condition[0] >= 1 else [None]
 
+    def not_condition(self, condition, pattern=[None], **kwargs):
+        """Do something only if the condition is not True"""
+        return pattern if condition != [1] else [None]
+
     def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""
         args = list(chain(*args))

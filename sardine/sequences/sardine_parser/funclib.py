@@ -192,6 +192,29 @@ class FunctionLibrary:
             else [0]
         )
 
+    def every(self, *args, **kwargs):
+        """
+        Inspired by the 'every' function in TidalCycles. Will return True if we are on
+        one of the targetted bar numbers. The upper limit for the modulo is determined
+        by the bar number we wish for itself.
+        """
+        def inner_function(x) -> list:
+            modulo_operation = (int(self.clock.bar) % x[0]) + 1
+            return [1] if modulo_operation == x[0] else [0]
+
+        results = []
+
+        for _ in args:
+            if inner_function(_) == [1]: 
+                results.append(True)
+            else:
+                results.append(False)
+
+        print("Results:", results)
+        return [1] if True in results else [0]
+
+
+
     def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_a if condition[0] >= 1 else pattern_b

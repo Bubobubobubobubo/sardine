@@ -493,6 +493,7 @@ class CalculateTree(Transformer):
             "if": self.library.simple_condition,
             "while": self.library.while_condition,
             "beat": self.library.beat,
+            "every": self.library.every,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,

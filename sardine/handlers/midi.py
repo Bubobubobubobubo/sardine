@@ -253,7 +253,7 @@ class MidiHandler(Sender):
                 message[k] = int(v)
             self.call_timed(deadline, self._control_change, **message)
 
-    @alias_param(name="number", alias="num")
+    @alias_param(name="program", alias="prog")
     @alias_param(name="channel", alias="chan")
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
@@ -261,7 +261,7 @@ class MidiHandler(Sender):
     def send_program(
         self,
         channel: Optional[NumericElement],
-        number: NumericElement = 60,
+        program: NumericElement = 60,
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
@@ -269,7 +269,7 @@ class MidiHandler(Sender):
         if channel is None:
             return
 
-        pattern = {"channel": channel, "program": number}
+        pattern = {"channel": channel, "program": program}
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["channel"] is None:

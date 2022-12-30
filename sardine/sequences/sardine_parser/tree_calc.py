@@ -1,8 +1,7 @@
 import datetime
 import random
-from itertools import count, cycle, takewhile
+from itertools import count, takewhile, chain
 from time import time
-from typing import Any, Union
 
 from lark import Transformer, v_args
 from lark.lexer import Token
@@ -22,6 +21,7 @@ class CalculateTree(Transformer):
         self.iterators = iterators
         self.variables = variables
         self.memory = {}
+        self.library = funclib.FunctionLibrary(clock=self.clock)
 
     def number(self, number):
         try:
@@ -122,18 +122,30 @@ class CalculateTree(Transformer):
         Returns:
             int: A MIDI Note (fourth octave)
         """
-        if note in ["C", "Do"]:
+        if note in ["Cb", "Dob"]:
+            return -1 + 12 + 12 * 4
+        elif note in ["C", "Do", "B#", "Si#"]:
             return 0 + 12 + 12 * 4
+        elif note in ["C#", "Db", "Do#", "Réb", "Reb"]:
+            return 1 + 12 + 12 * 4
         elif note in ["D", "Re", "Ré"]:
             return 2 + 12 + 12 * 4
+        elif note in ["D#", "Ré#", "Re#", "Eb", "Mib"]:
+            return 3 + 12 + 12 * 4
         elif note in ["E", "Mi"]:
             return 4 + 12 + 12 * 4
         elif note in ["F", "Fa"]:
             return 5 + 12 + 12 * 4
+        elif note in ["F#", "Fa#", "Gb", "Solb"]:
+            return 6 + 12 + 12 * 4
         elif note in ["G", "Sol"]:
             return 7 + 12 + 12 * 4
+        elif note in ["G#", "Sol#", "Ab", "Lab"]:
+            return 8 + 12 + 12 * 4
         elif note in ["A", "La"]:
             return 9 + 12 + 12 * 4
+        elif note in ["Bb", "A#", "Sib", "La#"]:
+            return 10 + 12 + 12 * 4
         elif note in ["B", "Si", "Ti"]:
             return 11 + 12 + 12 * 4
 
@@ -159,11 +171,11 @@ class CalculateTree(Transformer):
 
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return funclib.chordify(*sum(args, start=[]))
+        return self.library.chordify(*sum(args, start=[]))
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""
-        return funclib.invert(notes, [int(inversion[0])])
+        return self.library.invert(notes, [int(inversion[0])])
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
@@ -197,7 +209,7 @@ class CalculateTree(Transformer):
         quali = "".join([str(x) for x in quali])
         try:
             return map_binary_function(
-                lambda x, y: x + y, note, funclib.qualifiers[str(quali)]
+                lambda x, y: x + y, note, self.library.qualifiers[str(quali)]
             )
         except KeyError:
             return note
@@ -373,6 +385,9 @@ class CalculateTree(Transformer):
         return random.choice([left, right])
 
     def random_in_range(self, left, right):
+        left = min([left, right])
+        right = max([left, right])
+
         def my_random(low, high):
             if isinstance(low, int) and isinstance(high, int):
                 return random.randint(low, high)
@@ -415,48 +430,115 @@ class CalculateTree(Transformer):
 
         return map_binary_function(_simple_association, name, value)
 
+    def easy_choice(self, *args):
+        return random.choice(args)
+
+    def is_equal(self, left, right):
+        return [1] if left[0] == right[0] else [0]
+
+    def is_greater(self, left, right):
+        return [1] if left[0] > right[0] else [0]
+
+    def is_greater_or_equal(self, left, right):
+        return [1] if left[0] >= right[0] else [0]
+
+    def is_smaller(self, left, right):
+        return [1] if left[0] < right[0] else [0]
+
+    def is_smaller_or_equal(self, left, right):
+        return [1] if left[0] <= right[0] else [0]
+
     def function_call(self, func_name, *args):
+        """
+        Function application: supports arguments and keyword arguments just like the
+        basic Python syntax. There are a few special keys you can use for conditional
+        application of the function:
+
+        - do: apply the function only if boolean (represented by 1/0) is True. Condi-
+          tions can be chained as well for weirder chance / probability based operations
+
+        """
+
+        # Splitting between arguments and keyword arguments
+        current_keyname, past_keywords, skip_mode = "", [], False
+        arguments, kwarguments = [], {}
+
+        for _ in args:
+            # print(f'Token: {_} (type: {type(_)})')
+            # We need to determine if we are currently looking at a keyword and its
+            # value. If we have a repeating keyword, we will do our best to completely
+            # ignore it.
+            if isinstance(_, Token):
+                if not _ in past_keywords:
+                    current_keyname = str(_)
+                    kwarguments[current_keyname] = []
+                else:
+                    skip_mode = True
+
+            if skip_mode:
+                continue
+
+            if current_keyname == "":
+                arguments.append(_)
+            else:
+                if not isinstance(_, Token):
+                    kwarguments[current_keyname].append(_)
+
+        # Cleaning keyword_arguments so they form clean lists
+        kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
+
         modifiers_list = {
+            # Pure conditions
+            "not": self.library.not_condition,
+            "if": self.library.simple_condition,
+            "while": self.library.while_condition,
+            "beat": self.library.beat,
+            "every": self.library.every,
             # Voice leading operations
-            "dmitri": funclib.dmitri,
-            "voice": funclib.find_voice_leading,
-            "sopr": funclib.soprano,
-            "quant": funclib.quantize,
-            "disco": funclib.disco,
-            "adisco": funclib.antidisco,
-            "bass": funclib.bassify,
-            "sopr": funclib.soprano,
-            "invert": funclib.invert,
-            "aspeed": funclib.anti_speed,
+            "dmitri": self.library.dmitri,
+            "voice": self.library.find_voice_leading,
+            "sopr": self.library.soprano,
+            "quant": self.library.quantize,
+            "disco": self.library.disco,
+            "bass": self.library.bassify,
+            "sopr": self.library.soprano,
+            "invert": self.library.invert,
+            "aspeed": self.library.anti_speed,
             # Boolean mask operations
-            "euclid": funclib.euclidian_rhythm,
-            "mask": funclib.mask,
-            "vanish": funclib.remove_x,
-            "expand": funclib.expand,
-            "pal": funclib.palindrome,
-            "apal": funclib.alternative_palindrome,
-            "rev": funclib.reverse,
-            "leave": funclib.leave,
-            "inp": funclib.insert_pair,
-            "in": funclib.insert,
-            "inprot": funclib.insert_pair_rotate,
-            "inrot": funclib.insert_rotate,
-            "shuf": funclib.shuffle,
+            "euclid": self.library.euclidian_rhythm,
+            "eu": self.library.euclidian_rhythm,
+            "mask": self.library.mask,
+            "vanish": self.library.remove_x,
+            "expand": self.library.expand,
+            "pal": self.library.palindrome,
+            "rev": self.library.reverse,
+            "leave": self.library.leave,
+            "inp": self.library.insert_pair,
+            "in": self.library.insert,
+            "inprot": self.library.insert_pair_rotate,
+            "inrot": self.library.insert_rotate,
+            "shuf": self.library.shuffle,
             # Math functions
-            "clamp": funclib.clamp,
-            "sin": funclib.sinus,
-            "cos": funclib.cosinus,
-            "tan": funclib.tangent,
-            "abs": funclib.absolute,
-            "max": funclib.maximum,
-            "min": funclib.minimum,
-            "mean": funclib.mean,
-            "scale": funclib.scale,
-            "filt": funclib.custom_filter,
-            "quant": funclib.quantize,
+            "clamp": self.library.clamp,
+            "sin": self.library.sinus,
+            "cos": self.library.cosinus,
+            "tan": self.library.tangent,
+            "abs": self.library.absolute,
+            "max": self.library.maximum,
+            "min": self.library.minimum,
+            "mean": self.library.mean,
+            "scale": self.library.scale,
+            "filt": self.library.custom_filter,
+            "quant": self.library.quantize,
         }
+
         try:
-            return modifiers_list[func_name](*args)
+            if kwarguments.get("do", [1]) >= [1] or not "do" in kwarguments.keys():
+                return modifiers_list[func_name](
+                    *list(chain(arguments)), **(kwarguments)
+                )
+            else:
+                return list(arguments)
         except Exception as e:
             # Fail safe
             print(

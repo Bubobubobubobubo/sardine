@@ -14,6 +14,11 @@ pattern: sum ("," sum?)* -> return_pattern
     | product "%" sum                  -> modulo
 
 ?product: atom
+     | product "==" atom               -> is_equal
+     | product ">" atom                -> is_greater
+     | product ">=" atom               -> is_greater_or_equal
+     | product "<" atom                -> is_smaller 
+     | product "<=" atom               -> is_smaller_or_equal
      | product "*" atom                -> multiplication
      | product "/" atom                -> division
      | product "//" atom               -> floor_division
@@ -25,13 +30,14 @@ pattern: sum ("," sum?)* -> return_pattern
      | product "&" atom                -> get_slice
 
 ?atom: NUMBER                                              -> number
+     | function
      | col
      | patname
      | "-" atom                                            -> negation
      | "$"                                                 -> get_time
      | "$" "." "m"                                         -> get_measure
      | "$" "." "p"                                         -> get_phase
-     | "r"                                                 -> get_random_number
+     | "rand"                                              -> get_random_number
      | "I" "." LETTER                                      -> get_iterator
      | "I" "." LETTER "=" sum                              -> set_iterator
      | "I" "." LETTER "=" "[" sum "," sum "]"              -> set_iterator_step
@@ -51,13 +57,16 @@ pattern: sum ("," sum?)* -> return_pattern
      | "[" sum ":" sum "]"                                 -> generate_ramp
      | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
      | "[" sum ("," sum)* ","? "]"                         -> make_list
-     | "<" sum ("," sum)* ","? ">"                         -> make_chord
+     | "{" sum ("," sum)* ","? "}"                         -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
-     | NAME "(" sum ("," sum)* ")"                         -> function_call
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+// Rules functions ////////////////////////////////////////////////////////////
+
+?function: NAME "(" sum* ("," sum)* ("," NAME "=" sum)* ")"         -> function_call
 
 // Rules concerning names /////////////////////////////////////////////////////
 
@@ -113,6 +122,7 @@ pattern: sum ("," sum?)* -> return_pattern
 // Notes start with an uppercase letter, other names start with a lower case letter.
 // This helps disambiguating the syntax.
 NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
+    | "Cb"|"Db"|"Eb"|"Fb"|"Gb"|"Ab"|"Bb"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."

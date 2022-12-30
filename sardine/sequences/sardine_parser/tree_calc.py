@@ -492,8 +492,11 @@ class CalculateTree(Transformer):
             "not": self.library.not_condition,
             "if": self.library.simple_condition,
             "while": self.library.while_condition,
+            # Boolean functions
             "beat": self.library.beat,
             "every": self.library.every,
+            "proba": self.library.proba,
+            "phase": self.library.phase,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,

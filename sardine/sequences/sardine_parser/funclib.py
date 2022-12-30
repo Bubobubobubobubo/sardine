@@ -210,9 +210,7 @@ class FunctionLibrary:
             else:
                 results.append(False)
 
-        print("Results:", results)
         return [1] if True in results else [0]
-
 
 
     def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
@@ -233,12 +231,21 @@ class FunctionLibrary:
         list_of_silences = [[None] * x for x in range(0, len(args))]
         return list(zip(args, list_of_silences))
 
+    def proba(self, x: list, **kwargs) -> list:
+        """Probability of returning True or False"""
+        return [1] if random.random() * 100 <= x[0] else [0]
+
+    def phase(self, x: list, y: list, **kwargs) -> list:
+        """Return True if phase is in between x and y else False"""
+        return [1] if x[0] < self.clock.phase < y[0] else [0]
+
     def invert(self, x: list, how_many: list = [0], **kwargs) -> list:
         """Chord inversion algorithm"""
         x = list(reversed(x)) if how_many[0] < 0 else x
         for _ in range(abs(how_many[0])):
             x[_ % len(x)] += -12 if how_many[0] <= 0 else 12
         return x
+
 
     def _remap(self, x, in_min, in_max, out_min, out_max):
         """Remapping a value from a [x, y] range to a [x', y'] range"""
@@ -469,7 +476,8 @@ class FunctionLibrary:
         Returns:
             list: A list of integers
         """
-        depth = kwargs.get("depth", 1)
+        depth = kwargs.get("depth", [1])
+        depth = depth[0]
         collection = list(chain(*args))
         offsets = cycle([0, -12 * depth])
         return [

@@ -275,13 +275,17 @@ def silence(*runners: AsyncRunner) -> None:
     This function will only kill events on the Sardine side. For a function capable of
     killing synthesizers running on SuperCollider, try the more potent 'panic' function.
     """
+
     if len(runners) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
         return
 
     for run in runners:
-        bowl.scheduler.stop_runner(run)
+        if isinstance(run, Player):
+            run >> None
+        else:
+            bowl.scheduler.stop_runner(run)
 
 
 def panic(*runners: AsyncRunner) -> None:

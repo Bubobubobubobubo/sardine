@@ -1,7 +1,5 @@
 import random
 import statistics
-from collections.abc import Iterable
-from functools import partial
 from itertools import chain, cycle, islice
 from math import cos, sin, tan
 from random import shuffle
@@ -11,6 +9,7 @@ from ..sequence import euclid
 from .chord import Chord
 from .utils import map_binary_function, map_unary_function
 
+# Type declarations
 
 class FunctionLibrary:
 
@@ -183,7 +182,7 @@ class FunctionLibrary:
         """Turn a list into a chord"""
         return Chord(*x)
 
-    def beat(self, *args, **kwargs):
+    def beat(self, *args, **kwargs) -> list:
         """Return True if we are on the desired beat. Multiple beats are supported"""
         return (
             [1]

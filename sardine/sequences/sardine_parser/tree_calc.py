@@ -49,9 +49,8 @@ class CalculateTree(Transformer):
 
     def get_variable(self, letter):
         """
-        Prototype of getting a variable coming from the Python side.
-        It can only be an int, a float or a string. The result will
-        get turned to a list anyways, whatever happens.
+        Grabbing a variable coming from the Python side. It can only be an int, a float
+        or a string. The final result is always a list.
         """
         return [getattr(self.variables, str(letter))]
 
@@ -66,7 +65,7 @@ class CalculateTree(Transformer):
         accessible from the Python side following the type the value currently
         has in the pattern.
         """
-        setattr(self.variables, str(letter), number)
+        setattr(self.variables, str(letter), number[0])
         return [getattr(self.variables, str(letter))]
 
     # ---------------------------------------------------------------------- #
@@ -83,7 +82,7 @@ class CalculateTree(Transformer):
         return [getattr(self.iterators, letter)]
 
     def set_iterator(self, letter, number):
-        letter, number = str(letter), int(number)
+        letter, number = str(letter), int(number[0])
         setattr(self.iterators, letter, number)
         return [getattr(self.iterators, letter)]
 

@@ -235,6 +235,15 @@ class CalculateTree(Transformer):
         """
         return sum(args, start=[])
 
+    def make_list_repeat(self, *args):
+        """Make a list from gathered arguments (alias used by parser)
+
+        Returns:
+            list: Gathered arguments in a list
+        """
+        return sum(args, start=[])*2
+
+
     def get_time(self):
         """Return current clock time (tick) as integer"""
         return [self.clock.time]

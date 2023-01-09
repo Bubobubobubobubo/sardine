@@ -13,11 +13,11 @@ nav:
       - Introduction: 'documentation/sardinopedia/introduction.md'
       - Survival Kit: 'documentation/survival_kit.md'
       - Learning:
-        - Swimming: 'documentation/sardinopedia/basic_swimming_lessons.md'
-        - Senders: 'documentation/sardinopedia/senders.md'
-        - Patterns: 'documentation/sardinopedia/patterning.md'
-        - Language: 'documentation/sardinopedia/pattern_language.md'
-        - SuperDirt: 'documentation/sardinopedia/supercollider.md'
+        - Timing and Scheduling: 'documentation/sardinopedia/basic_swimming_lessons.md'
+        - Senders & Handlers: 'documentation/sardinopedia/senders.md'
+        - The pattern system: 'documentation/sardinopedia/patterning.md'
+        - Sardine Pattern Language: 'documentation/sardinopedia/pattern_language.md'
+        - SuperCollider & SuperDirt: 'documentation/sardinopedia/supercollider.md'
         - Clock: 'documentation/sardinopedia/clock.md'
       - Demos:
         - Solstice : 'documentation/demos/solstice.md'

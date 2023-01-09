@@ -1,24 +1,16 @@
-from pathlib import Path
-
+from .tree_calc import CalculateTree
+from ...base import BaseParser
 from lark import Lark, Tree
+from pathlib import Path
+from .chord import Chord
 from rich import print
 
-from ...base import BaseParser
-from .chord import Chord
-from .tree_calc import CalculateTree
-
-# __all__ = ("ListParser", "Pnote", "Pname", "Pnum")
 __all__ = ("ListParser", "Pat")
 
 
 class ParserError(Exception):
     pass
 
-
-# This section of the code is charged with retrieval and loading of grammar
-# files stored in the grammars/ subfolder next to ListParser.py. Each file
-# contains the formal specification of the grammar, and is used by Lark to
-# build an abstract syntax tree and get the combination rules for each token.
 
 grammar_path = Path(__file__).parent
 grammar = grammar_path / "sardine.lark"
@@ -30,17 +22,14 @@ class ListParser(BaseParser):
         parser_type: str = "sardine",
         debug: bool = False,
     ):
-        """ListParser is the main interface for the pattern syntax. It can be
-        initialised in three different modes: 'number', 'note', 'name'. It is
-        up to the user to choose the parser that fits best to a task. Each
-        parser will be initialised two times, in two different modes:
-        - full: the parser as it is used for parsing expressions and returning
-        a result.
-        - raw: the parser as it is used to print the syntax tree in debug mode.
 
-        Args:
-            parser_type (str, optional): Type of parser. Defaults to "number".
         """
+        ListParser is the main interface to the basic patterning langauge used in a very
+        basic Sardine setup. ListParser is a programming language capable of handling
+        notes, names, samples, OSC addresses, etc... It can be used for some basic
+        patterning.
+        """
+
         super().__init__()
         self.debug = debug
         self.parser_type = parser_type
@@ -80,8 +69,8 @@ class ListParser(BaseParser):
             ParserError(f"Invalid Parser grammar, {self.parser_type} is not a grammar.")
 
     def __flatten_result(self, pat):
-        """Flatten a nested list, for usage after parsing a pattern. Will
-        flatten deeply nested lists and return a one dimensional array.
+        """Flatten a nested list, for usage after parsing a pattern. Will flatten deeply
+        nested lists and return a one dimensional array.
 
         Args:
             pat (list): A potentially nested list

@@ -1,19 +1,15 @@
-import json
-from itertools import chain
+from ..io.UserConfig import create_template_configuration_file
+from InquirerPy.validator import EmptyInputValidator
+from InquirerPy.base.control import Choice
+from InquirerPy import inquirer
+from rich.panel import Panel
 from pathlib import Path
-
+from rich import print
+from appdirs import *  # Wildcard used in docs
 import click
+import json
 import mido
 
-# Wildcard used in docs..
-from appdirs import *
-from InquirerPy import inquirer, prompt
-from InquirerPy.base.control import Choice
-from InquirerPy.validator import EmptyInputValidator
-from rich import print
-from rich.panel import Panel
-
-from ..io.UserConfig import create_template_configuration_file
 
 FUNNY_TEXT = """
 ░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
@@ -237,6 +233,19 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     return config_file
 
 
+def _select_parser(config_file: dict) -> dict:
+    """Select the default parser to be used"""
+    parser = inquirer.select(
+        message="What parser do you wish to play with?",
+        choices=[
+            Choice(value="sardine", enabled=True, name="Sardine"),
+            Choice(value="ziffers", name="Ziffers"),
+        ],
+        default=None,
+    ).execute()
+    config_file["parser"] = parser
+    return config_file
+
 
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
@@ -290,6 +299,7 @@ def main():
         "MIDI",
         "Clock",
         "SuperCollider",
+        "Parser",
         "More",
         "Exit",
     ]
@@ -328,6 +338,8 @@ def main():
             USER_CONFIG = _select_midi_output(config_file=USER_CONFIG)
         elif menu_select == "Clock":
             USER_CONFIG = _select_bpm_and_timing(config_file=USER_CONFIG)
+        elif menu_select == "Parser":
+            USER_CONFIG = _select_parser(config_file=USER_CONFIG)
         elif menu_select == "SuperCollider":
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":

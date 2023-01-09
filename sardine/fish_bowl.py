@@ -8,7 +8,7 @@ from .base import BaseClock, BaseHandler, BaseParser
 from .clock import InternalClock, Time
 from .handlers import SleepHandler
 from .scheduler import Scheduler
-from .sequences import Iterator, ListParser, Variables, ZiffersParser
+from .sequences import Iterator, ListParser, Variables
 
 __all__ = ("FishBowl",)
 
@@ -192,12 +192,6 @@ class FishBowl:
         self.resume()
         self.dispatch("clock_swap", clock)
 
-    def swap_parser(self, parser: "BaseParser"):
-        """Hot-swap the current parser for a different one (eg. base -> ziffers)."""
-        self.remove_handler(self.parser)
-        self.add_handler(parser)
-        self.dispatch("parser_swap", parser)
-
     ## HANDLERS ############################################################
 
     def add_handler(self, handler: "BaseHandler"):
@@ -225,17 +219,16 @@ class FishBowl:
         if handler.env is not None:
             if handler.env is self:
                 return
-            message = f"{handler!r} was already added to {handler.env!r}"
-            raise ValueError(message)
+            raise ValueError(f"{handler!r} was already added to {handler.env!r}")
         elif handler.parent is not None and handler.parent.env is not self:
             if handler.parent.env is None:
-                parent_message = (
+                raise ValueError(
                     f"The parent {handler.parent!r} must be added to the fish bowl"
                 )
-                raise ValueError(parent_message)
             else:
-                parent_message_alt = f"The parent {handler.parent!r} was already added to {handler.env!r}"
-                raise ValueError(parent_message_alt)
+                raise ValueError(
+                    f"The parent {handler.parent!r} was already added to {handler.env!r}"
+                )
 
         # It may be possible that the user set `env` to None, but
         # given that `register_hook()` is idempotent, it's probably

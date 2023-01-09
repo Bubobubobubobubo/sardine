@@ -23,7 +23,6 @@ TEMPLATE_CONFIGURATION = {
         "bpm": 135,
         "beats": 4,
         "debug": False,
-        "parser": "sardine",
         "superdirt_handler": False,
         "sardine_boot_file": True,
         "boot_supercollider": False,
@@ -52,7 +51,6 @@ class Config:
     beats: int
     bpm: int
     debug: bool
-    parser: str
     superdirt_config_path: str
     verbose_superdirt: bool
     user_config_path: str
@@ -70,7 +68,6 @@ class Config:
             beats=config["beats"],
             debug=config["debug"],
             bpm=config["bpm"],
-            parser=config["parser"],
             superdirt_handler=config["superdirt_handler"],
             boot_supercollider=config["boot_supercollider"],
             sardine_boot_file=config["sardine_boot_file"],
@@ -88,7 +85,6 @@ class Config:
                 "beats": self.beats,
                 "debug": self.debug,
                 "bpm": self.bpm,
-                "parser": self.parser,
                 "superdirt_handler": self.superdirt_handler,
                 "boot_supercollider": self.boot_supercollider,
                 "sardine_boot_file": self.sardine_boot_file,

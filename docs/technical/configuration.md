@@ -1,14 +1,14 @@
-This page will help you to learn how to configure **Sardine**. You will soon figure out that **Sardine** is modular in nature. You can toggle on and off certain features, you can pre-configure many things and fine-tune to be up and ready for your next sessions, etc...
+This page will help you to learn how to configure **Sardine**. You will soon figure out that **Sardine** is really modular in nature and it has been designed to be altered. You can toggle on and off certain features, you can pre-configure many things and fine-tune to be up and ready for your next sessions, etc...
 
 ## I - Code Editors
 
-You can use `Sardine` directly from the Python interpreter, typing lines of code one by one in the interpreter. There is nothing wrong about it but you will be pretty limited in what you can do. This is a very infuriating experience! You might also dislike the fact that popups will be printed pretty frequently if you make mistakes. It is sometimes enough to run quick sound/MIDI tests but not much more. **TLDR:** you need a text editor to truly enjoy Sardine!
+You can use `Sardine` directly from the Python interpreter. There is nothing wrong about it, but you will be pretty limited in what you can do. You might also dislike the fact that popups will be printed pretty frequently if you make mistakes. It is sometimes enough to run quick sound/MIDI tests but not much more. After a while, you will figure out that working this way is fairly cumbersome and you will likely be searching for a better text editor. 
 
-**Sardine** code can become quite verbose when dealing with complex *swimming* functions. As you might have guessed already, there is no `Sardine` plugin for **VSCode**, **Atom** or any popular code editor **yet**. However, **Sardine** is just Python and *there are great plugins to deal with interactive Python code already*. Here are a few things you can try.
+**Sardine** code can become quite verbose when dealing with complex *swimming* functions. As you might have guessed already, there is no `Sardine` plugin for **VSCode**, **Atom** or any popular code editor **yet**. However, **Sardine** is just Python and there are great plugins to deal with interactive Python code already. Here are a few things you can try.
 
 ### Vim / Neovim
 
-[Neovim](https://github.com/neovim/neovim) (and by extension [Vim](https://github.com/vim/vim)) is the editor I currently use on stage but the target audience is mostly developers, old Unix gurus and command-line users. **Vim** is a modal text editor with multiple modes for editing and jumping around in the source code. It can be extended using plugins and tweaked to your liking. Quite powerful, but it requires some learning to be proficient. The process for working with **Sardine** from **Neovim** is pretty straightforward:
+[Neovim](https://github.com/neovim/neovim) (and by extension [Vim](https://github.com/vim/vim)) is the editor I currently use on stage but the target audience for this software is mostly developers, old Unix gurus and command-line users. **Vim** is a modal text editor with multiple modes for editing, jumping around and composing text. It can be extended using plugins and can be augmented and tweaked to your liking. Quite powerful, but quite hard and required some learning to be proficient. The process for working with **Sardine** from **Neovim** is pretty straightforward:
 
 - 1) install the [slime](https://github.com/jpalardy/vim-slime) plugin.
 - 2) split your workspace in two vertical (`:vs`) or horizontal (`:sp`) panes.
@@ -17,7 +17,7 @@ You can use `Sardine` directly from the Python interpreter, typing lines of code
 
 ### VSCode
 
-[VSCode](https://code.visualstudio.com/) is a powerful and all-devouring code editor developed by Microsoft. It is the most widely spread code editor out there with millions of users, thousands of plugins and corporate support. **VSCode** is more than capable of handling **Sardine** sessions and there are multiple ways to configure everything for it.
+[VSCode](https://code.visualstudio.com/) is a powerful and all-devouring code editor developed by Microsoft. It is the most widely spread code editor out there, with millions of users, thousands of plugins and corporate support. **VSCode** is more than capable of handling **Sardine** sessions and there are multiple ways to configure everything for it.
 
 #### The best technique
 
@@ -39,11 +39,9 @@ from sardine import *
 
 Press `Shift+Enter` and wait for the new Python terminal to show up. You can now start typing **Sardine** code, you are good to go! You will need to select the code you want to run before sending it to the console.
 
-Note that simply opening `fishery` in an integrated terminal might be enough since `v.0.2.1`!
-
 #### The Jupyter route
 
-If you like it, you can also use the [Jupyter](https://jupyter.org) extension for working with Python notebooks. Maybe it'll remind you about your daily job or your research at the lab. Whatever!
+and there might be more than one way to do it. I will present you one way of doing it, using the [Jupyter](https://jupyter.org) extension.
 
 - install **VSCode** and the **Jupyter Notebook** plugin. To do so, open the Extensions pane on the left (it looks like crates) and search for the extension name. Click install and wait a moment.
 - Create a new `.ipynb` notebook either by yourself or by using the plugin-backed command.
@@ -63,7 +61,7 @@ From now on, **Sardine** is installed in the notebook you just created. You can 
 
 ### Emacs
 
-The venerable [Emacs](https://www.gnu.org/software/emacs/) is of course able to manage Sardine! Please use the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin. This mode will allow you to pipe easily your code from a text buffer to a running interpeter. The plugin is adding quality-of-life features for working with **Python** in general but also makes working with a **REPL** much easier and much more convenient. If you are new to the vast world of Emacs, it is probably worthwhile to take a look at [Doom Emacs](https://github.com/doomemacs/doomemacs) or [Spacemacs](https://www.spacemacs.org/), both being really great distributions of plugins. I will not dive into more details, as Emacs users are generally able to figure out their prefered way of working by themselves :)
+The venerable [Emacs](https://www.gnu.org/software/emacs/) is of course able to do what the other ones are doing and it is particularly well suited for the task of running interpreted code. Please use the [python.el](https://github.com/emacs-mirror/emacs/blob/master/lisp/progmodes/python.el) plugin. This mode will allow you to pipe easily your code from a text buffer to a running interpeter. The plugin is adding quality-of-life features for working with **Python** in general but also makes working with a **REPL** much easier and much more convenient. If you are new to the vast world of Emacs, it is probably worthwhile to take a look at [Doom Emacs](https://github.com/doomemacs/doomemacs) or [Spacemacs](https://www.spacemacs.org/), both being really great distributions of plugins. I will not dive into more details, as Emacs users are generally able to figure out their prefered way of working by themselves :)
 
 ## II - Configuration options
 
@@ -91,19 +89,16 @@ Here is a rundown of what each option is doing in the config file:
 
 | Syntax      | Description |
 | -----------: | :----------- |
-|`beats`| Number of beats per bar |
-|`boot_supercollider`| Booting SuperCollider subprocess or not |
-|`bpm`| Default beats per minute (tempo) when starting a session |
-|`debug`| Used by devs |
-|`deferred_scheduling`| Important option for the scheduling mechanism |
-|`link_clock`| Should Sardine start a Link clock for synchronisation? |
-|`midi`| Default MIDI output used by Sardine |
-|`parser`| For future versions, choosing a parser version |
-|`sardine_boot_file`| Where the boot file is currently located |
-|`superdirt_config_path`| Where the internal SuperDirt configuration is located |
-|`superdirt_handler`| Should Sardine add an option to trigger SuperDirt? |
-|`user_config_path`| Configuration path for running arbitrary code |
-|`verbose_superdirt`| Mirroring SuperCollider output in the terminal |
+|`active_clock`| Whether the MIDI Clock must be active (ticking and sending clock messages) or passive (waiting for a clock) |
+|`beats`| number of beats per bar |
+|`boot_superdirt`| whether **Sardine** should boot its own instance of **SuperDirt** when it starts |
+|`bpm`| default tempo (you can change it later by running `c.bpm = x`) |
+|`debug`|  print the raw result of every pattern (used by devs)|
+|`deferred_scheduling`| low-level option used by devs to troubleshot scheduling (not exposed in the config tool) |
+|`midi`| your default MIDI port. If the port is `Sardine` or `internal`, **Sardine** will create its own MIDI port |
+|`ppqn`| Pulses per quarter note, the lowest rhythmical division **Sardine** can handle. `24` or `48` are safe values|
+|`config_paths`| various paths for the files used by configuration|
+
 
 ### B - SuperDirt
 

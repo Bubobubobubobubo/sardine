@@ -55,7 +55,7 @@ Alternatively, if you want to install the **development version**, follow the st
    and run the command:
 
    ```shell
-   pip install . --editable --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
+   pip install --editable . --find-links https://thegamecracks.github.io/python-rtmidi-wheels/
    ```
 
    The period denotes the current directory of your shell, which should be

@@ -17,13 +17,15 @@ class MidiHandler(Sender):
     MidiHandler: a class capable of reacting to most MIDI Messages.
     """
 
-    def __init__(self, port_name: str = "Sardine", nudge: float = 0.0):
+    def __init__(self, port_name: Optional[str] = None, nudge: float = 0.0):
         super().__init__()
         self.active_notes: dict[tuple[int, int], asyncio.Task] = {}
 
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
+        if self._port_name is None:
+            self._port_name = "Sardine" if sys.platform not in "win32" else self._available_ports[0]
         self._midi = None
 
         # For MacOS/Linux
@@ -42,8 +44,7 @@ class MidiHandler(Sender):
         # For W10/W11
         else:
             try:
-                self._midi = mido.open_output(self._available_ports[0])
-                self._port_name = str(self._available_ports[0])
+                self._midi = mido.open_output(self._port_name)
             except Exception as err:
                 print(f"[red]Failed to open a MIDI Connexion: {err}")
 

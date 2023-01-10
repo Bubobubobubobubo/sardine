@@ -198,6 +198,7 @@ class FunctionLibrary:
         one of the targetted bar numbers. The upper limit for the modulo is determined
         by the bar number we wish for itself.
         """
+
         def inner_function(x) -> list:
             modulo_operation = (int(self.clock.bar) % x[0]) + 1
             return [1] if modulo_operation == x[0] else [0]
@@ -205,15 +206,13 @@ class FunctionLibrary:
         results = []
 
         for _ in args:
-            if inner_function(_) == [1]: 
+            if inner_function(_) == [1]:
                 results.append(True)
             else:
                 results.append(False)
 
         print("Results:", results)
         return [1] if True in results else [0]
-
-
 
     def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
         """If the condition is True, play pattern A, else play pattern B"""
@@ -323,13 +322,15 @@ class FunctionLibrary:
         True values will return the value itself, others will
         return a silence.
         """
-        invert = kwargs.get('invert', 0)
+        invert = kwargs.get("invert", 0)
         invert = True if invert == 1 else False
 
         if invert:
             for index, _ in enumerate(mask):
-                if _ == 1: mask[index] = 0
-                if _ == 0: mask[index] = 1
+                if _ == 1:
+                    mask[index] = 0
+                if _ == 0:
+                    mask[index] = 1
 
         new_collection = []
 
@@ -341,7 +342,13 @@ class FunctionLibrary:
                 new_collection.append(None)
         return new_collection
 
-    def clamp(self, collection: list, low_boundary: list, high_boundary: list, **kwargs) -> list:
+    def clamp(
+        self,
+        collection: list,
+        low_boundary: list,
+        high_boundary: list,
+        **kwargs,
+    ) -> list:
         """
         Simple clamp function, restraining collection to a given range.
         """

@@ -45,7 +45,7 @@ Alternatively, if you want to install the **development version**, follow the st
    using [Git](https://git-scm.com/):
 
    ```shell
-   git clone https://github.com/Bubobubobubobubo/Sardine
+   git clone https://github.com/Bubobubobubobubo/sardine
    ```
 
    Otherwise if you don't have Git installed, you can click

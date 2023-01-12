@@ -49,9 +49,8 @@ class CalculateTree(Transformer):
 
     def get_variable(self, letter):
         """
-        Prototype of getting a variable coming from the Python side.
-        It can only be an int, a float or a string. The result will
-        get turned to a list anyways, whatever happens.
+        Grabbing a variable coming from the Python side. It can only be an int, a float
+        or a string. The final result is always a list.
         """
         return [getattr(self.variables, str(letter))]
 
@@ -66,7 +65,7 @@ class CalculateTree(Transformer):
         accessible from the Python side following the type the value currently
         has in the pattern.
         """
-        setattr(self.variables, str(letter), number)
+        setattr(self.variables, str(letter), number[0])
         return [getattr(self.variables, str(letter))]
 
     # ---------------------------------------------------------------------- #
@@ -83,7 +82,7 @@ class CalculateTree(Transformer):
         return [getattr(self.iterators, letter)]
 
     def set_iterator(self, letter, number):
-        letter, number = str(letter), int(number)
+        letter, number = str(letter), int(number[0])
         setattr(self.iterators, letter, number)
         return [getattr(self.iterators, letter)]
 
@@ -235,6 +234,15 @@ class CalculateTree(Transformer):
             list: Gathered arguments in a list
         """
         return sum(args, start=[])
+
+    def make_list_repeat(self, *args):
+        """Make a list from gathered arguments (alias used by parser)
+
+        Returns:
+            list: Gathered arguments in a list
+        """
+        return sum(args, start=[])*2
+
 
     def get_time(self):
         """Return current clock time (tick) as integer"""
@@ -492,8 +500,12 @@ class CalculateTree(Transformer):
             "not": self.library.not_condition,
             "if": self.library.simple_condition,
             "while": self.library.while_condition,
+            "in": self.library.in_condition,
+            # Boolean functions
             "beat": self.library.beat,
             "every": self.library.every,
+            "proba": self.library.proba,
+            "phase": self.library.phase,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,
@@ -513,10 +525,10 @@ class CalculateTree(Transformer):
             "pal": self.library.palindrome,
             "rev": self.library.reverse,
             "leave": self.library.leave,
-            "inp": self.library.insert_pair,
-            "in": self.library.insert,
-            "inprot": self.library.insert_pair_rotate,
-            "inrot": self.library.insert_rotate,
+            "insertp": self.library.insert_pair,
+            "insert": self.library.insert,
+            "insertprot": self.library.insert_pair_rotate,
+            "insertrot": self.library.insert_rotate,
             "shuf": self.library.shuffle,
             # Math functions
             "clamp": self.library.clamp,

@@ -1,6 +1,6 @@
 import time
 from itertools import chain
-from typing import Optional
+from typing import Optional, List
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
@@ -80,7 +80,7 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Optional[StringElement],
+        sound: Optional[StringElement|List[StringElement]],
         orbit: NumericElement = 0,
         iterator: Number = 0,
         divisor: NumericElement = 1,
@@ -90,6 +90,7 @@ class SuperDirtHandler(Sender):
 
         if sound is None:
             return
+
 
         pattern["sound"] = sound
         pattern["orbit"] = orbit

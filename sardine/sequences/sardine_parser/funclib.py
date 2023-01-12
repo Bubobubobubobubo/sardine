@@ -211,7 +211,6 @@ class FunctionLibrary:
 
         return [1] if True in results else [0]
 
-
     def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_a if condition[0] >= 1 else pattern_b
@@ -219,6 +218,11 @@ class FunctionLibrary:
     def while_condition(self, condition, pattern=[None], **kwargs):
         """While loop that returns nothing is the condition is not met"""
         return pattern if condition[0] >= 1 else [None]
+
+    def in_condition(self, test_value, condition, **kwargs):
+        """Return something from the pattern if the condition is met"""
+        print(f"Testing if {int(test_value[0])} in {list(map(lambda x: int(x), condition))}")
+        return [1] if int(test_value[0]) in list(map(lambda x: int(x), condition)) else [0]
 
     def not_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
@@ -249,6 +253,7 @@ class FunctionLibrary:
     def _remap(self, x, in_min, in_max, out_min, out_max):
         """Remapping a value from a [x, y] range to a [x', y'] range"""
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
+
 
     def scale(
         self,
@@ -460,9 +465,9 @@ class FunctionLibrary:
         """
         factor = factor[0]
 
-        def expand_number(number: Union[int, float]) -> Union[int, float]:
+        def expand_number(number: Union[int, float]) -> int|float:
             expansions = [0, -12, 12]
-            return number + (random.choice(expansions) * factor)
+            return [number + (random.choice(expansions) * factor)]
 
         return map_unary_function(expand_number, collection)
 
@@ -533,15 +538,15 @@ class FunctionLibrary:
         return list(chain(*zip(*args)))
 
     def insert_pair(self, collection: list, element: list, **kwargs) -> list:
-        """Insert function to insert a fixed element as pair element of each list"""
+        """Insert a fixed element as pair element of each list"""
         return [i for x in collection for i in (x, element)][:-1]
 
     def insert(self, collection: list, element: list, **kwargs) -> list:
-        """Insert function to insert a fixed element as odd element of each list"""
+        """Insert a fixed element as odd element of each list"""
         return [i for x in collection for i in (element, x)][:-1]
 
     def insert_pair_rotate(self, collection: list, element: list, **kwargs) -> list:
-        """Insert function to insert a fixed element as odd element of each list"""
+        """Insert a list in another list"""
         rotation = cycle(element)
         return [i for x in collection for i in (next(rotation), x)][:-1]
 

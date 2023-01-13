@@ -1,11 +1,3 @@
-body {
-    margin: 0px;
-    background: #282c34;
-    color: white;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
 textarea
 {
   width:100%;
@@ -13,6 +5,9 @@ textarea
   border: none;
   height: 20%;
   resize: none;
+  color: white;
+  margin-top: 0px;
+  padding-left: 10px;
 }
 
 .textwrapper

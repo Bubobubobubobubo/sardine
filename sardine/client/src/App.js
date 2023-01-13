@@ -10,7 +10,7 @@ function App() {
   const templateCode = `@swim
 def baba():
     D('bd')
-    again(baba)`;
+    again(baba)` + '\n'.repeat(40);
 
   const onChange = React.useCallback((value, viewUpdate) => {
     console.log('value:', value);

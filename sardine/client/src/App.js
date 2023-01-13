@@ -4,7 +4,7 @@ import { python } from '@codemirror/lang-python';
 import { vim } from "@replit/codemirror-vim";
 import Menubar from './components/Menubar.js';
 import Log from './components/Log.js';
-import { executeCode } from './lib/service/runnerService.js';
+import { executeCode } from './libs/service/runnerService.js';
 
 function App() {
   const templateCode = `@swim

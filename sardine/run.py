@@ -378,13 +378,18 @@ if config.superdirt_handler:
 #######################################################################################
 # EDITOR START
 
-if config.editor:
+if config.editor or True:
     from threading import Thread
     import logging
     import webbrowser
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
-    editor_app = server_factory()
+
+    d = dict(locals(), **globals())
+    print(d)
+
+    editor_app = server_factory(d)
+
     Thread(target=lambda: editor_app.run(
         port=5000, debug=False, 
         use_reloader=False)
@@ -392,6 +397,7 @@ if config.editor:
     print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:5000[/yellow][/red]")
     webbrowser.open('http://localhost:5000')
 
+print("[red]Starting session...[/red]")
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

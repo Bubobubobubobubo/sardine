@@ -1,11 +1,22 @@
 import os
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, request
+
 
 
 __all__ = ("server_factory",)
 
-def server_factory():
+def server_factory(d):
     app = Flask(__name__, static_folder='../client/build')
+
+    @app.post('/execute')
+    def execute():
+        code = request.json['code']
+        try:
+            exec(code, d, d)
+            return { 'code': code }
+        except Exception as e:
+            return { 'error': str(e) }
+        
     # Serve React App
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
@@ -14,6 +25,7 @@ def server_factory():
             return send_from_directory(app.static_folder, path)
         else:
             return send_from_directory(app.static_folder, 'index.html')
+
 
     return app
 

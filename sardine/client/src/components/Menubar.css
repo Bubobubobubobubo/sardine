@@ -1,0 +1,13 @@
+body {
+    margin: 0px;
+    background: #282c34;
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.menu {
+    padding-top: 5px;
+    display: inline;
+    white-space: nowrap;
+}

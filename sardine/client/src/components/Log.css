@@ -1,0 +1,23 @@
+body {
+    margin: 0px;
+    background: #282c34;
+    color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+textarea
+{
+  width:100%;
+  background: #282c34;
+  border: none;
+  height: 20%;
+  resize: none;
+}
+
+.textwrapper
+{
+  border:1px solid #999999;
+  margin:5px 0;
+  padding:3px;
+}

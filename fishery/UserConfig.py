@@ -32,6 +32,7 @@ TEMPLATE_CONFIGURATION = {
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "deferred_scheduling": True,
+        "editor": False,
     }
 }
 
@@ -61,6 +62,7 @@ class Config:
     sardine_boot_file: bool
     link_clock: bool
     deferred_scheduling: bool
+    editor: bool
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
@@ -79,6 +81,7 @@ class Config:
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
             deferred_scheduling=config["deferred_scheduling"],
+            editor=config["editor"],
         )
 
     def to_dict(self) -> dict:
@@ -97,6 +100,7 @@ class Config:
                 "link_clock": self.link_clock,
                 "user_config_path": self.user_config_path,
                 "deferred_scheduling": self.deferred_scheduling,
+                "editor": self.editor,
             }
         }
 

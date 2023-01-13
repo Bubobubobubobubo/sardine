@@ -55,9 +55,11 @@ dependencies = [
 ]
 
 [tool.hatch.build]
+exclude = ["sardine/client/node_modules"]
 packages = ["fishery", "sardine"]
 
 [tool.hatch.build.targets.sdist]
+exclude = ["sardine/client/node_modules", "sardine/client/build"]
 packages = ["sardine", "fishery", "tests"]
 
 [tool.hatch.version]

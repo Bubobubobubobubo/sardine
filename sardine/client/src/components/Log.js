@@ -7,7 +7,9 @@ class Log extends React.Component {
         <div id="log">
         <textarea 
             id="logwindow" 
-        />
+        >
+        Welcome to Sardine REPL: the embedded code editor for Sardine! Press Shift+Enter to eval selection.
+        </textarea>
         </div>
     )
   }

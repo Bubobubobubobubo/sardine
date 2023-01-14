@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import CodeMirror, { useCodeMirror } from '@uiw/react-codemirror';
+import React, { useState, useEffect, useRef } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { vim } from "@replit/codemirror-vim";
 import Menubar from './components/Menubar.js';
@@ -7,14 +7,25 @@ import Log from './components/Log.js';
 import { executeCode } from './libs/service/runnerService.js';
 
 function App() {
-  const templateCode = `@swim
+
+  const [editingMode, setEditingMode] = useState('Normal');
+  const bufferText = `@swim
 def baba():
     D('bd')
-    again(baba)` + '\n'.repeat(40);
+    again(baba)`;
 
   const onChange = React.useCallback((value, viewUpdate) => {
     console.log('value:', value);
   }, []);
+
+  const handleEditMode = () => {
+    // Change the editing mode between Vim Mode and Normal Mode
+    if (editingMode === 'Normal') {
+      setEditingMode('Vim');
+    } else {
+      setEditingMode('Normal');
+    }
+  }
 
   function kedDownHandler(event) {
     // Ctrl + Enter
@@ -46,12 +57,16 @@ def baba():
   useEventListener('keydown', kedDownHandler);
 
   const codeMirror = useRef();
+
   return (
     <div id="editor">
-        <Menubar />
+        <Menubar 
+        editingMode={editingMode}
+        editingModeFunction={handleEditMode}
+        />
         <CodeMirror
           ref={codeMirror}
-          value={templateCode}
+          value={bufferText}
           basicSetup={{
               foldGutter: false,
               dropCursor: false,
@@ -60,7 +75,8 @@ def baba():
           
           height="100%"
           theme="dark"
-          extensions={[vim(), python({})]}
+          extensions={editingMode === 'Normal' ? 
+          [vim(), python({})] : [python({})]}
           onChange={onChange}
         />
         <Log />

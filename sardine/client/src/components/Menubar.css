@@ -1,5 +1,7 @@
 .menu {
     display: flex;
+    padding-right: 10px;
+    justify-content: space-between;
     gap: 20px;
     background: #282c34;
     color: white;
@@ -7,6 +9,16 @@
     padding-left: 10px;
     height: 30px;
     font-variant: small-caps;
+}
+
+form {
+  margin: 0px;
+  display: flex;
+}
+
+#button-zone {
+  display: flex;
+  gap: 10px;
 }
 
 h2 {
@@ -18,39 +30,15 @@ img {
     background-image: none;
 }
 
-<!-- HTML !-->
-<button class="button-31" role="button">Button 31</button>
-
-/* CSS */
 button {
-  background-color: #222;
-  border-radius: 4px;
-  border-style: none;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: "Farfetch Basis","Helvetica Neue",Arial,sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.5;
-  margin: 0;
-  max-width: none;
-  min-height: 44px;
-  min-width: 10px;
-  outline: none;
-  overflow: hidden;
-  padding: 9px 20px 8px;
-  position: relative;
+  font-variant: small-caps;
+  background-color: white;
+  border: none;
+  color: black;
   text-align: center;
-  text-transform: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  width: 100%;
-}
-
-button:hover,
-button:focus {
-  opacity: .75;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 24px;
+  margin-top: 4px;
+  margin-bottom: 4px;
 }

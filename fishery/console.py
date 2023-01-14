@@ -103,6 +103,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
                 self.showtraceback()
 
 
+
 class REPLThread(threading.Thread):
     def __init__(self, *args, console: AsyncIOInteractiveConsole, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,45 +124,54 @@ class REPLThread(threading.Thread):
             )
 
 
-async def run_forever():
-    loop = asyncio.get_running_loop()
-    await loop.create_future()
+
+class Console:
+    def __init__(self):
+        
+        self.loop = sardine.event_loop.new_event_loop()
+
+        repl_locals = {"asyncio": asyncio}
+        for key in (
+            "__name__",
+            "__package__",
+            "__loader__",
+            "__spec__",
+            "__builtins__",
+            "__file__",
+        ):
+            repl_locals[key] = globals()[key]
+
+        self.console = AsyncIOInteractiveConsole(repl_locals, self.loop)
+
+    def run(self):
+        self.start()
+
+    async def run_forever(self):
+        loop = asyncio.get_running_loop()
+        await loop.create_future()
 
 
-def start():
-    loop = sardine.event_loop.new_event_loop()
 
-    repl_locals = {"asyncio": asyncio}
-    for key in (
-        "__name__",
-        "__package__",
-        "__loader__",
-        "__spec__",
-        "__builtins__",
-        "__file__",
-    ):
-        repl_locals[key] = globals()[key]
+    def start(self):
 
-    console = AsyncIOInteractiveConsole(repl_locals, loop)
+        try:
+            import readline  # NoQA
+        except ImportError:
+            pass
 
-    try:
-        import readline  # NoQA
-    except ImportError:
-        pass
+        repl_thread = REPLThread(console=self.console)
+        repl_thread.daemon = True
+        repl_thread.start()
 
-    repl_thread = REPLThread(console=console)
-    repl_thread.daemon = True
-    repl_thread.start()
-
-    with Runner(loop=loop) as runner:
-        while True:
-            try:
-                runner.run(run_forever())
-            except KeyboardInterrupt:
-                if console.repl_future and not console.repl_future.done():
-                    console.repl_future.cancel()
-                    console.repl_future_interrupted = True
+        with Runner(loop=self.loop) as runner:
+            while True:
+                try:
+                    runner.run(self.run_forever())
+                except KeyboardInterrupt:
+                    if self.console.repl_future and not self.console.repl_future.done():
+                        self.console.repl_future.cancel()
+                        self.console.repl_future_interrupted = True
+                    else:
+                        break
                 else:
                     break
-            else:
-                break

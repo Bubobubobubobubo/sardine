@@ -2,6 +2,7 @@ import click
 
 from . import console
 from .profiler import Profiler
+from .server import server_factory
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],
@@ -21,7 +22,26 @@ CONTEXT_SETTINGS = {
 @click.pass_context
 def main(ctx: click.Context):
     if ctx.invoked_subcommand is None:
-        console.start()
+        cons = console.Console()
+        start_server(cons.console)
+        cons.start()
+
+
+def start_server(console):
+    from threading import Thread
+    import logging
+    import webbrowser
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
+    editor_app = server_factory(console)
+
+    Thread(target=lambda: editor_app.run(
+        port=3000, debug=False, 
+        use_reloader=False)
+    ).start()
+    print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:3000[/yellow][/red]")
+    webbrowser.open('http://localhost:3000')
 
 
 @main.command(
@@ -51,6 +71,8 @@ def main(ctx: click.Context):
     show_default=True,
     type=click.Path(dir_okay=False, writable=True),
 )
+
+
 def profile(clock: str, filepath: str):
     profiler = Profiler(clock=clock, filepath=filepath)
     with profiler:

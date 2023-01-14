@@ -4,7 +4,7 @@ export async function executeCode(code) {
     const data = {
         code: code,
     }
-    const response = await fetch('http://localhost:5000/execute', {
+    const response = await fetch('/execute', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

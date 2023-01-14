@@ -18,7 +18,7 @@ def baba():
 
   function kedDownHandler(event) {
     // Ctrl + Enter
-    if(event.key === 'Enter' && event.ctrlKey) {
+    if(event.key === 'Enter' && event.shiftKey) {
       console.log(getSelectedLines());
       executeCode(getSelectedLines());
     }

@@ -5,14 +5,14 @@ from flask import Flask, send_from_directory, request
 
 __all__ = ("server_factory",)
 
-def server_factory(d):
+def server_factory(console):
     app = Flask(__name__, static_folder='../client/build')
 
     @app.post('/execute')
     def execute():
         code = request.json['code']
         try:
-            exec(code, d, d)
+            console.push(code)
             return { 'code': code }
         except Exception as e:
             return { 'error': str(e) }

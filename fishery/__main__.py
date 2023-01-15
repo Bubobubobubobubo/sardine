@@ -2,7 +2,10 @@ import click
 
 from . import console
 from .profiler import Profiler
-from .server import server_factory
+from .server import Server
+# traceback is used to print exceptions in the console
+import traceback
+import sys
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],
@@ -23,7 +26,8 @@ CONTEXT_SETTINGS = {
 def main(ctx: click.Context):
     if ctx.invoked_subcommand is None:
         cons = console.Console()
-        start_server(cons.console)
+        server = start_server(cons.console)
+        cons.on_write(lambda data: print("data", data) or server.broadcast("logs", data))
         cons.start()
 
 
@@ -34,14 +38,12 @@ def start_server(console):
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    editor_app = server_factory(console)
-
-    Thread(target=lambda: editor_app.run(
-        port=3000, debug=False, 
-        use_reloader=False)
-    ).start()
+    server = Server(console)
+    print("hello")
+    Thread(target=lambda: server.socketio.run( server.app,  port=3000, debug=False, use_reloader=False,)).start()
     print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:3000[/yellow][/red]")
     webbrowser.open('http://localhost:3000')
+    return server
 
 
 @main.command(

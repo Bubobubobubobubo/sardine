@@ -4,7 +4,7 @@
 
 import ast
 import asyncio
-import code
+from .scode import InteractiveConsole
 import concurrent.futures
 import inspect
 
@@ -51,7 +51,7 @@ APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 
 
-class AsyncIOInteractiveConsole(code.InteractiveConsole):
+class AsyncIOInteractiveConsole(InteractiveConsole):
     def __init__(self, locals: dict, loop: asyncio.BaseEventLoop):
         super().__init__(locals)
         self.compile.compiler.flags |= ast.PyCF_ALLOW_TOP_LEVEL_AWAIT
@@ -59,6 +59,7 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
         self.loop = loop
         self.repl_future: Optional[asyncio.Task] = None
         self.repl_future_interrupted = False
+        self.on_write = lambda data: print("hey-" + data)
 
     def _callback(self, future: concurrent.futures.Future, code: types.CodeType):
         self.repl_future = None
@@ -88,20 +89,28 @@ class AsyncIOInteractiveConsole(code.InteractiveConsole):
             future.set_exception(exc)
 
     def runcode(self, code: types.CodeType):
+        print("runcode")
         future = concurrent.futures.Future()
 
         self.loop.call_soon_threadsafe(self._callback, future, code)
 
         try:
-            return future.result()
+            out =  future.result()
+            print("out")
+            self.write("ok")
         except SystemExit:
+            print("SystemExit")
             raise
         except BaseException:
+            print("BaseException")
             if self.repl_future_interrupted:
                 self.write("\nKeyboardInterrupt\n")
             else:
-                self.showtraceback()
 
+                self.showtraceback()
+    
+    def write(self, data):
+        self.on_write(data)
 
 
 class REPLThread(threading.Thread):
@@ -146,11 +155,14 @@ class Console:
     def run(self):
         self.start()
 
+    def on_write(self, on_write):
+        self.console.on_write = on_write
+
     async def run_forever(self):
         loop = asyncio.get_running_loop()
         await loop.create_future()
 
-
+    
 
     def start(self):
 

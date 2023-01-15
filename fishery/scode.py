@@ -21,7 +21,7 @@ class InteractiveInterpreter:
 
     """
 
-    def __init__(self, locals=None):
+    def __init__(self, locals=None, writeCallback=None):
         """Constructor.
 
         The optional 'locals' argument specifies the dictionary in
@@ -34,6 +34,7 @@ class InteractiveInterpreter:
             locals = {"__name__": "__console__", "__doc__": None}
         self.locals = locals
         self.compile = CommandCompiler()
+        self.writeCallback = writeCallback
 
     def runsource(self, source, filename="<input>", symbol="single"):
         """Compile and run some source in the interpreter.
@@ -87,7 +88,8 @@ class InteractiveInterpreter:
 
         """
         try:
-            exec(code, self.locals)
+            out = eval(code, self.locals)
+            self.write(str(out))
         except SystemExit:
             raise
         except:
@@ -120,7 +122,7 @@ class InteractiveInterpreter:
                 # Stuff in the right filename
                 value = SyntaxError(msg, (filename, lineno, offset, line))
                 sys.last_value = value
-        if sys.excepthook is sys.__excepthook__:
+        if sys.excepthook is sys.__excepthook__ or True:
             lines = traceback.format_exception_only(type, value)
             self.write(''.join(lines))
         else:
@@ -156,7 +158,7 @@ class InteractiveInterpreter:
         replace this with a different implementation.
 
         """
-        #sys.stderr.write(data)
+        print("-----")
 
 
 
@@ -168,7 +170,7 @@ class InteractiveConsole(InteractiveInterpreter):
 
     """
 
-    def __init__(self, locals=None, filename="<console>", onWrite=None):
+    def __init__(self, locals=None, filename="<console>"):
         """Constructor.
 
         The optional locals argument will be passed to the
@@ -178,7 +180,7 @@ class InteractiveConsole(InteractiveInterpreter):
         of the input stream; it will show up in tracebacks.
 
         """
-        InteractiveInterpreter.__init__(self, locals, onWrite)
+        InteractiveInterpreter.__init__(self, locals)
         self.filename = filename
         self.resetbuffer()
 

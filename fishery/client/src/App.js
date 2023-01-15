@@ -1,10 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CodeMirror, { useCodeMirror } from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { vim } from "@replit/codemirror-vim";
 import Menubar from './components/Menubar.js';
 import Log from './components/Log.js';
 import { executeCode } from './libs/service/runnerService.js';
+import io from 'socket.io-client';
+
+const socket = io();
 
 function App() {
   const templateCode = `@swim
@@ -43,6 +46,38 @@ def baba():
     return state?.doc.sliceString(fromLine.from, toLine.to)
   }
 
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [lastPong, setLastPong] = useState(null);
+  const [logs, setLogs] = useState([]);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      setIsConnected(true);
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+    });
+
+    socket.on('pong', () => {
+      setLastPong(new Date().toISOString());
+    });
+
+    socket.on('logs', (data) => {
+      setLogs( logs => [...logs, data] );
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('pong');
+    };
+  }, []);
+
+  const sendPing = () => {
+    socket.emit('ping');
+  }
+
   useEventListener('keydown', kedDownHandler);
 
   const codeMirror = useRef();
@@ -64,6 +99,15 @@ def baba():
           onChange={onChange}
         />
         <Log />
+        <div id="console">
+          <textarea value={logs}/>
+        </div>
+
+      <div>
+        <p>Connected: { '' + isConnected }</p>
+        <p>Last pong: { lastPong || '-' }</p>
+        <button onClick={ sendPing }>Send ping</button>
+      </div>
     </div>
   );
 }

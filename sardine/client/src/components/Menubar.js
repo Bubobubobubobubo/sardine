@@ -1,6 +1,5 @@
 import React from 'react';
 import './Menubar.css';
-import SearchBar from "material-ui-search-bar";
 
 class Menubar extends React.Component {
   data = {}
@@ -8,11 +7,6 @@ class Menubar extends React.Component {
   return (
         <div className="menu">
         <h2>Sardine</h2>
-        <SearchBar
-          value={this.state.value}
-          onChange={(newValue) => console.log(newValue)}
-          onRequestSearch={() => console.log('Search')}
-        />
         <div id="button-zone">
           <button
           onClick={this.props.editingModeFunction}

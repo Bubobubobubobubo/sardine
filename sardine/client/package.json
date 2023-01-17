@@ -5,6 +5,9 @@
   "proxy": "https://localhost:5000",
   "dependencies": {
     "@codemirror/lang-python": "^6.1.1",
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@replit/codemirror-vim": "^6.0.4",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

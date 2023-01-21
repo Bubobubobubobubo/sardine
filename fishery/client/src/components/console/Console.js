@@ -2,15 +2,6 @@ import React from "react";
 
 const Console = ({ logs }) => {
 
-    // append logs to html var 
-    let htmlLogs = "";
-
-    for (let i = 0; i < logs.length; i++) {
-        htmlLogs += "<li>" + logs[i] + "</li>";
-    }
-
-    console.log(htmlLogs);
-
 
     return (
         <div className="console">
@@ -19,7 +10,9 @@ const Console = ({ logs }) => {
         </div>
         <div className="console-content">
             <ul>
-                {htmlLogs}
+                {logs.map((log) => {
+                    return <li>{log}</li>
+                })}
             </ul>
         </div>
         </div>

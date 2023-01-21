@@ -29,9 +29,9 @@ def baba():
 
   function kedDownHandler(event) {
     // Ctrl + Enter
-    if(event.key === 'Enter' && event.ctrlKey) {
-      console.log(getSelectedLines());
-      executeCode(getSelectedLines());
+    if(event.key === 'Enter' && event.shiftKey) {
+      event.preventDefault();
+      executeCode(getSelectedLines()+"\n\n");
     }
   }
 
@@ -68,7 +68,7 @@ def baba():
     }
     return () => {};
   }, []);
-  
+
   return (
     <div id="editor">
         <Menubar 

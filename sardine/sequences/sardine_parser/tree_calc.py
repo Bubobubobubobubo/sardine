@@ -5,7 +5,7 @@ from time import time
 
 from lark import Transformer, v_args
 from lark.lexer import Token
-from rich import print
+from ...logger import print
 from rich.panel import Panel
 
 from . import funclib

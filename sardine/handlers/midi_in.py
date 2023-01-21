@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import mido
 from mido import Message, get_input_names, open_input, parse_string_stream
-from rich import print
+from ..logger import print
 
 from ..base.handler import BaseHandler
 

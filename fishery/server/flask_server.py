@@ -61,7 +61,6 @@ def server_factory(console):
     def progress_log():
         def generate():
             for line in Pygtail(str(LOG_FILE), every_n=0.01):
-                print("LINE:" + line)
                 yield "data:" + str(line) + "\n\n"
         return Response(generate(), mimetype= 'text/event-stream')
     

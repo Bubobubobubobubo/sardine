@@ -3,13 +3,13 @@ import sys
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from rich import print
 from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, sardine_intro
 from .sequences import ZiffersParser, ListParser
 from .sequences.sequence import E, mod, imod, pick
+from .logger import print
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")

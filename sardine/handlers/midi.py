@@ -3,7 +3,7 @@ import sys
 from typing import Optional, Union
 
 import mido
-from rich import print
+from ..logger import print
 
 from ..utils import alias_param
 from .sender import Number, NumericElement, Sender

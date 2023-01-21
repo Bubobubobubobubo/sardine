@@ -37,6 +37,7 @@ classifiers = [
 
 # Requirements: This is done differently by poetry!
 dependencies = [
+    "pygtail>=0.14.0",
     "Flask-SocketIO>=5.3.2",
     "Flask>=2.2.2",
     "Click>=8.1.3",

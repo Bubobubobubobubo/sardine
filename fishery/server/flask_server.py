@@ -1,7 +1,14 @@
 import os
-from flask import Flask, send_from_directory, request
+from flask import Flask, send_from_directory, request, Response
+from pygtail import Pygtail
 
 
+from appdirs import *
+from pathlib import Path
+
+APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
+USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+LOG_FILE = USER_DIR / "sardine.log"
 
 __all__ = ("WebServer",)
 
@@ -35,7 +42,7 @@ def server_factory(console):
     def execute():
         code = request.json['code']
         try:
-            console.runcode(code)
+            console.push(code)
             return { 'code': code }
         except Exception as e:
             return { 'error': str(e) }
@@ -50,6 +57,14 @@ def server_factory(console):
             return send_from_directory(app.static_folder, 'index.html')
 
 
+    @app.route('/log')
+    def progress_log():
+        def generate():
+            for line in Pygtail(str(LOG_FILE), every_n=0.01):
+                print("LINE:" + line)
+                yield "data:" + str(line) + "\n\n"
+        return Response(generate(), mimetype= 'text/event-stream')
+    
     return app
 
     

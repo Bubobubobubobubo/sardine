@@ -91,7 +91,7 @@ def web(host: str, port: int):
     consoleManager = ConsoleManager()
     server = WebServer(host=host, port=port, )
     server.start_in_thread(consoleManager.console)
-    server.open_in_browser()
+    #server.open_in_browser()
     consoleManager.start()
     
 

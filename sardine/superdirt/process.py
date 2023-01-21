@@ -10,7 +10,7 @@ from typing import Optional, Union
 
 import psutil
 from appdirs import *
-from rich import print
+from ..logger import print
 from rich.console import Console
 from rich.panel import Panel
 

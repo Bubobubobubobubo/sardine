@@ -4,7 +4,7 @@ from InquirerPy.base.control import Choice
 from InquirerPy import inquirer
 from rich.panel import Panel
 from pathlib import Path
-from rich import print
+from ..logger import print
 from appdirs import *  # Wildcard used in docs
 import click
 import json

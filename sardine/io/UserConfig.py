@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 
 from appdirs import *
-from rich import print
+from ..logger import print
 
 __all__ = (
     "Config",

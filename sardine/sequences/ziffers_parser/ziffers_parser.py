@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from lark import Lark, Tree
-from rich import print
+from ...logger import print
 
 from ...base import BaseParser
 

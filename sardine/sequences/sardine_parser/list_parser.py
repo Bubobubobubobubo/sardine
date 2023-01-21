@@ -3,7 +3,7 @@ from ...base import BaseParser
 from lark import Lark, Tree
 from pathlib import Path
 from .chord import Chord
-from rich import print
+from ...logger import print
 
 __all__ = ("ListParser", "Pat")
 

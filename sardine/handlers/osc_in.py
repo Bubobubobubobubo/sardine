@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional, Union
 from osc4py3.as_eventloop import *
 from osc4py3.oscchannel import TransportChannel, get_channel
 from osc4py3.oscmethod import *
-from rich import print
+from ..logger import print
 
 from ..base.handler import BaseHandler
 from .osc_loop import OSCLoop

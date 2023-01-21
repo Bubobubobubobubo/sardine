@@ -29,9 +29,9 @@ def baba():
 
   function kedDownHandler(event) {
     // Ctrl + Enter
-    if(event.key === 'Enter' && event.ctrlKey) {
-      console.log(getSelectedLines());
-      executeCode(getSelectedLines());
+    if(event.key === 'Enter' && event.shiftKey) {
+      event.preventDefault();
+      executeCode(getSelectedLines()+"\n\n");
     }
   }
 
@@ -53,10 +53,21 @@ def baba():
 
     return state?.doc.sliceString(fromLine.from, toLine.to)
   }
-
+  
   useEventListener('keydown', kedDownHandler);
 
   const codeMirror = useRef();
+
+  const [logs, setLogs] = useState([]);
+  useEffect(() => {
+    let source = new EventSource("/log");
+    console.log("source", source)
+    source.onmessage = (event)=>{
+      console.log("onmessage",event)
+      setLogs( logs => [...logs, event.data] );
+    }
+    return () => {};
+  }, []);
 
   return (
     <div id="editor">
@@ -79,7 +90,7 @@ def baba():
           [vim(), python({})] : [python({})]}
           onChange={onChange}
         />
-        <Log />
+        <Log logs={logs} />
     </div>
   );
 }

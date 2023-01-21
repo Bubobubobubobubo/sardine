@@ -6,7 +6,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
 
-from rich import print
+from ..logger import print
 from rich.panel import Panel
 
 from ..base import BaseClock

@@ -10,7 +10,6 @@ from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, sardine_intro
 from .sequences import ZiffersParser, ListParser
 from .sequences.sequence import E, mod, imod, pick
-from .server import server_factory
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
@@ -375,29 +374,6 @@ if config.superdirt_handler:
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
 
-#######################################################################################
-# EDITOR START
-
-if config.editor or True:
-    from threading import Thread
-    import logging
-    import webbrowser
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
-
-    d = dict(locals(), **globals())
-    print(d)
-
-    editor_app = server_factory(d)
-
-    Thread(target=lambda: editor_app.run(
-        port=5000, debug=False, 
-        use_reloader=False)
-    ).start()
-    print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:5000[/yellow][/red]")
-    webbrowser.open('http://localhost:5000')
-
-print("[red]Starting session...[/red]")
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

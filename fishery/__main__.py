@@ -1,6 +1,6 @@
 import click
 
-from . import console
+from .console import ConsoleManager
 from .profiler import Profiler
 
 CONTEXT_SETTINGS = {
@@ -21,6 +21,7 @@ CONTEXT_SETTINGS = {
 @click.pass_context
 def main(ctx: click.Context):
     if ctx.invoked_subcommand is None:
+        console = ConsoleManager()
         console.start()
 
 
@@ -53,8 +54,48 @@ def main(ctx: click.Context):
 )
 def profile(clock: str, filepath: str):
     profiler = Profiler(clock=clock, filepath=filepath)
+    console = ConsoleManager()
     with profiler:
         console.start()
+
+
+# fishery web
+# fishery web --host
+# fishery web --port
+# fishery web --host --port
+@main.command(
+    short_help="Starts sardine as a web server.",
+    help="""
+        This command starts sardine as a web server. The server can be accessed
+        at http://localhost:5000 by default.
+        """,
+)
+@click.option(
+    "-h",
+    "--host",
+    default="localhost",
+    help="The host to bind the server to.",
+    show_default=True,
+    type=str,
+)
+@click.option(
+    "-p",
+    "--port",
+    default=5000,
+    help="The port to bind the server to.",
+    show_default=True,
+    type=int,
+)
+def web(host: str, port: int):
+    from .server import WebServer
+    consoleManager = ConsoleManager()
+    server = WebServer(host=host, port=port, )
+    server.start_in_thread(consoleManager.console)
+    server.open_in_browser()
+    consoleManager.start()
+    
+
+
 
 
 if __name__ == "__main__":

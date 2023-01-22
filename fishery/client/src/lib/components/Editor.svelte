@@ -4,31 +4,59 @@
     import { StateEffect } from '@codemirror/state'
     import {python} from "@codemirror/lang-python"
     export { minimalSetup, basicSetup }
-    </script>
-    
-    <script>
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte'
-    const dispatch = createEventDispatcher()
-    
-    let dom
-    
-    let _mounted = false
+    // Where can I use it?
+    let sardineTheme = EditorView.theme({
+      "&": {
+        color: "white",
+        backgroundColor: "#034"
+      },
+      ".cm-content": {
+        caretColor: "#0e9"
+      },
+      "&.cm-focused .cm-cursor": {
+        borderLeftColor: "#0e9"
+      },
+      "&.cm-focused .cm-selectionBackground, ::selection": {
+        backgroundColor: "#074"
+      },
+      ".cm-gutters": {
+        backgroundColor: "#045",
+        color: "#ddd",
+        border: "none"
+      }
+    }, {dark: true});
+
+</script>
+
+<script>
+
+    import { 
+      onMount, 
+      onDestroy, 
+      createEventDispatcher 
+    } from 'svelte';
+
+
+
+    const dispatch = createEventDispatcher();
+    let dom;
+    let _mounted = false;
+
     onMount(() => {
       _mounted = true
       return () => { _mounted = false }
     })
     
-    export let view = null
+    export let view = null;
     
     /* `doc` is deliberately made non-reactive for not storing a reduntant string
-       besides the editor. Also, setting doc to undefined will not trigger an
-       update, so that you can clear it after setting one. */
-    export let doc
+    besides the editor. Also, setting doc to undefined will not trigger an
+    update, so that you can clear it after setting one. */
+
+    export let doc;
     
     /* Set this if you would like to listen to all transactions via `update` event. */
     export let verbose = false
-
-    
     
     /* Cached doc string so that we don't extract strings in bulk over and over. */
     let _docCached = null
@@ -69,7 +97,7 @@
       },
     }
     
-    export let extensions = minimalSetupdf
+    export let extensions;
     // add python language support
     extensions.push(python())
 
@@ -79,7 +107,7 @@
       view.dispatch({
         effects: StateEffect.reconfigure.of(extensions),
       })
-    }
+    };
     
     $: extensions, _reconfigureExtensions()
     
@@ -88,7 +116,7 @@
     
       if (verbose) {
         dispatch('update', tr)
-      }
+      };
     
       if (tr.docChanged) {
         _docCached = null
@@ -143,14 +171,15 @@
         view.destroy()
       }
     })
-    </script>
+
+</script>
     
-    <div class="codemirror" bind:this={dom}>
-    </div>
+<div class="codemirror" bind:this={dom}>
+</div>
     
-    <style>
+<style>
     .codemirror {
       display: contents;
     }
     
-    </style>
+</style>

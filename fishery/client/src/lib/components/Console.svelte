@@ -18,5 +18,36 @@
 <style>
     .console{
     color: white;
+    border-top: dashed white 1px;
     }
+
+    .console-header{
+    display: flex;
+    align-items: center;
+
+    }
+    h3 {
+    padding-left: 15px;
+    }
+
+    .console-content{
+    height: 100%;
+    overflow-y: scroll;
+    }
+
+    .console-content ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 10vh;
+    }
+
+    .console-content li{
+    padding: 5px 15px;
+    }
+
+    .console-content li:nth-child(odd){
+    background-color: #333;
+    }
+
 </style>

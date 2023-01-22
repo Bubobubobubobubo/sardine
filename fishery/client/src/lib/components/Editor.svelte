@@ -4,6 +4,7 @@
     import { EditorView, minimalSetup, basicSetup,  } from 'codemirror'
     import { ViewPlugin } from '@codemirror/view'
     import { StateEffect } from '@codemirror/state'
+    import {python} from "@codemirror/lang-python"
     export { minimalSetup, basicSetup }
     </script>
     
@@ -70,7 +71,10 @@
       },
     }
     
-    export let extensions = minimalSetup
+    export let extensions = minimalSetupdf
+    // add python language support
+    extensions.push(python())
+
     
     function _reconfigureExtensions() {
       if (view === null) return
@@ -122,7 +126,8 @@
             effects: StateEffect.appendConfig.of([
             ViewPlugin.define((view) => {
                 view.dom.classList.add('editor')
-                view.dom.style.height = '80vh'
+                view.dom.style.height = '70vh'
+                view.dom.style.width = '99vw'
                 return {}
             }),
             ]),
@@ -150,4 +155,5 @@
     .codemirror {
       display: contents;
     }
+    
     </style>

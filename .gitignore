@@ -61,5 +61,5 @@ target/
 poetry.lock
 .vim
 
-# keep fishery/client/src/lib folder
+# Svelte
 !fishery/client/src/lib

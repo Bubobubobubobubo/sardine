@@ -1,24 +1,48 @@
+
+@font-face {
+	font-family: "Scientifica";
+	src: url('$lib/fonts/scientifica.ttf') format('truetype');
+}
+
+* {
+	font-family: "Scientifica", sans-serif;
+}
+
 body {
 	background: #282c34;
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-	  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-	  sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-  }
-  
-  code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-	  monospace;
-  }
-  
-  .CodeMirror {
-		 width: 100%;
-		 height: 100%;
-	}
-  
-  .cm-content, .cm-gutter { min-height: 150px; }
-  .cm-gutters { margin: 1px; }
-  .cm-scroller { overflow: auto; }
-  .cm-wrap { border: 1px solid silver }
+}
+
+/* Custom white scrollbar */
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background : black;
+	border: solid 1px #fff;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #fff;
+}
+
+/** CodeMirror overwrites */
+
+.cm-gutters {
+	background-color: black !important;
+	color: white !important;
+	border-right: 2px solid white !important;
+}
+
+.cm-activeLineGutter {
+	background-color: #282c34 !important;
+}
+
+.cm-selectionBackground {
+	background-color: #282c34 !important;
+}
+ 

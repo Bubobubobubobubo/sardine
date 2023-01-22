@@ -10,12 +10,18 @@
 	let store;
 	let codeMirrorState;
 
-	const bufferText = `@swim
-	def baba():
-		D('bd')
-		again(baba)`;
+	const bufferText = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
+# to eval your code. You can select the editing mode through the menubar. Have fun!
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-	// logs is a array of random logs string
+@swim
+def baba(p=0.5, i=0):
+	"""I am the default swimming function. Please evaluate me!"""
+	D('bd, hh, sn, hh', speed='1,1,0.5')
+	again(baba, p=0.5, i=i+1)`;
+
+	// The logs are defined as an array of strings
 	let logs = [
 		"Error  404",
 		"Hello World",
@@ -36,7 +42,7 @@
 
 	]
 
-	// if editorMode is vim, then add vim to the extensions
+	// Change the current editing mode.
 	let codeMirrorConf = basicSetup
     editorMode.subscribe(value => {
         if (value == 'vim') {
@@ -70,12 +76,12 @@
 
 	function keyDownHandler(e) {
     if(e.key === 'Enter' && e.ctrlKey) {
-		e.preventDefault()
-		console.log('Ctrl + Enter')
-		console.log(codeMirrorConf)
-      	executeCode($store);
-    }
-  }
+		e.preventDefault();
+		console.log('Ctrl + Enter');
+		console.log(codeMirrorConf);
+		executeCode($store);
+    	}
+	}
 
 </script>
 
@@ -84,12 +90,13 @@
 
 	<main>
 		<div on:keydown={keyDownHandler}>
-			<Editor doc={bufferText}
-									bind:docStore={store}
-									bind:effects={codeMirrorState}
-									extensions={codeMirrorConf}
-									on:change={changeHandler}
-									/>
+			<Editor 
+				doc={bufferText}
+				bind:docStore={store}
+				bind:effects={codeMirrorState}
+				extensions={codeMirrorConf}
+				on:change={changeHandler}
+			/>
 		</div>
 		<Console logs={logs}/>
 	</main>
@@ -99,6 +106,7 @@
 </div>
 
 <style>
+
 	.app {
 		display: flex;
 		flex-direction: column;
@@ -123,13 +131,10 @@
 		padding: 12px;
 	}
 
-	footer a {
-		font-weight: bold;
-	}
-
 	@media (min-width: 480px) {
 		footer {
 			padding: 12px 0;
 		}
 	}
+
 </style>

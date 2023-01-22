@@ -1,5 +1,3 @@
-<!-- The code below is released under public domain. -->
-
 <script context="module">
     import { EditorView, minimalSetup, basicSetup,  } from 'codemirror'
     import { ViewPlugin } from '@codemirror/view'
@@ -121,17 +119,16 @@
         dispatch: _editorTxHandler,
       })
 
-      // Add theme to the editor change height of the editor to 80% of the screen
-        view.dispatch({
-            effects: StateEffect.appendConfig.of([
-            ViewPlugin.define((view) => {
-                view.dom.classList.add('editor')
-                view.dom.style.height = '70vh'
-                view.dom.style.width = '99vw'
-                return {}
-            }),
-            ]),
-        })
+      view.dispatch({
+          effects: StateEffect.appendConfig.of([
+          ViewPlugin.define((view) => {
+              view.dom.classList.add('editor')
+              view.dom.style.height = '70vh'
+              view.dom.style.width = '99vw'
+              return {}
+          }),
+        ]),
+      })
       
       return true
     }

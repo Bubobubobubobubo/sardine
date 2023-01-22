@@ -1,4 +1,4 @@
 import { writable } from "svelte/store";
 
-// set editor mode var vim / emacs
+// Choosing an editor mode between Emacs (default) and Vim
 export const editorMode = writable("emacs");

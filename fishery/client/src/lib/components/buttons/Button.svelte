@@ -1,10 +1,13 @@
 <script lang="ts">
     export let text = "Hello World";
 </script>
+
 <section>
     <button>{text}</button>
 </section>
+
 <style>
+
     button {
         border: solid white 2px;
         background-color: black;
@@ -19,4 +22,5 @@
         color: black;
         transition: all 0.2s ease-in-out;
     }
+
 </style>

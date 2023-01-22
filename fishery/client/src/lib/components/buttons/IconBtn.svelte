@@ -4,7 +4,7 @@
 
     export let icon = "";
 
-    // map icon names to font awesome icons
+    // map icon names to FontAwesome icons
     const icons = {
         play: faPlay,
         stop: faStop,

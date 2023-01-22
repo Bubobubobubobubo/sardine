@@ -1,15 +1,15 @@
 
 @font-face {
-	font-family: "Scientifica";
+	font-family: "scientifica";
 	src: url('$lib/fonts/scientifica.ttf') format('truetype');
 }
 
 * {
-	font-family: "Scientifica", sans-serif;
+	font-family: "scientifica", sans-serif;
 }
 
 body {
-	background: #282c34;
+	background: #000000;
 	margin: 0;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -45,4 +45,3 @@ body {
 .cm-selectionBackground {
 	background-color: #282c34 !important;
 }
- 

@@ -4,7 +4,7 @@
 <section>
     <div class="console">
         <div class="console-header">
-            <h3>Console</h3>
+            <h3>Logs</h3>
         </div>
         <div class="console-content">
             <ul>

@@ -60,3 +60,6 @@ target/
 .nvim
 poetry.lock
 .vim
+
+# keep fishery/client/src/lib folder
+!fishery/client/src/lib

@@ -42,7 +42,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-
+node_modules/
 # Translations
 *.mo
 *.pot

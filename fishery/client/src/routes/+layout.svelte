@@ -69,9 +69,8 @@
 	}
 
 	function keyDownHandler(e) {
-    // Ctrl + Enter
-	console.log(e)
     if(e.key === 'Enter' && e.ctrlKey) {
+		e.preventDefault()
 		console.log('Ctrl + Enter')
 		console.log(codeMirrorConf)
       	executeCode($store);
@@ -84,7 +83,7 @@
 	<Header />
 
 	<main>
-		<div on:keydown|preventDefault={keyDownHandler}>
+		<div on:keydown={keyDownHandler}>
 			<Editor doc={bufferText}
 									bind:docStore={store}
 									bind:effects={codeMirrorState}

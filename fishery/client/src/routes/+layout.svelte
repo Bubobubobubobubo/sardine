@@ -10,7 +10,6 @@
 	import { SardineTheme } from '$lib/SardineTheme';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 
-	let BUFFER_CONTENT: string | null = null;
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
@@ -22,17 +21,31 @@ def baba(p=0.5, i=0):
 	D('bd, hh, sn, hh', speed='1,1,0.5')
 	again(baba, p=0.5, i=i+1)
 `;
-	let store, codeMirrorState, editorView;
+
+	// TODO: Implement a way to automatically fetch buffer files from the local folder
+	// It is now possible to reach them by querying the Flask Server (hopefully...)
+
+	// Initialise a list of code buffers
+    interface Dictionary<T> { [Key: string]: T; }
+    let BUFFERS: Dictionary<string> = {
+        0: "", 1: "", 2: "", 3: "", 4: "",
+        5: "", 6: "", 7: "", 8: "", 9: "",
+		default: DEFAULT_TEXT,
+    };
+
+	// Initialise logging
 	let logs: string[] = [];
 
-	// Service to start when mounting the component.
+
+	// Initialise local state
+	let store, codeMirrorState, editorView;
 	onMount((): void => {
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
 		})
 	})
 
-	// Change the current editing mode.
+	// Monitor the current editing mode (value queried from store)
 	let codeMirrorConf = [basicSetup, SardineTheme]
     editorMode.subscribe(value => {
         if (value == 'vim') {
@@ -49,37 +62,46 @@ def baba(p=0.5, i=0):
 	 * @param event Keypress or combination of multiple keys
 	 */
   	function keyDownHandler(event: KeyboardEvent): void {
+
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
     	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line
       		const code = editorView.getSelectedLines();
       		runnerService.executeCode(code + "\n\n");
     	}
+
 		// Keybinding to switch from Emacs mode to Vim Mode
 		if(event.key === ' ' && event.ctrlKey) {
 			console.log("Evenemnt reçu");
 			event.preventDefault(); // Prevents the addition of a newline.
 			editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 		}
+
+		// TODO: implement animation whenever the user sends code
  	}
 
-function handlePlay() {
-	runnerService.executeCode("bowl.dispatch('play')")
-}
 
-function handleStop() {
-	runnerService.executeCode("bowl.dispatch('stop')")
-}
+	/**
+	 * Reacting to the play button by resuming the FishBowl.
+	 */
+	function handlePlay() {
+		runnerService.executeCode("bowl.dispatch('resume')")
+	}
 
-function handleSave() {
-	console.log('Saving current session');
-}
+	/**
+	 * Reacting to the pause button by 'pausing' the FishBowl.
+	 */
+	function handleStop() {
+		runnerService.executeCode("bowl.dispatch('pause')")
+	}
 
-function handleChange({ detail: {tr} }) {
-	BUFFER_CONTENT = tr.changes.toJSON();
-	// console.log('change', $store)
-}
-
+	/**
+	 * Manually save a file somewhere in a local folder.
+	 * TODO: implement this mechanism (???)
+	 */
+	function handleSave() {
+		console.log('Saving current session');
+	}
 
 </script>
 
@@ -107,7 +129,6 @@ function handleChange({ detail: {tr} }) {
 				bind:effects={codeMirrorState}
 				extensions={codeMirrorConf}
 				on:keydown={keyDownHandler}
-				on:change{handleChange}
 			/>
 		</TabPanel>
 
@@ -133,9 +154,6 @@ function handleChange({ detail: {tr} }) {
 		</Tabs>
 		<Console {logs}/>
 	</main>
-
-	<footer>
-	</footer>
 </div>
 
 <style>

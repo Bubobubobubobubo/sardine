@@ -6,6 +6,7 @@
 
 * {
 	font-family: "scientifica", sans-serif;
+	font-size: 24px;
 }
 
 body {
@@ -38,6 +39,7 @@ body {
 	border-right: 2px solid white !important;
 }
 
+/*
 .cm-activeLineGutter {
 	background-color: #282c34 !important;
 }
@@ -45,3 +47,4 @@ body {
 .cm-selectionBackground {
 	background-color: #282c34 !important;
 }
+*/

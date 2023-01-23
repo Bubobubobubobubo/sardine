@@ -7,6 +7,7 @@
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
+	import { SardineTheme } from '$lib/SardineTheme';
 
 	const DEFAULT_TEXT = `
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -30,12 +31,12 @@ def baba(p=0.5, i=0):
 	let logs = []
 
 	// Change the current editing mode.
-	let codeMirrorConf = basicSetup
+	let codeMirrorConf = [basicSetup, SardineTheme]
     editorMode.subscribe(value => {
         if (value == 'vim') {
-            codeMirrorConf = [basicSetup, vim()]
+            codeMirrorConf = [basicSetup, vim(), SardineTheme]
         } else {
-            codeMirrorConf = basicSetup
+            codeMirrorConf = [basicSetup, SardineTheme]
         }
     })
 

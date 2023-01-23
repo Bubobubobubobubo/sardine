@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Flask, send_from_directory, request, Response
+from flask import Flask, send_from_directory, request, Response, jsonify
 from pygtail import Pygtail
 from flask_cors import CORS
 from pathlib import Path
@@ -111,19 +111,16 @@ def server_factory(console):
                 yield "data:" + str(line) + "\n\n"
         return Response(generate(), mimetype= 'text/event-stream')
 
-    @app.route('/download/<path:filename>', methods=['GET', 'POST'])
-    def download(filename):
-        user_directory = USER_DIR / "buffers"
-        return send_from_directory(
-            directory=user_directory, 
-            filename=filename
-        )
-
-    @app.route('/write_to_file', methods=['POST'])
-    def write_buffer_to_file():
-        """This is a route to save a buffer to a textual file somewhere on the computer"""
-        # TODO: add a function to save to file...
-        ...
+    @app.route('/text_files', methods=['GET'])
+    def get_text_files():
+        files = {}
+        for file_name in os.listdir(USER_DIR / "buffers"):
+            if file_name.endswith('.txt'):
+                with open(os.path.join(USER_DIR / "buffers", file_name)) as f:
+                    files[file_name] = f.read()
+        files = jsonify(files)
+        files.headers.add('Access-Control-Allow-Origin', '*')
+        return Response(files)
 
     return app
 

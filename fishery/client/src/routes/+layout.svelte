@@ -31,8 +31,18 @@ def baba(p=0.5, i=0):
     let BUFFERS: Dictionary<string> = {
 		"*": DEFAULT_TEXT,
         "0": DEFAULT_TEXT, "1": "", "2": "", "3": "", "4": "",
-        "5": "", "6": "", "7": "", "8": "", "9": "", "?": TUTO_BUFFER
+        "5": "", "6": "", "7": "", "8": "", "9": "", "tuto": TUTO_BUFFER
     };
+	try {
+		let response = fetch('http://localhost:5000/text_files')
+			.then(response => response.json())
+			.then(data => {
+				let textFiles = data;
+				console.log(textFiles);
+			});
+	} catch(e) {
+		console.log(e);
+	}
 
 	// Initialise logging
 	let logs: string[] = [];
@@ -122,7 +132,9 @@ def baba(p=0.5, i=0):
 	 * TODO: implement this mechanism (???)
 	 */
 	function handleSave() {
+		let content = 1;
 		console.log('Saving current session');
+        const file = new Blob([content], { type: 'text/plain' });
 	}
 
 </script>

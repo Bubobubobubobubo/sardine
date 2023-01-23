@@ -6,52 +6,35 @@
     export { minimalSetup, basicSetup }
 </script>
 
-<script>
+<script lang='ts'>
 
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
 
 
     const dispatch = createEventDispatcher();
+    let _mounted: boolean = false;
+    export let view: EditorView;
     let dom;
-    let _mounted = false;
 
-    /*
-     * Setting some weird internal flags when the component is mounted.
-    */
-    onMount(() => {
-      _mounted = true
-      return () => { _mounted = false }
-    });
+    onMount((): Function  => { _mounted = true; return () => { _mounted = false } });
+    onDestroy(() => { if (view) { view.destroy() } });
 
-    /**
-     * Getting rid of the CodeMirror Editor when the component is destroyed.
-    */
-    onDestroy(() => {
-      if (view) {
-        view.destroy()
-      }
-    });
 
-    /**
-     * @type {EditorView}
-     */
-    export let view;
-    
     /* `doc` is deliberately made non-reactive for not storing a reduntant string
     besides the editor. Also, setting doc to undefined will not trigger an
     update, so that you can clear it after setting one. */
 
-    export let doc;
+    export let doc: string;
     
     /* Set this if you would like to listen to all transactions via `update` event. */
-    export let verbose = false
+    export let verbose: boolean = false
     
     /* Cached doc string so that we don't extract strings in bulk over and over. */
-    let _docCached = null
+    let _docCached: string = "";
     
     /* Overwrite the bulk of the text with the one specified. */
-    function _setText(text) {
+    function _setText(text: string): void {
       view.dispatch({
         changes: {from: 0, to: view.state.doc.length, insert: text},
       })
@@ -86,13 +69,12 @@
       },
     }
     
-    export let extensions;
-    // add python language support
-    extensions.push(python({}))
+    // What is the expected type of extensions?
+    export let extensions: any[];
+    extensions.push(python());
     extensions.push(SardineTheme);
-
     
-    function _reconfigureExtensions() {
+    function _reconfigureExtensions(): void {
       if (!view) return
       view.dispatch({
         effects: StateEffect.reconfigure.of(extensions),
@@ -101,7 +83,7 @@
     
     $: extensions, _reconfigureExtensions()
     
-    function _editorTxHandler(tr) {
+    function _editorTxHandler(tr): void {
       this.update([tr])
     
       if (verbose) {
@@ -109,7 +91,7 @@
       };
     
       if (tr.docChanged) {
-        _docCached = null
+        _docCached = "";
         if (subscribers.size) {
           dispatchDocStore(_docCached = tr.newDoc.toString())
         }
@@ -124,7 +106,7 @@
     }
 
 
-  export function getSelectedLines() {
+  export function getSelectedLines(): string {
     // Get the current state of the editor
     const state = view.state;
 
@@ -141,7 +123,7 @@
     
     // the view will be inited with the either doc (as long as that it is not `undefined`)
     // or the value in docStore once set
-    function _initEditorView(initialDoc) {
+    function _initEditorView(initialDoc): boolean {
       if (view) {
         return false
       }

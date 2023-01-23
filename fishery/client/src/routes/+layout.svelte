@@ -1,4 +1,4 @@
-<script>
+<script lang='ts'>
 	import Editor, { basicSetup } from '$lib/components/Editor.svelte'
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
 
-	const DEFAULT_TEXT = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -24,7 +24,7 @@ def baba(p=0.5, i=0):
 	let logs: string[] = [];
 
 	// Service to start when mounting the component.
-	onMount(() => {
+	onMount((): void => {
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
 		})
@@ -41,20 +41,12 @@ def baba(p=0.5, i=0):
     })
 
 	/**
-	 * TODO: Is this function only used for debugging?
-	 */
-	function changeHandler({ detail: {tr} }) {
-		// console.log('change', tr.changes.toJSON())
-		// console.log('change', $store)
-	}
-
-	/**
 	 * Intercepting keypresses and triggering action. The current events are covered:
 	 * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
 	 * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
 	 * @param event Keypress or combination of multiple keys
 	 */
-  	function keyDownHandler(event) {
+  	function keyDownHandler(event: KeyboardEvent): void {
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
     	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line
@@ -81,7 +73,6 @@ def baba(p=0.5, i=0):
 			bind:docStore={store}
 			bind:effects={codeMirrorState}
 			extensions={codeMirrorConf}
-			on:change={changeHandler}
 			on:keydown={keyDownHandler}
 		/>
 

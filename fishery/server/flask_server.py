@@ -118,7 +118,13 @@ def server_factory(console):
             directory=user_directory, 
             filename=filename
         )
-    
+
+    @app.route('/write_to_file', methods=['POST'])
+    def write_buffer_to_file():
+        """This is a route to save a buffer to a textual file somewhere on the computer"""
+        # TODO: add a function to save to file...
+        ...
+
     return app
 
 

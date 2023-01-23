@@ -77,6 +77,27 @@ def baba(p=0.5, i=0):
 			editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 		}
 
+		// Keybindings for changing tab!
+		let anyTab: string[] = [
+			'1', '&', '2', 'é', '3', '"',
+			'4', '\'', '5', '(', '6', '-',
+			'7', 'è', '8', '_', '9', 'ç',
+			'*'];
+		if (anyTab.includes(event.key) && event.ctrlKey) {
+			// This stupid conversion method is here to handle AZERTY keyboards.
+			// It is not needed at all by any other keyboard layout out there.
+			let tabConvert: Dictionary<String> = {
+				'&':  '1', 'é':  '2', '"':  '3',
+				'\'': '4', '(':  '5', '-':  '6',
+				'è':  '7', '_':  '8', 'ç':  '9'
+			};
+			let real_key: String = (!['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(event.key))?
+				tabConvert[event.key] : event.key;
+
+			// TODO: implement tab selection here!
+			console.log('Switch to tab n°' + real_key);
+		}
+
 		// TODO: implement animation whenever the user sends code
  	}
 

@@ -189,6 +189,6 @@ export const sardineHighlight = HighlightStyle.define([
 // Extension to enable the Basic Dark theme 
 // (both the editor theme and the highlight style).
 export let SardineTheme = [
-  sardineColorScheme,
+  sardineColorScheme, 
   syntaxHighlighting(sardineHighlight)
 ]

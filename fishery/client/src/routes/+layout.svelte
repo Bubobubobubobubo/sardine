@@ -9,8 +9,7 @@
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
 
-	const DEFAULT_TEXT = `
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+	const DEFAULT_TEXT = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -21,14 +20,8 @@ def baba(p=0.5, i=0):
 	D('bd, hh, sn, hh', speed='1,1,0.5')
 	again(baba, p=0.5, i=i+1)
 `;
-	
-
-	let store;
-	let codeMirrorState;
-	let editorView;
-
-	// The logs are defined as an array of strings
-	let logs = []
+	let store, codeMirrorState, editorView;
+	let logs = [];
 
 	// Change the current editing mode.
 	let codeMirrorConf = [basicSetup, SardineTheme]
@@ -46,8 +39,8 @@ def baba(p=0.5, i=0):
 	}
 
   function keyDownHandler(event) {
-    // Shift + Enter
-    if(event.key === 'Enter' && event.shiftKey) {
+    // Shift + Enter or Ctrl + E (Rémi Georges mode)
+    if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       event.preventDefault(); // Prevents the addition of a new line
       const code = editorView.getSelectedLines();
       runnerService.executeCode(code + "\n\n");

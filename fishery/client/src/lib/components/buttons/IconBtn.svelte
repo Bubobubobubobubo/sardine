@@ -1,21 +1,38 @@
 <script lang='ts'>
-    import Fa from 'svelte-fa'
-    import { faPlay, faStop, faFloppyDisk, faUserGroup  } from '@fortawesome/free-solid-svg-icons'
+    import Fa from 'svelte-fa';
+    import { 
+        faPlay, faStop, faFloppyDisk, 
+        faUserGroup, type IconDefinition  
+    } from '@fortawesome/free-solid-svg-icons';
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
-    export let icon = "";
+    // Initialisation of props and events
+    export let icon: string = "";
 
-    // map icon names to FontAwesome icons
-    const icons = {
-        play: faPlay,
-        stop: faStop,
-        save: faFloppyDisk,
-        users: faUserGroup
+    function sendEvent(): void {
+        dispatch('pressed', {
+            text: 'event!'
+        });
+    };
+
+    interface Dictionary<T> {
+        [Key: string]: T;
     }
 
+    // Map icon names to FontAwesome glyphs
+    const icons: Dictionary<IconDefinition> = {
+        play: faPlay, stop: faStop,
+        save: faFloppyDisk, users: faUserGroup
+    };
+
 </script>
+
 <section>
     <button>
-        <Fa class="" icon={icons[icon]} />
+        <Fa 
+        class="" icon={icons[icon]} 
+        on:click={sendEvent} />
     </button>
 </section>
 <style>

@@ -4,19 +4,25 @@
 	import Button from '$lib/components/buttons/Button.svelte';
 	import { editorMode } from '$lib/store';
 
-
 	function changeMode(): void {
 		editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 	}
 
-	function play_button(): void {
+	function handlePlay(): void {
 		console.log('Pressing play');
 	}
 
-	function stop_button(): void {
+	function handleStop(): void {
 		console.log('Pressing stop');
 	}
-	
+
+	function handleSave(): void {
+		console.log('Saving the file');
+	}
+
+	function handleUsers(): void {
+		console.log('Showing current users');
+	}
 
 </script>
 
@@ -28,10 +34,10 @@
 		</a>
 
 		<div class="container">
-			<IconBtn icon="play" on:click={() => console.log('Click')}/>
-			<IconBtn icon="stop"/>
-			<IconBtn icon="save"/>
-			<IconBtn icon="users"/>
+			<IconBtn icon="play"  on:message={handlePlay}/>
+			<IconBtn icon="stop"  on:message={handleStop}/>
+			<IconBtn icon="save"  on:message={handleSave}/>
+			<IconBtn icon="users" on:message={handleUsers}/>
 
 			<span 
 				on:click={() => { changeMode()}}

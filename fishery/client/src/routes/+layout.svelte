@@ -21,7 +21,14 @@ def baba(p=0.5, i=0):
 	again(baba, p=0.5, i=i+1)
 `;
 	let store, codeMirrorState, editorView;
-	let logs = [];
+	let logs: string[] = [];
+
+	// Service to start when mounting the component.
+	onMount(() => {
+		runnerService.watchLogs((log) => {
+			logs = [...logs, log];
+		})
+	})
 
 	// Change the current editing mode.
 	let codeMirrorConf = [basicSetup, SardineTheme]
@@ -33,25 +40,35 @@ def baba(p=0.5, i=0):
         }
     })
 
+	/**
+	 * TODO: Is this function only used for debugging?
+	 */
 	function changeHandler({ detail: {tr} }) {
-		console.log('change', tr.changes.toJSON())
-		console.log('change', $store)
+		// console.log('change', tr.changes.toJSON())
+		// console.log('change', $store)
 	}
 
-  function keyDownHandler(event) {
-    // Shift + Enter or Ctrl + E (Rémi Georges mode)
-    if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
-      event.preventDefault(); // Prevents the addition of a new line
-      const code = editorView.getSelectedLines();
-      runnerService.executeCode(code + "\n\n");
-    }
-  }
+	/**
+	 * Intercepting keypresses and triggering action. The current events are covered:
+	 * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
+	 * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
+	 * @param event Keypress or combination of multiple keys
+	 */
+  	function keyDownHandler(event) {
+    	// Shift + Enter or Ctrl + E (Rémi Georges mode)
+    	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
+      		event.preventDefault(); // Prevents the addition of a new line
+      		const code = editorView.getSelectedLines();
+      		runnerService.executeCode(code + "\n\n");
+    	}
+		// Keybinding to switch from Emacs mode to Vim Mode
+		if(event.key === ' ' && event.ctrlKey) {
+			console.log("Evenemnt reçu");
+			event.preventDefault(); // Prevents the addition of a newline.
+			editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
+		}
+ 	}
 
-	onMount(() => {
-		runnerService.watchLogs((log) => {
-			logs = [...logs, log];
-		})
-	})
 </script>
 
 <div class="app">

@@ -8,27 +8,35 @@
 
 <script>
 
-import { 
-      onMount, 
-      onDestroy, 
-      createEventDispatcher 
-    } from 'svelte';
-
+  import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+	import { SardineTheme } from '$lib/SardineTheme';
 
 
     const dispatch = createEventDispatcher();
     let dom;
     let _mounted = false;
 
+    /*
+     * Setting some weird internal flags when the component is mounted.
+    */
     onMount(() => {
       _mounted = true
       return () => { _mounted = false }
-    })
-    
+    });
+
+    /**
+     * Getting rid of the CodeMirror Editor when the component is destroyed.
+    */
+    onDestroy(() => {
+      if (view) {
+        view.destroy()
+      }
+    });
+
     /**
      * @type {EditorView}
      */
-     export let view;
+    export let view;
     
     /* `doc` is deliberately made non-reactive for not storing a reduntant string
     besides the editor. Also, setting doc to undefined will not trigger an
@@ -49,7 +57,7 @@ import {
       })
     }
     
-    const subscribers = new Set()
+    const subscribers = new Set();
     
     /* And here comes the reactivity, implemented as a r/w store. */
     export const docStore = {
@@ -80,7 +88,8 @@ import {
     
     export let extensions;
     // add python language support
-    extensions.push(python())
+    extensions.push(python({}))
+    extensions.push(SardineTheme);
 
     
     function _reconfigureExtensions() {
@@ -163,14 +172,7 @@ import {
       dispatchDocStore(doc)
     }
     
-    onDestroy(() => {
-      if (view) {
-        view.destroy()
-      }
-    })
-
-
-
+    
 
 </script>
     

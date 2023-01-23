@@ -10,6 +10,7 @@
 	import { SardineTheme } from '$lib/SardineTheme';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 
+	const TUTO_BUFFER: string = "There is no tutorial... One will magically appear in a few days :)"
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
@@ -30,7 +31,7 @@ def baba(p=0.5, i=0):
     let BUFFERS: Dictionary<string> = {
 		"*": DEFAULT_TEXT,
         "0": DEFAULT_TEXT, "1": "", "2": "", "3": "", "4": "",
-        "5": "", "6": "", "7": "", "8": "", "9": "",
+        "5": "", "6": "", "7": "", "8": "", "9": "", "?": TUTO_BUFFER
     };
 
 	// Initialise logging

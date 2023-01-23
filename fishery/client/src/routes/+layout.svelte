@@ -64,7 +64,12 @@ def baba(p=0.5, i=0):
 </script>
 
 <div class="app">
-	<Header />
+	<Header 
+		on:play={() => console.log("Play")}
+		on:stop={() => console.log("Stop")}
+		on:save={() => console.log("Save")}
+		on:users={() => console.log("Users")}
+	/>
 
 	<main> 
 		<Editor 

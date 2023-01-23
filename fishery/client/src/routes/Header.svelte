@@ -1,13 +1,20 @@
-<script>
+<script lang='ts'>
 	import logo from '$lib/images/logo.svg';
 	import IconBtn from '$lib/components/buttons/IconBtn.svelte';
 	import Button from '$lib/components/buttons/Button.svelte';
 	import { editorMode } from '$lib/store';
 
 
-	function changeMode() {
+	function changeMode(): void {
 		editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
-		console.log($editorMode);
+	}
+
+	function play_button(): void {
+		console.log('Pressing play');
+	}
+
+	function stop_button(): void {
+		console.log('Pressing stop');
 	}
 	
 
@@ -21,23 +28,31 @@
 		</a>
 
 		<div class="container">
-			<IconBtn icon="play"/>
+			<IconBtn icon="play" on:click={() => console.log('Click')}/>
 			<IconBtn icon="stop"/>
 			<IconBtn icon="save"/>
 			<IconBtn icon="users"/>
 
-			<span on:click={() => {changeMode()}}><Button text={"Mode ["+$editorMode+"]"}/></span>
-			<a href="https://sardine.raphaelforment.fr" target="_blank">
+			<span 
+				on:click={() => { changeMode()}}
+				on:keypress={() => {}}
+			>
+				<Button text={"Mode ["+$editorMode+"]"}/>
+			</span>
+
+			<a 
+				href="https://sardine.raphaelforment.fr" 
+				target="_blank"
+				rel="noreferrer"
+			>
 				<Button text="Open Docs" />
 			</a>
 		</div>
-	
 	</nav>
-
-
 </header>
 
 <style>
+
 	nav {
 		display: flex;
 		justify-content: space-between;
@@ -45,6 +60,7 @@
 		align-items: center;
 		height: 5vh;
 	}
+
 	nav .logo {
 		width: auto;
 		height: 25px;
@@ -66,4 +82,5 @@
 		margin-left: 10px;
 		font-size: 1.8rem;
 	}
+
 </style>

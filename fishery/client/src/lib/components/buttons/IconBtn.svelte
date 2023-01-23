@@ -1,4 +1,4 @@
-<script>
+<script lang='ts'>
     import Fa from 'svelte-fa'
     import { faPlay, faStop, faFloppyDisk, faUserGroup  } from '@fortawesome/free-solid-svg-icons'
 

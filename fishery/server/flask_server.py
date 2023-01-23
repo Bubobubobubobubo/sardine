@@ -1,7 +1,7 @@
 import os
 from flask import Flask, send_from_directory, request, Response
 from pygtail import Pygtail
-
+from flask_cors import CORS
 
 from appdirs import *
 from pathlib import Path
@@ -37,7 +37,8 @@ class WebServer():
 
 def server_factory(console):
     app = Flask(__name__, static_folder='../client/build')
-
+    CORS(app, resources={r"/*": {"origins": "*"}})
+    
     @app.post('/execute')
     def execute():
         code = request.json['code']

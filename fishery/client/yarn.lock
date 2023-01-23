@@ -453,6 +453,11 @@
   dependencies:
     "import-meta-resolve" "^2.2.0"
 
+"@sveltejs/adapter-static@^1.0.5":
+  "integrity" "sha512-W5jbgvy9sbYEHs27NQOSFEun+zQwdcL4kpk5qc2kSHl8cKsP5wfXuWDTDRmD1Co40aFcesi5Az5ZzdnPI8KCVg=="
+  "resolved" "https://registry.npmjs.org/@sveltejs/adapter-static/-/adapter-static-1.0.5.tgz"
+  "version" "1.0.5"
+
 "@sveltejs/kit@^1.0.0":
   "integrity" "sha512-VyXiFoqoxV/2gNYPGsoreqGXRfUz1ASBKH+b+1VnF4LXnOvA2h1lTAgniotlamuC6yBM94DkztQSlIRwiS+REA=="
   "resolved" "https://registry.npmjs.org/@sveltejs/kit/-/kit-1.2.3.tgz"

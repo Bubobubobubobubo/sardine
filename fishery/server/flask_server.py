@@ -15,32 +15,48 @@ __all__ = ("WebServer",)
 
 class WebServer():
 
+    """
+    This is a small Flask WebServer serving the Sardine Code Editor. This
+    web server is also charged of loading / dispatching locally stored
+    buffer files that act as a temporary memory for the editor. Files are
+    stored in plain-text in the Sardine configuration folder under the buffers/
+    folder.
+    """
+
     def __init__(self, host="localhost", port=5000):
         self.host, self.port = host, port
+        self.local_files = self.load_buffer_files(
+            path=USER_DIR / "buffers"
+        )
 
-        # Reading local files to populate the web editor
+    def load_buffer_files(self, path: Path) -> dict:
+        """
+        Loading buffer files from a local folder. If the folder doesn't 
+        exis, this function will automatically create it and load empty 
+        files for the first round. If the folder exists, read files in their 
+        current state
+        """
+        buffer_files: dict = {}
+
+        # Creating the folder to store text files if it doesn't exist
         if not os.path.isdir(str(USER_DIR / "buffers")):
             try:
                 os.makedirs(str(USER_DIR / "buffers"))
                 for filename in range(0, 10):
                     print(f"Creating file {filename}.py.")
                     Path(USER_DIR / "buffers" / f"{filename}.py").touch()
+                    buffer_files[filename] = ""
+                    return buffer_files
             except FileExistsError or OSError:
                 print("[red]Fishery was not able to create web editor files![/red]")
                 exit()
+        # If it already exists, read files from the folder
         else:
-            pass
-
-
-        self.local_files = {}
-
-    def load_local_files(self, path: Path):
-        """Open local files from the configuration folder"""
-        pass
-
-    def create_local_storage(self, path: Path):
-        """Initialise local storage for web editor code buffers."""
-        pass
+            buffer_folder = Path(USER_DIR / "buffers")
+            for file in os.listdir(buffer_folder):
+                with open(buffer_folder / file, 'r') as buffer:
+                    buffer_files[file] = buffer.read() 
+            return buffer_files
 
     def start(self, console):
         import logging

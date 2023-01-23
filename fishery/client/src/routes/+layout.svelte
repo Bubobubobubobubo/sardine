@@ -8,7 +8,9 @@
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
+	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 
+	let BUFFER_CONTENT: string | null = null;
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
@@ -61,26 +63,65 @@ def baba(p=0.5, i=0):
 		}
  	}
 
+function handlePlay() {
+	runnerService.executeCode("bowl.dispatch('play')")
+}
+
+function handleStop() {
+	runnerService.executeCode("bowl.dispatch('stop')")
+}
+
+function handleSave() {
+	console.log('Saving current session');
+}
+
+function handleChange({ detail: {tr} }) {
+	BUFFER_CONTENT = tr.changes.toJSON();
+	// console.log('change', $store)
+}
+
+
 </script>
 
 <div class="app">
 	<Header 
-		on:play={() => console.log("Play")}
-		on:stop={() => console.log("Stop")}
-		on:save={() => console.log("Save")}
+		on:play={handlePlay}
+		on:stop={handleStop}
+		on:save={handleSave}
 		on:users={() => console.log("Users")}
 	/>
 
 	<main> 
-		<Editor 
-		 	bind:this={editorView}
-			doc={DEFAULT_TEXT}
-			bind:docStore={store}
-			bind:effects={codeMirrorState}
-			extensions={codeMirrorConf}
-			on:keydown={keyDownHandler}
-		/>
+		<Tabs>
+			<TabList>
+				<Tab>Editor</Tab>
+				<Tab>Docs</Tab>
+				<Tab>Options</Tab>
+			</TabList>
 
+		<TabPanel>
+			<Editor 
+			 	bind:this={editorView}
+				doc={BUFFER_CONTENT == null? DEFAULT_TEXT : BUFFER_CONTENT}
+				bind:docStore={store}
+				bind:effects={codeMirrorState}
+				extensions={codeMirrorConf}
+				on:keydown={keyDownHandler}
+				on:change{handleChange}
+			/>
+		</TabPanel>
+
+		<TabPanel>
+			Two
+		</TabPanel>
+
+		<TabPanel>
+			Three
+		</TabPanel>
+
+
+
+		</Tabs>
 		<Console {logs}/>
 	</main>
 

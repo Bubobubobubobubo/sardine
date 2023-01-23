@@ -28,9 +28,9 @@ def baba(p=0.5, i=0):
 	// Initialise a list of code buffers
     interface Dictionary<T> { [Key: string]: T; }
     let BUFFERS: Dictionary<string> = {
-        0: "", 1: "", 2: "", 3: "", 4: "",
-        5: "", 6: "", 7: "", 8: "", 9: "",
-		default: DEFAULT_TEXT,
+		"*": DEFAULT_TEXT,
+        "0": DEFAULT_TEXT, "1": "", "2": "", "3": "", "4": "",
+        "5": "", "6": "", "7": "", "8": "", "9": "",
     };
 
 	// Initialise logging
@@ -116,37 +116,31 @@ def baba(p=0.5, i=0):
 	<main> 
 		<Tabs>
 			<TabList>
-				<Tab>Code</Tab>
-				<Tab>Docs</Tab>
-				<Tab>Opts</Tab>
+				{#each Object.entries(BUFFERS) as [name, buffer]}
+					<Tab>{name}</Tab>
+				{/each}
 			</TabList>
 
+		{#each Object.entries(BUFFERS) as [name, buffer]}
+			<TabPanel>
+				<Editor 
+				 	bind:this={editorView}
+					doc={buffer}
+					bind:docStore={store}
+					bind:effects={codeMirrorState}
+					extensions={codeMirrorConf}
+					on:keydown={keyDownHandler}
+				/>
+			</TabPanel>
+		{/each}
+
+
 		<TabPanel>
-			<Editor 
-			 	bind:this={editorView}
-				doc={BUFFER_CONTENT == null? DEFAULT_TEXT : BUFFER_CONTENT}
-				bind:docStore={store}
-				bind:effects={codeMirrorState}
-				extensions={codeMirrorConf}
-				on:keydown={keyDownHandler}
-			/>
+			<p>Il n'y a rien dans cette tab mais on pourrait y charger quelque chose.</p>
 		</TabPanel>
 
 		<TabPanel>
-			<Editor 
-			 	bind:this={editorView}
-				doc={BUFFER_CONTENT == null? DEFAULT_TEXT : BUFFER_CONTENT}
-				bind:docStore={store}
-				bind:effects={codeMirrorState}
-				extensions={codeMirrorConf}
-				on:keydown={keyDownHandler}
-				on:change{handleChange}
-			/>
-
-		</TabPanel>
-
-		<TabPanel>
-			Three
+			<p>Il n'y a rien dans cette tab mais on pourrait y charger quelque chose.</p>
 		</TabPanel>
 
 

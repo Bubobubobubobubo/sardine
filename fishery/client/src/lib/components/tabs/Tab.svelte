@@ -14,6 +14,7 @@
 		border: none;
 		border-radius: 0;
 		margin: 0;
+		width: 20px;
 		color: #ccc;
 	}
 	

@@ -30,7 +30,7 @@
 
 <script>
 
-    import { 
+import { 
       onMount, 
       onDestroy, 
       createEventDispatcher 
@@ -47,7 +47,10 @@
       return () => { _mounted = false }
     })
     
-    export let view = null;
+    /**
+     * @type {EditorView}
+     */
+     export let view;
     
     /* `doc` is deliberately made non-reactive for not storing a reduntant string
     besides the editor. Also, setting doc to undefined will not trigger an
@@ -72,7 +75,7 @@
     
     /* And here comes the reactivity, implemented as a r/w store. */
     export const docStore = {
-      ready: () => (view !== null),
+      ready: () => (!!view),
       subscribe(cb) {
         subscribers.add(cb)
     
@@ -103,7 +106,7 @@
 
     
     function _reconfigureExtensions() {
-      if (view === null) return
+      if (!view) return
       view.dispatch({
         effects: StateEffect.reconfigure.of(extensions),
       })
@@ -132,11 +135,27 @@
         cb(s)
       }
     }
+
+
+  export function getSelectedLines() {
+    // Get the current state of the editor
+    const state = view.state;
+
+    // Get the current selection
+    const { from, to } = state.selection.main
+
+    // Get the line the cursor is currently on
+    const fromLine = state?.doc.lineAt(from)
+    const toLine = state?.doc.lineAt(to)
+
+    return state?.doc.sliceString(fromLine.from, toLine.to)
+  }
+  
     
     // the view will be inited with the either doc (as long as that it is not `undefined`)
     // or the value in docStore once set
     function _initEditorView(initialDoc) {
-      if (view !== null) {
+      if (view) {
         return false
       }
     
@@ -167,14 +186,20 @@
     }
     
     onDestroy(() => {
-      if (view !== null) {
+      if (view) {
         view.destroy()
       }
     })
 
+
+
+
 </script>
     
-<div class="codemirror" bind:this={dom}>
+<div class="codemirror" 
+  bind:this={dom}
+  on:keydown
+  >
 </div>
     
 <style>

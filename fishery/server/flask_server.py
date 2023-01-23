@@ -1,11 +1,13 @@
 import os
+import logging
+
 from flask import Flask, send_from_directory, request, Response
 from pygtail import Pygtail
 from flask_cors import CORS
-from rich import print
-
-from appdirs import *
 from pathlib import Path
+from rich import print
+from appdirs import *
+
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
@@ -59,12 +61,16 @@ class WebServer():
             return buffer_files
 
     def start(self, console):
-        import logging
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
-        print("Starting server" + str(self.host) + ":" + str(self.port))
+        print(f"Starting server {self.host} on {self.port}")
         app = server_factory(console)
-        app.run(host=self.host, port=self.port, use_reloader=False, debug=False)
+        app.run(
+            host=self.host, 
+            port=self.port, 
+            use_reloader=False, 
+            debug=False
+        )
 
     def start_in_thread(self, console):
         from threading import Thread
@@ -98,13 +104,20 @@ def server_factory(console):
         else:
             return send_from_directory(app.static_folder, 'index.html')
 
-
     @app.route('/log')
     def progress_log():
         def generate():
             for line in Pygtail(str(LOG_FILE), every_n=0.01):
                 yield "data:" + str(line) + "\n\n"
         return Response(generate(), mimetype= 'text/event-stream')
+
+    @app.route('/download/<path:filename>', methods=['GET', 'POST'])
+    def download(filename):
+        user_directory = USER_DIR / "buffers"
+        return send_from_directory(
+            directory=user_directory, 
+            filename=filename
+        )
     
     return app
 

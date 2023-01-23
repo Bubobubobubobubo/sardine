@@ -25,7 +25,7 @@ class WebServer():
     folder.
     """
 
-    def __init__(self, host="localhost", port=5000):
+    def __init__(self, host="localhost", port=8000):
         self.host, self.port = host, port
         self.local_files = self.load_buffer_files(
             path=USER_DIR / "buffers"
@@ -120,7 +120,7 @@ def server_factory(console):
                     files[file_name] = f.read()
         files = jsonify(files)
         files.headers.add('Access-Control-Allow-Origin', '*')
-        return Response(files)
+        return files
 
     return app
 

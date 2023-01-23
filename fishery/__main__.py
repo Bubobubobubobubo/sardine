@@ -67,7 +67,7 @@ def profile(clock: str, filepath: str):
     short_help="Starts sardine as a web server.",
     help="""
         This command starts sardine as a web server. The server can be accessed
-        at http://localhost:5000 by default.
+        at http://localhost:8000 by default.
         """,
 )
 @click.option(
@@ -81,7 +81,7 @@ def profile(clock: str, filepath: str):
 @click.option(
     "-p",
     "--port",
-    default=5000,
+    default=8000,
     help="The port to bind the server to.",
     show_default=True,
     type=int,

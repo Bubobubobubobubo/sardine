@@ -2,6 +2,7 @@ import os
 from flask import Flask, send_from_directory, request, Response
 from pygtail import Pygtail
 from flask_cors import CORS
+from rich import print
 
 from appdirs import *
 from pathlib import Path
@@ -13,9 +14,33 @@ LOG_FILE = USER_DIR / "sardine.log"
 __all__ = ("WebServer",)
 
 class WebServer():
+
     def __init__(self, host="localhost", port=5000):
-        self.host = host
-        self.port = port
+        self.host, self.port = host, port
+
+        # Reading local files to populate the web editor
+        if not os.path.isdir(str(USER_DIR / "buffers")):
+            try:
+                os.makedirs(str(USER_DIR / "buffers"))
+                for filename in range(0, 10):
+                    print(f"Creating file {filename}.py.")
+                    Path(USER_DIR / "buffers" / f"{filename}.py").touch()
+            except FileExistsError or OSError:
+                print("[red]Fishery was not able to create web editor files![/red]")
+                exit()
+        else:
+            pass
+
+
+        self.local_files = {}
+
+    def load_local_files(self, path: Path):
+        """Open local files from the configuration folder"""
+        pass
+
+    def create_local_storage(self, path: Path):
+        """Initialise local storage for web editor code buffers."""
+        pass
 
     def start(self, console):
         import logging

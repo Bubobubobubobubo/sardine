@@ -39,12 +39,15 @@ body {
 	border-right: 2px solid white !important;
 }
 
-/*
-.cm-activeLineGutter {
-	background-color: #282c34 !important;
+tabs {
+	width: 100%;
+	margin: 0;
+	flex-grow: 2;
+	flex-shrink: 0;
+	display: block;
+	white-space: pre;
+	word-wrap: normal;
+	box-sizing: border-box;
+	padding: 4px 0;
+	outline: none;
 }
-
-.cm-selectionBackground {
-	background-color: #282c34 !important;
-}
-*/

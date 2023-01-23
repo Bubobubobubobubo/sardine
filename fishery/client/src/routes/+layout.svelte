@@ -94,9 +94,9 @@ function handleChange({ detail: {tr} }) {
 	<main> 
 		<Tabs>
 			<TabList>
-				<Tab>Editor</Tab>
+				<Tab>Code</Tab>
 				<Tab>Docs</Tab>
-				<Tab>Options</Tab>
+				<Tab>Opts</Tab>
 			</TabList>
 
 		<TabPanel>
@@ -112,7 +112,16 @@ function handleChange({ detail: {tr} }) {
 		</TabPanel>
 
 		<TabPanel>
-			Two
+			<Editor 
+			 	bind:this={editorView}
+				doc={BUFFER_CONTENT == null? DEFAULT_TEXT : BUFFER_CONTENT}
+				bind:docStore={store}
+				bind:effects={codeMirrorState}
+				extensions={codeMirrorConf}
+				on:keydown={keyDownHandler}
+				on:change{handleChange}
+			/>
+
 		</TabPanel>
 
 		<TabPanel>

@@ -10,12 +10,6 @@
     // Initialisation of props and events
     export let icon: string = "";
 
-    function sendEvent(): void {
-        dispatch('pressed', {
-            text: 'event!'
-        });
-    };
-
     interface Dictionary<T> {
         [Key: string]: T;
     }
@@ -29,10 +23,10 @@
 </script>
 
 <section>
-    <button>
+    <button on:click>
         <Fa 
         class="" icon={icons[icon]} 
-        on:click={sendEvent} />
+         />
     </button>
 </section>
 <style>

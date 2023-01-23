@@ -5,6 +5,8 @@
 	import { editorMode } from '$lib/store';
 	import { vim } from "@replit/codemirror-vim";
 	import './styles.css';
+	import runnerService from '$lib/services/runnerService';
+	import { onMount } from 'svelte';
 
 	const DEFAULT_TEXT = `
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -22,27 +24,10 @@ def baba(p=0.5, i=0):
 
 	let store;
 	let codeMirrorState;
+	let editorView;
 
 	// The logs are defined as an array of strings
-	let logs = [
-		"Error  404",
-		"Hello World",
-		"Hello World",
-		"vfsdfsd",
-		" Sat  12:00:00",
-		"Hello World",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-		"Hello World 2",
-
-	]
+	let logs = []
 
 	// Change the current editing mode.
 	let codeMirrorConf = basicSetup
@@ -59,46 +44,37 @@ def baba(p=0.5, i=0):
 		console.log('change', $store)
 	}
 
-	async function executeCode(code) {
-    const data = { code: code, };
-    const response = await fetch('http://localhost:5000/execute', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    });
-    const result = await response.json();
-    return result;
-	}
+  function keyDownHandler(event) {
+    // Shift + Enter
+    if(event.key === 'Enter' && event.shiftKey) {
+      event.preventDefault(); // Prevents the addition of a new line
+      const code = editorView.getSelectedLines();
+      runnerService.executeCode(code + "\n\n");
+    }
+  }
 
-	/**
-	 * Key-handler in charge of sending selected code to the Fishery client.
-	 * @param e: KeyEvent
-	 */
-	function keyDownHandler(e) {
-    if(e.key === 'Enter' && e.ctrlKey) {
-		e.preventDefault();
-		executeCode($store);
-		}
-	}
-
+	onMount(() => {
+		runnerService.watchLogs((log) => {
+			logs = [...logs, log];
+		})
+	})
 </script>
 
 <div class="app">
 	<Header />
 
-	<main>
-		<div on:keydown={keyDownHandler}>
-			<Editor 
-				doc={DEFAULT_TEXT}
-				bind:docStore={store}
-				bind:effects={codeMirrorState}
-				extensions={codeMirrorConf}
-				on:change={changeHandler}
-			/>
-		</div>
-		<Console logs={logs}/>
+	<main> 
+		<Editor 
+		 	bind:this={editorView}
+			doc={DEFAULT_TEXT}
+			bind:docStore={store}
+			bind:effects={codeMirrorState}
+			extensions={codeMirrorConf}
+			on:change={changeHandler}
+			on:keydown={keyDownHandler}
+		/>
+
+		<Console {logs}/>
 	</main>
 
 	<footer>

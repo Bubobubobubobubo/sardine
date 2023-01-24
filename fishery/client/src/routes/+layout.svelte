@@ -2,7 +2,8 @@
 	import Editor, { basicSetup } from '$lib/components/Editor.svelte'
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
-	import { editorMode } from '$lib/store';
+	import { editorMode, selectedTab, selectedPanel } from '$lib/store';
+	import { get } from 'svelte/store';
 	import { vim } from "@replit/codemirror-vim";
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
@@ -12,6 +13,7 @@
 	import { keymap } from "@codemirror/view";
 	import {indentWithTab} from "@codemirror/commands";
 
+	let inputted_characters: number = 0;
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
@@ -64,10 +66,7 @@ def baba(p=0.5, i=0):
 				}
 		)
 		.then(response => console.log(response));
-	}
-	setInterval(() => {
-		saveBuffers(SARDINE_BUFFERS)
-	}, 1000);
+	};
 
 	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
 	SARDINE_BUFFERS["[*]"] = DEFAULT_TEXT;
@@ -200,11 +199,20 @@ def baba(p=0.5, i=0):
 	}
 
 	function handleBufferChange({ detail: {tr} }) {
-		// Get the name of the currently active tab
-		// Update the dictionary accordingly
-		// Profit
+		// 1) Get the currently active tab number or name
+		// 2) Update the internal dictionary with every keystroke
+		// 3) Trigger save if needed
+		// Absolutely no clue about how to do that.
+
 		// console.log('change', tr.changes.toJSON())
 		// console.log('change', $store)
+
+		// Everytime the user enters more than 50 characters,
+		// save the files to the disk!
+		inputted_characters += 1;
+		if (inputted_characters % 50 == 0) {
+			saveBuffers(SARDINE_BUFFERS);
+		}
 	}
 
 </script>
@@ -260,20 +268,6 @@ def baba(p=0.5, i=0):
 		flex-direction: column;
 		margin: 0 auto;
 		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 12px 0;
-		}
 	}
 
 </style>

@@ -126,7 +126,14 @@ def server_factory(console):
     @app.route('/save', methods=['POST'])
     def save_files_to_disk() -> str:
         data = request.get_json(silent=True)
-        print(data)
+        # Iterating over the dictionary we just received and dispatching to text files :)
+        for key, content in data.items():
+            # We need to strip the key first because it is formatted in a weird way.
+            key = ''.join(c for c in key if c not in "[]")
+            # Writing the file itself
+            with open(USER_DIR / "buffers" / f"{key}.py", 'w') as new_file:
+                new_file.write(content)
+
         return "OK"
 
     return app

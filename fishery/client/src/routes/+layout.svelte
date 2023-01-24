@@ -14,6 +14,8 @@
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
+
+# You can play on any tab. They will be saved automatically :) (except scratch : *)
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 @swim
@@ -24,10 +26,10 @@ def baba(p=0.5, i=0):
 `;
 
 	/* 
-	Initialise a list of code buffers by fetching them from the server.
-	We are fetching files from APPDIRS/buffers and populating a dictionary.
-    We will then mix it up with our own TS-defined local text buffers before
-	populating the tabs. 
+	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
+	from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
+	up with our own TS-defined local text buffers before populating the tabs. The same mecha-
+	nism in reverse is used for saving.
 	*/
 
     interface Dictionary<T> { [Key: string]: T; }
@@ -40,13 +42,12 @@ def baba(p=0.5, i=0):
 	.then(response => response.json())
 	.then((data: Object) => {
 		for (let [key, value] of Object.entries(data)) {
-			SARDINE_BUFFERS[key] = value.toString();
+			SARDINE_BUFFERS["["+key[0]+"]"] = value.toString();
 		};
 	});
-	SARDINE_BUFFERS["*"] = DEFAULT_TEXT;
-	SARDINE_BUFFERS["tuto"] = DEFAULT_TEXT; // TODO: Replace with a tutorial
 
-	console.log(SARDINE_BUFFERS);
+	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
+	SARDINE_BUFFERS["[*]"] = DEFAULT_TEXT;
 
 	// Initialise logging
 	let logs: string[] = [];
@@ -77,7 +78,6 @@ def baba(p=0.5, i=0):
 	 * @param event Keypress or combination of multiple keys
 	 */
   	function keyDownHandler(event: KeyboardEvent): void {
-
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
     	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line
@@ -87,7 +87,6 @@ def baba(p=0.5, i=0):
 
 		// Keybinding to switch from Emacs mode to Vim Mode
 		if(event.key === ' ' && event.ctrlKey) {
-			console.log("Evenemnt reçu");
 			event.preventDefault(); // Prevents the addition of a newline.
 			editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 		}
@@ -113,7 +112,7 @@ def baba(p=0.5, i=0):
 			console.log('Switch to tab n°' + real_key);
 		}
 
-		// TODO: implement animation whenever the user sends code
+		// TODO: implement animation whenever the user evaluates code
  	}
 
 
@@ -139,6 +138,14 @@ def baba(p=0.5, i=0):
 		let content = 1;
 		console.log('Saving current session');
         const file = new Blob([content], { type: 'text/plain' });
+	}
+
+	function handleBufferChange({ detail: {tr} }) {
+		// Get the name of the currently active tab
+		// Update the dictionary accordingly
+		// Profit
+		console.log('change', tr.changes.toJSON())
+		console.log('change', $store)
 	}
 
 </script>
@@ -168,6 +175,7 @@ def baba(p=0.5, i=0):
 					bind:effects={codeMirrorState}
 					extensions={codeMirrorConf}
 					on:keydown={keyDownHandler}
+					on:change={handleBufferChange}
 				/>
 			</TabPanel>
 		{/each}

@@ -2,7 +2,7 @@
 	import Editor, { basicSetup } from '$lib/components/Editor.svelte'
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
-	import { editorMode, selectedTab, selectedPanel } from '$lib/store';
+	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
 	import { vim } from "@replit/codemirror-vim";
 	import './styles.css';
@@ -172,8 +172,6 @@ def baba(p=0.5, i=0):
 		}
 	};
 
-
-
 	/**
 	 * Reacting to the play button by resuming the FishBowl.
 	 */
@@ -188,25 +186,19 @@ def baba(p=0.5, i=0):
 		runnerService.executeCode("bowl.dispatch('pause')")
 	}
 
-	/**
-	 * Manually save a file somewhere in a local folder.
-	 * TODO: implement this mechanism (???)
-	 */
-	function handleSave() {
-		let content = 1;
-		console.log('Saving current session');
-        const file = new Blob([content], { type: 'text/plain' });
-	}
-
 	function handleBufferChange({ detail: {tr} }) {
 		// 1) Get the currently active tab number or name
 		// 2) Update the internal dictionary with every keystroke
 		// 3) Trigger save if needed
 		// Absolutely no clue about how to do that.
-
-		// console.log('change', tr.changes.toJSON())
-		// console.log('change', $store)
-
+		let tab = get(activeTab);
+		// Scratch buffer is getting ignored
+		if (tab !== 0) {
+			console.log('Writing to buffer n° ' + "["+tab+"]")
+			// Here we should grab the text somehow?!
+			SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
+		}
+		
 		// Everytime the user enters more than 50 characters,
 		// save the files to the disk!
 		inputted_characters += 1;
@@ -221,7 +213,7 @@ def baba(p=0.5, i=0):
 	<Header 
 		on:play={handlePlay}
 		on:stop={handleStop}
-		on:save={handleSave}
+		on:save={()=> console.log('save')}
 		on:users={() => console.log("Users")}
 	/>
 

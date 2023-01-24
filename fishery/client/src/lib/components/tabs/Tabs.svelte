@@ -5,8 +5,8 @@
 <script lang='ts'>
 	import { setContext, onDestroy } from 'svelte';
 	import { writable, get } from 'svelte/store';
-	import { currentTab } from '$lib/store';
-	import { selectedTab, selectedPanel } from '$lib/store';
+	import { set } from 'svelte/store';
+	import { activeTab, selectedTab, selectedPanel } from '$lib/store';
 
 	const tabs: any[] = []; // what is the type of a tab?
 	const panels: any[] = []; // what is the type of a panel?
@@ -36,6 +36,7 @@
 
 		selectTab: tab => {
 			const i = tabs.indexOf(tab);
+			activeTab.set(i);
 			selectedTab.set(tab);
 			selectedPanel.set(panels[i]);
 		},

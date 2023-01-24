@@ -31,15 +31,18 @@
 </section>
 
 <style>
+
     button {
         background: none;
         color: white;
         font-size: 1.5rem;
         border: none;
     }
+
     button:hover {
         transform: scale(1.1);
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }
+
 </style>

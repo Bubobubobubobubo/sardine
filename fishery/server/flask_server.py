@@ -123,6 +123,12 @@ def server_factory(console):
         files.headers.add('Access-Control-Allow-Origin', '*')
         return files
 
+    @app.route('/save', methods=['POST'])
+    def save_files_to_disk() -> str:
+        data = request.get_json(silent=True)
+        print(data)
+        return "OK"
+
     return app
 
 

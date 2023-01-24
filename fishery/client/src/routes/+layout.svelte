@@ -7,14 +7,11 @@
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-	import { SardineTheme } from '$lib/SardineTheme';
+	import { SardineTheme } from '$lib/SardineTheme.js';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
-	import {EditorView, keymap} from "@codemirror/view";
+	import { keymap } from "@codemirror/view";
 	import {indentWithTab} from "@codemirror/commands";
-	import { selectedPanel, selectedTab } from '$lib/store';
-	import  { get } from 'svelte/store';
 
-	const TUTO_BUFFER: string = "There is no tutorial... One will magically appear in a few days :)"
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
 # to eval your code. You can select the editing mode through the menubar. Have fun!
@@ -25,7 +22,7 @@
 @swim
 def baba(p=0.5, i=0):
 	"""I am the default swimming function. Please evaluate me!"""
-	D('bd, hh, sn, hh', speed='1,1,0.5')
+	D('bd, hh, sn, hh', speed='1,1,0.5', i=i)
 	again(baba, p=0.5, i=i+1)
 `;
 
@@ -50,6 +47,28 @@ def baba(p=0.5, i=0):
 		};
 	});
 
+	/*
+	 * This function will be called periodically to send the current state
+	 * of all the text buffers to the Flask server. They will be parsed to
+	 * text files and saved in the APPDIRS/buffers folder for later usage.
+	 */ 
+	function saveBuffers(buffers: Object) {
+		console.log("Running auto-save");
+		let buffersToSave = buffers;
+		fetch("http://localhost:8000/save", {
+				credentials: 'include',
+				method: "POST", 
+				body: JSON.stringify(buffers),
+				headers: {
+					"Content-type": "application/json; charset=UTF-8"}
+				}
+		)
+		.then(response => console.log(response));
+	}
+	setInterval(() => {
+		saveBuffers(SARDINE_BUFFERS)
+	}, 1000);
+
 	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
 	SARDINE_BUFFERS["[*]"] = DEFAULT_TEXT;
 
@@ -69,10 +88,23 @@ def baba(p=0.5, i=0):
 	let codeMirrorConf = [basicSetup, SardineTheme]
     editorMode.subscribe(value => {
         if (value == 'vim') {
-            codeMirrorConf = [basicSetup, vim(), SardineTheme, keymap.of([indentWithTab])]
+            codeMirrorConf = [
+				basicSetup, 
+				vim(), 
+				keymap.of([indentWithTab]),
+				SardineTheme
+			]
         } else {
-            codeMirrorConf = [basicSetup, SardineTheme, keymap.of([indentWithTab])]
+            codeMirrorConf = [
+				basicSetup, 
+				keymap.of([indentWithTab]),
+				SardineTheme
+			]
         }
+	// This could be a solution to the theme disappearing on mode switch
+	// editor.current.dispatch({
+	// 	 effects: StateEffect.reconfigure.of(extensions)
+	// });
     })
 
 	/**
@@ -86,6 +118,12 @@ def baba(p=0.5, i=0):
 		if (event.key === "Tab") {
 			event.preventDefault();
 		}
+
+		// Prevent 'Esc' from defocusing the page (hard to catch)
+		if (event.key === "Escape" || event.keyCode === 27) {
+			event.preventDefault();
+		}
+
 
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
     	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
@@ -123,6 +161,18 @@ def baba(p=0.5, i=0):
 
 		// TODO: implement animation whenever the user evaluates code
  	}
+
+	/*
+	 * Some events are hard to catch on key up but can be prevented by chasing
+	 * key up events!
+	 */
+  	function keyUpHandler(event: KeyboardEvent): void {
+		// Prevent 'Esc' from defocusing the page (hard to catch)
+		if (event.key === "Escape" || event.keyCode === 27) {
+			event.preventDefault();
+		}
+	};
+
 
 
 	/**
@@ -184,6 +234,7 @@ def baba(p=0.5, i=0):
 					bind:effects={codeMirrorState}
 					extensions={codeMirrorConf}
 					on:keydown={keyDownHandler}
+					on:keyup={keyUpHandler}
 					on:change={handleBufferChange}
 				/>
 			</TabPanel>

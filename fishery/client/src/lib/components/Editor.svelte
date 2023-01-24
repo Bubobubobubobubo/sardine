@@ -2,7 +2,6 @@
     import { EditorView, minimalSetup, basicSetup,  } from 'codemirror'
     import { ViewPlugin } from '@codemirror/view'
     import { StateEffect } from '@codemirror/state'
-    import {indentWithTab} from "@codemirror/commands"
     import { python } from "@codemirror/lang-python"
     export { minimalSetup, basicSetup }
 </script>
@@ -20,7 +19,6 @@
 
   onMount((): Function  => { _mounted = true; return () => { _mounted = false } });
   onDestroy(() => { if (view) { view.destroy() } });
-
 
   /* `doc` is deliberately made non-reactive for not storing a reduntant string
   besides the editor. Also, setting doc to undefined will not trigger an
@@ -131,7 +129,7 @@
     
       view = new EditorView({
         doc: initialDoc,
-        extensions,
+        extensions: extensions,
         parent: dom,
         dispatch: _editorTxHandler,
       })

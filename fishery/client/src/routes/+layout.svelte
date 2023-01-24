@@ -9,6 +9,8 @@
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
+	import { selectedPanel, selectedTab } from '$lib/store';
+	import  { get } from 'svelte/store';
 
 	const TUTO_BUFFER: string = "There is no tutorial... One will magically appear in a few days :)"
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -70,6 +72,13 @@ def baba(p=0.5, i=0):
             codeMirrorConf = [basicSetup, SardineTheme]
         }
     })
+
+	// Monitor the currently selected tab (value queried from store)
+	let activeTabNumber: number | string;
+	selectedTab.subscribe(value => {
+		activeTabNumber = selectedTab.toString();
+	})
+
 
 	/**
 	 * Intercepting keypresses and triggering action. The current events are covered:
@@ -144,8 +153,13 @@ def baba(p=0.5, i=0):
 		// Get the name of the currently active tab
 		// Update the dictionary accordingly
 		// Profit
-		console.log('change', tr.changes.toJSON())
-		console.log('change', $store)
+		// console.log('change', tr.changes.toJSON())
+		// console.log('change', $store)
+		console.log(activeTabNumber);
+	}
+
+	function reportName(name: string): void {
+		console.log(name)
 	}
 
 </script>

@@ -2,14 +2,14 @@
 	export const TABS = {};
 </script>
 
-<script>
+<script lang='ts'>
 	import { setContext, onDestroy } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { writable, get } from 'svelte/store';
+	import { currentTab } from '$lib/store';
+	import { selectedTab, selectedPanel } from '$lib/store';
 
-	const tabs = [];
-	const panels = [];
-	const selectedTab = writable(null);
-	const selectedPanel = writable(null);
+	const tabs: any[] = []; // what is the type of a tab?
+	const panels: any[] = []; // what is the type of a panel?
 
 	setContext(TABS, {
 		registerTab: tab => {

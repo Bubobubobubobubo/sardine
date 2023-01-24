@@ -1,11 +1,10 @@
-
 @font-face {
-	font-family: "scientifica";
-	src: url('$lib/fonts/scientifica.ttf') format('truetype');
+	font-family: "hasklig";
+	src: url('$lib/fonts/hasklig/Hasklig-Regular.ttf') format('truetype');
 }
 
 * {
-	font-family: "scientifica", sans-serif;
+	font-family: "hasklig", sans-serif;
 	font-size: 24px;
 }
 

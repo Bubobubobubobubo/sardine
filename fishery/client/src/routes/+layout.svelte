@@ -73,13 +73,6 @@ def baba(p=0.5, i=0):
         }
     })
 
-	// Monitor the currently selected tab (value queried from store)
-	let activeTabNumber: number | string;
-	selectedTab.subscribe(value => {
-		activeTabNumber = selectedTab.toString();
-	})
-
-
 	/**
 	 * Intercepting keypresses and triggering action. The current events are covered:
 	 * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
@@ -155,11 +148,6 @@ def baba(p=0.5, i=0):
 		// Profit
 		// console.log('change', tr.changes.toJSON())
 		// console.log('change', $store)
-		console.log(activeTabNumber);
-	}
-
-	function reportName(name: string): void {
-		console.log(name)
 	}
 
 </script>

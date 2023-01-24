@@ -187,20 +187,17 @@ def baba(p=0.5, i=0):
 	}
 
 	function handleBufferChange({ detail: {tr} }) {
-		// 1) Get the currently active tab number or name
-		// 2) Update the internal dictionary with every keystroke
-		// 3) Trigger save if needed
-		// Absolutely no clue about how to do that.
+
+		// Getting the currently active tab through introspection
 		let tab = get(activeTab);
-		// Scratch buffer is getting ignored
+
+		// We ignore the scratch buffer! 
 		if (tab !== 0) {
-			console.log('Writing to buffer n° ' + "["+tab+"]")
-			// Here we should grab the text somehow?!
+			// Writing the content of the buffer to the internal dict.
 			SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
 		}
 		
-		// Everytime the user enters more than 50 characters,
-		// save the files to the disk!
+		// Everytime the user enters more than 50 characters, save the files to the disk!
 		inputted_characters += 1;
 		if (inputted_characters % 50 == 0) {
 			saveBuffers(SARDINE_BUFFERS);

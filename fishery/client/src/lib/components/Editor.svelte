@@ -2,6 +2,7 @@
     import { EditorView, minimalSetup, basicSetup,  } from 'codemirror'
     import { ViewPlugin } from '@codemirror/view'
     import { StateEffect } from '@codemirror/state'
+    import {indentWithTab} from "@codemirror/commands"
     import { python } from "@codemirror/lang-python"
     export { minimalSetup, basicSetup }
 </script>

@@ -9,6 +9,8 @@
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
+	import {EditorView, keymap} from "@codemirror/view";
+	import {indentWithTab} from "@codemirror/commands";
 	import { selectedPanel, selectedTab } from '$lib/store';
 	import  { get } from 'svelte/store';
 
@@ -67,9 +69,9 @@ def baba(p=0.5, i=0):
 	let codeMirrorConf = [basicSetup, SardineTheme]
     editorMode.subscribe(value => {
         if (value == 'vim') {
-            codeMirrorConf = [basicSetup, vim(), SardineTheme]
+            codeMirrorConf = [basicSetup, vim(), SardineTheme, keymap.of([indentWithTab])]
         } else {
-            codeMirrorConf = [basicSetup, SardineTheme]
+            codeMirrorConf = [basicSetup, SardineTheme, keymap.of([indentWithTab])]
         }
     })
 
@@ -80,6 +82,11 @@ def baba(p=0.5, i=0):
 	 * @param event Keypress or combination of multiple keys
 	 */
   	function keyDownHandler(event: KeyboardEvent): void {
+		// Cancel 'tab' from being used as a navigation key
+		if (event.key === "Tab") {
+			event.preventDefault();
+		}
+
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
     	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line

@@ -14,13 +14,13 @@
 		border: none;
 		border-radius: 0;
 		margin: 0;
-		width: 20px;
-		color: #ccc;
+		width: 8vh;
+		color: white;
 	}
 	
 	.selected {
 		border-bottom: 2px solid white;
-		color: #333;
+		color: white;
 	}
 </style>
 

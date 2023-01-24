@@ -23,26 +23,30 @@ def baba(p=0.5, i=0):
 	again(baba, p=0.5, i=i+1)
 `;
 
-	// TODO: Implement a way to automatically fetch buffer files from the local folder
-	// It is now possible to reach them by querying the Flask Server (hopefully...)
+	/* 
+	Initialise a list of code buffers by fetching them from the server.
+	We are fetching files from APPDIRS/buffers and populating a dictionary.
+    We will then mix it up with our own TS-defined local text buffers before
+	populating the tabs. 
+	*/
 
-	// Initialise a list of code buffers
     interface Dictionary<T> { [Key: string]: T; }
-    let BUFFERS: Dictionary<string> = {
-		"*": DEFAULT_TEXT,
-        "0": DEFAULT_TEXT, "1": "", "2": "", "3": "", "4": "",
-        "5": "", "6": "", "7": "", "8": "", "9": "", "tuto": TUTO_BUFFER
-    };
-	try {
-		let response = fetch('http://localhost:5000/text_files')
-			.then(response => response.json())
-			.then(data => {
-				let textFiles = data;
-				console.log(textFiles);
-			});
-	} catch(e) {
-		console.log(e);
-	}
+	let SARDINE_BUFFERS: Dictionary<String> = {};
+	
+	let response = fetch('http://localhost:8000/text_files', {
+		credentials: 'include',
+		method: 'GET',
+	})
+	.then(response => response.json())
+	.then((data: Object) => {
+		for (let [key, value] of Object.entries(data)) {
+			SARDINE_BUFFERS[key] = value.toString();
+		};
+	});
+	SARDINE_BUFFERS["*"] = DEFAULT_TEXT;
+	SARDINE_BUFFERS["tuto"] = DEFAULT_TEXT; // TODO: Replace with a tutorial
+
+	console.log(SARDINE_BUFFERS);
 
 	// Initialise logging
 	let logs: string[] = [];
@@ -150,12 +154,12 @@ def baba(p=0.5, i=0):
 	<main> 
 		<Tabs>
 			<TabList>
-				{#each Object.entries(BUFFERS) as [name, buffer]}
+				{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 					<Tab>{name}</Tab>
 				{/each}
 			</TabList>
 
-		{#each Object.entries(BUFFERS) as [name, buffer]}
+		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
 				<Editor 
 				 	bind:this={editorView}
@@ -167,18 +171,6 @@ def baba(p=0.5, i=0):
 				/>
 			</TabPanel>
 		{/each}
-
-
-		<TabPanel>
-			<p>Il n'y a rien dans cette tab mais on pourrait y charger quelque chose.</p>
-		</TabPanel>
-
-		<TabPanel>
-			<p>Il n'y a rien dans cette tab mais on pourrait y charger quelque chose.</p>
-		</TabPanel>
-
-
-
 		</Tabs>
 		<Console {logs}/>
 	</main>

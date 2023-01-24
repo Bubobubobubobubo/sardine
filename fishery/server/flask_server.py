@@ -115,10 +115,11 @@ def server_factory(console):
     def get_text_files():
         files = {}
         for file_name in os.listdir(USER_DIR / "buffers"):
-            if file_name.endswith('.txt'):
+            if file_name.endswith('.py'):
                 with open(os.path.join(USER_DIR / "buffers", file_name)) as f:
                     files[file_name] = f.read()
         files = jsonify(files)
+        print(files)
         files.headers.add('Access-Control-Allow-Origin', '*')
         return files
 

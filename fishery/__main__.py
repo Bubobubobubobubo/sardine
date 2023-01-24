@@ -101,8 +101,5 @@ def web(host: str, port: int, no_browser: bool):
     consoleManager.start()
     
 
-
-
-
 if __name__ == "__main__":
     main()

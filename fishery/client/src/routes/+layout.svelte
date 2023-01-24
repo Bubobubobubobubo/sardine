@@ -12,7 +12,7 @@
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 	import { keymap } from "@codemirror/view";
 	import {indentWithTab} from "@codemirror/commands";
-
+	import { listen, idle, onIdle } from 'svelte-idle';
 	let inputted_characters: number = 0;
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
@@ -74,7 +74,6 @@ def baba(p=0.5, i=0):
 	// Initialise logging
 	let logs: string[] = [];
 
-
 	// Initialise local state
 	let store, codeMirrorState, editorView;
 	onMount((): void => {
@@ -100,11 +99,7 @@ def baba(p=0.5, i=0):
 				SardineTheme
 			]
         }
-	// This could be a solution to the theme disappearing on mode switch
-	// editor.current.dispatch({
-	// 	 effects: StateEffect.reconfigure.of(extensions)
-	// });
-    })
+    });
 
 	/**
 	 * Intercepting keypresses and triggering action. The current events are covered:
@@ -137,28 +132,8 @@ def baba(p=0.5, i=0):
 			editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 		}
 
-		// Keybindings for changing tab!
-		let anyTab: string[] = [
-			'1', '&', '2', 'é', '3', '"',
-			'4', '\'', '5', '(', '6', '-',
-			'7', 'è', '8', '_', '9', 'ç',
-			'*'];
-		if (anyTab.includes(event.key) && event.ctrlKey) {
-			// This stupid conversion method is here to handle AZERTY keyboards.
-			// It is not needed at all by any other keyboard layout out there.
-			let tabConvert: Dictionary<String> = {
-				'&':  '1', 'é':  '2', '"':  '3',
-				'\'': '4', '(':  '5', '-':  '6',
-				'è':  '7', '_':  '8', 'ç':  '9'
-			};
-			let real_key: String = (!['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(event.key))?
-				tabConvert[event.key] : event.key;
-
-			// TODO: implement tab selection here!
-			console.log('Switch to tab n°' + real_key);
-		}
-
 		// TODO: implement animation whenever the user evaluates code
+		// TODO: implement switching tabs from keybindings
  	}
 
 	/*
@@ -187,6 +162,7 @@ def baba(p=0.5, i=0):
 	}
 
 	function handleBufferChange({ detail: {tr} }) {
+		// Don't ask me what a tr is, no idea...
 
 		// Getting the currently active tab through introspection
 		let tab = get(activeTab);
@@ -203,6 +179,16 @@ def baba(p=0.5, i=0):
 			saveBuffers(SARDINE_BUFFERS);
 		}
 	}
+
+	// This will trigger a save rather frequently. This value needs some finetuning
+	// to be less aggressive! I wonder what effect it can have on performances.
+	listen({
+		timer: 10,
+		cycle: 500
+	}); 
+	onIdle(() => {
+		saveBuffers(SARDINE_BUFFERS);
+	});
 
 </script>
 

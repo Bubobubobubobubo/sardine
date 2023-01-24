@@ -12,17 +12,7 @@
     "@codemirror/view" "^6.6.0"
     "@lezer/common" "^1.0.0"
 
-"@codemirror/commands@^6.0.0":
-  version "6.2.0"
-  resolved "https://registry.npmjs.org/@codemirror/commands/-/commands-6.2.0.tgz"
-  integrity sha512-+00smmZBradoGFEkRjliN7BjqPh/Hx0KCHWOEibUmflUqZz2RwBTU0MrVovEEHozhx3AUSGcO/rl3/5f9e9Biw==
-  dependencies:
-    "@codemirror/language" "^6.0.0"
-    "@codemirror/state" "^6.2.0"
-    "@codemirror/view" "^6.0.0"
-    "@lezer/common" "^1.0.0"
-
-"@codemirror/commands@^6.2.0":
+"@codemirror/commands@^6.0.0", "@codemirror/commands@^6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@codemirror/commands/-/commands-6.2.0.tgz#e575b7542406be8bc61efb56f1827c71587bb5f8"
   integrity sha512-+00smmZBradoGFEkRjliN7BjqPh/Hx0KCHWOEibUmflUqZz2RwBTU0MrVovEEHozhx3AUSGcO/rl3/5f9e9Biw==
@@ -1543,6 +1533,11 @@ svelte-hmr@^0.15.1:
   version "0.15.1"
   resolved "https://registry.npmjs.org/svelte-hmr/-/svelte-hmr-0.15.1.tgz"
   integrity sha512-BiKB4RZ8YSwRKCNVdNxK/GfY+r4Kjgp9jCLEy0DuqAKfmQtpL38cQK3afdpjw4sqSs4PLi3jIPJIFp259NkZtA==
+
+svelte-idle@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/svelte-idle/-/svelte-idle-2.0.3.tgz#41fd43624cd78c8c97d199c038a663babd43f3e9"
+  integrity sha512-QAjYAxxobQQy7C9EP4u9M4xJ4CGOv5ec8IbdjAo48RGRf5sATSbkuxe/1kdIqwyxkcHCwB1AtujjCCwVHtav7A==
 
 svelte-preprocess@^5.0.0:
   version "5.0.1"

@@ -1,18 +1,19 @@
 <script lang='ts'>
-	import Editor, { basicSetup } from '$lib/components/Editor.svelte'
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
+	import CodeMirror from "svelte-codemirror-editor";
+	import { python } from "@codemirror/lang-python";
 	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
-	import { vim } from "@replit/codemirror-vim";
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
 	import { SardineTheme } from '$lib/SardineTheme.js';
+	import { SardineBasicSetup } from '$lib/SardineSetup.js';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 	import { keymap } from "@codemirror/view";
 	import {indentWithTab} from "@codemirror/commands";
-	import { listen, idle, onIdle } from 'svelte-idle';
+	import { listen, onIdle } from 'svelte-idle';
 	let inputted_characters: number = 0;
 	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 # Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
@@ -86,32 +87,12 @@ def baba(p=0.5, i=0):
 	let logs: string[] = [];
 
 	// Initialise local state
-	let store, codeMirrorState, editorView;
 	onMount((): void => {
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
 		})
 	})
-
-	// Monitor the current editing mode (value queried from store)
-	let codeMirrorConf = [basicSetup, SardineTheme]
-    editorMode.subscribe(value => {
-        if (value == 'vim') {
-            codeMirrorConf = [
-				basicSetup, 
-				vim(), 
-				keymap.of([indentWithTab]),
-				SardineTheme
-			]
-        } else {
-            codeMirrorConf = [
-				basicSetup, 
-				keymap.of([indentWithTab]),
-				SardineTheme
-			]
-        }
-    });
-
+    
 	/**
 	 * Intercepting keypresses and triggering action. The current events are covered:
 	 * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
@@ -221,17 +202,22 @@ def baba(p=0.5, i=0):
 
 		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
-				<Editor 
-				 	bind:this={editorView}
-					doc={buffer}
-					bind:docStore={store}
-					bind:effects={codeMirrorState}
-					extensions={codeMirrorConf}
-					on:keydown={keyDownHandler}
-					on:keyup={keyUpHandler}
-					on:change={handleBufferChange}
+				<CodeMirror 
+					bind:value={buffer}
+					extensions={SardineBasicSetup}
+					editable={true}
+					lang={python()}
+					theme={SardineTheme}
+					useTab={true}
+					tabSize={4}
+					styles={{
+						"&": {
+							width: "99vw",
+							height: "70vh",
+						},
+					}}
 				/>
-			</TabPanel>
+		    </TabPanel>
 		{/each}
 		</Tabs>
 		<Console {logs}/>

@@ -153,29 +153,30 @@ def baba(p=0.5, i=0):
 		runnerService.executeCode("bowl.dispatch('pause')")
 	}
 
-	function handleBufferChange({ detail: {tr} }) {
-		// Don't ask me what a tr is, no idea...
-
-		// Getting the currently active tab through introspection
+	function handleBufferChange(text: string) {
+		// We are receiving the text from a buffer but we will have to infer the context 
+		// from the current tab number.
 		let tab = get(activeTab);
+		// console.log(text.detail);
 
 		// We ignore the scratch buffer! 
 		if (tab !== 0) {
 			// Writing the content of the buffer to the internal dict.
-			SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
+			SARDINE_BUFFERS["["+(tab-1)+"]"] = text.detail;
 		}
 		
 		// Everytime the user enters more than 50 characters, save the files to the disk!
 		inputted_characters += 1;
-		if (inputted_characters % 50 == 0) {
+		if (inputted_characters % 15 == 0) {
 			saveBuffers(SARDINE_BUFFERS);
 		}
 	}
 
 	// This will trigger a save rather frequently. This value needs some finetuning
 	// to be less aggressive! I wonder what effect it can have on performances.
+
 	listen({
-		timer: 10,
+		timer: 2000,
 		cycle: 500
 	}); 
 	onIdle(() => {
@@ -216,6 +217,7 @@ def baba(p=0.5, i=0):
 							height: "70vh",
 						},
 					}}
+					on:change={handleBufferChange}
 				/>
 		    </TabPanel>
 		{/each}

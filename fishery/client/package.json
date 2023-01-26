@@ -38,7 +38,6 @@
 		"@replit/codemirror-vim": "^6.0.4",
 		"@sveltejs/adapter-static": "^1.0.5",
 		"codemirror": "^6.0.1",
-		"svelte-codemirror-editor": "^1.1.0",
 		"svelte-fa": "^3.0.3",
 		"svelte-idle": "^2.0.3"
 	}

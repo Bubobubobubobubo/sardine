@@ -13,7 +13,7 @@ APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
 # We need to create it if it doesn't already exist
-Path(LOG_FILE).touch(exist_ok=True))
+Path(LOG_FILE).touch(exist_ok=True)
 
 __all__ = ("WebServer",)
 

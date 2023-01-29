@@ -15,8 +15,8 @@ import {lintKeymap} from "@codemirror/lint"
 import { SardineTheme } from "./SardineTheme"
 import { python } from "@codemirror/lang-python";
 
-
-// Still haven't imported my own theme
+// This is a stripped down editor. It is more than enough for playing with small
+// Python files!
 export const SardineBasicSetup = (() => [
     SardineTheme,
     python(),
@@ -26,20 +26,13 @@ export const SardineBasicSetup = (() => [
     highlightSpecialChars(),
     drawSelection(),
     indentOnInput(),
-    // syntaxHighlighting(defaultHighlightStyle, {
-    //     fallback: true
-    // }),
     rectangularSelection(),
     crosshairCursor(),
     highlightActiveLine(),
     highlightSelectionMatches(),
     keymap.of([
-    ...closeBracketsKeymap,
     ...defaultKeymap,
-    ...searchKeymap,
-    ...historyKeymap,
     ...foldKeymap,
-    ...completionKeymap,
     ...lintKeymap
     ])
     ]

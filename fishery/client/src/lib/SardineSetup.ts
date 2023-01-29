@@ -2,7 +2,11 @@ import {keymap, highlightSpecialChars, drawSelection, highlightActiveLine, dropC
     rectangularSelection, crosshairCursor,
     lineNumbers, highlightActiveLineGutter} from "@codemirror/view"
 import { EditorState } from "@codemirror/state"
-import {defaultHighlightStyle, syntaxHighlighting, indentOnInput, bracketMatching,
+import {
+    syntaxHighlighting, 
+    indentOnInput, 
+    bracketMatching,
+    indentUnit,
     foldGutter, foldKeymap} from "@codemirror/language"
 import {defaultKeymap, history, historyKeymap} from "@codemirror/commands"
 import {searchKeymap, highlightSelectionMatches} from "@codemirror/search"
@@ -17,18 +21,14 @@ export const SardineBasicSetup = (() => [
     SardineTheme,
     python(),
     lineNumbers(),
+    indentUnit.of("    "),
     highlightActiveLineGutter(),
     highlightSpecialChars(),
-    history(),
-    foldGutter(),
     drawSelection(),
-    dropCursor(),
-    EditorState.allowMultipleSelections.of(true),
     indentOnInput(),
-    syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
-    bracketMatching(),
-    closeBrackets(),
-    autocompletion(),
+    // syntaxHighlighting(defaultHighlightStyle, {
+    //     fallback: true
+    // }),
     rectangularSelection(),
     crosshairCursor(),
     highlightActiveLine(),

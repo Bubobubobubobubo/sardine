@@ -113,12 +113,6 @@
 			event.preventDefault();
 		}
 
-		// Prevent 'Esc' from defocusing the page (hard to catch)
-		if (event.key === "Escape" || event.keyCode === 27) {
-			event.preventDefault();
-		}
-
-
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
 		if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line

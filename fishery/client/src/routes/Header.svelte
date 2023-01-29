@@ -10,8 +10,6 @@
 	function changeMode(): void {
 		editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 	}
-
-
 </script>
 
 <header>
@@ -57,7 +55,7 @@
 
 	nav .logo {
 		width: auto;
-		height: 25px;
+		height: 50px;
 	}
 
 	.container {
@@ -66,6 +64,7 @@
 	}
 
 	a {
+        padding: 2px;
 		display: flex;
 		align-items: center;
 		text-decoration: none;
@@ -74,7 +73,7 @@
 
 	h1 {
 		margin-left: 10px;
-		font-size: 1.8rem;
+		font-size: 1.3rem;
 	}
 
 </style>

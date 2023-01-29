@@ -1,4 +1,5 @@
 <script lang='ts'>
+    import FileSaver from 'file-saver';
     import { tick } from 'svelte';
 	import type { EditorView } from '@codemirror/view';
     import Editor from '$lib/components/Editor.svelte';
@@ -49,7 +50,6 @@
 	 * text files and saved in the APPDIRS/buffers folder for later usage.
 	 */ 
 	function saveBuffers(buffers: Object) {
-		console.log("Running auto-save");
 		let buffersToSave = buffers;
 		fetch("http://localhost:8000/save", {
 				credentials: 'include',
@@ -59,7 +59,8 @@
 					"Content-type": "application/json; charset=UTF-8"}
 				}
 		)
-		.then(response => console.log(response));
+		.then(response => response);
+        // There is nothing I can do with the response... 
 	};
 
 	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
@@ -83,7 +84,6 @@
 	})
 
     onMount(() => {
-      console.log(view)
       editorMode.subscribe(value => {
         if (value == 'vim') {
             console.log('Switch to VIM Mode.')
@@ -107,7 +107,6 @@
 	 */
 	function keyDownHandler(event: KeyboardEvent): void {
 		// Cancel 'tab' from being used as a navigation key
-		console.log(extensions);
 
 		if (event.key === "Tab") {
 			event.preventDefault();
@@ -180,6 +179,15 @@
 		}
 	}
 
+    function saveAsTextFile() {
+        // Querying the content of the buffer
+        let file = new Blob(
+            [tr._doc.text.join('\n')],
+            { type: "text/plain;charset=utf-8" },
+        );
+        FileSaver.saveAs(file, "sardine.py");
+    }
+
 	// This will trigger a save rather frequently. This value needs some finetuning
 	// to be less aggressive! I wonder what effect it can have on performances.
 	listen({
@@ -196,7 +204,7 @@
 	<Header 
 		on:play={handlePlay}
 		on:stop={handleStop}
-		on:save={()=> console.log('save')}
+		on:save={saveAsTextFile}
 		on:users={() => console.log("Users")}
 	/>
 

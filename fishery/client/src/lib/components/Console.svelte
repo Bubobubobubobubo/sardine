@@ -33,38 +33,45 @@
     </div>
 </section>
 <style>
+    
     .console{
-    color: white;
-    border-top: dashed white 1px;
+        color: white;
+        border-top: dashed white 1px;
     }
 
     .console-header{
-    display: flex;
-    align-items: center;
-
+        display: flex;
+        align-items: center;
     }
+
     h3 {
-    padding-left: 15px;
+        font-size: 14px;
+        padding-left: 15px;
     }
 
     .console-content{
-    height: 100%;
-    overflow-y: scroll;
+        font-size: 12px;
+        height: 100%;
+        overflow-y: scroll;
     }
 
     .console-content ul{
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    height: 10vh;
+        font-size: 12px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        height: 10vh;
     }
 
     .console-content li{
-    padding: 5px 15px;
+        font-size: 12px;
+        padding: 0px 15px;
     }
 
-    .console-content li:nth-child(odd){
-    background-color: #333;
+    /*.console-content li:nth-child(odd){
+        background-color: #333;
     }
+    */
+
 
 </style>

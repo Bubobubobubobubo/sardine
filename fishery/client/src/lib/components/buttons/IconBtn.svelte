@@ -35,12 +35,12 @@
     button {
         background: none;
         color: white;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         border: none;
     }
 
     button:hover {
-        transform: scale(1.1);
+        transform: scale(1.3);
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }

@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	import { tick } from "svelte";
 
     export let logs: Array<string> = [];
@@ -9,7 +10,7 @@
     const scrollToTheBottomOfTheConsole = () => {
         if(!autoScroll) return;
         if(!consoleView) return;
-        console.log("scrolling to the bottom of the console")
+        // console.log("scrolling to the bottom of the console")
         consoleView.scrollTop = consoleView.scrollHeight;
     }
 

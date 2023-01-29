@@ -1,29 +1,35 @@
 <script context="module">
-    import { EditorView, minimalSetup, basicSetup,  } from 'codemirror'
-    import { ViewPlugin } from '@codemirror/view'
-    import { StateEffect } from '@codemirror/state'
-    import { python } from "@codemirror/lang-python"
-    export { minimalSetup, basicSetup }
+    import { EditorView, minimalSetup, basicSetup,  } from 'codemirror';
+    import { ViewPlugin } from '@codemirror/view';
+    import { StateEffect } from '@codemirror/state';
 </script>
 
 <script lang='ts'>
-
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import { SardineTheme } from '$lib/SardineTheme';
-
+	import { SardineBasicSetup } from '$lib/SardineSetup';
+  import { vim } from '@replit/codemirror-vim';
 
   const dispatch = createEventDispatcher();
   let _mounted: boolean = false;
   export let view: EditorView;
-  let dom;
+  export let dom;
 
-  onMount((): Function  => { _mounted = true; return () => { _mounted = false } });
-  onDestroy(() => { if (view) { view.destroy() } });
+  onMount((): Function  => { 
+    _mounted = true;
+    return () => {
+        _mounted = false 
+    } 
+  });
+
+  onDestroy(() => { 
+    if (view) {
+        view.destroy() 
+    } 
+  });
 
   /* `doc` is deliberately made non-reactive for not storing a reduntant string
-  besides the editor. Also, setting doc to undefined will not trigger an
-  update, so that you can clear it after setting one. */
-
+  besides the editor. Also, setting doc to undefined will not trigger an update,
+  so that you can clear it after setting one. */
   export let doc: string;
   
   /* Set this if you would like to listen to all transactions via `update` event. */
@@ -70,8 +76,19 @@
   
   // What is the expected type of extensions?
   export let extensions: any[];
-  extensions.push(python());
-  extensions.push(SardineTheme);
+  let extensionsWithVim = [SardineBasicSetup, vim()]
+  let extensionsWithoutVim = [SardineBasicSetup]
+  extensions = extensionsWithoutVim;
+
+  export function addVim() {
+    extensions = extensionsWithVim;
+    console.log('Child bim')
+  };
+
+  export function removeVim() {
+    extensions = extensionsWithoutVim;
+    console.log('Child boum')
+  };
   
   function _reconfigureExtensions(): void {
     if (!view) return

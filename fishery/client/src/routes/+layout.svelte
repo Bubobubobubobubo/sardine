@@ -1,5 +1,8 @@
 <script lang='ts'>
-	import Editor, { basicSetup } from '$lib/components/Editor.svelte'
+    import { tick } from 'svelte';
+	import type { EditorView } from '@codemirror/view';
+    import Editor from '$lib/components/Editor.svelte';
+	import _reconfigureExtensions from '$lib/components/Editor.svelte';
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
@@ -8,47 +11,27 @@
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-	import { SardineTheme } from '$lib/SardineTheme.js';
+    import { SardineBasicSetup } from '$lib/SardineSetup.js';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 	import { keymap } from "@codemirror/view";
-	import {indentWithTab} from "@codemirror/commands";
-	import { listen, idle, onIdle } from 'svelte-idle';
+	import { listen, onIdle } from 'svelte-idle';
+	import { default_buffer } from '$lib/DummyText';
 	let inputted_characters: number = 0;
-	const DEFAULT_TEXT: string = `# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-# Welcome to the embedded Sardine Code Editor! Press Shift+Enter while selecting text 
-# to eval your code. You can select the editing mode through the menubar. Have fun!
 
-# PRE WEB EDITOR RELEASE TASK LIST:
-# - blinking on evaluation (!!)
-# - fix the theme situation (!!)
-# - make every button actually do something (!!)
-# - make the logs resizable with a mouse handle (!!)
-# - keybinding to switch tab and prevent losing focus
-# - automatically create buffers folder when installing Sardine
-# - shipping a tutorial along with the web editor
-
-# You can play on any tab. They will be saved automatically :) (except scratch : *)
-# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-
-
-@swim
-def baba(p=0.5, i=0):
-	"""I am the default swimming function. Please evaluate me!"""
-	D('bd, hh, sn, hh', speed='1,1,0.5', i=i)
-	again(baba, p=0.5, i=i+1)
-`;
-
-	/* 
+	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
 	from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
 	up with our own TS-defined local text buffers before populating the tabs. The same mecha-
 	nism in reverse is used for saving.
+	=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	*/
 
+	// This is the data structure we use for storing text throughout the editor. It is basically
+	// a dictionary mapping of the APPDIRS/buffers directory structure.
     interface Dictionary<T> { [Key: string]: T; }
 	let SARDINE_BUFFERS: Dictionary<String> = {};
 	
+	// Fetching from the local server to grab the content of the files.
 	let response = fetch('http://localhost:8000/text_files', {
 		credentials: 'include',
 		method: 'GET',
@@ -80,36 +63,40 @@ def baba(p=0.5, i=0):
 	};
 
 	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
-	SARDINE_BUFFERS["[*]"] = DEFAULT_TEXT;
+	/* We are populating it with some dummy information gathered from DummyText.ts  */ 
+	SARDINE_BUFFERS["[*]"] = default_buffer;
 
-	// Initialise logging
+	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+	// Initialise state of the code editor: we don't know anything about the state of anything.
+	// We don't really know what we are dealing with and the state is crazy complex. Fun ahead :)
 	let logs: string[] = [];
+	let extensions: any[] = [];
+	$: extensions = extensions;
+	let store;
+	let codeMirrorState;
+	let view: EditorView;
 
-	// Initialise local state
-	let store, codeMirrorState, editorView;
 	onMount((): void => {
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
 		})
 	})
 
-	// Monitor the current editing mode (value queried from store)
-	let codeMirrorConf = [basicSetup, SardineTheme]
-    editorMode.subscribe(value => {
+    onMount(() => {
+      console.log(view)
+      editorMode.subscribe(value => {
         if (value == 'vim') {
-            codeMirrorConf = [
-				basicSetup, 
-				vim(), 
-				keymap.of([indentWithTab]),
-				SardineTheme
-			]
+            console.log('Switch to VIM Mode.')
+            tick().then(() => {
+                view.addVim();
+            });
         } else {
-            codeMirrorConf = [
-				basicSetup, 
-				keymap.of([indentWithTab]),
-				SardineTheme
-			]
+            console.log('Switch to Emacs Mode.')
+            tick().then(() => {
+                view.removeVim();
+            });
         }
+    });
     });
 
 	/**
@@ -118,8 +105,10 @@ def baba(p=0.5, i=0):
 	 * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
 	 * @param event Keypress or combination of multiple keys
 	 */
-  	function keyDownHandler(event: KeyboardEvent): void {
+	function keyDownHandler(event: KeyboardEvent): void {
 		// Cancel 'tab' from being used as a navigation key
+		console.log(extensions);
+
 		if (event.key === "Tab") {
 			event.preventDefault();
 		}
@@ -131,11 +120,11 @@ def baba(p=0.5, i=0):
 
 
     	// Shift + Enter or Ctrl + E (Rémi Georges mode)
-    	if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
+		if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
       		event.preventDefault(); // Prevents the addition of a new line
-      		const code = editorView.getSelectedLines();
-      		runnerService.executeCode(code + "\n\n");
-    	}
+			const code = view.getSelectedLines();
+			runnerService.executeCode(code + "\n\n");
+		}
 
 		// Keybinding to switch from Emacs mode to Vim Mode
 		if(event.key === ' ' && event.ctrlKey) {
@@ -222,11 +211,11 @@ def baba(p=0.5, i=0):
 		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
 				<Editor 
-				 	bind:this={editorView}
+                    extensions={extensions};
+				 	bind:this={view}
 					doc={buffer}
 					bind:docStore={store}
 					bind:effects={codeMirrorState}
-					extensions={codeMirrorConf}
 					on:keydown={keyDownHandler}
 					on:keyup={keyUpHandler}
 					on:change={handleBufferChange}

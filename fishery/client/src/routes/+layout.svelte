@@ -17,6 +17,7 @@
 	import { keymap } from "@codemirror/view";
 	import { listen, onIdle } from 'svelte-idle';
 	import { default_buffer } from '$lib/DummyText';
+    import { tutorialText } from '$lib/TutorialText';
 	let inputted_characters: number = 0;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -188,6 +189,13 @@
         FileSaver.saveAs(file, "sardine.py");
     }
 
+    function spawnTutorial() {
+        console.log('Spawning the basic tutorial');
+        // We change the buffer but we need to trigger a redraw as well
+        SARDINE_BUFFERS["[*]"] = tutorialText;
+        view._setText(tutorialText);
+    }
+
 	// This will trigger a save rather frequently. This value needs some finetuning
 	// to be less aggressive! I wonder what effect it can have on performances.
 	listen({
@@ -198,6 +206,7 @@
 		saveBuffers(SARDINE_BUFFERS);
 	});
 
+
 </script>
 
 <div class="app">
@@ -206,6 +215,7 @@
 		on:stop={handleStop}
 		on:save={saveAsTextFile}
 		on:users={() => console.log("Users")}
+        on:tutorial={spawnTutorial}
 	/>
 
 	<main> 

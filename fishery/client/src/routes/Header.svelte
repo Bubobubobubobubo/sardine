@@ -10,6 +10,7 @@
 	function changeMode(): void {
 		editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
 	}
+    
 </script>
 
 <header>
@@ -24,6 +25,7 @@
 			<IconBtn icon="stop"  on:click={()=>dispatch("stop")}/>
 			<IconBtn icon="save"  on:click={()=>dispatch("save")}/>
 			<IconBtn icon="users" on:click={()=>dispatch("users")}/>
+			<IconBtn icon="tutorial" on:click={()=>dispatch("tutorial")}/>
 
 			<span 
 				on:click={() => { changeMode()}}

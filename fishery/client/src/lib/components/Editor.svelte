@@ -39,7 +39,7 @@
   let _docCached: string = "";
     
   /* Overwrite the bulk of the text with the one specified. */
-  function _setText(text: string): void {
+  export function _setText(text: string): void {
     view.dispatch({
       changes: {from: 0, to: view.state.doc.length, insert: text},
     })

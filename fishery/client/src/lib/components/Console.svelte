@@ -6,11 +6,9 @@
     export let autoScroll: boolean = true;
     let consoleView: HTMLDivElement;
 
-
     const scrollToTheBottomOfTheConsole = () => {
         if(!autoScroll) return;
         if(!consoleView) return;
-        // console.log("scrolling to the bottom of the console")
         consoleView.scrollTop = consoleView.scrollHeight;
     }
 

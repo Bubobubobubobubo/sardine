@@ -2,7 +2,8 @@
     import Fa from 'svelte-fa';
     import { 
         faPlay, faStop, faFloppyDisk, 
-        faUserGroup, type IconDefinition  
+        faCircleQuestion, faUserGroup, 
+        type IconDefinition
     } from '@fortawesome/free-solid-svg-icons';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
@@ -17,7 +18,8 @@
     // Map icon names to FontAwesome glyphs
     const icons: Dictionary<IconDefinition> = {
         play: faPlay, stop: faStop,
-        save: faFloppyDisk, users: faUserGroup
+        save: faFloppyDisk, users: faUserGroup,
+        tutorial: faCircleQuestion
     };
 
 </script>

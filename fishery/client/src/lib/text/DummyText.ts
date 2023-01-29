@@ -11,6 +11,6 @@ def baba(p=0.5, i=0):
 	D('bd, hh, sn, hh', speed='1,1,0.5', i=i)
 	again(baba, p=0.5, i=i+1)
 
-// Remember about surfboards :)
+# Remember about surfboards :)
 Pa >> d('bd, cp')
 `;

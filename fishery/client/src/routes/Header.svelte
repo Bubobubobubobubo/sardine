@@ -26,6 +26,7 @@
 			<IconBtn icon="save"  on:click={()=>dispatch("save")}/>
 			<IconBtn icon="users" on:click={()=>dispatch("users")}/>
 			<IconBtn icon="tutorial" on:click={()=>dispatch("tutorial")}/>
+			<IconBtn icon="folder" on:click={()=>dispatch("folder")}/>
 
 			<span 
 				on:click={() => { changeMode()}}

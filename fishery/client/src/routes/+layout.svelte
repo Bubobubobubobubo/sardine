@@ -16,8 +16,8 @@
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 	import { keymap } from "@codemirror/view";
 	import { listen, onIdle } from 'svelte-idle';
-	import { default_buffer } from '$lib/DummyText';
-    import { tutorialText } from '$lib/TutorialText';
+	import { default_buffer } from '$lib/text/DummyText';
+    import { tutorialText } from '$lib/text/TutorialText';
 	let inputted_characters: number = 0;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -196,6 +196,18 @@
         view._setText(tutorialText);
     }
 
+    function openSardineFolder() {
+        // Will ask Flask to open the Sardine default folder
+        console.log("Opening Sardine Folder");
+        const response = fetch('http://localhost:8000/open_folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: {} 
+        });
+    }
+
 	// This will trigger a save rather frequently. This value needs some finetuning
 	// to be less aggressive! I wonder what effect it can have on performances.
 	listen({
@@ -216,6 +228,7 @@
 		on:save={saveAsTextFile}
 		on:users={() => console.log("Users")}
         on:tutorial={spawnTutorial}
+        on:folder={openSardineFolder}
 	/>
 
 	<main> 

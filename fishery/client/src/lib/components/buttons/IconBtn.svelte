@@ -3,7 +3,7 @@
     import { 
         faPlay, faStop, faFloppyDisk, 
         faCircleQuestion, faUserGroup, 
-        type IconDefinition
+        faFolder, type IconDefinition
     } from '@fortawesome/free-solid-svg-icons';
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
@@ -19,7 +19,7 @@
     const icons: Dictionary<IconDefinition> = {
         play: faPlay, stop: faStop,
         save: faFloppyDisk, users: faUserGroup,
-        tutorial: faCircleQuestion
+        tutorial: faCircleQuestion, folder: faFolder
     };
 
 </script>

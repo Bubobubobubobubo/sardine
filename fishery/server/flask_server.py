@@ -87,6 +87,26 @@ class WebServer():
 def server_factory(console):
     app = Flask(__name__, static_folder='../client/build')
     CORS(app, resources={r"/*": {"origins": "*"}})
+
+    @app.post('/open_folder')
+    def open_folder():
+        """Open Sardine Default Folder using the default file Explorer"""
+        import platform
+        def showFileExplorer(file):  # Path to file (string)
+            if platform.system() == "Windows":
+                import os
+                os.startfile(file)
+            elif platform.system() == "Darwin":
+                import subprocess
+                subprocess.call(["open", "-R", file])
+            else:
+                import subprocess
+                subprocess.Popen(["xdg-open", file])
+
+        # Open the file explorer
+        showFileExplorer(str(USER_DIR))
+
+        return "OK"
     
     @app.post('/execute')
     def execute():

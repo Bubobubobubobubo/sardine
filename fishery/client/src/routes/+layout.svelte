@@ -107,8 +107,8 @@
 	 * @param event Keypress or combination of multiple keys
 	 */
 	function keyDownHandler(event: KeyboardEvent): void {
-		// Cancel 'tab' from being used as a navigation key
 
+		// Cancel 'tab' from being used as a navigation key
 		if (event.key === "Tab") {
 			event.preventDefault();
 		}

@@ -6,8 +6,58 @@
 
 <script lang='ts'>
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
-	import { SardineBasicSetup } from '$lib/SardineSetup';
+  import { SardineBasicSetup } from '$lib/SardineSetup';
   import { vim } from '@replit/codemirror-vim';
+  import { StateField } from "@codemirror/state"
+  import {Decoration} from "@codemirror/view"
+
+  // Implement the blinking effect when evaluating text!
+  const blinking_effect = StateEffect.define(); 
+  const unblinking_effect = StateEffect.define(); 
+  const blinking_extension = StateField.define({
+
+        create() { 
+            return Decoration.none 
+        },
+
+        // Solution ici : https://discuss.codemirror.net/t/how-to-remove-a-decoration-mark-from-state/3809/3
+        update(value, transaction) {
+            value = value.map(transaction.changes);
+            for (let effect of transaction.effects) {
+              try {
+                if (effect.is(blinking_effect))  {
+                  value = value.update({
+                    add: effect.value, 
+                    sort: true
+                  })
+                } else if (effect.is(unblinking_effect)) {
+                  value = value.update({
+                    filter: (f, t, value) => { 
+                      value.class === "XYZ";
+                    }
+                  })
+                }
+              } catch (err) {
+                console.log(err)
+              }
+            }
+            return value;
+    }, provide: f => EditorView.decorations.from(f)
+  });
+
+  const blinking_decoration = Decoration.mark({
+    attributes: {
+        style: "background-color: orange"
+    },
+    class: 'red_back'
+  });
+
+  const unblinking_decoration = Decoration.mark({
+    attributes: {
+        style: "background-color: black"
+    },
+    class: 'black'
+  });
 
   const dispatch = createEventDispatcher();
   let _mounted: boolean = false;
@@ -76,18 +126,16 @@
   
   // What is the expected type of extensions?
   export let extensions: any[];
-  let extensionsWithVim = [SardineBasicSetup, vim()]
-  let extensionsWithoutVim = [SardineBasicSetup]
+  let extensionsWithVim = [SardineBasicSetup, vim(), blinking_extension]
+  let extensionsWithoutVim = [SardineBasicSetup, blinking_extension]
   extensions = extensionsWithoutVim;
 
   export function addVim() {
     extensions = extensionsWithVim;
-    console.log('Child bim')
   };
 
   export function removeVim() {
     extensions = extensionsWithoutVim;
-    console.log('Child boum')
   };
   
   function _reconfigureExtensions(): void {
@@ -132,6 +180,24 @@
     // Get the line the cursor is currently on
     const fromLine = state?.doc.lineAt(from)
     const toLine = state?.doc.lineAt(to)
+
+    // Blink the text!
+    view.dispatch({
+        effects: blinking_effect.of([blinking_decoration.range(
+          fromLine.from, 
+          toLine.to)]
+        )
+    });
+
+    setTimeout(() => {
+        view.dispatch({
+            effects: unblinking_effect.of([
+            unblinking_decoration.range(
+              fromLine.from, 
+              toLine.to)]
+            )
+        });
+    }, 400);
 
     return state?.doc.sliceString(fromLine.from, toLine.to)
   }

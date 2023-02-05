@@ -1,7 +1,5 @@
+from fishery.console import ConsoleManager
 import click
-
-from .console import ConsoleManager
-from .profiler import Profiler
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],

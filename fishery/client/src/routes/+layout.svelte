@@ -154,20 +154,20 @@
   }
 
   function handleBufferChange({ detail: {tr} }) {
-      // Getting the currently active tab through introspection
-      let tab = get(activeTab);
+    // Getting the currently active tab through introspection
+    let tab = get(activeTab);
 
-      // We ignore the scratch buffer!
-      if (tab !== 0) {
-          // Writing the content of the buffer to the internal dict.
-              SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
-      }
+    // We ignore the scratch buffer!
+    if (tab !== 0) {
+      // Writing the content of the buffer to the internal dict.
+        SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
+    }
 
-      // Everytime the user enters more than 50 characters, save the files to the disk!
-      inputted_characters += 1;
-      if (inputted_characters % 50 == 0) {
-          saveBuffers(SARDINE_BUFFERS);
-      }
+    // Everytime the user enters more than 50 characters, save the files to the disk!
+    inputted_characters += 1;
+    if (inputted_characters % 50 == 0) {
+      saveBuffers(SARDINE_BUFFERS);
+    }
   }
 
   function saveAsTextFile() {

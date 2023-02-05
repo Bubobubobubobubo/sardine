@@ -24,41 +24,6 @@ def main(ctx: click.Context):
         console = ConsoleManager()
         console.start()
 
-
-@main.command(
-    short_help="Run sardine with a background profiler (requires the yappi package)",
-    help="""
-        This command starts the deterministic profiler, yappi, and measures statistics
-        for both sardine and any functions written in the console. Once the REPL
-        is closed, a pstats file will be written containing the session's stats.
-        You can inspect the file's contents with Python's built-in pstats module
-        or a third-party package like snakeviz.
-        """,
-)
-@click.option(
-    "-c",
-    "--clock",
-    default="wall",
-    help="The clock type to use. Wall time includes time spent waiting, "
-    "while CPU time ignores it.",
-    show_default=True,
-    type=click.Choice(("cpu", "wall"), case_sensitive=False),
-)
-@click.option(
-    "-o",
-    "filepath",
-    default="stats.prof",
-    help="The path to use when outputting the pstats file",
-    show_default=True,
-    type=click.Path(dir_okay=False, writable=True),
-)
-def profile(clock: str, filepath: str):
-    profiler = Profiler(clock=clock, filepath=filepath)
-    console = ConsoleManager()
-    with profiler:
-        console.start()
-
-
 # fishery web
 # fishery web --host
 # fishery web --port

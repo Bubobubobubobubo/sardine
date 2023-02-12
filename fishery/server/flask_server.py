@@ -1,18 +1,26 @@
-import os
-import logging
-
 from flask import Flask, send_from_directory, request, Response, jsonify
 from pygtail import Pygtail
+from typing import Optional
 from flask_cors import CORS
 from pathlib import Path
 from rich import print
 from appdirs import *
+import logging
+import os
+
+# Monkey-patching to prevent some initial printing
+# More info can be found here: https://gist.github.com/daryltucker/e40c59a267ea75db12b1
+import flask.cli    
+flask.cli.show_server_banner = lambda *args: None
+logging.getLogger("werkzeug").disabled = True
+
 
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
-# We need to create it if it doesn't already exist
+
+# We need to create the log file if it doesn't already exist
 Path(LOG_FILE).touch(exist_ok=True)
 
 __all__ = ("WebServer",)
@@ -20,20 +28,17 @@ __all__ = ("WebServer",)
 class WebServer():
 
     """
-    This is a small Flask WebServer serving the Sardine Code Editor. This
-    web server is also charged of loading / dispatching locally stored
-    buffer files that act as a temporary memory for the editor. Files are
-    stored in plain-text in the Sardine configuration folder under the buffers/
-    folder.
+    This is a small Flask WebServer serving the Sardine Code Editor. This web server is
+    also charged of loading / dispatching locally stored buffer files that act as a
+    temporary memory for the editor. Files are stored in plain-text in the Sardine conf-
+    iguration folder under the buffers/folder.
     """
 
     def __init__(self, host="localhost", port=8000):
         self.host, self.port = host, port
-        self.local_files = self.load_buffer_files(
-            path=USER_DIR / "buffers"
-        )
+        self.local_files = self.load_buffer_files()
 
-    def load_buffer_files(self, path: Path) -> dict:
+    def load_buffer_files(self) -> Optional[dict]:
         """
         Loading buffer files from a local folder. If the folder doesn't 
         exis, this function will automatically create it and load empty 
@@ -63,10 +68,10 @@ class WebServer():
             return buffer_files
 
     def start(self, console):
-        log = logging.getLogger('werkzeug')
-        log.setLevel(logging.ERROR)
-        print(f"Starting server {self.host} on {self.port}")
+
         app = server_factory(console)
+
+        # Start the application
         app.run(
             host=self.host, 
             port=self.port, 
@@ -86,6 +91,7 @@ class WebServer():
 
 def server_factory(console):
     app = Flask(__name__, static_folder='../client/build')
+    app.logger.disabled = True  # Disable some of the logging
     CORS(app, resources={r"/*": {"origins": "*"}})
 
     @app.post('/open_folder')
@@ -117,7 +123,7 @@ def server_factory(console):
         except Exception as e:
             return { 'error': str(e) }
         
-    # Serve React App
+    # Serve App
     @app.route('/', defaults={'path': ''})
     @app.route('/<path:path>')
     def serve(path):
@@ -129,7 +135,7 @@ def server_factory(console):
     @app.route('/log')
     def progress_log():
         def generate():
-            for line in Pygtail(str(LOG_FILE), every_n=0.01):
+            for line in Pygtail(str(LOG_FILE), every_n=2):
                 yield "data:" + str(line) + "\n\n"
         return Response(generate(), mimetype= 'text/event-stream')
 
@@ -148,18 +154,21 @@ def server_factory(console):
     @app.route('/save', methods=['POST'])
     def save_files_to_disk() -> str:
         data = request.get_json(silent=True)
-        # Iterating over the dictionary we just received and dispatching to text files :)
-        for key, content in data.items():
-            # We need to strip the key first because it is formatted in a weird way.
-            key = ''.join(c for c in key if c not in "[]")
-            # Writing the file itself
-            with open(USER_DIR / "buffers" / f"{key}.py", 'w') as new_file:
-                new_file.write(content)
 
-        return "OK"
+        if data:
+            # Iterating over the dictionary we just received and dispatching to text files :)
+            for key, content in data.items():
+                # We need to strip the key first because it is formatted in a weird way.
+                key = ''.join(c for c in key if c not in "[]")
+                # Writing the file itself
+                with open(USER_DIR / "buffers" / f"{key}.py", 'w') as new_file:
+                    new_file.write(content)
+            return "OK"
+        else:
+            return "FAILED"
 
     return app
 
 
 if __name__ == '__main__':
-    server_factory().run()
+    server_factory().run(debug=False)

@@ -59,7 +59,7 @@ class WebServer():
             buffer_folder = Path(USER_DIR / "buffers")
             for file in os.listdir(buffer_folder):
                 with open(buffer_folder / file, 'r') as buffer:
-                    buffer_files[file] = buffer.read() 
+                    buffer_files[file] = buffer.read()
             return buffer_files
 
     def start(self, console):

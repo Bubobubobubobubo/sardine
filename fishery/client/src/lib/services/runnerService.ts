@@ -1,5 +1,7 @@
 class RunnerService{
+
     host: string;
+
     constructor() {
         this.host = "";
     }
@@ -20,7 +22,8 @@ class RunnerService{
     }
 
     watchLogs(onLogs: (data: string) => void): () => void {
-        // Create a new EventSource to receive server sent events from the server.
+        // Create a new EventSource to receive server
+        // sent events from the server.
         const eventSource = new EventSource(this.host + '/log');
 
         // The event listener that will be called when a message is received.
@@ -31,7 +34,8 @@ class RunnerService{
         // Register the handler for the message event.
         eventSource.onmessage = onMessage;
 
-        // Return a function that will be called when the client no longer wants to receive events.
+        // Return a function that will be called when
+        // the client no longer wants to receive events.
         return () => {
             // Close the connection.
             eventSource.close();

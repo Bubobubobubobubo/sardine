@@ -1,8 +1,8 @@
 <script lang='ts'>
-    import FileSaver from 'file-saver';
-    import { tick } from 'svelte';
+  import FileSaver from 'file-saver';
+  import { tick } from 'svelte';
 	import type { EditorView } from '@codemirror/view';
-    import Editor from '$lib/components/Editor.svelte';
+  import Editor from '$lib/components/Editor.svelte';
 	import _reconfigureExtensions from '$lib/components/Editor.svelte';
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
@@ -12,12 +12,12 @@
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-    import { SardineBasicSetup } from '$lib/SardineSetup.js';
+  import { SardineBasicSetup } from '$lib/SardineSetup.js';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
 	import { keymap } from "@codemirror/view";
 	import { listen, onIdle } from 'svelte-idle';
 	import { default_buffer } from '$lib/text/DummyText';
-    import { tutorialText } from '$lib/text/TutorialText';
+    import { tutorialText } from '$lib/text/TutorialText';
 
 	let inputted_characters = 0;
 
@@ -31,20 +31,25 @@
 
 	// This is the data structure we use for storing text throughout the editor. It is basically
 	// a dictionary mapping of the APPDIRS/buffers directory structure.
-    interface Dictionary<T> { [Key: string]: T; }
+  interface Dictionary<T> { [Key: string]: T; }
 	let SARDINE_BUFFERS: Dictionary<string> = {};
+
+  async function fetchLocalFiles() {
+    let response = await fetch('http://localhost:8000/text_files', {
+		  credentials: 'include',
+		  method: 'GET',
+	  })
+      .then(response => response.json())
+      .then((data: object) => {
+        for (let [key, value] of Object.entries(data)) {
+          SARDINE_BUFFERS["["+key[0]+"]"] = value.toString();
+        };
+      });
+  }
+
+ fetchLocalFiles()
 	
 	// Fetching from the local server to grab the content of the files.
-	let response = fetch('http://localhost:8000/text_files', {
-		credentials: 'include',
-		method: 'GET',
-	})
-	.then(response => response.json())
-	.then((data: object) => {
-		for (let [key, value] of Object.entries(data)) {
-			SARDINE_BUFFERS["["+key[0]+"]"] = value.toString();
-		};
-	});
 
 	/*
 	 * This function will be called periodically to send the current state
@@ -180,13 +185,14 @@
   }
 
   function spawnTutorial() {
-      console.log('Spawning the basic tutorial');
-      // We change the buffer but we need to trigger a redraw as well
-      SARDINE_BUFFERS["[*]"] = tutorialText;
-      view._setText(tutorialText);
+    console.log('Spawning the basic tutorial');
+    let tab = get(activeTab);
+    // We change the buffer but we need to trigger a redraw as well
+    SARDINE_BUFFERS["["+(tab-1)+"]"] = tutorialText;
+    view._setText(tutorialText);
   }
 
-  function openSardineFolder() {
+ function openSardineFolder() {
       // Will ask Flask to open the Sardine default folder
       console.log("Opening Sardine Folder");
       const response = fetch('http://localhost:8000/open_folder', {
@@ -232,8 +238,8 @@
 		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
 				<Editor 
-                    extensions={extensions};
-				 	bind:this={view}
+          extensions={extensions};
+			  	bind:this={view}
 					doc={buffer}
 					bind:docStore={store}
 					bind:effects={codeMirrorState}

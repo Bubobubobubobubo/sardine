@@ -36,7 +36,6 @@
 
   async function fetchLocalFiles() {
     let response = await fetch('http://localhost:8000/text_files', {
-		  credentials: 'include',
 		  method: 'GET',
 	  })
       .then(response => response.json())
@@ -58,7 +57,6 @@
 	 */ 
 	function saveBuffers(buffers: object) {
 		fetch("http://localhost:8000/save", {
-				credentials: 'include',
 				method: "POST", 
 				body: JSON.stringify(buffers),
 				headers: {

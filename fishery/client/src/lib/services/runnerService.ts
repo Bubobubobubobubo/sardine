@@ -3,7 +3,7 @@ class RunnerService{
     host: string;
 
     constructor() {
-        this.host = "";
+        this.host = "http://localhost:8000";
     }
 
     async executeCode(code:string) {

@@ -163,7 +163,7 @@
     let tab = get(activeTab);
 
     // We ignore the scratch buffer!
-    if (tab !== 0) {
+    if (tab !== 0 && tr._doc.text) {
       // Writing the content of the buffer to the internal dict.
         SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
     }

@@ -9,7 +9,7 @@ USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
 
 
-report_file = open(LOG_FILE, "wt")
+report_file = open(LOG_FILE, "wt", encoding="utf-8")
 file_console = Console(file=report_file)
 
 terminal_console = Console()

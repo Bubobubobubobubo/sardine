@@ -267,7 +267,12 @@ SCLang && SuperDirt...[/yellow]"
                 start_new_session=True,
             )
             if self._startup_file is not None:
-                self._write_stdin(message="""load("{}")""".format(self._startup_file))
+                startup_file_path = (
+                    str(self._startup_file).replace("\\", "\\\\")
+                    if platform.system() == "Windows"
+                    else self._startup_file
+                )
+                self._write_stdin(message="""load("{}")""".format(startup_file_path))
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
 

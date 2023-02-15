@@ -1,10 +1,10 @@
 @font-face {
-	font-family: "hasklig";
-	src: url('$lib/fonts/hasklig/Hasklig-Regular.ttf') format('truetype');
+	font-family: "spacemono";
+	src: url('$lib/fonts/spacemono/SpaceMono-Regular.ttf') format('truetype');
 }
 
 * {
-	font-family: "hasklig", sans-serif;
+	font-family: "spacemono", sans-serif;
 	font-size: 24px;
 }
 

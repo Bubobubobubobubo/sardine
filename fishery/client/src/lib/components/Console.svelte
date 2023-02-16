@@ -1,10 +1,13 @@
 <script lang="ts">
 
 	import { tick } from "svelte";
+	import Docs from "./Docs.svelte";
 
     export let logs: Array<string> = [];
     export let autoScroll: boolean = true;
     let consoleView: HTMLDivElement;
+
+    let displayDoc: boolean = true;
 
     const scrollToTheBottomOfTheConsole = () => {
         if(!autoScroll) return;
@@ -16,20 +19,25 @@
     $:{logs; tick().then(() => {scrollToTheBottomOfTheConsole();})}
 
 </script>
-<section>
     <div class="console">
         <div class="console-header">
-            <h3>Logs</h3>
+            <h3 on:click={() => {displayDoc = false}} class="{!displayDoc ? "active" : ""}">Logs</h3>
+            <h3 on:click={() => {displayDoc = true}} class="{displayDoc ? "active" : ""}">Docs</h3>
         </div>
-        <div class="console-content" bind:this={consoleView}>
-            <ul>
-                {#each logs as log }
-                    <li>{log}</li>
-                {/each}
-            </ul>
-        </div>
+        {#if displayDoc}
+            <div class="console-content">
+                <Docs />
+            </div>
+        {:else}
+            <div class="console-content" bind:this={consoleView}>
+                <ul>
+                    {#each logs as log }
+                        <li>{log}</li>
+                    {/each}
+                </ul>
+            </div>
+        {/if}
     </div>
-</section>
 <style>
     
     .console{
@@ -45,11 +53,23 @@
     h3 {
         font-size: 14px;
         padding-left: 15px;
+        margin-left: 15px;
+        padding: 4px;
+        cursor: pointer;
+    }
+    h3:hover {
+        color: black;
+        background-color: white;
+        transition: all 0.2s ease-in-out;
+    }
+    h3.active {
+        color: black;
+        background-color: white;
     }
 
     .console-content{
         font-size: 12px;
-        height: 100%;
+        height: 10vh;
         overflow-y: scroll;
     }
 
@@ -58,7 +78,6 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        height: 10vh;
     }
 
     .console-content li{

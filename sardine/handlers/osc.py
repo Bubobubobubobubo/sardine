@@ -52,6 +52,15 @@ class OSCHandler(Sender):
         )
         osc_send(bun, self._name)
 
+    def send_raw(self, address: str, message: list) -> None:
+        """
+        Public alias for the _send function. It can sometimes be useful to have it 
+        when we do want to write some raw OSC message without formatting it in the 
+        expected SuperDirt format.
+        """
+        self._send(address, message)
+
+
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")

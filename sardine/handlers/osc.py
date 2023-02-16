@@ -62,7 +62,7 @@ class OSCHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        sorted: bool = True,
+        sort: bool = True,
         **pattern: NumericElement,
     ) -> None:
 
@@ -75,7 +75,7 @@ class OSCHandler(Sender):
             if message["address"] is None:
                 continue
             address = message.pop("address")
-            if sorted:
+            if sort:
                 serialized = list(chain(*sorted(message.items())))
             else:
                 serialized = list(chain(*message.items()))

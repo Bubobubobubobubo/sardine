@@ -55,12 +55,14 @@ class OSCHandler(Sender):
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
+    @alias_param(name="sorted", alias="s")
     def send(
         self,
         address: Optional[StringElement],
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        sorted: bool = True,
         **pattern: NumericElement,
     ) -> None:
 
@@ -73,5 +75,8 @@ class OSCHandler(Sender):
             if message["address"] is None:
                 continue
             address = message.pop("address")
-            serialized = list(chain(*sorted(message.items())))
+            if sorted:
+                serialized = list(chain(*sorted(message.items())))
+            else:
+                serialized = list(chain(*message.items()))
             self.call_timed(deadline, self._send, f"/{address}", serialized)

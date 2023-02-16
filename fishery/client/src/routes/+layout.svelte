@@ -12,8 +12,8 @@
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-  import { SardineBasicSetup } from '$lib/SardineSetup.js';
-	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs.js';
+  import { SardineBasicSetup } from '$lib/SardineSetup';
+	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
 	import { keymap } from "@codemirror/view";
 	import { listen, onIdle } from 'svelte-idle';
 	import { default_buffer } from '$lib/text/DummyText';
@@ -236,7 +236,7 @@
 		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
 				<Editor 
-          extensions={extensions};
+                extensions={extensions};
 			  	bind:this={view}
 					doc={buffer}
 					bind:docStore={store}

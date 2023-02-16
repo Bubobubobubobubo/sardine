@@ -38,6 +38,14 @@ class SuperDirtHandler(Sender):
 
         loop.add_child(self, setup=True)
 
+    @property
+    def nudge(self):
+        return self._ahead_amount
+
+    @nudge.setter
+    def nudge(self, amount: int | float):
+        self._ahead_amount = amount
+
     def __repr__(self) -> str:
         return f"<SuperDirt: {self._name} nudge: {self._ahead_amount}>"
 

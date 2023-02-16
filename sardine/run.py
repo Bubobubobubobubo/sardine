@@ -7,7 +7,7 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, sardine_intro
-from .sequences import ZiffersParser, ListParser
+from .sequences import ListParser
 from .sequences.sequence import E, mod, imod, pick
 from .logger import print
 

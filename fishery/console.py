@@ -26,26 +26,6 @@ import sardine
 
 from .runners import Runner
 
-# system = platform.system()
-# # Setting very high priority for this process (time-critical)
-# warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
-# \nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
-# if system == "Windows":
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(psutil.HIGH_PRIORITY_CLASS)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
-# else:
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(-20)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
-
-
 # Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))

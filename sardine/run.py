@@ -40,6 +40,7 @@ else:
 # Initialisation of the FishBowl (the environment holding everything together)
 
 clock = LinkClock if config.link_clock else InternalClock
+parser = ListParser()
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
     parser=parser(),

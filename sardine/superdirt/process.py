@@ -51,7 +51,7 @@ class SuperDirtProcess:
     def _find_startup_file(self, user_file: Union[str, None] = None) -> Path:
         """Find the SuperDirt startup file"""
         if not user_file:
-            file_path = Path("/".join([str(self._user_dir), "default_superdirt.scd"]))
+            file_path = self._user_dir / "default_superdirt.scd"
             if file_path.is_file():
                 return file_path
             else:
@@ -69,7 +69,7 @@ class SuperDirtProcess:
 
     def _find_synths_directory(self) -> Path:
         """Find or create the synths directory needed"""
-        path = Path("/".join([str(self._user_dir), "synths/"]))
+        path = self._user_dir / "synths/"
         exists = path.is_dir()
         if exists:
             return path

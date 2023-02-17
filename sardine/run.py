@@ -10,13 +10,6 @@ import importlib
 from . import *
 import sys
 
-try:
-    from ziffers import zparse
-    ziffers_imported: bool = True
-except ImportError:
-    print('The ziffers-python package was not detected on the system')
-    ziffers_imported: bool = False
-
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
 
@@ -47,7 +40,6 @@ else:
 # Initialisation of the FishBowl (the environment holding everything together)
 
 clock = LinkClock if config.link_clock else InternalClock
-parser = ZiffersParser if config.parser == "ziffers" else ListParser
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
     parser=parser(),
@@ -104,17 +96,6 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
-
-#######################################################################################
-# ZIFFERS PLAYERS
-
-if ziffers_imported:
-    ziffer_names = ["Z" + l for l in ascii_lowercase + ascii_uppercase]
-    for player in player_names:
-        z = ZifferPlayer(name=player)
-        globals()[player] = z
-        bowl.add_handler(z)
-
 
 #######################################################################################
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS

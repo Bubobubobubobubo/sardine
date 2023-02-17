@@ -5,7 +5,6 @@ from .osc import *
 from .osc_in import *
 from .osc_loop import *
 from .player import *
-from .player_ziffers import *
 from .sender import *
 from .sleep_handler import *
 from .superdirt import *

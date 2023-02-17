@@ -22,7 +22,7 @@ LOG_FILE = USER_DIR / "sardine.log"
 FILENAMES = [
         "0.py", "1.py", "2.py", "3.py",
         "4.py", "5.py", "6.py", "7.py",
-        "8.py", "9.py", "*.py",
+        "8.py", "9.py", "10.py",
 ]
 
 # We need to create the log file if it doesn't already exist
@@ -46,7 +46,7 @@ class WebServer():
 
     def check_buffer_files(self) -> None:
         """This function will check the integrity of the buffer folder.""" 
-        buffer_folder = Path(USER_DIR / "buffers")
+        buffer_folder: Path = Path(USER_DIR / "buffers")
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
@@ -65,9 +65,9 @@ class WebServer():
         buffer_files: dict = {}
 
         # Creating the folder to store text files if it doesn't exist
-        if not os.path.isdir(str(USER_DIR / "buffers")):
+        if not (USER_DIR / "buffers").is_dir():
             try:
-                os.makedirs(str(USER_DIR / "buffers"))
+                (USER_DIR / "buffers").mkdir()
                 for filename in list(range(0, 10)):
                     print(f"Creating file {filename}.py.")
                     Path(USER_DIR / "buffers" / f"{filename}.py").touch()

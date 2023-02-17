@@ -81,7 +81,7 @@ class WebServer():
             self.check_buffer_files()
             buffer_folder = Path(USER_DIR / "buffers")
             for file in os.listdir(buffer_folder):
-                with open(buffer_folder / file, 'r') as buffer:
+                with open((buffer_folder / file).as_posix(), 'r') as buffer:
                     buffer_files[file] = buffer.read()
             return buffer_files
 
@@ -162,7 +162,8 @@ def server_factory(console):
         files = {}
         for file_name in os.listdir(USER_DIR / "buffers"):
             if file_name.endswith('.py'):
-                with open(os.path.join(USER_DIR / "buffers", file_name)) as f:
+                buffer_directory = USER_DIR / "buffers"
+                with open((buffer_directory / file_name).as_posix(), 'r') as f:
                     files[file_name] = f.read()
         files = jsonify(files)
         print(files)

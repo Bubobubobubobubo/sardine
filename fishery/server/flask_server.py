@@ -1,9 +1,9 @@
 from flask import (
         send_from_directory, 
+        Flask, 
         Response, 
         request, 
         jsonify
-        Flask, 
 )
 from pygtail import Pygtail
 from typing import Optional

@@ -1,4 +1,10 @@
-from flask import Flask, send_from_directory, request, Response, jsonify
+from flask import (
+        send_from_directory, 
+        Response, 
+        request, 
+        jsonify
+        Flask, 
+)
 from pygtail import Pygtail
 from typing import Optional
 from flask_cors import CORS

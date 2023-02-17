@@ -1,35 +1,32 @@
-# https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
+:q!# https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
 # Taken from the CPython Github Repository. Custom version of the
 # asyncio REPL that will autoload Sardine whenever started.
 
-import ast
-import asyncio
-import code
 import concurrent.futures
-import inspect
-
-# import os
-# import platform
 import threading
-import types
 import warnings
-from asyncio import futures
-from pathlib import Path
-from typing import Optional
+import inspect
+import asyncio
+import types
+import code
+import ast
 
-# import psutil
 from appdirs import user_data_dir
-from rich import print as pretty_print
-from rich.panel import Panel
+from typing import Optional
+from asyncio import futures
+from .runners import Runner
+from pathlib import Path
 
 import sardine
-
-from .runners import Runner
 
 # Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+LOG_FILE = USER_DIR / "sardine.log"
 
+# The file needs to exist to actually log something
+if not LOG_FILE.exists():
+    LOG_FILE.touch()
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):
     def __init__(self, locals: dict, loop: asyncio.BaseEventLoop):

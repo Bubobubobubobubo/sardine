@@ -1,15 +1,21 @@
-import importlib
-import sys
-from pathlib import Path
-from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from . import *
+from .utils import config_line_printer, get_snap_deadline, sardine_intro
+from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
-from .utils import config_line_printer, get_snap_deadline, sardine_intro
 from .sequences import ListParser
-from .sequences.sequence import E, mod, imod, pick
 from .logger import print
+from pathlib import Path
+import importlib
+from . import *
+import sys
+
+try:
+    from ziffers import zparse
+    ziffers_imported: bool = True
+except ImportError:
+    print('The ziffers-python package was not detected on the system')
+    ziffers_imported: bool = False
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
@@ -98,6 +104,16 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
+
+#######################################################################################
+# ZIFFERS PLAYERS
+
+if ziffers_imported:
+    ziffer_names = ["Z" + l for l in ascii_lowercase + ascii_uppercase]
+    for player in player_names:
+        z = ZifferPlayer(name=player)
+        globals()[player] = z
+        bowl.add_handler(z)
 
 
 #######################################################################################
@@ -359,20 +375,23 @@ play = Player.play
 def n(*args, **kwargs):
     return play(midi, midi.send, *args, **kwargs)
 
-
 def cc(*args, **kwargs):
     return play(midi, midi.send_control, *args, **kwargs)
-
 
 def pc(*args, **kwargs):
     return play(midi, midi.send_program, *args, **kwargs)
 
-
 if config.superdirt_handler:
     D = dirt.send
-
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
+    if ziffers_imported:
+        pass
+
+
+if ziffers_imported:
+    pass
+
 
 
 #######################################################################################

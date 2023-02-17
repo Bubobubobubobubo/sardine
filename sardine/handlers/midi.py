@@ -24,8 +24,17 @@ class MidiHandler(Sender):
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
-        if self._port_name is None:
-            self._port_name = "Sardine" if sys.platform not in "win32" else self._available_ports[0]
+
+        # Getting a default MIDI port name
+
+        if port_name in self._available_ports:
+            pass
+        else:
+            if sys.platform in "win32":
+                self._port_name = self._available_ports[0]
+            else:
+                self._port_name = "Sardine"
+
         self._midi = None
 
         # For MacOS/Linux

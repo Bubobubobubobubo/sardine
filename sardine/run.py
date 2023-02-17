@@ -367,13 +367,6 @@ if config.superdirt_handler:
     D = dirt.send
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
-    if ziffers_imported:
-        pass
-
-
-if ziffers_imported:
-    pass
-
 
 
 #######################################################################################

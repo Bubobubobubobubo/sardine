@@ -1,4 +1,4 @@
-:q!# https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
+# https://github.com/python/cpython/blob/main/Lib/asyncio/__main__.py
 # Taken from the CPython Github Repository. Custom version of the
 # asyncio REPL that will autoload Sardine whenever started.
 

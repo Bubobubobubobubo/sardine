@@ -74,9 +74,9 @@ class WebServer():
         if not (USER_DIR / "buffers").is_dir():
             try:
                 (USER_DIR / "buffers").mkdir()
-                for filename in list(range(0, 10)):
+                for filename in FILENAMES:
                     print(f"Creating file {filename}.py.")
-                    Path(USER_DIR / "buffers" / f"{filename}.py").touch()
+                    Path(USER_DIR / "buffers" / filename).touch()
                     buffer_files[filename] = ""
                     return buffer_files
             except FileExistsError or OSError:

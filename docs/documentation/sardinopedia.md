@@ -32,7 +32,7 @@ Pitching an audio sample relatively to a MIDI note.
 ```python3
 @swim
 def hh(d=0.5, i=0):
-    S('hh', freq='100 + (r*2000)').out(i)
+    S('hh', freq='100 + (rand*2000)').out(i)
     again(hh, d=0.5, i=i+1)
 ```
 Pitching an audio sample relatively to a given frequency (in `hertz`).

@@ -8,7 +8,7 @@ The `FishBowl` is central to the **Sardine** system. It is composed of **hard** 
 
 ### Hard dependencies
 
-Core components cannot be removed from the `FishBowl`. However, they can be swapped! It means that you can all of the sudden rip off the current clock and switch to a new one. The system might hiccup a bit but it will recover! To do so, note that you can use two important methods: 
+Core components cannot be removed from the `FishBowl`. However, they can be swapped! It means that you can all of the sudden rip off the current clock and switch to a new one. The system might hiccup a bit but it will recover! To do so, note that you can use two important methods:
 
 - `bowl.swap_clock(clock: "BaseClock")`: there are currently two clocks available: `InternalClock()` and `LinkClock()`. The latter is used for synchronisation with every device capable of using the `Link` protocol.
 
@@ -44,7 +44,7 @@ PC = midi.send_program_changes
 O = dummy_osc.send
 ```
 
-Please take note of the `bowl.add_handler` method. If you don't add your component to the `FishBowl`, your component will inevitably crash! This is a fairly common mistake, especially if you are working in a hurry. 
+Please take note of the `bowl.add_handler` method. If you don't add your component to the `FishBowl`, your component will inevitably crash! This is a fairly common mistake, especially if you are working in a hurry.
 
 ### Messaging system
 
@@ -60,13 +60,13 @@ When you install **Sardine**, you also install a set of default **Senders** that
 
 - **OSC Sender**: send or receive *Open Sound Control* messages.
 
-Naturally, **Sardine** users are thinking about adding more and more senders. Some are planned, some have never seen the light, and the best ones will be surely be added to the base library in the future. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights. 
+Naturally, **Sardine** users are thinking about adding more and more senders. Some are planned, some have never seen the light, and the best ones will be surely be added to the base library in the future. For now, these three *I/O* tools cover most of the messages used by *live-coders* and *algoravers*. **Python** packages can be imported to deal with other things that **Sardine** is not yet covering. You can turn the software into an ASCII art patterner or hack your way around to deal with DMX-controlled lights.
 
 You will soon figure out that learning how to *swim* was kind of the big deal. The rest is much easier to learn because you will now play with code quite a lot! **Senders** and *swimming functions* are enough to already make pretty interesting music. The rest is just me sprinkling goodies all around :)
 
 ## I - Anatomy of Senders
 
-A **Sender** is an *event generator*. It is a method call describing an event. This event can mutate based on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender call can be arbitrarily long depending on the precision you want to give to each event. It can sometimes happen that a sender will receive ten arguments or more.  
+A **Sender** is an *event generator*. It is a method call describing an event. This event can mutate based on multiple factors such as patterns, randomness, chance operations, clever **Python** string formatting, etc... A single sender call can be arbitrarily long depending on the precision you want to give to each event. It can sometimes happen that a sender will receive ten arguments or more.
 
 ```
        /`-._                          /`-._
@@ -75,7 +75,7 @@ A **Sender** is an *event generator*. It is a method call describing an event. T
  : S(...):';  _  {              : M(...):';  _  {               ... and more
   `-.  `' _,.-\`-.)        +     `-.  `' _,.-\`-.)        +
      `\\``\,.-'                     `\\``\,.-'
-                               
+
 ```
 
 ### Args and kwargs arguments
@@ -108,7 +108,7 @@ Now, try exploring this idea using this dummy pattern:
 ```python
 @swim
 def ocean_periodicity(p=0.5, i=0):
-    D('bd, hhh, sn, hhh', speed='1,2', freq='r*800', i=i, d=2, r=0.5)
+    D('bd, hhh, sn, hhh', speed='1,2', freq='rand*800', i=i, d=2, r=0.5)
     again(ocean_periodicity, p=0.5, i=i+1)
 ```
 Don't touch to the pattern itself, just change `i`, `r` or `d`. Try to get more familiar with this system. You can change the recursion speed to notice more clearly how the pattern will evolve with time.
@@ -124,7 +124,7 @@ D('bd', **params['loud'])
 
 ## II - The Dirt Sender (D)
 
-The **Dirt** or **SuperDirt** sender is a sender specialised in talking with **SuperCollider** and more specifically with **SuperDirt**, a great sound engine made for live-coding. This piece of software was initially written by [Julian Rohrhuber](https://www.rsh-duesseldorf.de/en/institutes/institute-for-music-and-media/faculty/rohrhuber-julian/) for TidalCycles but many people also use it as is. It is very stable, very flexible and highly-configurable. 
+The **Dirt** or **SuperDirt** sender is a sender specialised in talking with **SuperCollider** and more specifically with **SuperDirt**, a great sound engine made for live-coding. This piece of software was initially written by [Julian Rohrhuber](https://www.rsh-duesseldorf.de/en/institutes/institute-for-music-and-media/faculty/rohrhuber-julian/) for TidalCycles but many people also use it as is. It is very stable, very flexible and highly-configurable.
 
 This sender is the most complex you will have to interact with and it is entirely optional if you wish to use **Sardine** only to sequence MIDI and OSC messages. This sender is actually not so different from a specialised OSC sender that talks exclusively with **SuperDirt** using special timestamped messages. The sender is always used like so:
 
@@ -149,7 +149,7 @@ A simple bassdrum playing on every half-beat. This is the most basic sound-makin
 ```python3
 @swim
 def bd(p=0.5):
-    D('bd', speed='r*4', legato='r', cutoff='100+0~4000')
+    D('bd', speed='rand*4', legato='r', cutoff='100+0~4000')
     again(bd, p=0.25)
 ```
 A simple bassdrum but some parameters have been tweaked to add some randomness to the result. See how patterns can be used to make your keyword arguments more dynamic. The additional parameters are :
@@ -176,7 +176,7 @@ def bd(p=0.5, i=0):
     D('bd,hh,sn,hh', i=i)
     again(bd, p=0.5, i=i+1)
 ```
-Your classic four-on-the-floor. 
+Your classic four-on-the-floor.
 
 ### Piling up / Polyphony
 
@@ -203,7 +203,7 @@ You can also stack sounds by using polyphony. With **Sardine**, polyphony is not
 
 ## II - MIDI Senders
 
-MIDI is supported by the default `MidiHandler`. This handler is a bit special because it is defining multiple ways to send out MIDI information and not just notes or whatever. Every MIDI message can theorically be supported but the most important only are defined as of now. Send me a message if you would like to see support for other messages. This default MIDI sender works by defining a bunch of different `send` methods: 
+MIDI is supported by the default `MidiHandler`. This handler is a bit special because it is defining multiple ways to send out MIDI information and not just notes or whatever. Every MIDI message can theorically be supported but the most important only are defined as of now. Send me a message if you would like to see support for other messages. This default MIDI sender works by defining a bunch of different `send` methods:
 
 - `midi.send`: sending MIDI notes. Aliased as `N()` in the default setup.
 
@@ -257,7 +257,7 @@ Playing a little melody by tweaking the `note` argument.
 @swim
 def midi(p=0.5, i=0):
     N(chan='0,1,2,3',
-      vel='20 + (r*80)',
+      vel='20 + (rand*80)',
       dur=0.4, i=i,
       note='C5,D5,E5,G5,E5,D5,G5,C5')
     again(midi, p=0.5, i=i+1)
@@ -270,7 +270,7 @@ The same melody spreaded out on three **MIDI** channels (one per note) with rand
 @swim
 def midi(p=0.5, i=0):
     D(channel='0,1,2,3',
-      velocity='20 + (r*80)',
+      velocity='20 + (rand*80)',
       dur=0.4, i=i,
       note='C5,D5,E5,G5,E5,D5,G5,C5')
     PC(program='1,2,3,4', i=i)
@@ -287,7 +287,7 @@ The **OSC** Sender is the most complex and generic of all. It is a **sender** sp
 output_one = OSCHandler(
     ip="127.0.0.1", port=12345,
     name="A first test connexion",
-    ahead_amount=0.0, loop=osc_loop, # The default OSC loop, don't ask why! 
+    ahead_amount=0.0, loop=osc_loop, # The default OSC loop, don't ask why!
 )
 bowl.add_handler(output_one)
 
@@ -303,7 +303,7 @@ one = output_one.send
 two = output_two.send
 ```
 
-You can now use the methods `one` and `two` as OSC senders just like `D()` or `N()`.  
+You can now use the methods `one` and `two` as OSC senders just like `D()` or `N()`.
 
 ```python
 @swim
@@ -319,8 +319,8 @@ If you'd like, you can also make a **Player** (see *surfboards* in the preceding
 def osc_player(*args, **kwargs):
     """Partial function to add a new OSC player :)"""
     return play(
-        output_one, 
-        output_one.send, 
+        output_one,
+        output_one.send,
         *args, **kwargs
     )
 
@@ -334,9 +334,9 @@ You can also receive and track incoming OSC values. In fact, you can even attach
 ```python
 # Making a new OSC-In Handler
 listener = OSCInHandler(
-    ip="127.0.0.1", 
-    port=44444, 
-    name="Listener", 
+    ip="127.0.0.1",
+    port=44444,
+    name="Listener",
     loop=osc_loop
 )
 
@@ -366,7 +366,7 @@ If you are receiving something, you can now use it in your patterns to map a cap
 ```python
 listener.watch('/sitar/speed/')
 
-@swim 
+@swim
 def contamination(p=0.5, i=0):
     v.a = listener.get('/sitar/speed/')['args'][0]
     D('sitar', speed='v.a')

@@ -60,7 +60,7 @@ def free(p=0.5, i=0):
     again(free, p=0.5, i=i+1)
 ```
 
-You might sometimes feel a bit lost when writing complex patterns. As you'll soon discover, there are many features to the language. Always remember that you can print out patterns! You can observe them without making sound and you can even use them to do other tasks if you prefer. **Sardine** is cool for music playing but you can do much more with it. 
+You might sometimes feel a bit lost when writing complex patterns. As you'll soon discover, there are many features to the language. Always remember that you can print out patterns! You can observe them without making sound and you can even use them to do other tasks if you prefer. **Sardine** is cool for music playing but you can do much more with it.
 
 ## III - Patterns and senders
 
@@ -69,8 +69,8 @@ You might sometimes feel a bit lost when writing complex patterns. As you'll soo
 ```python3
 @swim
 def boom(p=0.5, i=0):
-    D('bd', 
-        cutoff='r*2000',
+    D('bd',
+        cutoff='rand*2000',
         speed='1,2,3,4', i=i)
     again(boom, p=0.5, i=i+1)
 ```
@@ -80,7 +80,7 @@ Conceptually, *senders* are pattern sandwiches. It is a collection of lists shar
 ```python3
 @swim
 def boom(p=0.5, i=0):
-    D('bd', 
+    D('bd',
         cutoff=P('2000!4, 4000!2, 8000!3, 200~5000', i+2),
         speed='1,2,3,4', i=i)
     again(boom, p=0.5, i=i+1)
@@ -93,8 +93,8 @@ It can even be more extreme than this but it all depends on what you are trying 
 ```python3
 @swim
 def boom(p=0.5, i=0):
-    D('bd', 
-        cutoff=P('r*2000, 500, 1000', i%2),
+    D('bd',
+        cutoff=P('rand*2000, 500, 1000', i%2),
         speed='1, 2, 3, 4', i=randint(1,4))
     again(boom, p=0.5, i=i+1)
 ```

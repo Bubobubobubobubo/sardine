@@ -154,7 +154,7 @@ This is a simple emulation of a Leslie rotating speaker typically used in music 
 @swim
 def test_fx(p=0.25):
     D('jvbass', amp=1, leslie=0.9,
-            lrate=0.1, lsize='0.1+r*2')
+            lrate=0.1, lsize='0.1+rand*2')
     a(test_fx, p=0.25)
 ```
 
@@ -212,7 +212,7 @@ def test_fx(p=0.25, i=0):
 def test_fx(p=0.25):
     D('jvbass',
             midinote='C.|C|Eb|G|Bb',
-            cutoff='r*7000', resonance='r/2', amp=1)
+            cutoff='rand*7000', resonance='r/2', amp=1)
     a(test_fx, p=0.5)
 ```
 
@@ -230,7 +230,7 @@ Will distort your signal, combination of multiple effects put together. It works
 ```python
 @swim
 def test_fx(p=0.25):
-    D('tabla:r*200', cut=1,
+    D('tabla:rand*200', cut=1,
             squiz='0|2|4|8',
             midinote='C|F|Bb|E5b', amp=1)
     a(test_fx, p=0.5)
@@ -247,7 +247,7 @@ Very gentle distortion. I actually have no idea about how the `triode` parameter
 ```python
 @swim
 def test_fx(p=0.25):
-    D('tabla:r*200', cut=1,
+    D('tabla:rand*200', cut=1,
             triode='r', # comment me
             midinote='C|F|Bb|E5b', amp=1)
     a(test_fx, p=0.5)
@@ -264,7 +264,7 @@ Heavy distortion that will/can wildly change the spectrum of your sound.
 ```python
 @swim
 def test_fx(p=0.25):
-    D('sd:r*200', cut=1,
+    D('sd:rand*200', cut=1,
             distort='0|0.5',
             midinote='C|G', amp=1)
     a(test_fx, p=0.5)

@@ -91,6 +91,17 @@ O = dummy_osc.send
 if config.superdirt_handler:
     dirt = SuperDirtHandler(loop=osc_loop)
 
+# Ziffers Midi and Dirt Handlers
+try:
+    from ziffers import z
+    ziffdirt = ZiffersDirt(loop=osc_loop, parser=z)
+    ziffmidi = ZiffersMIDI(
+            port_name=str(config.midi), 
+            parser=z
+    )
+except ImportError:
+    pass
+
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
 for player in player_names:

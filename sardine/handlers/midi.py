@@ -1,12 +1,10 @@
-import asyncio
-import sys
-from typing import Optional, Union
-
-import mido
-from ..logger import print
-
-from ..utils import alias_param
 from .sender import Number, NumericElement, Sender
+from typing import Optional, Union
+from ..utils import alias_param
+from ..logger import print
+import asyncio
+import mido
+import sys
 
 __all__ = ("MidiHandler",)
 

@@ -55,14 +55,14 @@ The most crucial information to know about **Sardine** is that everything happen
 * `c.bpm`: current tempo in beats per minute.
 * `c.ppqn`: current [PPQN](https://en.wikipedia.org/wiki/Pulses_per_quarter_note) (Pulses per Quarter Note, used by MIDI gear).
   - be careful. The tempo might fluctuate based on the PPQN you choose. Assume that 24 is a default sane PPQN for most synthesizers/drum machines.
-* `c.accel`: an acceleration factor for the clock, from `0` to `100` (double tempo) %. 
-* `c.nudge`: nudge the clock forward in time by the given amount. Usually pinged randomly until you fall back on the external click track you wish to follow. 
+* `c.accel`: an acceleration factor for the clock, from `0` to `100` (double tempo) %.
+* `c.nudge`: nudge the clock forward in time by the given amount. Usually pinged randomly until you fall back on the external click track you wish to follow.
 
 ### Ableton Link Clock
 
 The **Link** protocol is a novel open source protocol released by **Ableton** which allows users to synchronise their musical tempo seamlessly on a local network. While still pretty new, this method of synchronisation is now supported by a fair amount of by music software and apps, including other live coding libraries.
 
-**Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` method. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo originating somewhere and followed by everyone, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state. 
+**Sardine** can be made to start or follow an **Ableton Link** Clock that will be shared by all users on the local network. To do so, you will need to join/start a session using the `c.link()` method. Be mindful that the regular behavior of the clock will be altered and that you won't be able to change the tempo or alter time the way you want. **Link** is a collaborative clocking protocol, and there is no "main" tempo originating somewhere and followed by everyone, unlike MIDI. To resume the regular behavior of the clock, use the command `c.unlink()`. The `c.link_log()` function can be used to monitor the **Ableton Link** Clock state.
 
 
 !!! info "Weirdness of Link Clock"
@@ -108,7 +108,7 @@ These clock attributes are used everywhere in **Sardine** as they provide the mo
 
 #### The meaning of sleep
 
-If you are already familiar with *Python*, you might have heard about or used the `sleep()` function. This function will halt the execution of a program for a given amount of time and resume immediately after. **Sardine** does not rely on Python's `sleep` because it is *unreliable* for musical purposes! Your OS can decide to introduce micro-delays, to resume the execution too late or even not sleep for the precise duration you wanted. 
+If you are already familiar with *Python*, you might have heard about or used the `sleep()` function. This function will halt the execution of a program for a given amount of time and resume immediately after. **Sardine** does not rely on Python's `sleep` because it is *unreliable* for musical purposes! Your OS can decide to introduce micro-delays, to resume the execution too late or even not sleep for the precise duration you wanted.
 
 **Sardine** proposes an alternative to regular Python `sleep`, backed by the clock system previously described, crafted by @thegamecracks. The `sleep()` function has been overriden to allow you to have a safe and sane, similarly working alternative for musical contexts. You can use it to stop and resume a **swimming function** while keeping synchronization and timing accuracy.
 
@@ -133,7 +133,7 @@ The **swimming function** `sleeping_demo()` will recurse after a delay of `2`. T
 
 !!! warning "Oversleeping is a thing"
 
-    **Be careful**! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your **swimming functions**:   
+    **Be careful**! You can oversleep and trigger a recursion while your function is still running, effectively overlapping different versions of your **swimming functions**:
 
     ```python
     @swim
@@ -172,7 +172,7 @@ If you don't manually add the recursion to the designated **swimming function**,
 
 ```python
 # Boring
-@swim 
+@swim
 def bd(d=1):
     S('bd', amp=2).out()
 ```
@@ -180,7 +180,7 @@ def bd(d=1):
 The recursion can (and should) be used to update your arguments between each call of the **swimming function**. Here is an example of a very simple iterator:
 
 ```python
-@swim # or die 
+@swim # or die
 async def iter(d=1, nb=0):
     """A simple recursive iterator"""
     print(f"{nb}")
@@ -209,18 +209,18 @@ When you import **Sardine**, `MIDISender`, `SuperDirtSender` and `OSCSender` wil
 
 #### SuperDirt output
 
-The easiest way to trigger a sound with **Sardine** is to send an OSC message to **SuperDirt**. **SuperDirt** is designed as a tool that will convert control messages into the an appropriate action without having to deal with **SuperCollider** itself. Most people will use the **SuperDirt** output instead of plugging multiple synthesizers along with **Sardine**, or craft musical patches listening to OSC messages. The interface to **SuperDirt** is crude but fully functional. People already familiar with [**TidalCycles**](https://tidalcycles.org/) will feel at home using the `S()` (for `SuperDirt`) object. The syntax is extremely similar for the purpose is similar, and names often match between the two systems:  
+The easiest way to trigger a sound with **Sardine** is to send an OSC message to **SuperDirt**. **SuperDirt** is designed as a tool that will convert control messages into the an appropriate action without having to deal with **SuperCollider** itself. Most people will use the **SuperDirt** output instead of plugging multiple synthesizers along with **Sardine**, or craft musical patches listening to OSC messages. The interface to **SuperDirt** is crude but fully functional. People already familiar with [**TidalCycles**](https://tidalcycles.org/) will feel at home using the `S()` (for `SuperDirt`) object. The syntax is extremely similar for the purpose is similar, and names often match between the two systems:
 
 ```python
 # A bassdrum (sample 0 from folder 'bd')
-S('bd').out() 
+S('bd').out()
 # Fourth sample, way louder!
-S('bd', n=3, amp=2).out() 
+S('bd', n=3, amp=2).out()
 # Patterning a parameter (read the appropriate section) 
-S('bd', n=3, amp=1, speed='1,0.5').out(i) 
+S('bd', n=3, amp=1, speed='1,0.5').out(i)
 # Introducing some Python in our parameters
 from random import random, randint
-S('bd' if random() > 0.5 else 'hh', speed=randint(1,5)) 
+S('bd' if random() > 0.5 else 'hh', speed=randint(1,5))
 ```
 
 #### Delayed messages
@@ -291,7 +291,7 @@ Argument names do not matter when composing OSC messages. You can name arguments
 
 ![blackandwhite](images/pattern_black_and_white.png){width=100%}
 
-**Sardine** features an **embedded programming language** dedicated to the generation of musical patterns. **Python code** and **pattern code** go hand in hand to compose a successful and musical *swimming function*. This is, by far, the most intriguing aspect of **Sardine**. These patterns can be used to generate rhythms, streams of notes, OSC addresses, numbers, random values, etc... They can be used just anywhere a regular Python value would be expected. They replace fixed values with dynamic values, regular variables by mutating variables, etc... 
+**Sardine** features an **embedded programming language** dedicated to the generation of musical patterns. **Python code** and **pattern code** go hand in hand to compose a successful and musical *swimming function*. This is, by far, the most intriguing aspect of **Sardine**. These patterns can be used to generate rhythms, streams of notes, OSC addresses, numbers, random values, etc... They can be used just anywhere a regular Python value would be expected. They replace fixed values with dynamic values, regular variables by mutating variables, etc...
 
 Think of this pattern-oriented programming language as a glorified *time-dependant* calculator that can also do some arithmetics on lists, with new operators such as `_`, `!` or `:`. The pattern syntax can be used for things like summoning musical scales, musical chords and applying some funny musical transformations (such as `.disco` or `.explosion`). All of this is *maïeutic*, aka meant to fuel your imagination and let you explore a world of dynamic algorithmic musical patterns.
 
@@ -438,11 +438,11 @@ The typical functions you can access on a scientific calculator are present in *
 - `sin` and `cos`: **sinus** and **cosinus** functions used to compute periodc phenomenons (how convenient, just like sound).
 - `tan`: tangent function.
 
-They are extremely useful for generating signal-like patterns, even though the resolution is not the greatest due to how **Sardine** operates. 
+They are extremely useful for generating signal-like patterns, even though the resolution is not the greatest due to how **Sardine** operates.
 
 ##### Number ranges
 
-As a shorthand, you can use the `1:10` syntax to generate a number between `1` and `10`. This is also working for floating point numbers! 
+As a shorthand, you can use the `1:10` syntax to generate a number between `1` and `10`. This is also working for floating point numbers!
 
 ##### Number ramps
 
@@ -452,7 +452,7 @@ You can generate ramps by surrounding two numbers with curly braces: `[1:10]`. T
 
 The `!` operator inspired by TidalCycles is used to denote the repetition of a value. You can also sometimes use the `!!` operator from the same family. This operator is a bit special and will be detailed later.
 
-##### Overflow protection 
+##### Overflow protection
 
 Some values such as notes need to be confined in the usual range of MIDI notes, defined on 8 bytes, from `0` to `127`. Math operations on notes that should result in overflowing that limit will be wrapped around. 128 will be changed into 0, etc...  Most arithmetic operations are wrapped around. If you think that it makes no sense, I feel the same too but I am waiting to find a better solution to this problem. I could probably just lock the value to its bounds. More on this in later versions.
 
@@ -479,7 +479,7 @@ Here is an example of a **swimming function** sending a constant MIDI Note:
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(dur=0.3, note=60, 
+    M(dur=0.3, note=60,
             velocity=127, channel=0).out()
     a(hop, d=0.5, i=i+1)
 ```
@@ -500,9 +500,9 @@ A similar function exists for sending MIDI CC messages. Let's combine it with ou
 ```python
 @swim
 def hop(d=0.5, i=0):
-    M(dur=0.3, note='60 46 50 67', 
+    M(dur=0.3, note='60 46 50 67',
             velocity=127, channel=0).out(i)
-    cc(channel=0, control=20, value=P('r*127', i.v))
+    cc(channel=0, control=20, value=P('rand*127', i.v))
     a(hop, d=0.5, i=i+1)
 ```
 
@@ -579,18 +579,18 @@ my_osc = OSC(ip="127.0.0.1", port=23000, name="Bibu", ahead_amount=0.25)
 O(my_osc, 'loulou', value='1, 2, 3, 4').out()
 
 O(my_osc, 'loulou/yves', value='1, 2, 3, 4').out()
- 
+
 @swim
 def lezgo(d=1, i=0):
-    O(my_osc, 'loulou/blabla', 
-        value='1, 2, 3, 4', 
-        otherv='1, 2|4, r*2').out(i)
+    O(my_osc, 'loulou/blabla',
+        value='1, 2, 3, 4',
+        otherv='1, 2|4, rand*2').out(i)
     anew(lezgo, i=i+1)
 ```
 
 ## What about crashes?
 
-If you already know how to program, you know that 90% of your time is usually spent debugging code that doesn't run. You will not be a better programmer when using **Sardine**. Crashes will happen too, but they are handled and taken care of so that the musical flow is never truly interrupted. If you write something wrong inside a **swimming function**, the following will happen: 
+If you already know how to program, you know that 90% of your time is usually spent debugging code that doesn't run. You will not be a better programmer when using **Sardine**. Crashes will happen too, but they are handled and taken care of so that the musical flow is never truly interrupted. If you write something wrong inside a **swimming function**, the following will happen:
 
 - if the function crashes and has never looped, it will not be recovered.
 - if the function is already running and has already looped, the last valid function will be rescheduled and the current error message will be printed so that you can debug.

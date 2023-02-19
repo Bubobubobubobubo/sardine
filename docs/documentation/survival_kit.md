@@ -12,7 +12,7 @@ You can copy-paste this file and/or get a copy of it in the repository itself. T
 # I have toggled pretty much everything in sardine-conf.
 # BPM: 120.0,BEATS: 4 SC: [X], DEFER: [X] MIDI: Sardine
 
-# You can now evaluate every code example I'm providing. 
+# You can now evaluate every code example I'm providing.
 # Let's start with a basic hello world!
 
 @swim
@@ -36,7 +36,7 @@ def hello_world():
 def hello_world():
     print('Hello World!')
 
-# This is not enough, because we need to explicitely tell our 
+# This is not enough, because we need to explicitely tell our
 # function to come back around :)
 
 @swim
@@ -44,7 +44,7 @@ def hello_world():
     print('Hello World!')
     again(hello_world)
 
-# We call this pattern a 'temporally recursive function' or a 
+# We call this pattern a 'temporally recursive function' or a
 # 'swimming function' because fishes are funnier.
 # Now we are going to replace printing by sounds.
 
@@ -98,7 +98,7 @@ def hello_world(p=0.5, i=0):
     D('jvbass:[0:10]', i=randint(1,1000))
     again(hello_world, p=0.5, i=i+1)
 
-# We are now randomly peeking in the pattern. Let's now play the 
+# We are now randomly peeking in the pattern. Let's now play the
 # pattern in reverse.
 
 @swim
@@ -117,7 +117,7 @@ def hello_world(p=0.5, i=0):
     again(hello_world, p=0.5, i=i+2)
 
 # Now we are skipping some pattern elements! This is yet another easy
-# variation on our last pattern. 
+# variation on our last pattern.
 
 @swim
 def hello_world(p=0.5, i=0):
@@ -184,15 +184,15 @@ def pattern101(p=0.5, i=0):
     D('bd', speed='1,2,3,4', shape='0.1,0.3', room='0.0, 0.2', i=i)
     again(pattern101, p=0.5, i=i+1)
 
-# Keyword arguments are used to change parameters of the sound or 
+# Keyword arguments are used to change parameters of the sound or
 # event you want to play with!
 
 @swim
 def pattern101(p=0.5, i=0):
-    D('bd', 
+    D('bd',
       midinote='C,E,G',
-      speed='[1:4]', 
-      shape='0.1,0.3', 
+      speed='[1:4]',
+      shape='0.1,0.3',
       room='0.0, 0.2', i=i)
     again(pattern101, p=0.5, i=i+1)
 
@@ -202,10 +202,10 @@ def pattern101(p=0.5, i=0):
 
 @swim
 def pattern101(p=0.5, i=0):
-    D('bd', 
+    D('bd',
       midinote='C,E,G',
-      speed='[1:4]', 
-      shape='0.1~0.3', 
+      speed='[1:4]',
+      shape='0.1~0.3',
       room='sin($)', i=i)
     again(pattern101, p=0.5, i=i+1)
 
@@ -237,7 +237,7 @@ def pattern101(p=0.25, i=0):
     D('jvbass:[0:10]', i=i)
     again(pattern101, p=0.25, i=i+1)
 
-# [x:y] can be used to create a consecutive list of integers or 
+# [x:y] can be used to create a consecutive list of integers or
 # floating point numbers. The pattern above is actually:
 # jvbass:0 jvbass:1 jvbass:2 jvbass:3 jvbass:4, etc...
 # Here is what it sounds like with notes!
@@ -255,7 +255,7 @@ def pattern101(p=0.25, i=0):
     print(Pat('[0:10]', i)) # lovely silence
     again(pattern101, p=0.25, i=i+1)
 
-# It would be too long to explain all the things you can do with that pattern language. 
+# It would be too long to explain all the things you can do with that pattern language.
 # Be ready, here is a big pattern sandwich you can explore!
 # Comment out various parts to check the output of each pattern
 
@@ -264,8 +264,8 @@ def pattern101(p=0.25, i=0):
     print(Pat('[0:10]', i)) # lists
     print(Pat('[0:10,0.5]', i)) # custom step
     print(Pat('r', i)) # random number between 0.0 and 1.0
-    print(Pat('r*20', i)) # but you can do math with it
-    print(Pat('sin(r)', i)) # there are functions as well
+    print(Pat('rand*20', i)) # but you can do math with it
+    print(Pat('sin(rand)', i)) # there are functions as well
     print(Pat('1~10', i)) # random integer in range
     print(Pat('1.0~10.0', i)) # random float in range
     print(Pat('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))', i))
@@ -274,7 +274,7 @@ def pattern101(p=0.25, i=0):
 
 silence()
 
-# These are very basic tokens you can use but they can bring you 
+# These are very basic tokens you can use but they can bring you
 # really far when you start to apply them to MIDI or audio samples.
 # Let's focus a bite more about note-specific tokens!
 
@@ -295,7 +295,7 @@ def pattern101(p=0.25, i=0):
 silence()
 
 # Note that note names are in reality... numbers. They are automa-
-# tically converted to numbers whenever they are parsed by the 
+# tically converted to numbers whenever they are parsed by the
 # internal language. You can also use numbers if you prefer!
 
 # Sample names are rather weird as well. There is a lot you can do!
@@ -305,7 +305,7 @@ def pattern101(p=0.25, i=0):
     print(Pat('baba:1', i)) # First sample in 'baba' folder
     print(Pat('baba:1~5', i)) # Random picking in 'baba' folder
     print(Pat('baba:[0:10]', i)) # List of samples from 0 to 10
-    print(Pat('baba:r*8', i)) # Yet another random picking method
+    print(Pat('baba:rand*8', i)) # Yet another random picking method
     again(pattern101, p=0.25, i=i+1)
 ```
 

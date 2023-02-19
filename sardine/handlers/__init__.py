@@ -8,5 +8,3 @@ from .player import *
 from .sender import *
 from .sleep_handler import *
 from .superdirt import *
-from .ziffsuperdirt import *
-from .ziffmidi import *

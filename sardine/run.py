@@ -101,6 +101,8 @@ O = dummy_osc.send
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
     dirt = SuperDirtHandler(loop=osc_loop)
+    if ziffers_imported:
+        dirt._ziffers_parser = z
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
@@ -378,6 +380,8 @@ def pc(*args, **kwargs):
 
 if config.superdirt_handler:
     D = dirt.send
+    if ziffers_imported:
+        ZD = dirt.send_ziffers
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
 

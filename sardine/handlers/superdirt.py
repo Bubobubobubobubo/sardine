@@ -36,7 +36,18 @@ class SuperDirtHandler(Sender):
             "panic": self._dirt_panic,
         }
 
+        self._ziffers_parser = None
+
         loop.add_child(self, setup=True)
+
+    # Ziffers implementation 
+    @property
+    def ziffers_parser(self):
+        return self._ziffers_parser
+
+    @ziffers_parser.setter
+    def ziffers_parser(self, parser):
+        self._ziffers_parser = parser
 
     @property
     def nudge(self):
@@ -100,6 +111,59 @@ class SuperDirtHandler(Sender):
             return
 
 
+        pattern["sound"] = sound
+        pattern["orbit"] = orbit
+        pattern["cps"] = round(self.env.clock.phase, 4)
+        pattern["cycle"] = (
+            self.env.clock.bar * self.env.clock.beats_per_bar
+        ) + self.env.clock.beat
+
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["sound"] is None:
+                continue
+            serialized = list(chain(*sorted(message.items())))
+            self.call_timed(deadline, self._dirt_play, serialized)
+
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_ziffers(
+        self,
+        sound: Optional[StringElement|List[StringElement]],
+        ziff: str,
+        orbit: NumericElement = 0,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        key: str = "C4",
+        scale: str = "IONIAN",
+        **pattern: ParsableElement,
+    ):
+        if not self._ziffers_parser:
+            raise Exception("The ziffers package is not imported!")
+        else:
+            # Getting the ziffer pattern
+            ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
+            try:
+                freq = ziffer.freq
+            except AttributeError: # if there is no note, it must be a silence
+                try:
+                    freq = []
+                    for pitch in ziffer.pitch_classes:
+                        freq.append(pitch.freq)
+                except AttributeError:
+                    sound = None # the ziffers pattern takes precedence
+                    freq = 0
+
+            if isinstance(freq, list):
+                freq = f"{{{', '.join([str(x) for x in freq])}}}"
+
+        if sound is None:
+            return
+
+
+        pattern["freq"] = freq
         pattern["sound"] = sound
         pattern["orbit"] = orbit
         pattern["cps"] = round(self.env.clock.phase, 4)

@@ -139,7 +139,7 @@ class SuperDirtHandler(Sender):
         key: str = "C4",
         scale: str = "IONIAN",
         **pattern: ParsableElement,
-    ):
+    ) -> int | float:
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
@@ -177,3 +177,8 @@ class SuperDirtHandler(Sender):
                 continue
             serialized = list(chain(*sorted(message.items())))
             self.call_timed(deadline, self._dirt_play, serialized)
+
+        try:
+            return ziffer.duration
+        except:
+            return 1

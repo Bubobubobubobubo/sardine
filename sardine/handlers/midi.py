@@ -24,7 +24,6 @@ class MidiHandler(Sender):
         self._port_name = port_name
 
         # Getting a default MIDI port name
-
         if port_name in self._available_ports:
             pass
         else:
@@ -72,6 +71,18 @@ class MidiHandler(Sender):
             "sysex": self._sysex,
             "pitchwheel": self._pitch_wheel,
         }
+
+        # Reference to the ziffers parser if needed!
+        self._ziffers_parser = None
+
+    # Ziffers implementation 
+    @property
+    def ziffers_parser(self):
+        return self._ziffers_parser
+
+    @ziffers_parser.setter
+    def ziffers_parser(self, parser):
+        self._ziffers_parser = parser
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} port={self._port_name!r} nudge={self._nudge}>"
@@ -285,3 +296,57 @@ class MidiHandler(Sender):
             for k, v in message.items():
                 message[k] = int(v)
             self.call_timed(deadline, self._program_change, **message)
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="duration", alias="dur")
+    @alias_param(name="velocity", alias="vel")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def ziffers_send(
+        self,
+        ziff: str,
+        velocity: NumericElement = 100,
+        channel: NumericElement = 0,
+        duration: NumericElement = 1,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+    ) -> int | float:
+        """
+        Alternative to the send method for the ziffers sender. The message will be pre-
+        pared and mixed with the result of a ziffers message!
+        """
+        if not self._ziffers_parser:
+            raise Exception("The ziffers package is not imported!")
+        else:
+            # Getting the ziffer pattern
+            ziffer = self._ziffers_parser(ziff)[iterator]
+            try:
+                note = ziffer.note
+            except AttributeError: # if there is no note, it must be a silence
+                try:
+                    note = ziffer.notes
+                except AttributeError:
+                    note = "."
+
+            if isinstance(note, list):
+                note = f"{{{', '.join([str(x) for x in note])}}}"
+                print(note)
+
+
+        pattern = {
+            "note": note,
+            "velocity": velocity,
+            "channel": channel,
+            "duration": duration,
+        }
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["note"] is None:
+                continue
+            for k in ("note", "velocity", "channel"):
+                message[k] = int(message[k])
+            self.call_timed(deadline, self.send_midi_note, **message)
+
+        return ziffer.duration

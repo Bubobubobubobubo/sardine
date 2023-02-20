@@ -10,6 +10,14 @@ import importlib
 from . import *
 import sys
 
+try:
+    from ziffers import z
+    ziffers_imported: bool = True
+except ImportError:
+    print("Install the ziffers package for using Ziffers patterns")
+    ziffers_imported: bool = False
+
+
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
 
@@ -67,6 +75,9 @@ if config.boot_supercollider:
 # MIDI Handler: matching with the MIDI port defined in the configuration file
 midi = MidiHandler(port_name=str(config.midi))
 bowl.add_handler(midi)
+if ziffers_imported:
+    midi._ziffers_parser = z
+
 
 # OSC Loop: handles processing OSC messages
 osc_loop = OSCLoop()
@@ -348,11 +359,13 @@ clock = bowl.clock
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
 P = Pat  # Generic pattern interface
+
 N = midi.send  # For sending MIDI Notes
+if ziffers_imported:
+    ZN = midi.ziffers_send
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
 play = Player.play
-
 
 def n(*args, **kwargs):
     return play(midi, midi.send, *args, **kwargs)

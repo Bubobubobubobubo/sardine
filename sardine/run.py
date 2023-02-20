@@ -364,13 +364,17 @@ P = Pat  # Generic pattern interface
 
 N = midi.send  # For sending MIDI Notes
 if ziffers_imported:
-    ZN = midi.ziffers_send
+    ZN = midi.send_ziffers
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
 play = Player.play
 
 def n(*args, **kwargs):
     return play(midi, midi.send, *args, **kwargs)
+
+def zn(*args, **kwargs):
+    return play(midi, midi.send_ziffers, *args, **kwargs)
+
 
 def cc(*args, **kwargs):
     return play(midi, midi.send_control, *args, **kwargs)
@@ -384,6 +388,9 @@ if config.superdirt_handler:
         ZD = dirt.send_ziffers
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
+    def zd(*args, **kwargs):
+        return play(dirt, dirt.send_ziffers, *args, **kwargs)
+
 
 
 #######################################################################################

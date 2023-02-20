@@ -303,7 +303,7 @@ class MidiHandler(Sender):
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
-    def ziffers_send(
+    def send_ziffers(
         self,
         ziff: str,
         velocity: NumericElement = 100,

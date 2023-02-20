@@ -125,7 +125,7 @@ class Player(BaseHandler):
             self.iterator = pattern.iterator
             pattern.iterator = None
 
-        pattern.send_method(
+        dur = pattern.send_method(
             *pattern.args,
             **pattern.kwargs,
             iterator=self.iterator,
@@ -135,7 +135,10 @@ class Player(BaseHandler):
 
         self.iterator += self._iteration_span
         period = self.get_new_period(pattern)
-        self.again(pattern=pattern, p=period)
+        if not dur:
+            self.again(pattern=pattern, p=period)
+        else:
+            self.again(pattern=pattern, p=dur)
 
     def push(self, pattern: Optional[PatternInformation]):
         """

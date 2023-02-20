@@ -312,6 +312,8 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        scale: str = "IONIAN",
+        key: str = "C4",
     ) -> int | float:
         """
         Alternative to the send method for the ziffers sender. The message will be pre-
@@ -321,7 +323,7 @@ class MidiHandler(Sender):
             raise Exception("The ziffers package is not imported!")
         else:
             # Getting the ziffer pattern
-            ziffer = self._ziffers_parser(ziff)[iterator]
+            ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
             try:
                 note = ziffer.note
             except AttributeError: # if there is no note, it must be a silence

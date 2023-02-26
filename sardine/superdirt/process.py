@@ -97,6 +97,8 @@ class SuperDirtProcess:
         if "listening to Tidal on port 57120" in decoded_line:
             print("\n")
             print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
+            if self._synth_directory is not None:
+                self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
             print("\n")
             print(
@@ -273,8 +275,6 @@ SCLang && SuperDirt...[/yellow]"
                     else self._startup_file
                 )
                 self._write_stdin(message="""load("{}")""".format(startup_file_path))
-            if self._synth_directory is not None:
-                self.load_custom_synthdefs()
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""

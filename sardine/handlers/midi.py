@@ -297,6 +297,35 @@ class MidiHandler(Sender):
                 message[k] = int(v)
             self.call_timed(deadline, self._program_change, **message)
 
+    @alias_param(name="data", alias="d")
+    @alias_param(name="value", alias="v")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_sysex(
+        self,
+        data: list[int],
+        value: NumericElement = 60,
+        optional_modulo: NumericElement = 127,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+    ) -> None:
+        if data is None:
+            return
+
+        pattern = {"value": value}
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["value"] is None:
+                continue
+            for k, v in message.items():
+                message[k] = int(v)
+            self.call_timed(
+                deadline, self._sysex,
+                **{"data": [*data, *[int(message['value']) % optional_modulo]]}
+            )
+
     @alias_param(name="channel", alias="chan")
     @alias_param(name="duration", alias="dur")
     @alias_param(name="velocity", alias="vel")
@@ -351,4 +380,4 @@ class MidiHandler(Sender):
                 message[k] = int(message[k])
             self.call_timed(deadline, self.send_midi_note, **message)
 
-        return ziffer.duration
+        return ziffer.duration * (self.env.clock.beats_per_bar)

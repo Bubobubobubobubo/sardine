@@ -74,7 +74,12 @@ if config.boot_supercollider:
 
 # MIDI Handler: matching with the MIDI port defined in the configuration file
 midi = MidiHandler(port_name=str(config.midi))
+midi_in = MidiInHandler(
+    target=ControlTarget(control=20, channel=1),
+    port=str(config.midi)
+)
 bowl.add_handler(midi)
+bowl.add_handler(midi_in)
 if ziffers_imported:
     midi._ziffers_parser = z
 
@@ -367,7 +372,11 @@ if ziffers_imported:
     ZN = midi.send_ziffers
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
+SY = midi.send_sysex  # For MIDI Sysex messages
 play = Player.play
+
+def sy(*args, **kwargs):
+    return play(midi, midi.send_sysex, *args, **kwargs)
 
 def n(*args, **kwargs):
     return play(midi, midi.send, *args, **kwargs)

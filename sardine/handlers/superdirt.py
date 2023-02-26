@@ -143,17 +143,16 @@ class SuperDirtHandler(Sender):
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
-            # Getting the ziffer pattern
             ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
             try:
                 freq = ziffer.freq
-            except AttributeError: # if there is no note, it must be a silence
+            except AttributeError:  # if there is no note, it must be a silence
                 try:
                     freq = []
                     for pitch in ziffer.pitch_classes:
                         freq.append(pitch.freq)
                 except AttributeError:
-                    sound = None # the ziffers pattern takes precedence
+                    sound = None  # the ziffers pattern takes precedence
                     freq = 0
 
             if isinstance(freq, list):
@@ -179,6 +178,11 @@ class SuperDirtHandler(Sender):
             self.call_timed(deadline, self._dirt_play, serialized)
 
         try:
-            return ziffer.duration
-        except:
-            return 1
+            if isinstance(ziffer.duration, (int, float)):
+                return ziffer.duration * (self.env.clock.beats_per_bar)
+            elif isinstance(ziffer.duration, (list)):
+                return ziffer.duration[0] * (self.env.clock.beats_per_bar)
+            else:
+                return 1.0
+        except AttributeError:
+            return 1.0 * (self.env.clock.beats_per_bar)

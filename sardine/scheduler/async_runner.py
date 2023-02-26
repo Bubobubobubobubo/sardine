@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
 
 from ..logger import print
-from rich.panel import Panel
 
 from ..base import BaseClock
 from ..clock import Time
@@ -20,14 +19,6 @@ if TYPE_CHECKING:
     from .scheduler import Scheduler
 
 __all__ = ("AsyncRunner", "FunctionState")
-
-
-def print_panel(text: str) -> None:
-    """
-    Print swimming function event inside a Rich based Panel.
-    The box is automatically resized to fit text length.
-    """
-    print("\n", Panel.fit(text), end="")
 
 
 def _assert_function_signature(sig: inspect.Signature, args, kwargs):
@@ -489,7 +480,7 @@ class AsyncRunner:
             self._revert_state()
             raise exc
 
-        print_panel(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+        print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self._is_ready_for_iteration():
@@ -502,7 +493,7 @@ class AsyncRunner:
                     self._revert_state()
                     self.swim()
         finally:
-            print_panel(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
+            print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     def _prepare(self):
         self._last_iteration_called = False
@@ -614,9 +605,9 @@ class AsyncRunner:
     def _maybe_print_new_state(self, state: FunctionState):
         if self._last_state is not None and state is not self._last_state:
             if not self._has_reverted:
-                print_panel(f"[yellow][Updating [red]{self.name}[/red]]")
+                print(f"[yellow][Updating [red]{self.name}[/red]]")
             else:
-                print_panel(f"[yellow][Saving [red]{self.name}[/red] from crash]")
+                print(f"[yellow][Saving [red]{self.name}[/red] from crash]")
                 self._has_reverted = False
 
     async def _sleep_until(self, deadline: Union[float, int]) -> bool:

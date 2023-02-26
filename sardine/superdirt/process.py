@@ -12,7 +12,6 @@ import psutil
 from appdirs import *
 from ..logger import print
 from rich.console import Console
-from rich.panel import Panel
 
 __all__ = ("SuperDirtProcess",)
 
@@ -89,32 +88,26 @@ class SuperDirtProcess:
         """
         if "no synth or sample" in decoded_line:
             sample_name = decoded_line.split("'")
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Sample {sample_name[1]} not found."))
+            print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))
+            print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
         if "listening to Tidal on port 57120" in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
+            print(f"[[green]/!\\\\[/green] - Audio server ready!]")
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
             print("\n")
             print(
-                Panel.fit(
                     (
                         f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
                         + "\nrunning somewhere. It might be a mistake or a"
                         + "\nzombie process. Run `Server.killAll` in an SC"
                         + "\nwindow (can be the IDE of `sclang` in term..)"
                     )
-                )
             )
         if "Mismatched sample rates are not supported" in decoded_line:
             print("\n")
             print(
-                Panel.fit(
                     (
                         f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
                         + "\nsure that your audio input sample rate and"
@@ -122,7 +115,6 @@ class SuperDirtProcess:
                         + "\nThis is usually modified in your OS audio"
                         + "\nconfiguration menus. Reboot Sardine!"
                     )
-                )
             )
 
     async def monitor(self):
@@ -226,7 +218,7 @@ class SuperDirtProcess:
         if len(loaded_synthdefs_message) == 1:
             return
         else:
-            print(Panel.fit("\n".join(loaded_synthdefs_message)))
+            print("\n".join(loaded_synthdefs_message))
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""

@@ -94,6 +94,34 @@ class SuperDirtHandler(Sender):
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
 
+    def _parse_aliases(self, pattern: dict):
+        """Parse aliases for certain keys in the pattern (lpf -> cutoff)"""
+        def rename_keys(initial_dictionary: dict, aliases: dict) -> dict:
+            return dict([(aliases.get(k, k), v) for k, v in initial_dictionary.items()])
+
+        aliases = {
+            "lpf": "cutoff",
+            "lpq": "resonance",
+            "hpf": "hcutoff",
+            "lpq": "resonance",
+            "bpf": "bandf",
+            "bpq": "resonance",
+            "res": "resonance",
+            "midi": "midinote",
+            "oct": "octave",
+            "accel": "accelerate",
+            "leg": "legato",
+            "delayt": "delaytime",
+            "delayfb": "delayfeedback",
+            "phasr": "phaserrate",
+            "phasd": "phaserdepth",
+            "tremrate": "tremolorate",
+            "tremd": "tremolodepth",
+            "dist": "distort",
+        }
+        return rename_keys(pattern, aliases)
+
+
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
@@ -110,6 +138,8 @@ class SuperDirtHandler(Sender):
         if sound is None:
             return
 
+        # Replace some shortcut parameters by their real name
+        pattern = self._parse_aliases(pattern)
 
         pattern["sound"] = sound
         pattern["orbit"] = orbit
@@ -140,6 +170,10 @@ class SuperDirtHandler(Sender):
         scale: str = "IONIAN",
         **pattern: ParsableElement,
     ) -> int | float:
+
+        # Replace some shortcut parameters by their real name
+        pattern = self._parse_aliases(pattern)
+
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:

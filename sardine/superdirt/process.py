@@ -192,6 +192,10 @@ class SuperDirtProcess:
         """Open SuperCollider frequency scope + VUmeter"""
         self._write_stdin("s.scope(); s.meter()")
 
+    def info(self) -> None:
+        """Open makeWindow window"""
+        self._write_stdin("s.makeWindow")
+
     def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 

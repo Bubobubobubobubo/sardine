@@ -233,20 +233,6 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     return config_file
 
 
-def _select_parser(config_file: dict) -> dict:
-    """Select the default parser to be used"""
-    parser = inquirer.select(
-        message="What parser do you wish to play with?",
-        choices=[
-            Choice(value="sardine", enabled=True, name="Sardine"),
-            Choice(value="ziffers", name="Ziffers"),
-        ],
-        default=None,
-    ).execute()
-    config_file["parser"] = parser
-    return config_file
-
-
 def _select_editor(config_file: dict) -> dict:
     """Select to spawn or not the embedded text editor"""
     editor = inquirer.select(
@@ -312,7 +298,6 @@ def main():
         "MIDI",
         "Clock",
         "SuperCollider",
-        "Parser",
         "Editor",
         "More",
         "Exit",
@@ -352,8 +337,6 @@ def main():
             USER_CONFIG = _select_midi_output(config_file=USER_CONFIG)
         elif menu_select == "Clock":
             USER_CONFIG = _select_bpm_and_timing(config_file=USER_CONFIG)
-        elif menu_select == "Parser":
-            USER_CONFIG = _select_parser(config_file=USER_CONFIG)
         elif menu_select == "SuperCollider":
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":

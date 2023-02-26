@@ -76,6 +76,10 @@ class SuperDirtProcess:
             path.mkdir(parents=True)
             return path
 
+    def __call__(self, code: str) -> None:
+        """Send code to the SuperCollider sub-process"""
+        self._write_stdin(code)
+
     def terminate(self) -> None:
         """Terminate the SCLang process"""
         self._write_stdin("Server.killAll; 0.exit;")

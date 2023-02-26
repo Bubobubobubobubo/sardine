@@ -152,7 +152,10 @@ class SuperDirtHandler(Sender):
                     for pitch in ziffer.pitch_classes:
                         freq.append(pitch.freq)
                 except AttributeError:
-                    sound = None  # the ziffers pattern takes precedence
+                    if ziffer.text == 'r':
+                        sound = "rest"
+                    else:
+                        sound = None  # the ziffers pattern takes precedence
                     freq = 0
 
             if isinstance(freq, list):
@@ -161,28 +164,26 @@ class SuperDirtHandler(Sender):
         if sound is None:
             return
 
+        if sound != "rest":
+            pattern["freq"] = freq
+            pattern["sound"] = sound
+            pattern["orbit"] = orbit
+            pattern["cps"] = round(self.env.clock.phase, 4)
+            pattern["cycle"] = (
+                self.env.clock.bar * self.env.clock.beats_per_bar
+            ) + self.env.clock.beat
 
-        pattern["freq"] = freq
-        pattern["sound"] = sound
-        pattern["orbit"] = orbit
-        pattern["cps"] = round(self.env.clock.phase, 4)
-        pattern["cycle"] = (
-            self.env.clock.bar * self.env.clock.beats_per_bar
-        ) + self.env.clock.beat
-
-        deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
-            if message["sound"] is None:
-                continue
-            serialized = list(chain(*sorted(message.items())))
-            self.call_timed(deadline, self._dirt_play, serialized)
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["sound"] is None:
+                    continue
+                serialized = list(chain(*sorted(message.items())))
+                self.call_timed(deadline, self._dirt_play, serialized)
 
         try:
             if isinstance(ziffer.duration, (int, float)):
                 return ziffer.duration * (self.env.clock.beats_per_bar)
             elif isinstance(ziffer.duration, (list)):
                 return ziffer.duration[0] * (self.env.clock.beats_per_bar)
-            else:
-                return 1.0
         except AttributeError:
             return 1.0 * (self.env.clock.beats_per_bar)

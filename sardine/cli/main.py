@@ -292,6 +292,7 @@ def main():
     Just like before, we are building a monolothic configuration dict that we
     inject into the current config.json file. Not fancy but cool nonetheless!
     """
+
     MENU_CHOICES = [
         "Show Config",
         "Reset",
@@ -302,6 +303,7 @@ def main():
         "More",
         "Exit",
     ]
+
     try:
         USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
@@ -309,25 +311,28 @@ def main():
             "[bold red]No Sardine Configuration found. Please boot Sardine first![/bold red]"
         )
         exit()
+
+    # This panel can stay because it is a splashscreen
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
+
     while True:
+
         menu_select = inquirer.select(
-            message="Select an option", choices=MENU_CHOICES
+            message="Select an option",
+            choices=MENU_CHOICES
         ).execute()
+
         if menu_select == "Exit":
+
             write_to_file = inquirer.confirm(
-                message="Do you wish to save the current config file?"
+                message="Do you wish to save and exit?"
             ).execute()
             if write_to_file:
                 try:
                     write_json_file({"config": USER_CONFIG})
+                    exit()
                 except Exception:
                     raise SystemError("Couldn't write config file!")
-            exit_from_conf = inquirer.confirm(message="Do you wish to exit?").execute()
-            if exit_from_conf:
-                exit()
-            else:
-                continue
         elif menu_select == "Reset":
             create_template_configuration_file(CONFIG_JSON)
             USER_CONFIG = read_json_file()["config"]

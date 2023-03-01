@@ -363,7 +363,6 @@ class MidiHandler(Sender):
 
             if isinstance(note, list):
                 note = f"{{{', '.join([str(x) for x in note])}}}"
-                print(note)
 
 
         pattern = {

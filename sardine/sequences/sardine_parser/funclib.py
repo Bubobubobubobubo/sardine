@@ -577,6 +577,7 @@ class FunctionLibrary:
         random.shuffle(collection)
         return collection
 
+
     def prob(self, prob: list, *x, **kwargs) -> list:
         """Return the pattern specified as second argument with probability"""
         return list(map(lambda x: x if random.random() * 100 < prob[0] else None, x))

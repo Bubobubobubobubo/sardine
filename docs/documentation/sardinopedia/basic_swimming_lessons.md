@@ -24,7 +24,7 @@ def basic():
 
 silence(basic) # or panic()
 ```
-This is the most basic and iconic *swimming function* you can write. We will surely make a sweatshirt out of it one day. It is just like your regular **Python** function to the exception of two little details: 
+This is the most basic and iconic *swimming function* you can write. We will surely make a sweatshirt out of it one day. It is just like your regular **Python** function to the exception of two little details:
 
 - the `@swim` or `@die` decorators.
 
@@ -38,7 +38,7 @@ Using `silence(function_name)` or just `silence()` will halt the function execut
 ### Swimming with style
 
 ```python3
-@swim 
+@swim
 def basic(p=0.5, i=0):
     print('I am swimming now!')
     again(basic, p=0.5, i=i+1)
@@ -48,17 +48,17 @@ silence(basic)
 
 This is a *swimming function* with some minor improvements. The function is passed a period (`p`) and an iterator (`i`) as arguments. This is the function you will want/need to save as a snippet somewhere in your text editor. **Sardine** users write this skeleton constantly, mechanically, without even thinking about it.
 
-- The period (`p`) is the function's **duration**, the `0.5` value representing half of a beat.  
+- The period (`p`) is the function's **duration**, the `0.5` value representing half of a beat.
 
 - The `i` parameter is an hand-crafted **iterator** progressively incremented by recursion. Don't be scared by all this jargon. It just means that the value increases by one each time the function is repeated.
 
 ### Drowning in numbers
 
 ```python3
-@swim 
+@swim
 def basic(p=0.5, i=0, j=0, k=0):
     print(f'I am swimming with {i}, {j}, and {k}!')
-    again(basic, p=0.5, i=i+1, j=j+2, k=P('r*10', i))
+    again(basic, p=0.5, i=i+1, j=j+2, k=P('rand*10', i))
 
 silence(basic)
 ```
@@ -114,7 +114,7 @@ Exchanging data between *swimming functions* just like sardines playing waterpol
 
 ## II - Surfing with surfboards: a concise syntax
 
-Sardine features an alternative *swimming function* based mechanism called *surfboards*. *Surfboards* are inspired by [FoxDot](https://foxdot.org/), another cool *live-coding* library for **Python** created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). Surfboards are great for quick improvisation or for jotting down ideas before composing something larger using *swimming functions*. They also have some features not to be found anywhere else in the system for working with proportional durations, etc... It uses the same syntax and the same philosophy of patterning but it relies on **Sardine**'s temporal foundations. This mode of *swimming* is basically assigning **Senders** to an invisible *swimming function* that runs automatically behind your back. 
+Sardine features an alternative *swimming function* based mechanism called *surfboards*. *Surfboards* are inspired by [FoxDot](https://foxdot.org/), another cool *live-coding* library for **Python** created by [Ryan Kirkbride](https://ryan-kirkbride.github.io/). Surfboards are great for quick improvisation or for jotting down ideas before composing something larger using *swimming functions*. They also have some features not to be found anywhere else in the system for working with proportional durations, etc... It uses the same syntax and the same philosophy of patterning but it relies on **Sardine**'s temporal foundations. This mode of *swimming* is basically assigning **Senders** to an invisible *swimming function* that runs automatically behind your back.
 
 ### Surfboards (Players)
 
@@ -153,7 +153,7 @@ bowl.add_handler(midi)
 cool_sender = my_super_midi_sender.send
 ```
 
-3) Compose a partial function following this template: 
+3) Compose a partial function following this template:
 
 ```python
 def custom_sender(*args, **kwargs):
@@ -174,7 +174,7 @@ The `span` argument can receive any integer or floating point number. That numbe
 
 ```python
 Pa >> d('bd, hh', p='0.5!4, 0.25!4', span=2)
-# Change the span value and observe 
+# Change the span value and observe
 ```
 
 You can mix *surfboards* with different spans, but you might not like what you hear depending on the rhythm you have previously specified.
@@ -182,8 +182,8 @@ You can mix *surfboards* with different spans, but you might not like what you h
 ### The efficiency of surfing
 
 ```python
-PB >> d('jvbass:r*8, ..., pluck, ...')
-PA >> d('bd, ., hh, sn, hh', 
+PB >> d('jvbass:rand*8, ..., pluck, ...')
+PA >> d('bd, ., hh, sn, hh',
         amp=0.4,
         legato='0.3~1', speed='1')
 ```
@@ -195,13 +195,13 @@ This section requires a good understanding of general **Sardine** concepts. You 
 
 ### Swimming really fast
 
-The recursion you define in a *swimming function* is usually rather slow compared to how fast your computer is running the asynchronous loop. If you feel adventurous, you can speed up the recursion and enter the high speed zone. The faster you go, the better the rhythmic precision. The faster, the merrier! Fast *swimming functions* will allow you to have a finely grained control over time and events, making it easier to generate groovy or swinging code. It will also make your LFOs and signal-like patterns feel more natural as they will be sampled more frequently. 
+The recursion you define in a *swimming function* is usually rather slow compared to how fast your computer is running the asynchronous loop. If you feel adventurous, you can speed up the recursion and enter the high speed zone. The faster you go, the better the rhythmic precision. The faster, the merrier! Fast *swimming functions* will allow you to have a finely grained control over time and events, making it easier to generate groovy or swinging code. It will also make your LFOs and signal-like patterns feel more natural as they will be sampled more frequently.
 
 ```python
-@swim 
+@swim
 def fast(p=0.25, i=0):
     D('bd', speed='0.5,2', legato=0.1, i=i, d=4, r=2)
-    D('hh, jvbass:(0|8|4)', 
+    D('hh, jvbass:(0|8|4)',
             pan='[0:1,0.1]', legato=0.1,
             i=i, r=2, d=8 if rarely() else 5)
     D('cp', legato=0.1, i=i, d=8)
@@ -217,7 +217,7 @@ The recipe for *fast swimming* is the following:
 ### Fast swimming template
 
 ```python
-@swim 
+@swim
 def fast(p=0.5, i=0):
     # print("Damn, that's fast!")
     again(fast, p=1/32, i=i+1)
@@ -229,7 +229,7 @@ This is the template for a fast *swimming function*. You can skip the iterator i
 
 ```python
 
-@swim 
+@swim
 def fast(p=0.5, i=0):
     D('bd', i=i, d=8)
     again(fast, d=1/16, i=i+1)
@@ -245,7 +245,7 @@ Every `Sender` can receive three additional arguments that will help you to cont
 Let's illustrate. In the example below, we are playing with various divisors to generate an interesting rythmic pattern. Combine that with more interesting drumming and boom, you now have the secret recipe for an interesting [algorave](https://algorave.com/).
 
 ```python
-@swim 
+@swim
 def fast(p=0.5, i=0):
     D('bd', i=i, d=8)
     D('hh', i=i, d=7)
@@ -259,10 +259,10 @@ Of course we can. So far, we only used one patterning speed because every **send
 
 ```python
 clock.tempo = 125
-@swim 
+@swim
 def there_is_a_light(p=0.5, i=0):
     D('drum', legato=1, speed='1', i=i, d=8)
-    D('drum:[1,2,3,4]', legato=1, 
+    D('drum:[1,2,3,4]', legato=1,
         speed=Pat('1,2,3,4,5,1!2,4!4', i+1, 2, 0.5), i=i, d=4)
     again(there_is_a_light, p=1/8, i=i+1)
 ```

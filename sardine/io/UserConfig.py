@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 
 from appdirs import *
-from rich import print
+from ..logger import print
 
 __all__ = (
     "Config",
@@ -32,6 +32,7 @@ TEMPLATE_CONFIGURATION = {
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "deferred_scheduling": True,
+        "editor": False,
     }
 }
 
@@ -61,6 +62,7 @@ class Config:
     sardine_boot_file: bool
     link_clock: bool
     deferred_scheduling: bool
+    editor: bool
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
@@ -79,6 +81,7 @@ class Config:
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
             deferred_scheduling=config["deferred_scheduling"],
+            editor=config["editor"],
         )
 
     def to_dict(self) -> dict:
@@ -97,6 +100,7 @@ class Config:
                 "link_clock": self.link_clock,
                 "user_config_path": self.user_config_path,
                 "deferred_scheduling": self.deferred_scheduling,
+                "editor": self.editor,
             }
         }
 
@@ -150,6 +154,15 @@ def read_user_configuration() -> Config:
     else:
         USER_DIR.mkdir(parents=True)
         config = create_template_configuration_file(config_file)
+
+        # Creating console file for the web editor
+        Path(USER_DIR / "console.log").touch(exist_ok=True)
+
+        # Create the buffers for the web editor
+        Path(USER_DIR / "buffers").mkdir(parents=True)
+        for number in list(range(0,10)):
+            Path(USER_DIR / "buffers" / f"{number}.py").touch(exist_ok=True)
+
     return config
 
 

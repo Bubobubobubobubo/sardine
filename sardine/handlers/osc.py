@@ -52,15 +52,26 @@ class OSCHandler(Sender):
         )
         osc_send(bun, self._name)
 
+    def send_raw(self, address: str, message: list) -> None:
+        """
+        Public alias for the _send function. It can sometimes be useful to have it 
+        when we do want to write some raw OSC message without formatting it in the 
+        expected SuperDirt format.
+        """
+        self._send(address, message)
+
+
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
+    @alias_param(name="sorted", alias="s")
     def send(
         self,
         address: Optional[StringElement],
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        sort: bool = True,
         **pattern: NumericElement,
     ) -> None:
 
@@ -73,5 +84,8 @@ class OSCHandler(Sender):
             if message["address"] is None:
                 continue
             address = message.pop("address")
-            serialized = list(chain(*sorted(message.items())))
+            if sort:
+                serialized = list(chain(*sorted(message.items())))
+            else:
+                serialized = list(chain(*message.items()))
             self.call_timed(deadline, self._send, f"/{address}", serialized)

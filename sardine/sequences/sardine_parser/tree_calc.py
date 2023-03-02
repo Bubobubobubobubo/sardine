@@ -5,7 +5,7 @@ from time import time
 
 from lark import Transformer, v_args
 from lark.lexer import Token
-from rich import print
+from ...logger import print
 from rich.panel import Panel
 
 from . import funclib
@@ -545,7 +545,7 @@ class CalculateTree(Transformer):
         }
 
         try:
-            if kwarguments.get("do", [1]) >= [1] or not "do" in kwarguments.keys():
+            if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():
                 return modifiers_list[func_name](
                     *list(chain(arguments)), **(kwarguments)
                 )

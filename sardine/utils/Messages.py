@@ -23,6 +23,7 @@ def _ticked(condition: bool):
 
 
 def config_line_printer(config: dict):
+    midi_port = "Automatic" if config.midi == "Sardine" else config.midi
     return (
         f"[yellow]BPM: [red]{config.bpm}[/red],"
         + f"[yellow]BEATS: [red]{config.beats}[/red] "

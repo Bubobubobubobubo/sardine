@@ -42,7 +42,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-
+node_modules/
 # Translations
 *.mo
 *.pot
@@ -60,3 +60,7 @@ target/
 .nvim
 poetry.lock
 .vim
+.vscode
+
+# Svelte
+!fishery/client/src/lib

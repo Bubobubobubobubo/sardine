@@ -2,54 +2,31 @@
 # Taken from the CPython Github Repository. Custom version of the
 # asyncio REPL that will autoload Sardine whenever started.
 
-import ast
-import asyncio
-import code
 import concurrent.futures
-import inspect
-
-# import os
-# import platform
 import threading
-import types
 import warnings
-from asyncio import futures
-from pathlib import Path
-from typing import Optional
+import inspect
+import asyncio
+import types
+import code
+import ast
 
-# import psutil
 from appdirs import user_data_dir
-from rich import print as pretty_print
-from rich.panel import Panel
+from typing import Optional
+from asyncio import futures
+from .runners import Runner
+from pathlib import Path
 
 import sardine
-
-from .runners import Runner
-
-# system = platform.system()
-# # Setting very high priority for this process (time-critical)
-# warning_text = "[yellow]/!\\\\[/yellow] [red bold]  Run Sardine faster by starting it using\
-# \nadministrator priviledges (sudo on Unix..)[/red bold] [yellow]/!\\\\[/yellow]"
-# if system == "Windows":
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(psutil.HIGH_PRIORITY_CLASS)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
-# else:
-#     try:
-#         p = psutil.Process(os.getpid())
-#         p.nice(-20)
-#     except psutil.AccessDenied:
-#         pretty_print(Panel.fit(warning_text))
-#         pass
-
 
 # Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
+LOG_FILE = USER_DIR / "sardine.log"
 
+# The file needs to exist to actually log something
+if not LOG_FILE.exists():
+    LOG_FILE.touch()
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):
     def __init__(self, locals: dict, loop: asyncio.BaseEventLoop):
@@ -128,40 +105,44 @@ async def run_forever():
     await loop.create_future()
 
 
-def start():
-    loop = sardine.event_loop.new_event_loop()
+class ConsoleManager:
 
-    repl_locals = {"asyncio": asyncio}
-    for key in (
-        "__name__",
-        "__package__",
-        "__loader__",
-        "__spec__",
-        "__builtins__",
-        "__file__",
-    ):
-        repl_locals[key] = globals()[key]
+    def __init__(self):
+        self.loop = sardine.event_loop.new_event_loop()
 
-    console = AsyncIOInteractiveConsole(repl_locals, loop)
+        repl_locals = {"asyncio": asyncio}
+        for key in (
+            "__name__",
+            "__package__",
+            "__loader__",
+            "__spec__",
+            "__builtins__",
+            "__file__",
+        ):
+            repl_locals[key] = globals()[key]
 
-    try:
-        import readline  # NoQA
-    except ImportError:
-        pass
+        self.console = AsyncIOInteractiveConsole(repl_locals, self.loop)
 
-    repl_thread = REPLThread(console=console)
-    repl_thread.daemon = True
-    repl_thread.start()
 
-    with Runner(loop=loop) as runner:
-        while True:
-            try:
-                runner.run(run_forever())
-            except KeyboardInterrupt:
-                if console.repl_future and not console.repl_future.done():
-                    console.repl_future.cancel()
-                    console.repl_future_interrupted = True
+    def start(self):
+        try:
+            import readline  # NoQA
+        except ImportError:
+            pass
+
+        repl_thread = REPLThread(console=self.console)
+        repl_thread.daemon = True
+        repl_thread.start()
+
+        with Runner(loop=self.loop) as runner:
+            while True:
+                try:
+                    runner.run(run_forever())
+                except KeyboardInterrupt:
+                    if self.console.repl_future and not self.console.repl_future.done():
+                        self.console.repl_future.cancel()
+                        self.console.repl_future_interrupted = True
+                    else:
+                        break
                 else:
                     break
-            else:
-                break

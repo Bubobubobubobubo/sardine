@@ -1,12 +1,10 @@
-import asyncio
-import sys
-from typing import Optional, Union
-
-import mido
-from rich import print
-
-from ..utils import alias_param
 from .sender import Number, NumericElement, Sender
+from typing import Optional, Union
+from ..utils import alias_param
+from ..logger import print
+import asyncio
+import mido
+import sys
 
 __all__ = ("MidiHandler",)
 
@@ -24,8 +22,16 @@ class MidiHandler(Sender):
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
-        if self._port_name is None:
-            self._port_name = "Sardine" if sys.platform not in "win32" else self._available_ports[0]
+
+        # Getting a default MIDI port name
+        if port_name in self._available_ports:
+            pass
+        else:
+            if sys.platform in "win32":
+                self._port_name = self._available_ports[0]
+            else:
+                self._port_name = "Sardine"
+
         self._midi = None
 
         # For MacOS/Linux
@@ -65,6 +71,18 @@ class MidiHandler(Sender):
             "sysex": self._sysex,
             "pitchwheel": self._pitch_wheel,
         }
+
+        # Reference to the ziffers parser if needed!
+        self._ziffers_parser = None
+
+    # Ziffers implementation 
+    @property
+    def ziffers_parser(self):
+        return self._ziffers_parser
+
+    @ziffers_parser.setter
+    def ziffers_parser(self, parser):
+        self._ziffers_parser = parser
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} port={self._port_name!r} nudge={self._nudge}>"
@@ -278,3 +296,87 @@ class MidiHandler(Sender):
             for k, v in message.items():
                 message[k] = int(v)
             self.call_timed(deadline, self._program_change, **message)
+
+    @alias_param(name="data", alias="d")
+    @alias_param(name="value", alias="v")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_sysex(
+        self,
+        data: list[int],
+        value: NumericElement = 60,
+        optional_modulo: NumericElement = 127,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+    ) -> None:
+        if data is None:
+            return
+
+        pattern = {"value": value}
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["value"] is None:
+                continue
+            for k, v in message.items():
+                message[k] = int(v)
+            self.call_timed(
+                deadline, self._sysex,
+                **{"data": [*data, *[int(message['value']) % optional_modulo]]}
+            )
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="duration", alias="dur")
+    @alias_param(name="velocity", alias="vel")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_ziffers(
+        self,
+        ziff: str,
+        velocity: NumericElement = 100,
+        channel: NumericElement = 0,
+        duration: NumericElement = 1,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        scale: str = "IONIAN",
+        key: str = "C4",
+    ) -> int | float:
+        """
+        Alternative to the send method for the ziffers sender. The message will be pre-
+        pared and mixed with the result of a ziffers message!
+        """
+        if not self._ziffers_parser:
+            raise Exception("The ziffers package is not imported!")
+        else:
+            # Getting the ziffer pattern
+            ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
+            try:
+                note = ziffer.note
+            except AttributeError: # if there is no note, it must be a silence
+                try:
+                    note = ziffer.notes
+                except AttributeError:
+                    note = "."
+
+            if isinstance(note, list):
+                note = f"{{{', '.join([str(x) for x in note])}}}"
+
+
+        pattern = {
+            "note": note,
+            "velocity": velocity,
+            "channel": channel,
+            "duration": duration,
+        }
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["note"] is None:
+                continue
+            for k in ("note", "velocity", "channel"):
+                message[k] = int(message[k])
+            self.call_timed(deadline, self.send_midi_note, **message)
+
+        return ziffer.duration * (self.env.clock.beats_per_bar)

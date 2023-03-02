@@ -1,7 +1,5 @@
+from fishery.console import ConsoleManager
 import click
-
-from . import console
-from .profiler import Profiler
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],
@@ -21,41 +19,50 @@ CONTEXT_SETTINGS = {
 @click.pass_context
 def main(ctx: click.Context):
     if ctx.invoked_subcommand is None:
+        console = ConsoleManager()
         console.start()
 
-
+# fishery web
+# fishery web --host
+# fishery web --port
+# fishery web --host --port
 @main.command(
-    short_help="Run sardine with a background profiler (requires the yappi package)",
+    short_help="Starts sardine as a web server.",
     help="""
-        This command starts the deterministic profiler, yappi, and measures statistics
-        for both sardine and any functions written in the console. Once the REPL
-        is closed, a pstats file will be written containing the session's stats.
-        You can inspect the file's contents with Python's built-in pstats module
-        or a third-party package like snakeviz.
+        This command starts sardine as a web server. The server can be accessed
+        at http://localhost:8000 by default.
         """,
 )
 @click.option(
-    "-c",
-    "--clock",
-    default="wall",
-    help="The clock type to use. Wall time includes time spent waiting, "
-    "while CPU time ignores it.",
+    "-h",
+    "--host",
+    default="localhost",
+    help="The host to bind the server to.",
     show_default=True,
-    type=click.Choice(("cpu", "wall"), case_sensitive=False),
+    type=str,
 )
 @click.option(
-    "-o",
-    "filepath",
-    default="stats.prof",
-    help="The path to use when outputting the pstats file",
+    "-p",
+    "--port",
+    default=8000,
+    help="The port to bind the server to.",
     show_default=True,
-    type=click.Path(dir_okay=False, writable=True),
+    type=int,
 )
-def profile(clock: str, filepath: str):
-    profiler = Profiler(clock=clock, filepath=filepath)
-    with profiler:
-        console.start()
-
+@click.option(
+    "--no-browser",
+    is_flag=True,
+    help="Prevents the server from opening a browser window.",
+)
+def web(host: str, port: int, no_browser: bool):
+    from .server import WebServer
+    consoleManager = ConsoleManager()
+    server = WebServer(host=host, port=port, )
+    server.start_in_thread(consoleManager.console)
+    if not no_browser:
+        server.open_in_browser()
+    consoleManager.start()
+    
 
 if __name__ == "__main__":
     main()

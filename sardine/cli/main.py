@@ -4,7 +4,7 @@ from InquirerPy.base.control import Choice
 from InquirerPy import inquirer
 from rich.panel import Panel
 from pathlib import Path
-from rich import print
+from ..logger import print
 from appdirs import *  # Wildcard used in docs
 import click
 import json
@@ -233,19 +233,18 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     return config_file
 
 
-def _select_parser(config_file: dict) -> dict:
-    """Select the default parser to be used"""
-    parser = inquirer.select(
-        message="What parser do you wish to play with?",
+def _select_editor(config_file: dict) -> dict:
+    """Select to spawn or not the embedded text editor"""
+    editor = inquirer.select(
+        message="Would you like to open up the embedded code editor?",
         choices=[
-            Choice(value="sardine", enabled=True, name="Sardine"),
-            Choice(value="ziffers", name="Ziffers"),
+            Choice(value=True, enabled=True, name="Yes"),
+            Choice(value=False, name="No"),
         ],
         default=None,
     ).execute()
-    config_file["parser"] = parser
+    config_file["editor"] = editor
     return config_file
-
 
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
@@ -293,16 +292,18 @@ def main():
     Just like before, we are building a monolothic configuration dict that we
     inject into the current config.json file. Not fancy but cool nonetheless!
     """
+
     MENU_CHOICES = [
         "Show Config",
         "Reset",
         "MIDI",
         "Clock",
         "SuperCollider",
-        "Parser",
+        "Editor",
         "More",
         "Exit",
     ]
+
     try:
         USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
@@ -310,25 +311,28 @@ def main():
             "[bold red]No Sardine Configuration found. Please boot Sardine first![/bold red]"
         )
         exit()
+
+    # This panel can stay because it is a splashscreen
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
+
     while True:
+
         menu_select = inquirer.select(
-            message="Select an option", choices=MENU_CHOICES
+            message="Select an option",
+            choices=MENU_CHOICES
         ).execute()
+
         if menu_select == "Exit":
+
             write_to_file = inquirer.confirm(
-                message="Do you wish to save the current config file?"
+                message="Do you wish to save and exit?"
             ).execute()
             if write_to_file:
                 try:
                     write_json_file({"config": USER_CONFIG})
+                    exit()
                 except Exception:
                     raise SystemError("Couldn't write config file!")
-            exit_from_conf = inquirer.confirm(message="Do you wish to exit?").execute()
-            if exit_from_conf:
-                exit()
-            else:
-                continue
         elif menu_select == "Reset":
             create_template_configuration_file(CONFIG_JSON)
             USER_CONFIG = read_json_file()["config"]
@@ -338,12 +342,13 @@ def main():
             USER_CONFIG = _select_midi_output(config_file=USER_CONFIG)
         elif menu_select == "Clock":
             USER_CONFIG = _select_bpm_and_timing(config_file=USER_CONFIG)
-        elif menu_select == "Parser":
-            USER_CONFIG = _select_parser(config_file=USER_CONFIG)
         elif menu_select == "SuperCollider":
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)
+        elif menu_select == "Editor":
+            USER_CONFIG = _select_editor(config_file=USER_CONFIG)
+
 
 
 if __name__ == "__main__":

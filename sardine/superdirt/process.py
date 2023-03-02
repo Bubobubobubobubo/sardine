@@ -10,9 +10,8 @@ from typing import Optional, Union
 
 import psutil
 from appdirs import *
-from rich import print
+from ..logger import print
 from rich.console import Console
-from rich.panel import Panel
 
 __all__ = ("SuperDirtProcess",)
 
@@ -51,7 +50,7 @@ class SuperDirtProcess:
     def _find_startup_file(self, user_file: Union[str, None] = None) -> Path:
         """Find the SuperDirt startup file"""
         if not user_file:
-            file_path = Path("/".join([str(self._user_dir), "default_superdirt.scd"]))
+            file_path = self._user_dir / "default_superdirt.scd"
             if file_path.is_file():
                 return file_path
             else:
@@ -69,13 +68,17 @@ class SuperDirtProcess:
 
     def _find_synths_directory(self) -> Path:
         """Find or create the synths directory needed"""
-        path = Path("/".join([str(self._user_dir), "synths/"]))
+        path = self._user_dir / "synths/"
         exists = path.is_dir()
         if exists:
             return path
         else:
             path.mkdir(parents=True)
             return path
+
+    def __call__(self, code: str) -> None:
+        """Send code to the SuperCollider sub-process"""
+        self._write_stdin(code)
 
     def terminate(self) -> None:
         """Terminate the SCLang process"""
@@ -89,30 +92,26 @@ class SuperDirtProcess:
         """
         if "no synth or sample" in decoded_line:
             sample_name = decoded_line.split("'")
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Sample {sample_name[1]} not found."))
+            print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))
+            print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
         if "listening to Tidal on port 57120" in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
+            print(f"[[green]/!\\\\[/green] - Audio server ready!]")
+            if self._synth_directory is not None:
+                self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
             print("\n")
             print(
-                Panel.fit(
                     (
                         f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
                         + "\nrunning somewhere. It might be a mistake or a"
                         + "\nzombie process. Run `Server.killAll` in an SC"
                         + "\nwindow (can be the IDE of `sclang` in term..)"
                     )
-                )
             )
         if "Mismatched sample rates are not supported" in decoded_line:
             print("\n")
             print(
-                Panel.fit(
                     (
                         f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
                         + "\nsure that your audio input sample rate and"
@@ -120,7 +119,6 @@ class SuperDirtProcess:
                         + "\nThis is usually modified in your OS audio"
                         + "\nconfiguration menus. Reboot Sardine!"
                     )
-                )
             )
 
     async def monitor(self):
@@ -198,6 +196,10 @@ class SuperDirtProcess:
         """Open SuperCollider frequency scope + VUmeter"""
         self._write_stdin("s.scope(); s.meter()")
 
+    def info(self) -> None:
+        """Open makeWindow window"""
+        self._write_stdin("s.makeWindow")
+
     def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
@@ -224,7 +226,7 @@ class SuperDirtProcess:
         if len(loaded_synthdefs_message) == 1:
             return
         else:
-            print(Panel.fit("\n".join(loaded_synthdefs_message)))
+            print("\n".join(loaded_synthdefs_message))
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""
@@ -267,9 +269,12 @@ SCLang && SuperDirt...[/yellow]"
                 start_new_session=True,
             )
             if self._startup_file is not None:
-                self._write_stdin(message="""load("{}")""".format(self._startup_file))
-            if self._synth_directory is not None:
-                self.load_custom_synthdefs()
+                startup_file_path = (
+                    str(self._startup_file).replace("\\", "\\\\")
+                    if platform.system() == "Windows"
+                    else self._startup_file
+                )
+                self._write_stdin(message="""load("{}")""".format(startup_file_path))
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""

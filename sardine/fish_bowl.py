@@ -1,14 +1,13 @@
 import asyncio
 import collections
+
 from typing import Hashable, Iterable, Optional, Protocol, Union
-
-from exceptiongroup import BaseExceptionGroup
-
+from .sequences import Iterator, ListParser, Variables
 from .base import BaseClock, BaseHandler, BaseParser
+from exceptiongroup import BaseExceptionGroup
 from .clock import InternalClock, Time
 from .handlers import SleepHandler
 from .scheduler import Scheduler
-from .sequences import Iterator, ListParser, Variables, ZiffersParser
 
 __all__ = ("FishBowl",)
 

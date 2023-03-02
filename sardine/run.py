@@ -1,15 +1,22 @@
-import importlib
-import sys
-from pathlib import Path
-from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from rich import print
-from . import *
+from .utils import config_line_printer, get_snap_deadline, sardine_intro
+from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
-from .utils import config_line_printer, get_snap_deadline, sardine_intro
-from .sequences import ZiffersParser, ListParser
-from .sequences.sequence import E, mod, imod, pick
+from .sequences import ListParser
+from .logger import print
+from pathlib import Path
+import importlib
+from . import *
+import sys
+
+try:
+    from ziffers import z
+    ziffers_imported: bool = True
+except ImportError:
+    print("Install the ziffers package for using Ziffers patterns")
+    ziffers_imported: bool = False
+
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
@@ -41,7 +48,7 @@ else:
 # Initialisation of the FishBowl (the environment holding everything together)
 
 clock = LinkClock if config.link_clock else InternalClock
-parser = ZiffersParser if config.parser == "ziffers" else ListParser
+parser = ListParser
 bowl = FishBowl(
     clock=clock(tempo=config.bpm, bpb=config.beats),
     parser=parser(),
@@ -67,7 +74,15 @@ if config.boot_supercollider:
 
 # MIDI Handler: matching with the MIDI port defined in the configuration file
 midi = MidiHandler(port_name=str(config.midi))
+midi_in = MidiInHandler(
+    target=ControlTarget(control=20, channel=1),
+    port=str(config.midi)
+)
 bowl.add_handler(midi)
+bowl.add_handler(midi_in)
+if ziffers_imported:
+    midi._ziffers_parser = z
+
 
 # OSC Loop: handles processing OSC messages
 osc_loop = OSCLoop()
@@ -91,6 +106,8 @@ O = dummy_osc.send
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
     dirt = SuperDirtHandler(loop=osc_loop)
+    if ziffers_imported:
+        dirt._ziffers_parser = z
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
@@ -98,7 +115,6 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
-
 
 #######################################################################################
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
@@ -350,32 +366,42 @@ clock = bowl.clock
 
 I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
 P = Pat  # Generic pattern interface
+
 N = midi.send  # For sending MIDI Notes
+if ziffers_imported:
+    ZN = midi.send_ziffers
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
+SY = midi.send_sysex  # For MIDI Sysex messages
 play = Player.play
 
+def sy(*args, **kwargs):
+    return play(midi, midi.send_sysex, *args, **kwargs)
 
 def n(*args, **kwargs):
     return play(midi, midi.send, *args, **kwargs)
+
+def zn(*args, **kwargs):
+    return play(midi, midi.send_ziffers, *args, **kwargs)
 
 
 def cc(*args, **kwargs):
     return play(midi, midi.send_control, *args, **kwargs)
 
-
 def pc(*args, **kwargs):
     return play(midi, midi.send_program, *args, **kwargs)
 
-
 if config.superdirt_handler:
     D = dirt.send
-
+    if ziffers_imported:
+        ZD = dirt.send_ziffers
     def d(*args, **kwargs):
         return play(dirt, dirt.send, *args, **kwargs)
+    def zd(*args, **kwargs):
+        return play(dirt, dirt.send_ziffers, *args, **kwargs)
+
 
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
-
 bowl.start()

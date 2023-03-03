@@ -72,17 +72,21 @@ if config.boot_supercollider:
 #######################################################################################
 # HANDLERS INITIALIZATION. YOU CAN ADD YOUR MODULAR COMPONENTS HERE.
 
-# MIDI Handler: matching with the MIDI port defined in the configuration file
-midi = MidiHandler(port_name=str(config.midi))
-midi_in = MidiInHandler(
-    target=ControlTarget(control=20, channel=1),
-    port=str(config.midi)
-)
-bowl.add_handler(midi)
-bowl.add_handler(midi_in)
-if ziffers_imported:
-    midi._ziffers_parser = z
+try:
 
+    # MIDI Handler: matching with the MIDI port defined in the configuration file
+    midi = MidiHandler(port_name=str(config.midi))
+    midi_in = MidiInHandler(
+        target=ControlTarget(control=20, channel=1),
+        port=str(config.midi)
+    )
+    bowl.add_handler(midi)
+    bowl.add_handler(midi_in)
+    if ziffers_imported:
+        midi._ziffers_parser = z
+
+except OSError as e:
+    print(f'{e}: [red]Invalid MIDI port![/red]')
 
 # OSC Loop: handles processing OSC messages
 osc_loop = OSCLoop()

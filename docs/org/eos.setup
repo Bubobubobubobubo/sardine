@@ -1,0 +1,11 @@
+# -*- mode: org; -*-
+
+#+LANGUAGE: en
+#+PROPERTY: header-args:emacs-lisp :tangle yes
+#+PROPERTY: header-args:sh :eval no
+#+HTML_HEAD: <link rel="stylesheet" href="https://writequit.org/css/org-spec.css" type="text/css" />
+#+HTML_HEAD: <link rel="stylesheet" href="/css/org-spec.css" type="text/css" />
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+OPTIONS: H:4 num:nil toc:t \n:nil ::t |:t ^:{} -:t f:t *:t
+#+OPTIONS: d:(HIDE) tags:not-in-toc
+#+STARTUP: nodlcheck lognotestate showall

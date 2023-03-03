@@ -1,0 +1,502 @@
+# Turn off default internal styles
+#+OPTIONS: html-style:nil
+
+#+HTML_HEAD: <style type="text/css">
+#+HTML_HEAD: body {
+#+HTML_HEAD:     font-family: Helvetica, Arial, sans-serif;
+#+HTML_HEAD:     font-size: 16px;
+#+HTML_HEAD:     line-height: 1.4;
+#+HTML_HEAD:     color: #33333f;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: code {
+#+HTML_HEAD:     font-family: "Inconsolata", "monospace";
+#+HTML_HEAD:     font-size: 16px;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: p>code, li>code {
+#+HTML_HEAD:     background-color: #eee;
+#+HTML_HEAD:     padding: 0.25em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h1, h2, h3 {
+#+HTML_HEAD:     font-family: "Roboto Slab", Helvetica, Arial, sans-serif;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h2 {
+#+HTML_HEAD:     border-bottom: 1px solid #f0c;
+#+HTML_HEAD:     padding-bottom: 0.5em;
+#+HTML_HEAD:     font-size: 1.75em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h3 {
+#+HTML_HEAD:     margin-top: 2em;
+#+HTML_HEAD:     font-size: 1.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h4 {
+#+HTML_HEAD:     font-size: 1.25em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h5 {
+#+HTML_HEAD:     font-size: 1em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: h2 code, h3 code, h4 code, h5 code, td code {
+#+HTML_HEAD:     font-family: inherit !important;
+#+HTML_HEAD:     font-size: inherit !important;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: td code {
+#+HTML_HEAD:     font-weight: bold;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a:link, a:hover, a:visited {
+#+HTML_HEAD:                      text-decoration: none;
+#+HTML_HEAD:                      color: black;
+#+HTML_HEAD:                  }
+#+HTML_HEAD: 
+#+HTML_HEAD: a:link {
+#+HTML_HEAD:     background: #ff8;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a:visited {
+#+HTML_HEAD:     color: #666;
+#+HTML_HEAD:     background: #ffc;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a:link:hover,
+#+HTML_HEAD: a:visited:hover {
+#+HTML_HEAD:     background: #ff0;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a[href^="http"] {
+#+HTML_HEAD:     background: #bff;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a[href^="http"]:visited {
+#+HTML_HEAD:     background: #dff;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a[href^="http"]:link:hover,
+#+HTML_HEAD: a[href^="http"]:visited:hover {
+#+HTML_HEAD:     background: #0ff;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: a[href^="http"]:after {
+#+HTML_HEAD:     content: "\21B3";
+#+HTML_HEAD:     background: white;
+#+HTML_HEAD:     padding-left: 0.2em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #meta {
+#+HTML_HEAD:     margin-top: 2em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents a:link,
+#+HTML_HEAD: #table-of-contents a:visited {
+#+HTML_HEAD:     color: black;
+#+HTML_HEAD:     background: transparent;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents {
+#+HTML_HEAD:     line-height: 1.2;
+#+HTML_HEAD: }
+#+HTML_HEAD: #table-of-contents h2 {
+#+HTML_HEAD:     border-bottom: 0;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents ul {
+#+HTML_HEAD:     list-style: none;
+#+HTML_HEAD:     padding-left: 0.5em;
+#+HTML_HEAD:     font-weight: normal;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents div>ul>li {
+#+HTML_HEAD:     margin-top: 1em;
+#+HTML_HEAD:     font-weight: bold;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents .tag {
+#+HTML_HEAD:     display: none;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents .todo,
+#+HTML_HEAD: #table-of-contents .done {
+#+HTML_HEAD:     font-size: 80%;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: #table-of-contents ol>li {
+#+HTML_HEAD:     margin-top: 1em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: table {
+#+HTML_HEAD:     width: 100%;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: table, th, td {
+#+HTML_HEAD:     border: 1px solid #666;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: th, td {
+#+HTML_HEAD:     padding: 0.5em;
+#+HTML_HEAD:     text-align: left;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: tbody tr:nth-child(odd) {
+#+HTML_HEAD:     background-color: #eee;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: img {
+#+HTML_HEAD:     max-width: 90%;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice {
+#+HTML_HEAD:     position: relative;
+#+HTML_HEAD:     margin: 0 1.2em;
+#+HTML_HEAD:     padding: 0.25em 1em;
+#+HTML_HEAD:     border-left: 4px solid;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: table + div.notice {
+#+HTML_HEAD:     margin-top: 2em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice a {
+#+HTML_HEAD:     background: transparent !important;
+#+HTML_HEAD:     border-bottom: 1px dotted;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice a[href^="http"]:after {
+#+HTML_HEAD:     background: transparent !important;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice:before {
+#+HTML_HEAD:     position: absolute;
+#+HTML_HEAD:     top: 0;
+#+HTML_HEAD:     right: 0;
+#+HTML_HEAD:     padding: 0.25em 0.5em 0;
+#+HTML_HEAD:     font-size: 60%;
+#+HTML_HEAD:     border-bottom-left-radius: 0.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-warning {
+#+HTML_HEAD:     background: #fcc;
+#+HTML_HEAD:     color: #600;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-example {
+#+HTML_HEAD:     background: #def;
+#+HTML_HEAD:     color: #069;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-info {
+#+HTML_HEAD:     background: #efe;
+#+HTML_HEAD:     color: #060;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-warning a {
+#+HTML_HEAD:     color: #600;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-example a {
+#+HTML_HEAD:     color: #069;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .notice-info a {
+#+HTML_HEAD:     color: #060;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice-warning:before {
+#+HTML_HEAD:     content: "WARNING";
+#+HTML_HEAD:     background: #c99;
+#+HTML_HEAD:     color: #fcc;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice-example:before {
+#+HTML_HEAD:     content: "EXAMPLE";
+#+HTML_HEAD:     background: #abc;
+#+HTML_HEAD:     color: #def;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.notice-info:before {
+#+HTML_HEAD:     content: "INFO";
+#+HTML_HEAD:     background: #9c9;
+#+HTML_HEAD:     color: #efe;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: /* things inside the #+BEGIN_NOTE...#+END_NOTE block */
+#+HTML_HEAD: div.NOTE a {
+#+HTML_HEAD:     background: transparent !important;
+#+HTML_HEAD:     border-bottom: 1px dotted;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.NOTE {
+#+HTML_HEAD:     position: relative;
+#+HTML_HEAD:     margin: 0 1.2em;
+#+HTML_HEAD:     padding: 0.25em 1em;
+#+HTML_HEAD:     border-left: 4px solid;
+#+HTML_HEAD:     margin-top: 2em;
+#+HTML_HEAD:     background: #efe;
+#+HTML_HEAD:     color: #060;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.NOTE:before {
+#+HTML_HEAD:     position: absolute;
+#+HTML_HEAD:     top: 0;
+#+HTML_HEAD:     right: 0;
+#+HTML_HEAD:     padding: 0.25em 0.5em 0;
+#+HTML_HEAD:     font-size: 60%;
+#+HTML_HEAD:     border-bottom-left-radius: 0.5em;
+#+HTML_HEAD:     content: "NOTE";
+#+HTML_HEAD:     background: #9c9;
+#+HTML_HEAD:     color: #efe;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: blockquote {
+#+HTML_HEAD:     padding: 0px 10px 0px 10px;
+#+HTML_HEAD:     border: 1px solid #ddd;
+#+HTML_HEAD:     background: #eee;
+#+HTML_HEAD:     box-shadow: 5px 5px 5px #eee;
+#+HTML_HEAD:     border-radius: 2px;
+#+HTML_HEAD:     line-height: 1.2em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre {
+#+HTML_HEAD:     font-family: "Inconsolata", "monospace";
+#+HTML_HEAD:     font-size: 100%;
+#+HTML_HEAD:     border: 0;
+#+HTML_HEAD:     box-shadow: none;
+#+HTML_HEAD:     overflow: auto;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.example:before {
+#+HTML_HEAD:     content: "EXAMPLE";
+#+HTML_HEAD:     display: block;
+#+HTML_HEAD:     border-bottom: 1px dotted;
+#+HTML_HEAD:     margin-bottom: 1em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.example {
+#+HTML_HEAD:     background: #fec;
+#+HTML_HEAD:     color: #666;
+#+HTML_HEAD:     font-size: 0.85em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre {
+#+HTML_HEAD:     background-color: #f8f8f8;
+#+HTML_HEAD:     background-size: 8px 8px;
+#+HTML_HEAD:     background-image: linear-gradient(135deg, transparent 25%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 50%, transparent 50%, transparent 75%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02));
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src {
+#+HTML_HEAD:     padding: 0.5em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src:before {
+#+HTML_HEAD:     display: block;
+#+HTML_HEAD:     position: absolute;
+#+HTML_HEAD:     background-color: #ccccd0;
+#+HTML_HEAD:     top: 0;
+#+HTML_HEAD:     right: 0;
+#+HTML_HEAD:     padding: 0.25em 0.5em;
+#+HTML_HEAD:     border-bottom-left-radius: 8px;
+#+HTML_HEAD:     border: 0;
+#+HTML_HEAD:     color: white;
+#+HTML_HEAD:     font-size: 80%;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-plantuml:before {
+#+HTML_HEAD:     content: "UML";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-javascript:before {
+#+HTML_HEAD:     content: "JS";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-clojure:before {
+#+HTML_HEAD:     content: "CLJ";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-c:before {
+#+HTML_HEAD:     content: "C";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-sh:before {
+#+HTML_HEAD:     content: "Shell";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: pre.src-es:before {
+#+HTML_HEAD:     content: "ES";
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-string {
+#+HTML_HEAD:     color: #f94;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-keyword {
+#+HTML_HEAD:     color: #c07;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-variable-name {
+#+HTML_HEAD:     color: #f04;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-clojure-keyword {
+#+HTML_HEAD:     color: #09f;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-comment, span.org-comment-delimiter {
+#+HTML_HEAD:     color: #999;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-rainbow-delimiters-depth-1, span.org-rainbow-delimiters-depth-5 {
+#+HTML_HEAD:     color: #666;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-rainbow-delimiters-depth-2, span.org-rainbow-delimiters-depth-6 {
+#+HTML_HEAD:     color: #888;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-rainbow-delimiters-depth-3, span.org-rainbow-delimiters-depth-7 {
+#+HTML_HEAD:     color: #aaa;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: span.org-rainbow-delimiters-depth-4, span.org-rainbow-delimiters-depth-8 {
+#+HTML_HEAD:     color: #ccc;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: div.figure {
+#+HTML_HEAD:     font-size: 0.85em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .tag {
+#+HTML_HEAD:     font-family: "Roboto Slab", Helvetica, Arial, sans-serif;
+#+HTML_HEAD:     font-size: 11px;
+#+HTML_HEAD:     font-weight: normal;
+#+HTML_HEAD:     float: right;
+#+HTML_HEAD:     margin-top: 1em;
+#+HTML_HEAD:     background: transparent;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .tag span {
+#+HTML_HEAD:     background: #ccc;
+#+HTML_HEAD:     padding: 0 0.5em;
+#+HTML_HEAD:     border-radius: 0.2em;
+#+HTML_HEAD:     color: white;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .todo, .done {
+#+HTML_HEAD:     font-family: "Roboto Slab", Helvetica, Arial, sans-serif;
+#+HTML_HEAD:     font-weight: normal;
+#+HTML_HEAD:     padding: 0 0.25em;
+#+HTML_HEAD:     border-radius: 0.2em;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .todo {
+#+HTML_HEAD:     background: #f04;
+#+HTML_HEAD:     color: white;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: .done {
+#+HTML_HEAD:     background: #5f7;
+#+HTML_HEAD:     color: white;
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: @media screen {
+#+HTML_HEAD:     h1.title {
+#+HTML_HEAD:         text-align: left;
+#+HTML_HEAD:         margin: 0.5em 0 1em 0;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     h2 {
+#+HTML_HEAD:         margin-top: 3em;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     #table-of-contents {
+#+HTML_HEAD:         position: fixed;
+#+HTML_HEAD:         top: 0;
+#+HTML_HEAD:         left: 0;
+#+HTML_HEAD:         padding: 2em 0 2em 2em;
+#+HTML_HEAD:         width: 290px;
+#+HTML_HEAD:         height: 100vh;
+#+HTML_HEAD:         font-size: 11px;
+#+HTML_HEAD:         background: #eee;
+#+HTML_HEAD:         overlow-x: hidden;
+#+HTML_HEAD:         overlow-y: auto;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     #table-of-contents h2 {
+#+HTML_HEAD:         margin-top: 0;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     #table-of-contents code {
+#+HTML_HEAD:         font-size: 12px;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     div#content {
+#+HTML_HEAD:         margin-left: 320px;
+#+HTML_HEAD:         max-width: 1100px;
+#+HTML_HEAD:     }
+#+HTML_HEAD:     div#postamble {
+#+HTML_HEAD:         margin-left: 320px;
+#+HTML_HEAD:         max-width: 1100px;
+#+HTML_HEAD:     }
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: @media screen and (max-width: 1024px) {
+#+HTML_HEAD:     html, body {
+#+HTML_HEAD:         font-size: 14px;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     #table-of-contents {
+#+HTML_HEAD:         display: none;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     h1.title {
+#+HTML_HEAD:         margin-left: 0%;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     div#content {
+#+HTML_HEAD:         margin-left: 5%;
+#+HTML_HEAD:         max-width: 90%;
+#+HTML_HEAD:     }
+#+HTML_HEAD:     div#postamble {
+#+HTML_HEAD:         margin-left: 5%;
+#+HTML_HEAD:         max-width: 90%;
+#+HTML_HEAD:     }
+#+HTML_HEAD: }
+#+HTML_HEAD: 
+#+HTML_HEAD: @media print {
+#+HTML_HEAD: 
+#+HTML_HEAD:     body {
+#+HTML_HEAD:         color: black;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     @page {
+#+HTML_HEAD:         margin: 25mm;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     h2, h3 {
+#+HTML_HEAD:         page-break-before: always;
+#+HTML_HEAD:         margin-top: 0;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     table {
+#+HTML_HEAD:         page-break-inside: avoid;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     a:visited {
+#+HTML_HEAD:         color: black;
+#+HTML_HEAD:         background: #ff8;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     a[href^="http"]:visited {
+#+HTML_HEAD:         background: #bff;
+#+HTML_HEAD:     }
+#+HTML_HEAD: 
+#+HTML_HEAD:     div.notice:before {
+#+HTML_HEAD:         display: none;
+#+HTML_HEAD:     }
+#+HTML_HEAD: }
+#+HTML_HEAD: </style>

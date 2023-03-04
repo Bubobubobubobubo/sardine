@@ -1,17 +1,53 @@
-#+title: Sardine Documentation
+#+title: 🐟 Sardine 🐟
+#+SUBTITLE: 🫧 A Python Live Coding Instrument 🫧
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="gray/gray.css" />
+#+BEGIN_EXPORT html
+<script>
+    // select #text-table-of-contents
+    const menu = document.querySelector('#text-table-of-contents');
 
+    // select the first ul li's
+    const menuItems = menu.querySelectorAll('ul li');
+
+    // add detail tag inside thye first li level and summary arounbd the ul
+    menuItems.forEach((item) => {
+        // add detail tag to the first li level
+        item.innerHTML = `<details>${item.innerHTML}</details>`;
+        // add summary tag around the a
+        item.querySelector('a').outerHTML = `<summary>${item.querySelector('a').outerHTML}</summary>`;
+    });
+
+
+    // select divs startint with id outline-container-x
+    const outlines = document.querySelectorAll('div[id^="outline-container-"]');
+    // add details tag around them
+    outlines.forEach((outline) => {
+        outline.innerHTML = `<details>${outline.innerHTML}</details>`;
+    });
+    // inside each details tag, add summary tag around the h2
+    const details = document.querySelectorAll('details');
+    details.forEach((detail) => {
+        detail.querySelector('h2').outerHTML = `<summary>${detail.querySelector('h2').outerHTML}</summary>`;
+    });
+</script>
+#+END_EXPORT
+
+#+begin_quote
+
+*With Sardine you can*:
 - Play synthesizers and audio samples using *SuperCollider*.
 - Control synthesizers through MIDI/OSC messages.
 - Interconnect audio/video softwares and/or sound engines.
-- Play collaboratively / synchronise your code with your friends.
-- Extend *Sardine* using any *Python* package.
+- Play collaboratively with your friends.
+- Extend your environment using any *Python* package.
 
-*Sardine* is designed for you to explore algorithmic improvisation using a friendly syntax/environment. This software is made for music, it transforms *Python* in a musical instrument capable of sequencing any event in time. The code can be updated anytime while the program is running, a technique called *live coding*!
+*Sardine* is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. *Sardine* is made for music. It transforms *Python* in a musical instrument capable of sequencing any event in time. The code can be updated anytime while the program is running, a technique called *live coding*!
 
 | *It's just Python!*                                                                                                                 | *Collaborative*                                                                                                                     | *Free/Open Source Software*                                                                                                         |
 |-------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------|
 | Sardine is just timed Python. Customize your workflow using all the packages and libraries you like! Sardine can be extended for other purposes! Pattern your connected teapot! Crash in rhythm! | Sardine can be synchronized using the MIDI or the Link Protocol. Play with other musicians, sync your code with other instruments and music/video softwares. | Sardine is a collaborative effort! You can be a part of development by contributing with code, documentation or anything you'd like to share with the Sardine community. |
+#+end_quote
+
 
 * Presentation
 ** What is Sardine?
@@ -1431,7 +1467,6 @@ This menu will allow you to toggle the *web editor* by default or not. See the s
 This section is used by developers to add custom debugging options to *Sardine*.
 
 ** MIDI
-
 *** Receiving MIDI
 
 *MIDI* Input is supported through the use of a special object, the *MidiListener* object. This object will open a connexion listening to incoming MIDI messages. There are only a few types of messages you should be able to listen to:
@@ -1737,7 +1772,7 @@ In the past, people have been running *Sardine* code on many different text edit
 
 We know this is working, but there is no documentation about it or the one we have is outdated!
 
-* TODO Basics
+* Basics
 ** Starting Sardine
 
 Before starting *Sardine*, you need understand what *Sardine* is and where it sits on your system:
@@ -1778,7 +1813,6 @@ You can write code directly in the interpreter. However, this is not a recommend
 For the duration of this tutorial, I will make the assumption that you are using ~fishery web~, our internal text editor and environment!
 
 ** Playing sound
-
 *** Code evaluation
 
 Let's start. We will write a few lines of code and I'll guide you along. To evaluate code, press *Shift + Enter*. The entire code block will be evaluated. If an error occurs, the application will not stop but will report the error and continue running using an older version of the code.
@@ -1916,7 +1950,7 @@ To know the complete list of all the possible parameters, you will have to refer
 
 As you might have noticed already, there is a difference between arguments that are plain numbers and arguments that are specified as a string (in green). The difference is that numbers are just numbers but strings are interpreted as *patterns*. They move in time with each step. It means that the following pattern: ~"0.5!4, 0.25!2"~ is in fact: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~.
 
-Don't focus too much on it for the moment, we will come back to it later on!
+Don't focus too much on it for the moment, we will come back to it later on! There is much depth to what a pattern is and what you can do with them.
 
 *Summary:*
 - *Patterns* are a complete description of an algorithmic musical pattern: *pitch*, *timbre*, *rhythm*, etc.
@@ -1924,11 +1958,49 @@ Don't focus too much on it for the moment, we will come back to it later on!
 - *Patterns* can take an undefinite amount of arguments.
 - *Patterns* can use a special syntax in between ~strings~ for writing better patterns.
 
-*** Players
+*** Tempo and playback
 
-We have learned how to play a specific sound, how to give it parameters, and how to specify a simple rhythm. However, we don't always want to play an audio sample or a synthesizer. Some other event types that might be interesting are :
-- *MIDI* notes or controls
-- *OSC* messages
+Everytime you start *Sardine*, the clock starts as well. The clock is the main mechanism that takes your code and makes it live. There are currently two different clocks you can use:
+- *the internal clock:* Your system clock.
+- *the external clock:* A special clock relying on the Ableton Link technology. *It allows you to synchronise with other players*.
+
+These clocks have the same interface! If you learn how to use one of them, you know how to use them all.
+
+If you type ~clock~ in your *fishery* window, you will get a similar message:
+#+begin_src python
+<InternalClock running time=1.9 tempo=135 beats_per_bar=4>
+#+end_src
+Time has passed since the beginning of time. We are currently sailing, and you can see that the clock is active.
+
+Here are some attributes that you might find interesting :
+
+- ~clock.tempo~ : reports the current tempo.
+  - to change the tempo, you can type ~clock.tempo = 140~
+- ~clock.phase~ / ~clock.beat~ / ~clock.bar~
+  - our position in time, from the smallest division to the largest division. You will be able to use these attributes later on for composing in time!
+- ~clock.time~: the most basic representation of time (monotonic time)
+
+You can pause, resume, restart or stop your code at any given time using the ~bowl~:
+- ~bowl.pause()~ / ~bowl.resume()~ : pause and resume.
+~ ~bowl.stop()~ / ~bowl.start()~: stop and play.
+
+#+begin_src python
+print(clock)
+bowl.pause()
+print(clock)
+bowl.resume()
+print(clock)
+#+end_src
+
+Most of the time, you will keep the system running. Don't worry too much about this!
+
+*** Players / Handlers
+
+You now know how to play a specific sound, how to give it parameters, and how to specify a simple rhythm. However, you don't always want to play an audio sample or a synthesizer. There are other event types that you might be interested in such as:
+- *MIDI* notes or controls (changing any parameter on an external synthesizer)
+- *OSC* messages (control pretty much anything through the network)
+
+
 
 For each of these event types, you can find a specific object that will take specific arguments depending on its nature:
 - ~n("C,E,G", channel=0, vel=120, dur=0.25)~ (*MIDI* note)
@@ -1939,6 +2011,262 @@ For each of these event types, you can find a specific object that will take spe
 
 ** TODO Time
 ** TODO Pattern
+* Pattern Languages
+** Sardine Pattern Language
+** Ziffers
+* Audio engine Reference
+
+*SuperDirt* documentation is rather scarce and most of it needs to be inferred by looking at the source code. However, the behavior of most parameters is well known -- usually from experience -- by live coders. Moreover, *SuperDirt* can be customised freely to add custom effects and synthesizers. I'm working hard on gathering information about each and every parameter I can find :) Some of them are rather arcane. They are probably not meant to be used directly. Keep in mind that not all of them are useful and that you will likely find better options by building your own environment.
+
+** Sampler
+
+Everytime you play an audio sample, this sampler will be invoked. It is pretty powerful and it is worth spending some time studying its behavior.
+
+| Parameter  | Brief description                                           | Typical range | alias |
+|------------+-------------------------------------------------------------+---------------+-------|
+| amp        | Sound volume (linear scaling)                               | 0->x          |       |
+| gain       | Sound volume (exponential scaling)                          | 0->1          |       |
+| freq       | Pitch around given frequency                                | 0->x          |       |
+| midinote   | Pitch around given MIDI note                                | 0-127         |       |
+| note       | Pitch around given note                                     | ???           |       |
+| octave     | Pitch up or down depending on octave number                 | 0->x          | oct   |
+| sound      | Implicit (first argument of *D()*)                          |               |       |
+| begin      | Start position of audio playback                            | 0->1          |       |
+| end        | End position of audio playback                              | 0->1          |       |
+| speed      | Sample playback, impacts pitch. Negative will play reverse  | -x->0->x      |       |
+| accelerate | Rising sample playback speed (pitch glissando)              | -x->0->x      | accel |
+| cps        | Implicit (cycles per second, inherited from Tidal)          |               |       |
+| loop       | ???                                                         |               |       |
+| delta      | Unused                                                      |               |       |
+| cut        | Cut other sounds playing on same orbit, start playing       | 0 or 1        |       |
+| legato     | Play sample for the given duration (without cutting others) | 0->x          | leg   |
+| pan        | Pan sound from left to right speaker (by default)           | 0->1          |       |
+| orbit      | Play sound/synth on the given audio effect bus (0 - 11)     | 0->11         |       |
+| latency    | Add a latency to audio playback (in seconds)                | 0->x          |       |
+| lag        | Similar to latency/offset                                   | 0->x          |       |
+| offset     | Similar to latency/lag                                      | 0->x          |       |
+
+** Effects
+
+*** Reverb
+
+This is a pretty basic metallic sounding reverb. Not very usable but still.
+
+| Parameter | Brief description                       | Typical range |
+|-----------+-----------------------------------------+---------------|
+| room      | Size of the room                        | 0->x          |
+| size      | Size of the reverb - keep below 1 (inf) | 0->1          |
+| dry       | Dry/Wet balance                         | 0->1          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('hh', amp=1, room='sin($.S)', dry=0.1, size='sin($)')
+    again(test_fx, p=0.25)
+
+#+end_src
+
+*** Delay
+
+The delay effect is initially built for *Tidal*, which is based on a cyclical time representation. However, it has been pre-configured here to work properly with *Sardine*. Be careful with the _feedback_ if you don't want to see things explode!
+
+
+| Parameter     | Brief description                       | Typical range |
+|---------------+-----------------------------------------+---------------|
+| delay         | Wet / Dry                               | 0->1          |
+| delaytime     | Delay time                              | 0->x          |
+| delayfeedback | Amount of reinjection of the dry signal | 0->.99        |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('hh',
+            speep='1|2|4',
+            delay=1/2, delaytime=1/(2/3),
+            delayfeedback='0.5+(rand/4)',
+            amp=1)
+    again(test_fx, p=0.25)
+#+end_src
+
+*** Phaser
+
+| Parameter   | Brief description | Typical range |
+|-------------+-------------------+---------------|
+| phaserrate  | Speed of phaser   | 0->x          |
+| phaserdepth | Depth of phaser   | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('jvbass',
+            midinote='C|Eb|G|Bb',
+            phaserrate='1~10',
+            phaserdepth='sin($*2)', amp=1)
+    again(test_fx, p=0.5)
+#+end_src
+
+*** Leslie
+
+This is a simple emulation of a Leslie rotating speaker typically used in music for treating organ sounds, voices, and to add an eary tint to everything that goes through it. This is basically a way to play creatively with doppler effects.
+
+| Parameter | Brief description               | Typical range |
+|-----------+---------------------------------+---------------|
+| Leslie    | Dry / wet                       | 0->1          |
+| lrate     | Rate                            | 0->x          |
+| lsize     | Wooden cabinet size (in meters) | 0->x          |
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('jvbass', amp=1, leslie=0.9,
+            lrate=0.1, lsize='0.1+rand*2')
+    again(test_fx, p=0.25)
+#+end_src
+
+*** Tremolo
+
+A simple tremolo effect.
+
+| Parameter    | Brief description | Typical range |
+|--------------+-------------------+---------------|
+| tremolorate  | Tremolo speed     | 0->x          |
+| tremolodepth | Depth of tremolo  | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]',
+            tremolorate='16|32',
+            tremolodepth='[0.0~1.0,0.25]', i=i)
+    again(test_fx, p=0.5, i=i+1)
+#+end_src
+
+*** Granular weird
+
+This is a weird granular effect probably intended to serve as a building block for some other effect but you can use it as is nonetheless. It will slice your audio sample into tiny fragments of it while applying some amount of pitch-shifting on every sample.
+
+
+| Parameter | Brief description      | Typical range |
+|-----------+------------------------+---------------|
+| psrate    | Pitch-shift rate       | 0->x          |
+| psdisp    | Pitch-shift dispersion | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]',
+            psrate='2',
+            psdisp='[0:1,0.5]',
+            i=i)
+    again(test_fx, p=0.5, i=i+1)
+#+end_src
+
+** Filtering
+
+| Parameter | Brief description                            | Typical range  | alias |
+|-----------+----------------------------------------------+----------------+-------|
+| cutoff    | Low-pass filter cutoff frequency (in hertz)  | 0->x us. >2Khz | lpf   |
+| hcutoff   | High-pass filter cutoff frequency (in hertz) | 0->x us. <1Khz | hpf   |
+| bandf     | Bandpass filter cutoff frequency (in hertz)  | 0->x           | bpf   |
+| resonance | Filter resonance                             | 0->.99         | res   |
+| bandqf    | Bandpass resonance                           | 0->.99         | ???   |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('jvbass',
+            midinote='C|C|Eb|G|Bb',
+            cutoff='rand*7000', resonance='rand/2', amp=1)
+    again(test_fx, p=0.5)
+#+end_src
+
+** Distortion
+
+Nobody knows why but *SuperDirt* is full of distortion effects. Hope you like it.
+
+*** Squiz
+
+Will distort your signal, combination of multiple effects put together. It works better if you input multiples of two as parameters.
+
+| Parameter | Brief description | Typical range |
+|-----------+-------------------+---------------|
+| squiz     | amount            | 0.2->x        |
+
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('tabla:rand*200', cut=1,
+            squiz='0|2|4|8',
+            midinote='C|F|Bb|E5b', amp=1)
+    again(test_fx, p=0.5)
+#+end_src
+
+*** Triode
+
+Another type of distortion. Emulating a triode distortion unit.
+
+| Parameter | Brief description | Typical range |
+|-----------+-------------------+---------------|
+| triode    | Distortion amount | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('tabla:rand*200', cut=1,
+            triode='r', # comment me
+            midinote='C|F|Bb|E5b', amp=1)
+    again(test_fx, p=0.5)
+#+end_src
+
+*** Distort
+
+Heavy distortion that will/can wildly change the spectrum of your sound.
+
+| Parameter | Brief description | Typical range |
+|-----------+-------------------+---------------|
+| distort   | Distortion amount | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25):
+    D('sd:rand*200', cut=1,
+            distort='0|0.5',
+            midinote='C|G', amp=1)
+    again(test_fx, p=0.5)
+#+end_src
+
+*** Shaping
+
+| Parameter | Brief description    | Typical range |
+|-----------+----------------------+---------------|
+| shape     | Amplification amount | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25, i=0):
+    D('amencutup:[1:20]', shape='[0:1,0.1]', i=i)
+    again(test_fx, p=0.5, i=i+1)
+#+end_src
+
+*** Crush
+
+Crush will.. crush your sound. You get it!
+
+| Parameter | Brief description | Typical range |
+|-----------+-------------------+---------------|
+| crush     | Crushing Factor   | 0->x          |
+
+#+begin_src python
+@swim
+def test_fx(p=0.25, i=0):
+    D('bd, sn, hh, sn', crush=4, i=i)
+    again(test_fx, p=0.5, i=i+1)
+#+end_src
+
+** Hidden Gems
+
+There are hidden gems in the *SuperDirt* engine. Note that you can also customize it with your own effects. This documentation, thus, is only covering the tip of the iceberg.
+
 * About
 ** Why Sardine?
 
@@ -1955,3 +2283,137 @@ Contributions of any sort are really welcome! I am not a professional developer 
 ** About this website
 
 This website is maintained using [[https://orgmode.org/][Org Mode]], a wonderful tool for documentation. The whole documentation is a monolithic ~.org~ file that you can find (and edit!) on GitHub. The styling is plain CSS, using a customized [[https://github.com/fniessen/org-html-themes][gray]] theme.
+
+** Sardine Strategies
+
+The *Oblique Strategies* are a set of cards once written by Brian Eno and Peter Schmidt. These are cards that you should take a look at when you are feeling down when working in the studio. They are pretty famous and were used by many musicians worldwide. To my knowledge, nobody ever tried to write a _live coding flavour_ of these cards... until now. Here they are, have fun:
+
+#+begin_src
+1) Why are you using a computer?
+2) Some things can't be coded. Move!
+3) You are not looking for a function, you are looking for a gesture.
+4) Do you know how to do it differently?
+5) Your code could sound better if only you stopped coding.
+6) Record, Listen, Reuse the recording!
+7) What is yours?
+8) Complex things are simple if you cut them up.
+9) Simple things are infinitely difficult if you look at them closely.
+10) What is a computer keyboard?
+11) Remember that you are typing code. That's not the only thing you can do.
+12) Are there things that really deserve to be live coded?
+13) What would you do to do the same thing without a computer?
+14) Write the most complex thing you can think of.
+15) Computers are made to process files. Use lots of files.
+16) Will you ever be able to sound human?
+17) This is the cybernetic hour. Add more to the system.
+18) Why did you learn how to program?
+19) Beautiful things are scarce. Think of colors.
+20) Ugly things are plentiful, but they can be pretty if you try hard enough.
+21) Computer musicians have invented DAWs. Why?
+22) Perspective and layers.
+23) Your computer doesn't know what time is. Teach him.
+24) Digital sound is a material. We want to hear it.
+25) What is the triangle of your orchestra?
+26) Time is flexible. Height is relative.
+27) What's the worst thing about a computer? Can you get your revenge?
+28) Beep beep, we can send messages. Internet was a good idea at the very beginning.
+29) There are musicians who play their instruments well.
+30) You are not yourself anymore. Do something about it.
+31) Computers are stubborn and you are not!
+32) Visualise both the beginning and the end of a process.
+33) Bigger font, bigger ideas.
+34) Ping-pong with your friend.
+35) What is computer folklore? We don't have folk music with computers.
+36) Tappity tap, you write in rhythm.
+37) Computers are not helping you at all.
+38) Get political!
+39) Do it yourself, fail hard doing it.
+40) Where does the sound comes from?
+41) Music is all about expressiveness and mannerisms.
+42) Will animals like it?
+43) Pretend that you can play jazz music.
+44) Nobody is watching, people don't get it.
+45) Remember that your favorite music is probably made with a DAW.
+46) You often don't play the music you want, same thing goes for code.
+47) Live code is temporary, what are you going to do after?
+48) Expect bugs, not joy!
+49) Everything you do has been done before.
+50) And again, and again, and again, and again!
+51) BOOM, pshhht, plip plop, and all over again.
+52) What is the ABC of what you do?
+53) Remember that everything is in your own mind.
+54) Doing things alone is ok. Doing it again with someone, funnier!
+55) Show us what you are hiding behind your back.
+56) Computer code, more like Pomputer pode.
+57) "In the end you get tired of this old world".
+58) Snacks, forbidden snacks. Code, forbidden code.
+59) Hit it with a stick, now blow inside it.
+60) Tools are making us. Change your tools, change yourself.
+61) Tout le monde ne parle pas anglais, vous saviez ?
+62) Linear or cyclic? Is that everything there is?
+63) You will always be a cliché for someone else.
+64) Yeah, TOPLAP. But now think of something else.
+65) Borrow code that you don't understand at all.
+66) Computer keyboard is lava!
+67) I got shoes, you got shoes. All o' God's chillun got shoes.
+68) Is there some sort of progress?
+69) Just clicking around is probably fine!
+70) Read about computers: LISP, FORTH, and the nerdy stuff.
+71) Water is everywhere.
+72) It's not because you code that you do computer music. Kraftwerk does it better.
+73) Everybody is going to love that gimmick!
+74) Stay fresh!
+75) If your computer could sing, what would the lyrics look like?
+76) Why do modular synthesizers still exist?
+77) We have more and more computers but people are more and more alone.
+78) 100 years of electric guitar. 100 years of computer music?
+79) Design your music/code to be universally appreciated.
+80) Clever yes, but is it interesting?
+81) You have a very big brush and big boots.
+82) The sound is all around. No need to spatialize if you listen in the right place.
+83) Think of all the silly code that runs important things.
+84) Nobody sees you live coding if you don't show it. Is it really necessary to see what you do?
+85) Welcome to my TED Talk, live coding is not going to change the world.
+86) We have to stop making new music. We already know how it works.
+87) Yeah, well, go on.
+88) Three rules. If you lose, you start again.
+89) Write for one minute, delete for thirty seconds.
+90) Beat around the bush.
+91) Why don't you code everything yourself?
+92) Oh no, midnight already! Your code has become a score.
+93) Perhaps you should consider stopping taking advice.
+94) AZERTY, QWERTY, DVORAK, does it matter?
+95) Everything fits on one line, the rest is superfluous.
+96) Think about others.
+97) If you're looking for something complicated, maybe it's for the good. Some thoughts don't have words.. yet.
+98) Make a list, put everything down on paper.
+99) Planes don't fly without buttons and knobs. Wings, ok? But what about the other stuff?
+100) It always works better when you press twice.
+101) The Greeks already had computers. They were better at philosophy and poetry.
+102) If you feel sad, clean your computer. Look around.
+103) Why do we feel compelled to type?
+104) Food and beverage pairing, live coding version.
+105) The things kids like, excessive and brutal.
+106) Go to your neighbor, tell him you live code. So what?
+107) Live code something that shouldn't be.
+108) Essay on the border between the virtual and the actual.
+109) We do this mostly because it's fun.
+110) At least the ugly things work.
+111) If it crashes, that's your fault.
+112) Does the computer really let you scream?
+113) Find your motto: mine is: "Sail on sight".
+114) I don't work with computers.
+115) Frankly, there are programs that deserve not to be live.
+116) If it works, maybe we should break it?
+117) No one cares about the code. We want records, words, thoughts.
+118) The device you use is not a computer.
+119) To do is to understand. Well, not always.
+120) Try to find a profound aphorism about live coding too. It's not easy, is it?
+121) 127 cards, 127 MIDI notes. Is MIDI 2.0 killing the mood?
+122) Why does language matter?
+123) Have fun but don't program too much. You'll need glasses.
+124) Is there anything really divisive? Why is that?
+125) Pianists play chords on their keyboards. You can do too, but what does it mean?
+126) Does your computer seem to like anything in particular? Think about its well-being.
+127) Who could have coded live but never did?
+#+end_src

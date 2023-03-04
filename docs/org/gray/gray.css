@@ -30,6 +30,18 @@ h1, h2, h3 {
         font-family: "Raleway", Helvetica, Arial, sans-serif;
     }
 
+h1 {
+        font-size: 4em;
+}
+
+.title {
+        text-align: center;
+}
+
+span.subtitle {
+        font-size: 20px;
+}
+
 h2 {
         border-bottom: 1px solid black;
         padding-bottom: 0.05em;
@@ -100,6 +112,7 @@ a[href^="http"]:after {
         margin-top: 2em;
     }
 
+
 #table-of-contents a:link,
 #table-of-contents a:visited {
         color: black;
@@ -120,9 +133,23 @@ a[href^="http"]:after {
         border-bottom: 0;
     }
 
+
+#table-of-contents li {
+        margin-bottom: 5px;
+        margin-top: 5px;
+}
+
+#table-of-contents li:first {
+        margin-bottom: 5px;
+        margin-top: 10px;
+}
+
+
 #table-of-contents ul {
         list-style: none;
         padding-left: 0.5em;
+        margin-top: 5px;
+        margin-bottom: 5px;
         font-weight: normal;
     }
 
@@ -424,7 +451,7 @@ div.figure {
 
 @media screen {
         h1.title {
-                text-align: left;
+                text-align: center;
                 margin: 0.5em 0 1em 0;
             }
     
@@ -475,6 +502,7 @@ div.figure {
     
         h1.title {
                 margin-left: 0%;
+                text-align: center;
             }
     
         div#content {

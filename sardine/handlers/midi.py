@@ -23,7 +23,7 @@ class MidiHandler(Sender):
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
 
-        # Getting a default MIDI port name
+        # Getting a default MIDI port name
         if port_name in self._available_ports:
             pass
         else:

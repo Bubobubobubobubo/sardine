@@ -12,6 +12,10 @@ body {
     color: black;
     }
 
+li {
+    margin-top: 5px;
+}
+
 p {
     line-height: 150%;
 }

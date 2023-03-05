@@ -73,7 +73,6 @@ file:sardine_stack.svg
 
 Try to read about it. It's a fascinating world of people happily hacking and sharing software, usually free and open source. The goal is to find the right tool for the nail you want to hammer, and build from there, turning your computer into an environment for personal artistic expression. For our case, it means that Sardine is meant to be extended, modified, specialised for what you need to do :)
 
-
 ** Community
 
 There are multiple pages on the internet to share your new-found passion about *Sardine*:
@@ -1237,7 +1236,6 @@ panic()
 - *Software:* Sardine
 - Dumpster samples are available via the [[https://github.com/Bubobubobubobubo/sardine-sounds][sardine-sounds]] repository.
 
-
 **** Tribute to Jules Cipher
 **** Artificial Life
 * Installation
@@ -1281,6 +1279,19 @@ python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi
 
 These commands will download and install *Sardine* using the recommended method. Once the installation is done, you now have officially installed *Sardine* with all its dependencies. Congratulations! You can now proceed to the configuration section. If you encounter an error, please head to the *Troubleshot* section or ask a question on the *Discord server* or in the *Github Issues*.
 
+*Installing Ziffers*
+
+*Sardine* is great but *Ziffers* is great as well. The two together form the perfect duo for making algorithmic music. *Ziffers* is developed by Miika Alonen independently from *Sardine* but we do collaborate to blend our tools together :) Install *Ziffers* now, you won't regret it later!
+
+- Clone the [[https://github.com/Bubobubobubobubo/ziffers-python][ziffers-python]] repository.
+- Install it like a regular Python package.
+
+TLDR:
+#+begin_src shell
+git clone https://github.com/Bubobubobubobubo/ziffers-python
+cd ziffers-python && python -m pip install --editable .
+#+end_src
+
 ** MacOS
 
 *Preparing your environment*
@@ -1313,6 +1324,21 @@ python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi
 
 These commands will download and install *Sardine* using the recommended method. Once the installation is done, you now have officially installed *Sardine* with all its dependencies. Congratulations! You can now proceed to the configuration section. If you encounter an error, please head to the *Troubleshot* section or ask a question on the *Discord server* or in the *Github Issues*.
 
+*Installing Ziffers*
+
+*Sardine* is great but *Ziffers* is great as well. The two together form the perfect duo for making algorithmic music. *Ziffers* is developed by Miika Alonen independently from *Sardine* but we do collaborate to blend our tools together :) Install *Ziffers* now, you won't regret it later!
+
+- Clone the [[https://github.com/Bubobubobubobubo/ziffers-python][ziffers-python]] repository.
+- Install it like a regular Python package.
+
+TLDR:
+#+begin_src shell
+git clone https://github.com/Bubobubobubobubo/ziffers-python
+cd ziffers-python && python -m pip install --editable .
+#+end_src
+
+
+
 ** Linux
 
 *Preparing your environment*
@@ -1344,6 +1370,19 @@ python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi
 - (*Note*) the ~--editable~ flag is optional. You can remove it if you are not planning to modify *Sardine*!
 
 These commands will download and install *Sardine* using the recommended method. Once the installation is done, you now have officially installed *Sardine* with all its dependencies. Congratulations! You can now proceed to the configuration section. If you encounter an error, please head to the *Troubleshot* section or ask a question on the *Discord server* or in the *Github Issues*.
+
+*Installing Ziffers*
+
+*Sardine* is great but *Ziffers* is great as well. The two together form the perfect duo for making algorithmic music. *Ziffers* is developed by Miika Alonen independently from *Sardine* but we do collaborate to blend our tools together :) Install *Ziffers* now, you won't regret it later!
+
+- Clone the [[https://github.com/Bubobubobubobubo/ziffers-python][ziffers-python]] repository.
+- Install it like a regular Python package.
+
+TLDR:
+#+begin_src shell
+git clone https://github.com/Bubobubobubobubo/ziffers-python
+cd ziffers-python && python -m pip install --editable .
+#+end_src
 
 ** Updating / Uninstall
 
@@ -2013,7 +2052,666 @@ For each of these event types, you can find a specific object that will take spe
 ** TODO Pattern
 * Pattern Languages
 ** Sardine Pattern Language
+
+The pattern language is everywhere in *Sardine*. Everytime you use any of the senders (~D()~, ~N()~, ~P()~ and their lowercase variants), you are likely to encounter it. *Sardine* automatically turns every argument it receives as a ~string~ in an expression that is read using the *pattern language*:
+
+#+begin_src python
+D('bd', speed=1, legato=2) # speed and legato are using regular Python types
+
+D('b', speed='1|2', legato='1~4') # speed and legato are now patterns (string)
+#+end_src
+
+You can't even use a synthesizer or play a note without writing at least one pattern (the initial string). One call to the senders/handlers can result in multiple patterns being interpreted by the *Sardine pattern language* at once.
+
+Think of it as having a second programming language inside your programming language.
+
+Why?
+
+- It saves space, it makes it easier to express complex transformations fast.
+- It gives you access to new operators that *Python* doesn't provide.
+- It makes writing lists way easier and less verbose.
+
+*** Numbers
+
+#+begin_src python
+@swim
+def number(p=0.5, i=0):
+    print(Pat('1, 1+1, 1*2, 1/3, 1%4, 1+(2+(5/2))', i))
+    again(number, p=0.5, i=i+1)
+#+end_src
+
+You can write numbers (both *integers* and *floating point numbers*) and use common operators such as addition, substraction, division, multiplication, modulo. Parentheses are supported. *Sardine* makes it so that most arithmetic operators can be used on anything expect if intuitively it doesn't make sense at all like multiplying a string against a string.
+
+*You can apply arithmetic operators to numbers but also to lists!* You can for instance write an addition between a number and a list, between two lists, between a number and a note, between a chord and a list, etc..
+
+Incidentally, it means that functions that work on lists can also work on single tokens. It also means that functions that are supposed to work for single numbers will work for lists, because the function will be mapped to every element in the list. *It turns the act of composing patterns into a rather interesting process.*
+
+**** Time-dependant numbers
+
+#+begin_src python
+@swim
+def number(p=0.5, i=0):
+    # We print time-dependant values
+    print(P('$, $.p, $.m', i))
+    again(number, p=0.5, i=i+1)
+#+end_src
+
+Some number tokens are clock-time dependant (based on *Sardine* clock time).  Depending on the moment your loop/operation takes place, you might see some values recurring because you are not polling time continuously but at predictible rhythmic moments of time. Read that sentence twice, then read it again, *please*!
+
+- ~$~: *beat*, the current beat, with floating point precision.
+- ~$.p~: *phase*, a number between ~0~ and ~1~ denoting where you are in the beat.
+- ~$.m~: *measure*, the measure since the clock started.
+
+#+begin_src python
+@swim
+def number(p=0.5, i=0):
+    print(Pat('$, $.m, $.p', i))
+    again(number, p=0.5, i=i+1)
+#+end_src
+
+Some other number tokens are based on *absolute time*. They are not dependent on the clock. Use them for long-running sequences for introducing randomization. You will notice that they are all prefixed by ~T~. ~T~ is a symbol very often associated with *time* in *Sardine*, while ~$~ denotes the clock time.
+
+#+begin_src python
+@swim
+def wow(p=0.5, i=0):
+    print(Pat('T.U, T.Y, T.M, T.D, T.h, T.m, T.s, T.µ', i))
+    again(wow, p=0.5, i=i+1)
+#+end_src
+
+- ~T.U~: Unix Time, the current Unix Time.
+- ~T.Y~: year, the current year.
+- ~T.M~: month, the current month.
+- ~T.D~: day, the current day.
+- ~T.h~: hour, the current hour.
+- ~T.m~: minute, the current minute.
+- ~T.s~: second, the current second.
+- ~T.µ~: microsecond, the current microsecond.
+
+**** Random numbers
+
+- You can write random numbers by using the word ~rand~. ~rand~ will return a floating point number between ~0.0~ and ~1.0~.
+  - In some contexts, ~rand~ will be casted to *Integer* if it makes more sense (context dependant, _e.g_ ~sample:r*8~).
+- ~rand~ and ~0.0~1.0~ yield a similar result. Two ways to express the same idea.
+
+**** Patterns out of time
+
+#+begin_src python
+@swim
+def outof(p=0.25, i=0):
+    D('cp', speed='$%10', i=i)
+    again(outof, p=0.25, i=i+1)
+#+end_src
+
+Timed tokens make good *low frequency oscillators*, *ramps* or oscillating patterns. Playing with time tokens using modulos or the ~sin()~, ~cos()~ or ~tan()~ functions is a great way to get generative results out of a predictible sequence.
+
+- The faster you recurse (low ~p~), the better your timing resolution is. You can start to enter into the realm of signal-like patterns that can be particularly good for generating fluid patterns. *Use this to generate fluid patterns.*
+
+*** Names
+
+#+begin_src python
+@swim
+def names(p=0.5, i=0):
+    D('bd, pluck, bd, pluck:2+4', i=i)
+    again(names, p=0.5, i=i+1)
+#+end_src
+
+You are using names since your first *Sardine* session! A single letter (if it's not already a note name) can be considered as a name. Be careful! There are a few hidden rules for names. Names can be one letter long but some letters are already taken by some tokens of the language (such as ~rand~). Names cannot begin with a number. It is also forbidden to use any symbol inside your names.
+
+Names can't start with a number. It will cause you problems with playing some default samples. Be warned!
+
+*** Addresses
+
+#+begin_src python
+O(osc_client, "an/address, another/address", value=1, other_value=2)
+#+end_src
+
+- Addresses are just like names except that they can contain a `/` separator just like any other typical OSC address.
+- They are not really distinct from a name. The difference is only conceptual.
+
+Be careful, some functions might still require you to write addresses using a ~/~ first. Check twice.
+
+*** Operators
+
+*Python* is limited to a set of operators and you can't create your own. That's not good for us because live coding is also about speed. It is faster to write ~!!~ than to write ~repeat_and_copy~. That's also why having a *pattern language* is important. We have new operators to work with to create musical patterns.
+
+**** Choice
+
+#+begin_src python
+@swim
+def choosing_stuff(p=0.5, i=0):
+    D('bd|pluck', speed='1|2', i=i)
+    again(choosing_stuff, p=0.5, i=i+1)
+#+end_src
+
+
+The pipe operator ~|~ can be used on anything to make a 50/50% choice between two tokens. You can also chain them: ~1|2|3|4~. The behavior of chaining multiple choice operators has not been clearly defined. The distribution might not be the one you expect.
+
+**** Ranges
+
+#+begin_src python
+@swim
+def rangeD(p=0.5, i=0):
+    D('pluck|jvbass', speed='1~5', i=i)
+    again(ranges, p=0.5, i=i+1)
+#+end_src
+
+- If you want to generate a number in the range ~x~ to ~y~ included, you can use the ~~~ operator. This operator will adapt to context (integer or floating point number).
+
+- It can be used as an alternative to ~rand~ for scaled randomisation.
+
+**** Ramps
+
+#+begin_src python
+@swim
+def rampD(p=0.5, i=0):
+    D('amencutup:[0:10]',
+        room='[0:1,0.1]',
+        cutoff='[1:10]*100', i=i)
+    again(ramps, p=0.5, i=i+1)
+#+end_src
+
+- This operator is very reminiscent of the *range()* function, only better.
+
+- You can generate ramps of integers using the ~[1:10]~ syntax.
+  - This expression will yield ~[1,2,3,4,5,6,7,8,9,10]~.
+
+- You can ramp up and you can ramp down!
+
+- You can be more specific: ~[1:10,2]~.
+  - This expression will yield: ~[1,3,5,7,9]~.
+
+- It also works with floating point numbers and floating point number steps: ~[1:10,0.5]~!
+
+**** Repeat
+
+#+begin_src python
+@swim
+def repeat_stuff(p=0.5, i=0):
+    D('pluck|jvbass', speed='1:2', midinote='C4!4, E4!3, E5, G4!4', i=i)
+    again(repeat_stuff, p=0.5, i=i+1)
+#+end_src
+
+- The ~!~ operator inspired by **TidalCycles** is used to denote the repetition of a value.
+  - You need to add a number or a list to its right side.
+
+- There is also the ~!!~ to be used on lists. This second one will not repeat the content of the list but repeat each element ~x~ times.
+
+**** Silence
+
+#+begin_src python
+@swim
+def silence_demo(p=0.5, i=0):
+    D('bd,...', i=i, d=1)
+    D('hh,., hh,..', i=i, d=1)
+    again(silence_demo, p=1/8, i=i+1)
+#+end_src
+
+- You can use a dot (~.~) inside any pattern to denote a silence. Be careful, the concept of silence in *Sardine* can be pretty confusing.
+
+Silence is a very important and complex topic. Adding silences is a great way to generate interesting patterns. Silences are different for each sender because silence doesn't have the same meaning for a sampler, a MIDI output or an OSC output (~D()~, ~N()~, etc.).
+- ~D()~: a silence is the absence of a sample. The event will be skipped.
+- ~N()~: a silence is the absence of a note. The event will be skipped.
+- any OSC based Sender: a silence is the absence of an address. The event will be skipped.
+
+Perfect, but what about other patterns that live alongside the main pattern? A silence in an auxilliary pattern will cause a *'parametric silence'* to happen. Take a look at the following example:
+
+#+begin_src python
+@swim
+def silence_demo(p=0.5, i=0):
+    D('sitar', legato='0.5', speed='[1:4], .!8', i=i, d=1)
+    again(silence_demo, p=1/8, i=i+1)
+#+end_src
+
+We always have a sample here. There is no *real* silence, only a parametric one (in ~speed~).
+
+Denoting the absence of something the silence will cause the pattern to search its last value and hold it. *Sardine* will backtrack and search the last value that could have been generated by the pattern. The result of the ~speed~ parameter will then be ~[1,2,3,4,8,8,8,8,8,8,8,8]~.
+
+For people familiar with modular synthesizers and analog circuits, this is pretty much a *sample & hold* mechanism.
+
+Note that it is impossible to write a *parametric silence* composed only of silences. A pattern of nothing is not a pattern.
+
+**** Lists and Collections
+
+The *Sardine* pattern notation is built around the idea of having multiple ways to deal with linear lists and collections. The basic arithmetic syntax and most operators work on single tokens *but will also work on lists*. It means that you can write expressions such as :
+
+#+begin_src python
+[0,1,2,3]%8
+[0,2,4,5]*[4,5]
+[1:8,0.1]&[2,9]
+[0,2,4,5,9,10,12,14]!2
+[0,2,4,5,9,10,12,14]!!4
+#+end_src
+
+There are a few special operators that are only available when you deal with lists. This is something you will get familiar with by trying. You will see that most things work while some will not yield the result you expect.
+
+**** Slicing and indexing
+
+#+begin_src python
+@swim
+def test_slice(p=0.5, i=0):
+    D('pluck:19',
+            legato=0.2,
+            midinote='([60,63,67,69, 71]&[i.i, i.i + 8])^(1~8)', i=i)
+    again(test_slice, p=0.125, i=i+1)
+#+end_src
+
+- You can get a slice or just one value from a list by using the special ~&~ operator.
+- It will work with any list on the right side of the operator but it will only take the first and second value of it no matter what to compose a slice.
+
+- The index value can be infinite because the index is looping on the list. You can feed a random number generator and get something out.
+
+On the down side, it can become quite complex to write very fast, so be careful with it:
+
+#+begin_src python
+@swim
+def test_slice(p=0.5, i=0):
+    D('pluck:19',
+            legato=0.2,
+            midinote='[60,62, 63,67, 69, 71]^(1~5)&[r, rand*4]', i=i)
+    again(test_slice, p=0.125, i=i+1)
+#+end_src
+
+**** Extend
+
+#+begin_src python
+@swim
+def test_extend(p=0.5, i=0):
+    D('pluck:19', legato=0.2, midinote='[60,62]!2', i=i)
+    again(test_extend, p=0.125, i=i+1)
+#+end_src
+
+Just like with numbers, names and addresses, you can extend a list by calling the ~!~ operator on it. It will repeat the list x times.
+
+**** Extend-repeat
+
+#+begin_src python
+@swim
+def test_extend_repeat(p=0.5, i=0):
+    D('pluck:19', legato=0.2, midinote='[60,62,63]!!3', i=i) #note the repetition of values within the list
+    again(test_extend_repeat, p=0.125, i=i+1)
+```
+The variant `!!` now makes sense. It allows you to repeat each individual value in a list `x` times.
+#+end_src
+
+*** Function Library
+*** TODO Conditions
+
+Every function from the function library can be applied conditionnally. It means that every function can be applied based on a probability or based on a deterministic event (~e.g.~ being on beat 1).
+
+*** Amphibian
+
+This is probably the worst feature of *Sardine*. Do not use this until I fix it!
+
+**** Amphibian variables
+
+#+begin_src python
+V.s = 60 # this is an amphibian variable
+
+@swim
+def fun():
+    # Calling it and setting it to v.s + 5
+    N(note='v.s = v.s + 5')
+    if random() > 0.8:
+        V.s = 60 # resetting so it doesn't go too high
+    again(fun)
+#+end_src
+
+- There are variables called *amphibian variables*. They are both valid inside and outside the pattern notation.
+- They are defined by ~v~ followed by a letter from the alphabet (uppercase or lowercase) : ~V.a~, ~V.A~, ~V.Z~, ~V.j~. These variables can be freely manipulated from the Python side or from the pattern side. *They are amphibian because they exist in the two languages*.
+
+#+begin_src python
+@swim
+def fun(p=0.25):
+    # Now having fun with it
+    N(note='v.s = v.s + 5|2') # more fun
+    if random() > 0.8:
+        v.s = 50
+    again(fun, p=0.25)
+#+end_src
+
+You can use them to leverage Python or the pattern syntax for what they do best: patterning or dealing with complex algorithmic transformations. Having them both available makes the pattern syntax even more expressive.
+
+There is a finite list of actions you can perform on *amphibian variables*:
+- using them (just by calling them)
+- setting them: ~V.i = 5~ 
+- resetting them to 0: ~V.i.reset~
+
+**** Amphibian iterators
+
+#+begin_src python
+@swim
+def amphi_iter(p=0.25):
+    D('amencutup:[1:10]', i=i.i)
+    if random() > 0.8:
+        i.i = 0
+    again(amphi_iter, p=0.25)
+#+end_src
+
+- Similarly to *amphibian variables*, there are *amphibian iterators*.
+- They are defined by ~I~ followed by a letter from the alphabet: ~I.a~, ~I.A~, ~I.Z~, ~I.j~.
+- They are supposed to help you dealing with multiple iterators.
+
+#+begin_src python
+@swim
+def amphi_iter(p=0.25):
+    D('amencutup:[1:10]', speed='1|2|i.i=0', i=i.i)
+    again(amphi_iter, p=0.25)
+#+end_src
+
+These iterators can be reset or set on the pattern side!
+
+#+begin_src python
+@swim
+def amphi_iter(p=0.25):
+    if random() > 0.8:
+        I.i = [1, 5]
+    else:
+        i.i = [1, 2]
+    D('amencutup:[1:10]', speed='i.v|i.v=[1,2]', i=i.i)
+    again(amphi_iter, p=0.25)
+#+end_src
+
+Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.
+
+**** The Function Library
+
+**Sardine** pattern notation now comes with a function library. These are functions that should be used directly in the pattern notation to alter a list or a pattern you are working on. They can take basically any input but you will soon figure that some are more specialised than others. This is the part of the language that is the more subject to changes in upcoming versions. That's why I am only talking about it now, at the bottom of a fairly long page.
+
+I want to explore how far you can go by introducing functional concepts to handle linear sequences. So far, only functions are available. The next step will be to introduce high-order functions and to build a small set of functional operations to pattern functions themselves. Only then will I be happy. I will base myself on that work to write a decent and complex function library.
+
+
+***** Sinus, Cosinus, Tangent
+
+- ~sin(x)~: *sinus of input* (single tokens or lists). Classic mathematical sinus function.
+- ~cos(x)~: *cosinus of input* (single tokens or lists). Classic mathematical cosinus function.
+- ~tan(x)~: *tangent of input* (single tokens or lists). Classic mathematical tangent function.
+
+***** Scaling, measuring
+
+- ~abs(x)~: Absolute value.
+- ~max(x)~: Maximum value of list or token itself.
+- ~min(x)~: Minimum value of list or token itself.
+- ~mean(x)~: Mean of list or token itself.
+- ~scale(z, x, y, x', y')~: Bring a value ~z~ from range ~x-y~ to range ~x'-y'~.
+- ~clamp(x, y, z)~: Clamp function, limit a value `x` to the minimum ~y~ to the maximum ~z~.
+
+***** Reversal, shuffling
+
+- ~rev(x)~: Reverse a list.
+- ~shuf(x)~: Shuffle a list.
+- ~pal(x)~: palindrome of list.
+- ~apal(x)~: palindrome of list without repetition of last value.
+
+***** Musical functions
+
+- ~disco(x)~: Disco function. Every pair note down an octave.
+- ~bass(x)~: The first note of list is down an octave (not very useful).
+- ~sopr(x)~: The last note of list is up an octave (not very useful).
+- ~quant(x, y)~: The last note of list is up an octave (not very useful).
+
+***** Voice Leading
+
+These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
+
+- ~voice(x)~: four-note voice leading algorithm. Naive implementation.
+- ~dmitri(x)~: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
+
+***** Probabilities 
+
+- ~vanish(x, y)~ : Takes a list ~x~, output only ~y~% of values from it.
+
+***** Booleans
+
+- ~euclid(a, b, c, d)~: Euclidian rhythm function applied to patterns. Takes a pattern ~a~, a number of pulses ~b~, a number of steps ~c~ and a rotation amount ~d~. Outputs a pattern where the absence of a pulse is a silence and where pulses are values from the pattern.
+
+- ~mask(x, y)~: Generalisation of the euclidian rhythm algorithm. Works for any pattern and list of booleans.
+
+***** Insertion and rotation
+
+
+- ~in(x, y)~:
+- ~inPat(x, y)~:
+- ~inrot(x, y)~:
+- ~inprot(x, y)~:
+
+*** Notes
+
+#+begin_src python
+@swim
+def notes(p=0.5, i=0):
+    D('pluck', midinote='C5,D5,E5,F5,G5', i=i)
+    again(notes, p=0.5, i=i+1)
+#+end_src
+
+Notes are one of the primitives you can use in patterns. Notes will always be converted to some MIDI value (an integer value between ~0~ and ~127~). Notes will be converted to some MIDI value used by *SuperDirt*. If you need more precision, speak in hertzs (~freq=402.230239~).
+
+The syntax to write notes is the following:
+1) *[MANDATORY]* capital letter indicating the note name: ~C~, ~D~, ~E~, ~F~, ~G~, ~A~, ~B~. *Sardine* also supports the french notation system, so you can write ~Do, Ré, Mi, Fa, Sol, La, Si~ if it feels more natural to you.
+2) *[FACULTATIVE]* flat or sharp: ~#~, ~b~.
+3) *[FACULTATIVE]* octave number: ~0~..~9~.
+
+If you are a robot, you might prefer to speak in numbers. Because notes are turned into numbers, you can everything on them just like if they were numbers. It can be particularly useful to generate custom voicings or weirdly shaped chords that you want to transpose and invert around: ~{([0,4,7,9,10,11]+50)^1}~.
+
+**** Note qualifiers
+
+#+begin_src python
+@swim
+def notes(p=0.5, i=0):
+    D('pluck', midinote='C5@penta', i=i)
+    again(notes, p=0.5, i=i+1)
+#+end_src
+
+You can use the ~@~ operator to *qualify* a note. This will turn a note into a collection of notes based your initial note.
+
+~C@penta~ will summon a major pentatonic scale based on the middle C note: ~[60, 62, 64, 67, 69]~.
+
+Be careful while using them as they will instantly turn a single token into a list of x tokens. You might want to filter part of your newly generated collection or you will just play.. a chord or a scale. You will have to learn techniques to get better at summoning the exact materials you want and some processing by using functions might be needed to get a better result. Writing your patterns by hand is also an option if you are able to think and write down precise harmonic / melodic materials. Check out functions like ~filt()~ or ~quant()~.
+
+Take note that the following list is not always perfectly up to date. Moreover, it can be particularly tricky for you to remember how I named some of the structures:
+
+#+begin_src python
+qualifiers = {
+
+    ##########
+    # Chords #
+    ##########
+
+    "dim": [0, 3, 6, 12],
+    "dim9": [0, 3, 6, 9, 14],
+    "hdim7": [0, 3, 6, 10],
+    "hdim9": [0, 3, 6, 10, 14],
+    "hdimb9": [0, 3, 6, 10, 13],
+    "dim7": [0, 3, 6, 9],
+    "aug": [0, 4, 8, 12],
+    "augMaj7": [0, 4, 8, 11],
+    "aug7": [0, 4, 8, 10],
+    "aug9": [0, 4, 10, 14],
+    "maj": [0, 4, 7, 12],
+    "maj7": [0, 4, 7, 11],
+    "maj9": [0, 4, 11, 14],
+    "minmaj7": [0, 3, 7, 11],
+    "five": [0, 7, 12],
+    "six": [0, 4, 7, 9],
+    "seven": [0, 4, 7, 10],
+    "nine": [0, 4, 10, 14],
+    "b9": [0, 4, 10, 13],
+    "mM9": [0, 3, 11, 14],
+    "min": [0, 3, 7, 12],
+    "min7": [0, 3, 7, 10],
+    "min9": [0, 3, 10, 14],
+    "sus4": [0, 5, 7, 12],
+    "sus2": [0, 2, 7, 12],
+    "b5": [0, 4, 6, 12],
+    "mb5": [0, 3, 6, 12],
+
+    ##########
+    # Scales #
+    ##########
+
+    "major": [0, 2, 4, 5, 7, 9, 11],
+    "minor": [0, 2, 3, 5, 7, 8, 10],
+    "hminor": [0, 2, 3, 5, 7, 8, 11],
+    "vminor": [0, 2, 3, 5, 7, 8, 10],
+    "penta": [0, 2, 4, 7, 9],
+    "acoustic": [0, 2, 4, 6, 7, 9, 10],
+    "aeolian": [0, 2, 3, 5, 7, 8, 10],
+    "algerian": [0, 2, 3, 6, 7, 9, 11, 12, 14, 15, 17],
+    "superlocrian": [0, 1, 3, 4, 6, 8, 10],
+    "augmented": [0, 3, 4, 7, 8, 11],
+    "bebop": [0, 2, 4, 5, 7, 9, 10, 11],
+    "blues": [0, 3, 5, 6, 7, 10],
+    "chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+    "dorian": [0, 2, 3, 5, 7, 9, 10],
+    "doubleharmonic": [0, 1, 4, 5, 8, 11],
+    "enigmatic": [0, 1, 4, 6, 8, 10, 11],
+    "flamenco": [0, 1, 4, 5, 7, 8, 11],
+    "gypsy": [0, 2, 3, 6, 7, 8, 10],
+    "halfdim": [0, 2, 3, 5, 6, 8, 10],
+    "harmmajor": [0, 2, 4, 5, 7, 8, 11],
+    "harmminor": [0, 2, 3, 5, 7, 8, 11],
+    "hirajoshi": [0, 4, 6, 7, 11],
+    "hungarianminor": [0, 2, 3, 6, 7, 8, 11],
+    "hungarianmajor": [0, 3, 4, 6, 7, 9, 10],
+    "in": [0, 1, 5, 7, 8],
+    "insen": [0, 1, 5, 7, 10],
+    "ionian": [0, 2, 4, 5, 7, 9, 11],
+    "istrian": [0, 1, 3, 4, 6, 7],
+    "iwato": [0, 1, 5, 6, 10],
+    "locrian": [0, 1, 3, 5, 6, 8, 10],
+    "lydianaug": [0, 2, 4, 6, 8, 9, 11],
+    "lydian": [0, 2, 4, 5, 7, 8, 9, 11],
+    "majorlocrian": [0, 2, 4, 5, 6, 8, 10],
+    "majorpenta": [0, 2, 4, 7, 9],
+    "minorpenta": [0, 3, 5, 7, 10],
+    "melominup": [0, 2, 3, 5, 7, 9, 11],
+    "melomindown": [0, 2, 3, 5, 7, 8, 10],
+    "mixolydian": [0, 2, 4, 5, 7, 9, 10],
+    "neapolitan": [0, 1, 3, 5, 7, 8, 11],
+    "octatonic": [0, 2, 3, 5, 6, 8, 9, 11],
+    "octatonic2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "persian": [0, 1, 4, 5, 6, 8, 11],
+    "phrygian": [0, 1, 4, 5, 7, 8, 10],
+    "prometheus": [0, 2, 4, 6, 9, 10],
+    "harmonics": [0, 3, 4, 5, 7, 9],
+    "tritone": [0, 1, 4, 6, 7, 10],
+    "ukrainian": [0, 2, 3, 6, 7, 9, 10],
+    "whole": [0, 2, 4, 6, 8, 10],
+    "yo": [0, 3, 5, 7, 10],
+    "symetrical": [0, 1, 2, 6, 7, 10],
+    "symetrical2": [0, 2, 3, 6, 8, 10],
+    "messiaen1": [0, 2, 4, 6, 8, 10],
+    "messiaen2": [0, 1, 3, 4, 6, 7, 9, 10],
+    "messiaen3": [0, 2, 3, 4, 6, 7, 8, 10, 11],
+    "messiaen4": [0, 1, 2, 4, 6, 7, 8, 11],
+    "messiaen5": [0, 1, 5, 6, 7, 11],
+    "messiaen6": [0, 2, 4, 5, 6, 8],
+    "messiaen7": [0, 1, 2, 3, 5, 6, 7, 8, 9, 11],
+
+    ##############
+    # Structures #
+    ##############
+
+    "fourths": [0, 4, 10, 15, 20],
+    "fifths": [0, 7, 14, 21, 28],
+    "sixths": [0, 9, 17, 26, 35],
+    "thirds": [0, 4, 8, 12],
+    "octaves": [0, 12, 24, 36, 48],
+}
+#+end_src
+
+**** Chord / Collection inversion
+
+#+begin_src python
+@swim
+def notes(p=0.5, i=0):
+    D('pluck', midinote='disco(C5@maj7^(0~4))', i=i)
+    again(notes, p=0.5, i=i+1)
+#+end_src
+
+You can write chord/sequence inversions using the ~^~ syntax. It will accept any valid expression like ~^(1~5)~. You can also feed negative numbers for inverting a chord downwards. Chord inversions work on anything that is a list. Write custom chords!
+
+**** Mathematics on notes
+
+#+begin_src python
+@swim
+def notes(p=0.2, i=0):
+    D('pluck', midinote='disco(braid(C5+ 10|20|30')), i=i)
+    again(notes, p=0.2, i=i+1)
+#+end_src python
+
+You can use arithmetic operators on notes like if they were numbers. Think about it twice. There are many things that are numbers in *Sardine*. It might be fun.
+
+*** Polyphony
+
+A complex topic, with no definite answer. This is truly a work in progress.
+
+**** Note polyphony
+
+#+begin_src python
+@swim
+def poly(p=0.5, i=0):
+    D('superpiano', cutoff=500, midinote='{D@maj9}, {G@maj7^0}, {D@maj9}, {G@dim7^1}', i=i, d=2, r=0.25)
+    again(poly, p=P('0.5!4, 0.25!2', i), i=i+1)
+#+end_src
+
+- You can use the ~<~ and ~>~ delimiters to make parts of your pattern polyphonic.
+  - There is *note polyphony*, aka when multiple notes are played together.
+  - There is *parametric polyphonic*, aka when the same event is played multiple times with different parameters.
+
+There a few rules to understand about polyphony and polyphonic messages. These rules can sound quite counter-intuitive if you think about polyphony just like you think of it on a musical score.
+
+- The *size* of a polyphonic event -- meaning the number of messages sent for one occurence of an event -- is equal to the length of the largest polyphonic pattern you declared.
+
+In the first example, we have a 4-5 note polyphony. Every polyphonic element from our pattern is a major 9 or 7 chord (_e.g_ ~[62, 66, 69, 73, 76]~). It means that if you have a polyphony of ~2~ somewhere and a polyphony of ~4~ elsewhere, your first polyphony will be distributed over the second one:
+
+#+begin_quote
+1) [1,2,3,4]
+2) [0,1]
+
+RESULT:
+1) [1,2,3,4]
+2) [0,1,0,1]
+
+   POLYPHONY
+#+end_quote
+
+To illustrate the preceding rule we just talked about, here is a truly bizarre example. Half of our chord is played by a tuned bassdrum, the other half by a piano. Even though this may look odd, this is fully compliant with how parameters are handled by *Sardine*.
+
+#+begin_src python
+@swim
+def poly(p=0.5, i=0):
+    D('<[bd, superpiano]>', cutoff=500, midinote='<D@maj9>, <G@maj7^0>, <D@maj9>, <G@dim7^1>', i=i, d=2, r=0.25)
+    again(poly, p=Pat('0.5!4, 0.25!2', i), i=i+1)
+#+end_src
+
+We have two clear alternations, one between the ~superpiano~ and ~bd~ sound sets, the other between the four or five values that form our chords. It is then natural that half of our polyphony will be composed from a tuned bassdrum and the remaining half from a tuned piano. Once you get use to this novel way of thinking about polyphonic patterns, you will see that it opens up some space for interesting polyphonic interactions between sounds :)
+
+It is currently not possible to limit the number of voices generated by an event. Be careful! It is quite easy to get overrun and to kill your computer playing with polyphony!
+
+**** Parametric polyphony
+
+#+begin_src python
+@swim
+def poly(p=0.5, i=0):
+    D('drum:[1,6]', speed='{[1,rand]}, {[2,1.9]}', i=i, d=3)
+    D('drum:2', cutoff='{[500:2000,500]*sin($%rand*80/40)*10}', i=i, d=2)
+    D('bd', shape=0.5).out(i, 4)
+    again(poly, p=0.5/2, i=i+1)
+#+end_src
+
+Everything can become polyphonic. Just wrap anything between ~{~ and ~}~ and you will return x events, one for each value. It allows you to be very creative with patterns.
+
+
 ** Ziffers
+*** What is Ziffers?
+
+[[https://github.com/amiika/ziffers][Ziffers]] is a number based patterning language for writing melodies and harmonies made by Miika Alonen. It is a powerful addition to the *Sardine* environment. This language is another flavor of patterning that you get just like this, boom! It is fully compatible with the *Sardine* pattern language and can be seen as a more specialised way to speak about common musical objects such as chords, notes, scales, bars, etc...
+
+When I first created *Sardine*, I told myself that having something like *Ziffers* would be great. Now I have it thanks to Amiika :)
+
+*** How to get Ziffers?
+
+You can start *Sardine* without installing *Ziffers*. It will work. The *Ziffers* layer will not be activated and you will lose some functionalities!
 
 *** Testing a Ziffers without looping
 
@@ -2429,7 +3127,7 @@ The *Oblique Strategies* are a set of cards once written by Brian Eno and Peter 
 120) Try to find a profound aphorism about live coding too. It's not easy, is it?
 121) 127 cards, 127 MIDI notes. Is MIDI 2.0 killing the mood?
 122) Why does language matter?
-123) Have fun but don't program too much. You'll need glasses.
+123) Be non binary.
 124) Is there anything really divisive? Why is that?
 125) Pianists play chords on their keyboards. You can do too, but what does it mean?
 126) Does your computer seem to like anything in particular? Think about its well-being.

@@ -2188,22 +2188,92 @@ This is *the stereotypical swimming function* and *you need to learn it by heart
 
 ** Swimming rhythm
 
-Rhythm in a *swimming* function using either ~p~ or the arguments : ~d, i, r~.
+This is the end of the road! This last section will teach you the last basic concepts you need to understand to truly master *Sardine*! You should now know:
+- how to evaluate and update your code anytime you want.
+- how to play sounds and send notes to your synthesizers and instruments.
+- how to play with the shorthand syntax and with *swimming functions*.
+- how to describe looping processes and how to count in time.
 
-** Players / Handlers
+This is where *Sardine* starts to get more creative because we will do something with these new found powers. *Sardine* is basing a lot on two concepts:
+- *temporal recursion* aka *swimming functions*
+- *iterations*: counting up and down.
 
-You now know how to play a specific sound, how to give it parameters, and how to specify a simple rhythm. However, you don't always want to play an audio sample or a synthesizer. There are other event types that you might be interested in such as:
-- *MIDI* notes or controls (changing any parameter on an external synthesizer)
-- *OSC* messages (control pretty much anything through the network)
+*** Iterator
+
+Remember about patterns? Patterns were these things that we were writing in ~strings~ like so:
+#+begin_src python
+"C, E, G, B"
+"bd!2, cp:rand*20, tabla"
+"1, 2, 3, 4"
+#+end_src
+
+I told you before that you could *use strings in your senders* and that this *would transform them into sequences*. Let's explore that:
+#+begin_src python
+@swim
+def sequence(p=0.5, i=0):
+    D("bd!2, cp:rand*20, tabla")
+    again(sequence, p=0.5, i=i+1)
+#+end_src
+
+All you are hearing is a kick, right? We are looping, but how do we tell *Sardine* to move ahead in time? For that, we will be using that counter we saw earlier. This counter can be fed to a pattern to tell him where we are in time:
+#+begin_src python
+@swim
+def sequence(p=0.5, i=0):
+    D("bd!2, cp:rand*20, tabla", i=i)
+    again(sequence, p=0.5, i=i+1)
+#+end_src
+
+~i~ stands for ~iterator~ and *every sender can receive an iterator*. Your pattern is now alternating between ~bd~, ~cp~ and ~tabla~. That is because it plays the first sound in the sequence, then the second one, then the third one, and all over again. Your iterator can be infinitely big, the sequence will just loop around!
+
+Take a look at this musical sequence using patterns of different lengths with a single iterator:
+#+begin_src python
+@swim
+def sequence(p=0.5, i=0):
+    D("bd!2, cp:rand*20, tabla",
+      speed='1,2,3,4,5,6',
+      lpf="200+rand*2000",
+      i=i
+    )
+    again(sequence, p=0.5, i=i+1)
+#+end_src
+
+This opens up a new world of complexity because *every parameter can be patterned*, including the ones that you wouldn't have thought about: MIDI channels, instruments, etc... You can start patterning every musical information at your fingertips!
+
+*** Jumping in time(s)
+
+Time flows. We all know that. With *Sardine*, you can also play with the idea of making time flow backwards, or randomly. Time is only symbolised by a single number, your iterator. It means that by controllign this iterator wisely, you can control the direction to give to your musical sequence:
+#+begin_src python
+@swim
+def sequence(p=0.5, i=0):
+    ...
+    again(sequence, p=0.5, i=i-1) # Code changed here
+#+end_src
+
+It now flow backwards, but let's also make it flow... randomly. To do that, we can use the ~random.randint()~ function from *Python*:
+
+#+begin_src python
+from random import randint
+
+@swim
+def sequence(p=0.5, i=0):
+    ...
+    again(sequence, p=0.5, i=randint(1,100)) # Code changed here
+#+end_src
+
+And it will now jump between 100 different positions. You can also start to play around with different ideas:
+- having multiple iterators flowing at different speeds.
+- freezing an iterator, resuming it based on a condition.
+- etc...
 
 
+*** Divisor and rate
 
-For each of these event types, you can find a specific object that will take specific arguments depending on its nature:
-- ~n("C,E,G", channel=0, vel=120, dur=0.25)~ (*MIDI* note)
-- ~cc(control=2, channel=0, value=40)~ (*MIDI* control)
-- ~pc(program=2, channel=0)~ (*MIDI* program change)
-- ~O('some/address', value=1, other_value=3)~ (*OSC* message)
-  - Note that you have to create ~O()~ yourself. See the section about it!
+And now it becomes truly bizarre. What if we had some other tools to control how fast we iterate over our musical sequence?
+
+I told you about ~i~ (the ~iterator~) but it also comes to the party with some friends: ~r~ (the rate) and ~d~ (the divisor):
+- the ~rate~ will count how many times you need to increment your number for it to move upwards or backwards by 1. It will basically make it much harder or much easier to increase or decrease the index of your patterns.
+- the ~divisor~ will just refuse to play some events if the iterator ~modulo~ the ~divisor~ is equal to zero. Doesn't make sense to you? Think rhythm generator. Try to experiment with this :)
+
 
 * Pattern Languages
 ** Sardine Pattern Language

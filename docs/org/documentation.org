@@ -1337,8 +1337,6 @@ git clone https://github.com/Bubobubobubobubo/ziffers-python
 cd ziffers-python && python -m pip install --editable .
 #+end_src
 
-
-
 ** Linux
 
 *Preparing your environment*
@@ -1823,9 +1821,8 @@ Before starting *Sardine*, you need understand what *Sardine* is and where it si
 ~text editor -> fishery -> sardine -> SuperCollider/MIDI/OSC~
 #+end_quote
 
-Do not try to import ~sardine~ in a regular *Python* interpreter! It won't work, you will be disappointed.
-
-Whenever you start ~fishery~ in your terminal, the following splashscreen will appear:
+- Do not try to import ~sardine~ in a regular *Python* interpreter! It won't work, you will be disappointed.
+- Whenever you start ~fishery~ in your terminal, the following splashscreen will appear:
 #+begin_src python
 ╭──────────────────────────────────────────────────────╮
 │                                                      │
@@ -1845,33 +1842,40 @@ Whenever you start ~fishery~ in your terminal, the following splashscreen will a
 BPM: 120.0,BEATS: 4 SC: [X], DEFER: [X] MIDI: Sardine
 >>>
 #+end_src
+
 Only then will you know that *Sardine* has started and that everything is working! Some additional messages are likely to appear shortly after, warning you that the audio engine was hooked correctly or that an error has happened somewhere.
 
-You can write code directly in the interpreter. However, this is not a recommended practice! You will soon begin to see that whenever you evaluate a temporal function, the system will print some useful information about it, preventing you from writing at ease in that space. You should jump to your text editor!
+- You can write code directly in the interpreter. However, this is not a recommended practice!
+  - You will soon begin to see that whenever you evaluate a temporal function, the system will print some useful information about it, preventing you from writing at ease in that space. You should jump to your text editor!
 
-For the duration of this tutorial, I will make the assumption that you are using ~fishery web~, our internal text editor and environment!
+- For the duration of this tutorial, I will make the assumption that you are using ~fishery web~, our internal text editor and environment!
 
-** Playing sound
-*** Code evaluation
+** Code evaluation
 
-Let's start. We will write a few lines of code and I'll guide you along. To evaluate code, press *Shift + Enter*. The entire code block will be evaluated. If an error occurs, the application will not stop but will report the error and continue running using an older version of the code.
+To live code, you always need to have two things :
+- a document where you write your code.
+- a running interpreter that will receive code.
 
-By the end of this tutorial, you will be able to make music using *Sardine*. You will be able to sequence audio samples, synthesizers, and be able to manipulate algorithmic patterns to write and perform your own music!
+One pattern is the base of everything: *sending new code for evaluation* :
+- Your main document is your playing interface. Write / edit / change code.
+- Send new code whenever you are ready by pressing a key.
 
-Write the following line and press *Shift + Enter* (or the suitable command for your editor):
+On the included web text editor, press *Shift + Enter* or *Ctrl+E* to send code for evaluation. The entire code block will be evaluated! If an error occurs, the application will not stop but will report the error and continue running using an older version of the code. The interpreter will warn you if something goes wrong!
+
+Write the following line and evaluate it:
 #+begin_src python
 Pa >> d('bd, cp')
 #+end_src
 
-Soon after, you will start hearing a kickdrum and a clap playing on repeat. This is what *Sardine* users are calling a *pattern*. It will repeat that section indefinitely until you stop it or until your computer dies because of the entropy of the universe we live in :) To stop a pattern, use one of the following functions:
+At the beginning of the next bar, a musical pattern will start to play. This pattern will be composed of a kickdrum and a clapping sound in quick succession. We just evaluated our first *pattern*. This pattern will repeat indefinitely until you stop it.
 
+To stop a pattern, use one of the following functions:
 #+begin_src python
 silence() #  gentle shutdown
 panic() #  hard stop (will be detailed later)
 #+end_src
 
 You can also be more precise about your intentions by giving the name of the pattern you want to stop:
-
 #+begin_src python
 silence(Pa)
 #+end_src
@@ -1885,14 +1889,24 @@ silence(Pa)
 
 You can update (*live code*) anything even if the code is already running. The system will jump to the new version of your code as soon as you submit it. This is how you live code. From now on, we will only get more specific and precise in the code we submit.
 
+Evaluating code takes some practice. There are some pitfalls when you do live coding:
+- you sometimes need to evaluate things in a specific order.
+- you need to make sure that ALL your needed code is evaluated.
+- sending code can fail for cryptic reasons (invisible characters), etc.
+
 *Summary:*
 - *Shift + Enter*: submitting new code.
 - ~silence()~ or ~panic()~: stop the execution of code.
 
-*** Samples and Synths
+** Samples and Synths
 
-Why are we hearing a bassdrum and then a clap? Where does the rhythm comes from? *Sardine* is based on the *SuperDirt* audio engine. *SuperDirt* expects to receive information about audio samples and synthesizers using a string (~bd~, ~cp~, etc.). When you say ~Pa >> d('bd')~, the sound played will be the first audio sample contained in a folder called ~bd~. By default, there are a lot of samples automatically loaded by *SuperDirt*:
+Why were we hearing a bassdrum and then a clap? Where does the rhythm comes from?
 
+*Sardine* is based on the *SuperDirt* audio engine. This is *SuperDirt*'s doing. *SuperDirt* expects to receive information about audio samples and synthesizers using a simple messaging system.
+
+*SuperDirt* expects to receive information about audio samples and synthesizers using a string (~bd~, ~cp~, etc.).
+
+When you say ~Pa >> d('bd')~, the sound played will be the first audio sample contained in a folder called ~bd~. By default, there are a lot of samples automatically loaded by *SuperDirt* whenever you start it:
 #+begin_src text
 217 existing sample banks:
 808 (6) 808bd (25) 808cy (25) 808hc (5) 808ht (5) 808lc (5) 808lt (5) 808mc (5)
@@ -1924,18 +1938,19 @@ xmas (1) yeah (31)
 ... file reading complete. Required 444 MB of memory.
 #+end_src
 
-It means that you can replace ~bd~ by ~tech~ and it will work! You can summon any audio sample you like. You can also call synthesizers using the same syntax:
+It means that you can replace ~bd~ by ~tech~ and it will work! You can summon any audio sample you like.
 
+The same syntax is used to call synthesizers:
 #+begin_src python
+# You will need sc3_plugins for it to work
 Pa >> d('supersaw, superpiano')
 
 silence(Pa)
 #+end_src
 
-These synths are labelled ~super~ because they come by default with *SuperDit*. You can write your own synthesizers using [[https://supercollider.github.io/][SuperColider]] and add them to your setup. That's what experimented players do. They have a custom folder full of their own samples and complex synthesizers! For now, we will stick to the default ones and make them our own!
+These synths are labelled ~super~ because they come by default with *SuperDirt*. You can write your own synthesizers using [[https://supercollider.github.io/][SuperColider]] and add them to your setup. That's what experimented players do. They have custom libraries full of synthesizers and audio samples! For now, we will stick to default.
 
 For audio samples, note that you can also be more specific about the file you want to select:
-
 #+begin_src python
 Pa >> d('voodoo:0, voodoo:1, voodoo:2')
 
@@ -1949,21 +1964,21 @@ This pattern will play the first, second and third sample from the ~voodoo~ fold
 - You can call a specific sample by using a specific number: ~bd:4~.
 - ~"names"~ can refer to a synth or a sample. There is no difference.
 
-*** Sound Patterns
+** Sound Patterns
 
-We now know how to play basic sounds, but we don't know why this is happening. How unfortunate! Remember for a moment about the pattern we wrote before:
-
+We know how to play basic sounds, but we don't know why this is happening. How unfortunate! Remember for a moment about the pattern we wrote before:
 #+begin_src python
 Pa >> d('bd, cp')
 #+end_src
 
-~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. This syntax is a shorthand version of a more powerful syntax that we will explain later on :) There are 48 players by default:
+This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for newcomers.
+
+~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. There are 48 players by default:
 #+begin_src python
 all_players = [Pa, Pb, Pc..., PA, PB, PC, ...]
 #+end_src
 
-This pattern can take *any number of arguments*. These arguments will help shaping the sound, timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... a sandwich of values. Here is a more complex pattern based on the one we saw earlier:
-
+This pattern can take *any number of arguments*. These arguments will help to preicse the timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... a sandwich of values. Here is a more complex pattern based on the one we saw earlier:
 #+begin_src python
 Pa >> d('bd, cp', speed='1,2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4, 0.25')
 
@@ -1978,12 +1993,13 @@ Pa >> d('bd, cp',
 )
 #+end_src
 
-- ~p~ (*period*): rhythm of each step in *beats*. Can be a number or *string*.
-- ~shape~, ~room~, etc.: parameters of the audio sampler.
+- ~p~ for *period*: the rhythm of each step in *beats*. It can be a number or *string*.
+  - This value is always relative to the tempo!
+- ~shape~, ~room~, etc.: parameters of the audio sampler, helping us to shape the sound.
 
-The arguments given to any pattern are of two kind:
-- *pattern arguments:* *Sardine* related arguments. They will teach the system how your pattern will unfold in time (~period~, ~divisor~, ~rate~, etc).
-- *instrument-specific arguments :* *SuperDirt* / *MIDI* / *OSC* specific arguments. They will help to precise what output you would like to get out of your pattern.
+There are two types of arguments you can give to a pattern:
+- *pattern-relative*: *Sardine* related arguments. They will teach the system how your pattern will unfold in time (~period~, ~divisor~, ~rate~, etc).
+- *instrument-relative :* *SuperDirt* / *MIDI* / *OSC* specific arguments. They will help to precise what output you would like to get out of your pattern.
 
 To know the complete list of all the possible parameters, you will have to refer to the *SuperDirt Reference*. Note that you can also add more parameters later on if you tweak your audio engine.
 
@@ -1997,11 +2013,11 @@ Don't focus too much on it for the moment, we will come back to it later on! The
 - *Patterns* can take an undefinite amount of arguments.
 - *Patterns* can use a special syntax in between ~strings~ for writing better patterns.
 
-*** Tempo and playback
+** Tempo and playback
 
-Everytime you start *Sardine*, the clock starts as well. The clock is the main mechanism that takes your code and makes it live. There are currently two different clocks you can use:
+*Sardine* will always try to execute code based on a timing given by its clock. The clock is always there, from the moment you start the software until the moment you exit. The clock is the main mechanism that takes your code and makes it live. There are currently two different clocks you can use:
 - *the internal clock:* Your system clock.
-- *the external clock:* A special clock relying on the Ableton Link technology. *It allows you to synchronise with other players*.
+- *the external clock:* A special clock *for synchronisation on the network*.
 
 These clocks have the same interface! If you learn how to use one of them, you know how to use them all.
 
@@ -2031,9 +2047,107 @@ bowl.resume()
 print(clock)
 #+end_src
 
-Most of the time, you will keep the system running. Don't worry too much about this!
+** Basic of Senders
 
-*** Players / Handlers
+The preceding sections of this tutorial were using a special function named ~d()~. It is now time to explain its nature. ~d()~ is what we call a *Sender*. It is a special function that takes care of sending messages to your musical applications. It also provides an interface to any pattern language that you'd like to use.
+
+*Senders* are numerous, and more can be created depending on your needs. By default, there are a couple of pre-declared ones that you will be using *all the time*:
+- ~D()~ and ~d()~: *SuperDirt* sender.
+- ~N()~ and ~n()~: *MIDI* notes.
+- ~CC()~ and ~cc()~: *MIDI* control messages.
+- ~PC()~ and ~pc()~: *MIDI* program changes.
+
+These *senders* both exist in uppercase and lowercase. Why is that?
+- UPPERCASE players are the basic *senders*.
+- lowercase players are to be used with the shorthand notation: ~Pa >> d('bd')~.
+
+There are some additional *senders* that you can use to play with the *Ziffers* patterning language:
+- ~ZD()~ or ~zd()~: the *Ziffers SuperDirt* senders.
+- ~ZN()~ or ~zn()~: the *Ziffers MIDI* note senders.
+
+The following example will higlight basic usage of these *senders*:
+  #+begin_src python
+Pa >> n('C5, E5, G5', p=0.25) # playing a chord, one note every 1/4 of a beat.
+Pb >> cc(ctrl=20, chan=0, value='rand*127') # sending a random MIDI control on ctrl 20, channel 0
+Pc >> d('tabla, tabla:') # Playing audio samples of an indian tabla
+  #+end_src
+
+** Player arguments
+
+Every *sender* is specialised for a task. Every *sender* will have its own special arguments. Some of them can also be aliased (_e.g_ ~vel~ for ~velocity~). Learning these arguments is part of learning the *Sardine* instrument.
+
+*** MIDI Arguments
+
+There are multiple *senders* for *MIDI* because there are different *MIDI* messages you can write. To each messsage its sender.
+
+- ~N("pattern", velocity, channel, duration)~: the *sender* for MIDI notes.
+  - ~velocity~ or ~vel~: how hard the note is played, from 0 to 127.
+  - ~channel~ or ~chan~: on which channel to play the note (from 0 to 15).
+  - ~duration~ or ~dur~: for how long to play the note (in beats).
+
+- ~CC(control, channel, value)~: the *sender* for MIDI control changes.
+  - ~control~ or ~ctrl~: number of the control to target (0 to 127).
+  - ~channel~ or ~chan~: on which channel to send the control.
+  - ~value~ or ~val~: value of that control (0 to 127).
+
+- ~PC(program, channel)~: the *sender* for *MIDI* program changes.
+  - ~program~ or ~prog~: program number to send.
+  - ~channel~ or ~chan~: on which channel to send the control.
+
+There is also a special ~SY~ sender that is very experimental and is used to control some very specific gear. I have currently no plan to open it for others to play but you can still send Sysex messages by using private methods of the ~midi~ object.
+
+*** SuperDirt Arguments
+
+There is only one *sender* for *SuperDirt*: ~D()~ or ~d()~. This sender is a basic interface to *SuperDirt*, allowing you to play sounds or synthesizers and to add effects to them.
+
+- ~D("pattern", orbit=0)~: the *sender* for *SuperDirt*.
+  - ~orbit~ : channel the sound will played on (mono or stereo).
+
+The concept of ~orbit~ is just a way to detect on which channel of the console to apply some specific effects that will concern specifically the sound you wish to play (reverb amount, low-pass filter, etc...). This concept of ~orbit~ is specific to *SuperDirt*.
+
+** Swimming functions
+
+*Sardine* very existence is tied to the notion of *swimming functions*. A *swimming function* is a specific type of function that can easily be modified and updated *on the fly*, whenever you want. Strictly speaking, a *swimming function* is a *temporally recursive function*, a construct used by many programming languages for music and digital art. This way of writing functions is extremely interesting, and people have been playing with the concept for more than 30 years now. If you dig deep enough, you will find that the concept of a *swimming function* is at the very base of computer music systems such as *SuperCollider*.
+
+Here is a basic Python function that you might already be familiar with:
+#+begin_src python
+def hello_world():
+    print('Hello, World!')
+#+end_src
+
+You can call this function like so:
+#+begin_src python
+hello_world()
+#+end_src
+
+However, this will only play once. Not so interesting for live coding or for playing on stage. A few remarks:
+- it would be much better if the function could be called again, indefinitely, in rhythm.
+- it would be nice if we could reevaluate that function to change its behavior, whenever you want.
+
+A *swimming function* is doing precisely doing this! It comes at a cost, a slightly different syntax. Evalute this:
+#+begin_src python
+@swim
+def hello_world():
+    print('Hello, World!')
+    again(hello_world)
+#+end_src
+
+Your interpreter window will now be polluted by the message ~Hello, World!~ printing on repeat. This is a good sign! The function will now be repeated indefinitely, until you change something. Let's change something then:
+
+#+begin_src python
+@swim
+def hello_world():
+    print('Goodbye, World!')
+    again(hello_world)
+#+end_src
+
+Now it prints ~Goodbye, World!~. You can alter a swimming function whenever you can. This is really the beginning of a rabit hole of the things you can do using *swimming functions*. To illustrate that, think of the shorthand notation we mentioned earlier: ~Pa >> d('bd')~. This is a *swimming function* in disguise!
+
+** Swimming rhythm
+
+Rhythm in a *swimming* function using either ~p~ or the arguments : ~d, i, r~.
+
+** Players / Handlers
 
 You now know how to play a specific sound, how to give it parameters, and how to specify a simple rhythm. However, you don't always want to play an audio sample or a synthesizer. There are other event types that you might be interested in such as:
 - *MIDI* notes or controls (changing any parameter on an external synthesizer)
@@ -2048,8 +2162,6 @@ For each of these event types, you can find a specific object that will take spe
 - ~O('some/address', value=1, other_value=3)~ (*OSC* message)
   - Note that you have to create ~O()~ yourself. See the section about it!
 
-** TODO Time
-** TODO Pattern
 * Pattern Languages
 ** Sardine Pattern Language
 
@@ -2643,8 +2755,6 @@ You can use arithmetic operators on notes like if they were numbers. Think about
 
 *** Polyphony
 
-A complex topic, with no definite answer. This is truly a work in progress.
-
 **** Note polyphony
 
 #+begin_src python
@@ -2665,6 +2775,7 @@ There a few rules to understand about polyphony and polyphonic messages. These r
 In the first example, we have a 4-5 note polyphony. Every polyphonic element from our pattern is a major 9 or 7 chord (_e.g_ ~[62, 66, 69, 73, 76]~). It means that if you have a polyphony of ~2~ somewhere and a polyphony of ~4~ elsewhere, your first polyphony will be distributed over the second one:
 
 #+begin_quote
+PATTERN:
 1) [1,2,3,4]
 2) [0,1]
 
@@ -2700,7 +2811,6 @@ def poly(p=0.5, i=0):
 #+end_src
 
 Everything can become polyphonic. Just wrap anything between ~{~ and ~}~ and you will return x events, one for each value. It allows you to be very creative with patterns.
-
 
 ** Ziffers
 *** What is Ziffers?
@@ -3005,41 +3115,41 @@ This website is maintained using [[https://orgmode.org/][Org Mode]], a wonderful
 The *Oblique Strategies* are a set of cards once written by Brian Eno and Peter Schmidt. These are cards that you should take a look at when you are feeling down when working in the studio. They are pretty famous and were used by many musicians worldwide. To my knowledge, nobody ever tried to write a _live coding flavour_ of these cards... until now. Here they are, have fun:
 
 #+begin_src
-1) Why are you using a computer?
-2) Some things can't be coded. Move!
-3) You are not looking for a function, you are looking for a gesture.
-4) Do you know how to do it differently?
-5) Your code could sound better if only you stopped coding.
+1) Computers are good at maths.
+2) Do what musicians can't do. Elaborate.
+3) This is not the function you are looking for.
+4) If my grandmother had wheels, she would have been a bike.
+5) Your code is totally fine. It just doesn't sound good.
 6) Record, Listen, Reuse the recording!
-7) What is yours?
+7) What is truly yours?
 8) Complex things are simple if you cut them up.
 9) Simple things are infinitely difficult if you look at them closely.
 10) What is a computer keyboard?
-11) Remember that you are typing code. That's not the only thing you can do.
-12) Are there things that really deserve to be live coded?
-13) What would you do to do the same thing without a computer?
+11) Text is for speaking.
+12) That one thing that deserves to be live coded
+13) What would you do if you had to apy each letter you type
 14) Write the most complex thing you can think of.
-15) Computers are made to process files. Use lots of files.
+15) Computers love files. Use lots of files.
 16) Will you ever be able to sound human?
-17) This is the cybernetic hour. Add more to the system.
+17) Cybernetic hour. Add more to the system.
 18) Why did you learn how to program?
 19) Beautiful things are scarce. Think of colors.
-20) Ugly things are plentiful, but they can be pretty if you try hard enough.
+20) Ugly things are plentiful, but they can be pretty if you try.
 21) Computer musicians have invented DAWs. Why?
 22) Perspective and layers.
-23) Your computer doesn't know what time is. Teach him.
+23) What is time. Does your computer think the same?.
 24) Digital sound is a material. We want to hear it.
-25) What is the triangle of your orchestra?
-26) Time is flexible. Height is relative.
+25) The triangle of your orchestra.
+26) Solos are great.
 27) What's the worst thing about a computer? Can you get your revenge?
-28) Beep beep, we can send messages. Internet was a good idea at the very beginning.
+28) Beep beep, this is internet.
 29) There are musicians who play their instruments well.
-30) You are not yourself anymore. Do something about it.
+30) You are not yourself anymore. You are free!.
 31) Computers are stubborn and you are not!
-32) Visualise both the beginning and the end of a process.
+32) The beginning and the end. See them.
 33) Bigger font, bigger ideas.
 34) Ping-pong with your friend.
-35) What is computer folklore? We don't have folk music with computers.
+35) What is computer folklore?
 36) Tappity tap, you write in rhythm.
 37) Computers are not helping you at all.
 38) Get political!

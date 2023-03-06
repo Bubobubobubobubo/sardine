@@ -11,7 +11,7 @@ body {
     text-justify: inter-word;
     line-height: 1.15;
     color: #404040;
-	background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #A7CEFA , #F9F9FB, #B4DDED);
+	background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #E0FFFF , #F9F9FB, #B4DDED);
 	background-size: 900% 900%;
 	animation: gradient 45s ease infinite;
 	height: 100vh;
@@ -151,7 +151,7 @@ a[href^="http"]:after {
 #table-of-contents {
         line-height: 1.15;
         overflow: scroll; /* Show scrollbars */
-	    background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #A7CEFA , #F9F9FB, #B4DDED);
+	    background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #E0FFFF, #F9F9FB, #B4DDED);
 	    background-size: 900% 900%;
 	    animation: gradient 45s ease infinite;
 }
@@ -527,7 +527,7 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
                 width: 290px;
                 height: 100vh;
                 font-size: 14px;
-             	background: linear-gradient(-90deg, #FFFFFF, #F0F8FF, #A7CEFA , #F9F9FB, #B4DDED);
+             	background: linear-gradient(-90deg, #FFFFFF, #F0F8FF, #E0FFFF, #F9F9FB, #B4DDED);
 	            background-size: 800% 800%;
 	            animation: gradient 45s ease infinite;
 

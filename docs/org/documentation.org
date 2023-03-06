@@ -1805,14 +1805,9 @@ We know this is working, but there is no documentation about it or the one we ha
 Before starting *Sardine*, you need understand what *Sardine* is and where it sits on your system:
 - *Fishery* is the *Sardine* interpreter. To play with *Sardine*, you need to start ~fishery~.
 - *Sardine* is the main *Python* library that you will be interacting with.
-- Behind the scene, everything will be translated to *SuperCollider*, *MIDI* or *OSC* messages.
+- Behind the scene, everything will be translated to *SuperCollider*, *MIDI* or *OSC* messages : ~text editor -> fishery -> sardine -> SuperCollider/MIDI/OSC~
 
-#+begin_quote
-~text editor -> fishery -> sardine -> SuperCollider/MIDI/OSC~
-#+end_quote
-
-- Do not try to import ~sardine~ in a regular *Python* interpreter! It won't work, you will be disappointed.
-- Whenever you start ~fishery~ in your terminal, the following splashscreen will appear:
+Do not try to import ~sardine~ in a regular *Python* interpreter! It won't work, you will be disappointed. Whenever you start ~fishery~ in your terminal, the following splashscreen will appear:
 #+begin_src python
 ╭──────────────────────────────────────────────────────╮
 │                                                      │
@@ -1836,7 +1831,7 @@ BPM: 120.0,BEATS: 4 SC: [X], DEFER: [X] MIDI: Sardine
 Only then will you know that *Sardine* has started and that everything is working! Some additional messages are likely to appear shortly after, warning you that the audio engine was hooked correctly or that an error has happened somewhere.
 
 - You can write code directly in the interpreter. However, this is not a recommended practice!
-  - You will soon begin to see that whenever you evaluate a temporal function, the system will print some useful information about it, preventing you from writing at ease in that space. You should jump to your text editor!
+  - You will soon begin to see that the system will print some useful information, preventing you from writing easily in the interpreter window. You should jump to your text editor!
 
 - For the duration of this tutorial, I will make the assumption that you are using ~fishery web~, our internal text editor and environment!
 
@@ -1846,7 +1841,7 @@ To live code, you always need to have two things :
 - a document where you write your code.
 - a running interpreter that will receive code.
 
-One pattern is the base of everything: *sending new code for evaluation* :
+One pattern is the base of everything, *sending new code for evaluation* :
 - Your main document is your playing interface. Write / edit / change code.
 - Send new code whenever you are ready by pressing a key.
 
@@ -1877,9 +1872,9 @@ Pa >> d('bd!2, cp')
 silence(Pa)
 #+end_src
 
-You can update (*live code*) anything even if the code is already running. The system will jump to the new version of your code as soon as you submit it. This is how you live code. From now on, we will only get more specific and precise in the code we submit.
+You can  *live code* anything. The system will jump to the new version of your code as soon as you submit it. This is how you *live code*. From now on, we will only get more specific and precise in the code we submit.
 
-Evaluating code takes some practice. There are some pitfalls when you do live coding:
+Evaluating code takes some practice. There are some pitfalls to avoid:
 - you sometimes need to evaluate things in a specific order.
 - you need to make sure that ALL your needed code is evaluated.
 - sending code can fail for cryptic reasons (invisible characters), etc.
@@ -1890,13 +1885,9 @@ Evaluating code takes some practice. There are some pitfalls when you do live co
 
 ** Samples and Synths
 
-Why were we hearing a bassdrum and then a clap? Where does the rhythm comes from?
+Why were we hearing a bassdrum and then a clap? Where does the rhythm comes from? *Sardine* is based on the *SuperDirt* audio engine. This is *SuperDirt*'s doing. *SuperDirt* expects to receive information about audio samples and synthesizers using a simple messaging system. *SuperDirt* expects to receive information about audio samples and synthesizers using a string (~bd~, ~cp~, etc.).
 
-*Sardine* is based on the *SuperDirt* audio engine. This is *SuperDirt*'s doing. *SuperDirt* expects to receive information about audio samples and synthesizers using a simple messaging system.
-
-*SuperDirt* expects to receive information about audio samples and synthesizers using a string (~bd~, ~cp~, etc.).
-
-When you say ~Pa >> d('bd')~, the sound played will be the first audio sample contained in a folder called ~bd~. By default, there are a lot of samples automatically loaded by *SuperDirt* whenever you start it:
+When you say ~Pa >> d('bd')~, the sound played will be the first audio sample contained in a folder called ~bd~. By default, there are a lot of samples automatically loaded by *SuperDirt*:
 #+begin_src text
 217 existing sample banks:
 808 (6) 808bd (25) 808cy (25) 808hc (5) 808ht (5) 808lc (5) 808lt (5) 808mc (5)
@@ -1921,7 +1912,8 @@ newnotes (15) noise (1) noise2 (8) notes (15) numbers (9) oc (4) odx (15) off (1
 pad (3) padlong (1) pebbles (1) perc (6) peri (15) pluck (17) popkick (10) print (11) proc (2)
 procshort (8) psr (30) rave (8) rave2 (4) ravemono (2) realclaps (4) reverbkick (1)
 rm (2) rs (1) sax (22) sd (2) seawolf (3) sequential (8) sf (18) sheffield (1) short (5)
-sid (12) sine (6) sitar (8) sn (52) space (18) speakspell (12) speech (7) speechless (10) speedupdown (9) stab (23) stomp (10) subroc3d (11) sugar (2) sundance (6) tabla (26)
+sid (12) sine (6) sitar (8) sn (52) space (18) speakspell (12) speech (7) speechless (10)
+speedupdown (9) stab (23) stomp (10) subroc3d (11) sugar (2) sundance (6) tabla (26)
 tabla2 (46) tablex (3) tacscan (22) tech (13) techno (7) tink (5) tok (4) toys (13)
 trump (11) ul (10) ulgab (5) uxay (3) v (6) voodoo (5) wind (10) wobble (1) world (3)
 xmas (1) yeah (31)
@@ -1938,7 +1930,7 @@ Pa >> d('supersaw, superpiano')
 silence(Pa)
 #+end_src
 
-These synths are labelled ~super~ because they come by default with *SuperDirt*. You can write your own synthesizers using [[https://supercollider.github.io/][SuperColider]] and add them to your setup. That's what experimented players do. They have custom libraries full of synthesizers and audio samples! For now, we will stick to default.
+These synths are labelled ~super~ because they come installed by default with *SuperDirt*. You can write your own synthesizers using [[https://supercollider.github.io/][SuperColider]] and add them to your setup. That's what experimented players do. They have custom libraries full of synthesizers and audio samples! For now, we will stick to default.
 
 For audio samples, note that you can also be more specific about the file you want to select:
 #+begin_src python
@@ -1957,18 +1949,19 @@ This pattern will play the first, second and third sample from the ~voodoo~ fold
 ** Sound Patterns
 
 We know how to play basic sounds, but we don't know why this is happening. How unfortunate! Remember for a moment about the pattern we wrote before:
+
 #+begin_src python
 Pa >> d('bd, cp')
 #+end_src
 
-This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for newcomers.
+This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for new users.
 
 ~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. There are 48 players by default:
 #+begin_src python
 all_players = [Pa, Pb, Pc..., PA, PB, PC, ...]
 #+end_src
 
-This pattern can take *any number of arguments*. These arguments will help to preicse the timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... a sandwich of values. Here is a more complex pattern based on the one we saw earlier:
+This pattern can take *any number of arguments*. These arguments will help to precise the timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... *a sandwich of values*. Here is a more complex pattern based on the one we saw earlier:
 #+begin_src python
 Pa >> d('bd, cp', speed='1,2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4, 0.25')
 
@@ -1988,14 +1981,12 @@ Pa >> d('bd, cp',
 - ~shape~, ~room~, etc.: parameters of the audio sampler, helping us to shape the sound.
 
 There are two types of arguments you can give to a pattern:
-- *pattern-relative*: *Sardine* related arguments. They will teach the system how your pattern will unfold in time (~period~, ~divisor~, ~rate~, etc).
-- *instrument-relative :* *SuperDirt* / *MIDI* / *OSC* specific arguments. They will help to precise what output you would like to get out of your pattern.
+- *pattern-relative*: They will teach the system how your pattern will unfold in time (~period~, ~divisor~, ~rate~, etc).
+- *instrument-relative :* arguments specific to *SuperDirt* / *MIDI* / *OSC*. They will help to precise what output you would like to get out of your pattern.
 
-To know the complete list of all the possible parameters, you will have to refer to the *SuperDirt Reference*. Note that you can also add more parameters later on if you tweak your audio engine.
+To know the complete list of all the possible parameters, you will have to refer to the *SuperDirt Reference* included in the sidebar! Note that you can also add more parameters later on if you tweak your audio engine.
 
-As you might have noticed already, there is a difference between arguments that are plain numbers and arguments that are specified as a string (in green). The difference is that numbers are just numbers but strings are interpreted as *patterns*. They move in time with each step. It means that the following pattern: ~"0.5!4, 0.25!2"~ is in fact: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~.
-
-Don't focus too much on it for the moment, we will come back to it later on! There is much depth to what a pattern is and what you can do with them.
+As you might have noticed already, there is a difference between arguments that are plain numbers and arguments that are specified as a string (in green). The difference is that numbers are just numbers but strings are interpreted as *patterns*. They move in time with each step. It means that the following pattern: ~"0.5!4, 0.25!2"~ is in fact: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~. Don't focus too much on it for the moment, we will come back to it later on! There is much depth to what a pattern is and what you can do with them.
 
 *Summary:*
 - *Patterns* are a complete description of an algorithmic musical pattern: *pitch*, *timbre*, *rhythm*, etc.
@@ -2006,7 +1997,7 @@ Don't focus too much on it for the moment, we will come back to it later on! The
 ** Tempo and playback
 
 *Sardine* will always try to execute code based on a timing given by its clock. The clock is always there, from the moment you start the software until the moment you exit. The clock is the main mechanism that takes your code and makes it live. There are currently two different clocks you can use:
-- *the internal clock:* Your system clock.
+- *the internal clock:* Your regular system clock.
 - *the external clock:* A special clock *for synchronisation on the network*.
 
 These clocks have the same interface! If you learn how to use one of them, you know how to use them all.
@@ -2039,7 +2030,9 @@ print(clock)
 
 ** Basic of Senders
 
-The preceding sections of this tutorial were using a special function named ~d()~. It is now time to explain its nature. ~d()~ is what we call a *Sender*. It is a special function that takes care of sending messages to your musical applications. It also provides an interface to any pattern language that you'd like to use.
+Previously, you might have noticed that we used ~d()~ without talking about its true nature!
+
+~d()~ is what we call a *Sender*. It is a special function that takes care of sending messages to your musical applications or audio tools. It also provides an interface to any pattern language that you'd like to use. Basically, *senders are a gate to the outside world*.
 
 *Senders* are numerous, and more can be created depending on your needs. By default, there are a couple of pre-declared ones that you will be using *all the time*:
 - ~D()~ and ~d()~: *SuperDirt* sender.
@@ -2048,14 +2041,14 @@ The preceding sections of this tutorial were using a special function named ~d()
 - ~PC()~ and ~pc()~: *MIDI* program changes.
 
 These *senders* both exist in uppercase and lowercase. Why is that?
-- UPPERCASE players are the basic *senders*.
-- lowercase players are to be used with the shorthand notation: ~Pa >> d('bd')~.
+- *UPPERCASE* players are the basic *senders*.
+- *lowercase* players are to be used with the shorthand notation: ~Pa >> d('bd')~.
 
 There are some additional *senders* that you can use to play with the *Ziffers* patterning language:
 - ~ZD()~ or ~zd()~: the *Ziffers SuperDirt* senders.
 - ~ZN()~ or ~zn()~: the *Ziffers MIDI* note senders.
 
-The following example will higlight basic usage of these *senders*:
+The following example is highlighting the very basic usage of these *senders*:
   #+begin_src python
 Pa >> n('C5, E5, G5', p=0.25) # playing a chord, one note every 1/4 of a beat.
 Pb >> cc(ctrl=20, chan=0, value='rand*127') # sending a random MIDI control on ctrl 20, channel 0
@@ -2064,7 +2057,7 @@ Pc >> d('tabla, tabla:') # Playing audio samples of an indian tabla
 
 ** Player arguments
 
-Every *sender* is specialised for a task. Every *sender* will have its own special arguments. Some of them can also be aliased (_e.g_ ~vel~ for ~velocity~). Learning these arguments is part of learning the *Sardine* instrument.
+Every *sender* is specialised for a task. Every *sender* will have its own special arguments. Some of them can also be aliased (/e.g/ ~vel~ for ~velocity~). Learning these arguments is part of learning the *Sardine* instrument. There is no way around it!
 
 *** MIDI Arguments
 
@@ -2075,29 +2068,31 @@ There are multiple *senders* for *MIDI* because there are different *MIDI* messa
   - ~channel~ or ~chan~: on which channel to play the note (from 0 to 15).
   - ~duration~ or ~dur~: for how long to play the note (in beats).
 
+
 - ~CC(control, channel, value)~: the *sender* for MIDI control changes.
   - ~control~ or ~ctrl~: number of the control to target (0 to 127).
   - ~channel~ or ~chan~: on which channel to send the control.
   - ~value~ or ~val~: value of that control (0 to 127).
 
+
 - ~PC(program, channel)~: the *sender* for *MIDI* program changes.
   - ~program~ or ~prog~: program number to send.
   - ~channel~ or ~chan~: on which channel to send the control.
 
-There is also a special ~SY~ sender that is very experimental and is used to control some very specific gear. I have currently no plan to open it for others to play but you can still send Sysex messages by using private methods of the ~midi~ object.
+There is also a special ~SY~ sender that is very experimental and is used to control some very specific gear. I have currently no plan to open it for others to play but you can still send Sysex messages by using private methods of the ~midi~ object. The basic senders should cover 99% of your needs. If ever you were to miss one, it is easy to add them. Just contact me!
 
 *** SuperDirt Arguments
 
-There is only one *sender* for *SuperDirt*: ~D()~ or ~d()~. This sender is a basic interface to *SuperDirt*, allowing you to play sounds or synthesizers and to add effects to them.
+There is only one *sender* for *SuperDirt*: ~D()~ or ~d()~. This sender is a basic interface to *SuperDirt*, allowing you to play sounds or synthesizers and to add effects to them. You will notice that the *SuperDirt* sender can take any number of arguments. It all depends on how much arguments your synthesizers can take and on how precise you want to be in the description of a specific musical event.
 
 - ~D("pattern", orbit=0)~: the *sender* for *SuperDirt*.
   - ~orbit~ : channel the sound will played on (mono or stereo).
 
-The concept of ~orbit~ is just a way to detect on which channel of the console to apply some specific effects that will concern specifically the sound you wish to play (reverb amount, low-pass filter, etc...). This concept of ~orbit~ is specific to *SuperDirt*.
+The concept of ~orbit~ is just a way to precise on which channel of the audio console some specific effects should be applied. Assigning an orbit to an event guarantees that the sound you want to play (reverb amount, low-pass filter, etc...) will only be local and not global to every other pattern currently playing. This concept of ~orbit~ is an important concept specific to *SuperDirt*.
 
 ** Swimming functions
 
-*Sardine* very existence is tied to the notion of *swimming functions*. A *swimming function* is a specific type of function that can easily be modified and updated *on the fly*, whenever you want. Strictly speaking, a *swimming function* is a *temporally recursive function*, a construct used by many programming languages for music and digital art. This way of writing functions is extremely interesting, and people have been playing with the concept for more than 30 years now. If you dig deep enough, you will find that the concept of a *swimming function* is at the very base of computer music systems such as *SuperCollider*.
+*Sardine* very existence is tied to the notion of *swimming functions*. A *swimming function* is a specific type of function that can easily be modified and updated *on the fly*, whenever you want. Strictly speaking, a *swimming function* is a *temporally recursive function*, a construct used by many programming languages in the realm of music and digital art. This way of writing functions is extremely interesting. People have been playing with the concept for more than 30 years now. If you dig deep enough, you will find that the concept of *temporal recursive functions* is at the very base of computer music systems such as *SuperCollider*.
 
 Here is a basic Python function that you might already be familiar with:
 #+begin_src python
@@ -2132,14 +2127,64 @@ def hello_world():
 
 Now it prints ~Goodbye, World!~. You can alter a swimming function whenever you want. Whenever you add ~@swim~ and ~again()~, you make the function recursive. It is calling itself again and again.
 
-You can stop a *swimming function* by changing the decorator:
+You can stop a *swimming function* by changing the decorator (the ~@~ that /decorates/ our function):
 - ~@swim~: the function will loop.
 - ~@die~: the function stops looping.
 
 Let's stop our first *swimming function* then:
 #+begin_src python
+@die
+def hello_world():
+    print('Goodbye, World!')
+    again(hello_world)
 #+end_src
 
+Even though the function is fully written, it will not play anymore. Try to rewrite ~@swim~ again to make it start anew. You can also try to remove some parts of the function (the call to ~again()~) to see what happens. Try to familiarise yourself with *swimming functions* because they are exciting!
+
+You might be wondering what happens if a function is invalid. Under pressure, on stage, you can easily write a function that just doesn't make sense. Here is a fictional one written by an animal suddenly falling on the keyboard:
+#+begin_src python
+@swim
+def hello_world():
+    qsjdfmlsqfdkjlm
+    print('Goodbye, World!')
+    again(hello_world)
+#+end_src
+
+You can try to evaluate this function. If you do so, the following will happen:
+- If the function was previously running: *Sardine* will continue with the previous one that worked!
+- If the function is brand new: *Sardine* will refuse to play and will warn you.
+
+This means that you are immune to crash! You can experiment freely. The next step for you is now to try to make the system crash even by respecting these rules. It can happen, you have to be creative!
+
+** Time and swimming
+
+*Swimming functions* are interesting but they always repeat at the same rate. What if we want to repeat the function, but in rhythm?
+
+The answer, once again, is the ~p~ (~period~) argument. This argument will allow you to precise the time of your *temporal recursion*. You can repeat the function every beat, every two beats, twice in a beat, etc...
+
+This function will clap twice per beat. Try to change the value in the last call to ~again()~:
+#+begin_src python
+@swim
+def yes(p=0.5):
+    D('cp')
+    again(yes, p=0.5)
+#+end_src
+
+You now control the rate of repetition, which is the very basic of playing in rhythm. Obviously, we can be more clever than that. Hold on for a moment :)
+
+What you are doing here, basically speaking, is passing a new ~period~ to your future function. You call that function *again* with a new period. The first value you give to ~p~ if your function signature has no importance because time is not flowing yet. After the first iteration, you basically *recall* your function with a new value of ~p~, and again, and again, and again.. It loops! With loops, we can describe a lot of different things!
+
+But.. wait. If we can pass a new value to the same function in the future, it means that we can also pass it some information! Let's try this:
+
+This function will start to count, because the value of ~i~ will be incremented every time we loop around:
+#+begin_src python
+@swim
+def counter(p=0.5, i=0):
+    print(f"Counter: {i}")
+    again(counter, p=0.5, i=i+1)
+#+end_src
+
+This is *the stereotypical swimming function* and *you need to learn it by heart*. You can even start training writing it as fast as you can. You will type it a lot because this is an extremely convenient way to think about time both as a /cycle/ (it loops) and as a continuity (we can count how many times it loops). Many many things in *Sardine* are based on this concept. Pretty much all of it!
 
 ** Swimming rhythm
 

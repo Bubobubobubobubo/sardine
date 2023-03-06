@@ -1,23 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Golos+Text&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@300;400&display=swap');
+
 
 
 body {
     padding-left: 5%;
     padding-right: 5%;
-    /*  font-family: Helvetica, Arial, sans-serif;*/
-    font-family: 'Golos Text', sans-serif;
+    font-family: 'Source Serif Pro', serif;
     font-size: 16px;
+    text-align: justify;
+    text-justify: inter-word;
     line-height: 1.15;
-    /* color: #33333f; */
     color: black;
-    }
+	background: linear-gradient(-45deg, #FFFFFF, ##F5F5DC, #FDF4E3 , #F9F9FB);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+	height: 100vh;
+}
 
 li {
     margin-top: 5px;
+    line-height: 1.5;
 }
 
 p {
     line-height: 150%;
+    text-align: justify;
+    text-justify: inter-word;
 }
 
 code {
@@ -31,11 +39,19 @@ p>code, li>code {
     }
 
 h1, h2, h3 {
-        font-family: "Raleway", Helvetica, Arial, sans-serif;
+        font-family: "Source Serif Pro", Helvetica, Arial, sans-serif;
     }
 
 h1 {
         font-size: 4em;
+}
+
+b {
+        font-weight: 900;
+        color: #6434A3;
+        text-shadow: 1px 0 #888888;
+        letter-spacing:2px;
+        font-weight:bold;
 }
 
 .title {
@@ -47,14 +63,17 @@ span.subtitle {
 }
 
 h2 {
-        border-bottom: 1px solid black;
-        padding-bottom: 0.05em;
+        border-style: dotted none;
+        padding-top: 0.5em;
+        padding-bottom: 1em;
         font-size: 1.75em;
     }
 
 h3 {
         margin-top: 2em;
         font-size: 1.5em;
+        border-bottom: dotted;
+        padding-bottom: 0.5em;
     }
 
 h4 {
@@ -80,7 +99,7 @@ a:link, a:hover, a:visited {
                      }
 
 a:link {
-        background: #ff8;
+        background: #FAF0E6;
     }
 
 a:visited {
@@ -299,11 +318,11 @@ div.NOTE:before {
     }
 
 blockquote {
-        padding: 0px 10px 0px 10px;
+        padding: 10px 20px 20px 10px;
         border: 1px solid #ddd;
         background: #eee;
         box-shadow: 5px 5px 5px #eee;
-        border-radius: 2px;
+        border-radius: 5px;
         line-height: 1.2em;
     }
 
@@ -421,7 +440,7 @@ div.figure {
     }
 
 .tag {
-        font-family: "Roboto Slab", Helvetica, Arial, sans-serif;
+        font-family: "Source Serif Pro", Helvetica, Arial, sans-serif;
         font-size: 14px;
         font-weight: normal;
         float: right;
@@ -437,10 +456,10 @@ div.figure {
     }
 
 .todo, .done {
-        font-family: "Roboto Slab", Helvetica, Arial, sans-serif;
+        font-family: "Source Serif Pro", Helvetica, Arial, sans-serif;
         font-weight: normal;
         padding: 0 0.25em;
-        border-radius: 0em;
+        border-radius: 2em;
     }
 
 .todo {
@@ -452,6 +471,38 @@ div.figure {
         background: #5f7;
         color: white;
     }
+
+pre                                      {background-color:#FFFFFF;}
+pre span.org-builtin                     {color:#006FE0;font-weight:bold;}
+pre span.org-string                      {color:#008000;}
+pre span.org-keyword                     {color:#0000FF;}
+pre span.org-variable-name               {color:#BA36A5;}
+pre span.org-function-name               {color:#006699;}
+pre span.org-type                        {color:#6434A3;}
+pre span.org-preprocessor                {color:#808080;font-weight:bold;}
+pre span.org-constant                    {color:#D0372D;}
+pre span.org-comment-delimiter           {color:#8D8D84;}
+pre span.org-comment                     {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-1            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-2            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-3            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-4            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-5            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-6            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-7            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-8            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-9            {color:#8D8D84;font-style:italic}
+pre span.org-rainbow-delimiters-depth-1  {color:#707183;}
+pre span.org-rainbow-delimiters-depth-2  {color:#7388d6;}
+pre span.org-rainbow-delimiters-depth-3  {color:#909183;}
+pre span.org-rainbow-delimiters-depth-4  {color:#709870;}
+pre span.org-rainbow-delimiters-depth-5  {color:#907373;}
+pre span.org-rainbow-delimiters-depth-6  {color:#6276ba;}
+pre span.org-rainbow-delimiters-depth-7  {color:#858580;}
+pre span.org-rainbow-delimiters-depth-8  {color:#80a880;}
+pre span.org-rainbow-delimiters-depth-9  {color:#887070;}
+pre span.org-sh-quoted-exec              {color:#FF1493;}
+
 
 @media screen {
         h1.title {
@@ -550,4 +601,16 @@ div.figure {
         div.notice:before {
             display: none;
         }
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }

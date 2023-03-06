@@ -6,6 +6,7 @@
     // select #text-table-of-contents
     const menu = document.querySelector('#text-table-of-contents');
 
+
     // select the first ul li's
     const menuItems = menu.querySelectorAll('ul li');
 
@@ -2120,11 +2121,11 @@ You can call this function like so:
 hello_world()
 #+end_src
 
-However, this will only play once. Not so interesting for live coding or for playing on stage. A few remarks:
+However, this will only be executed once. It is not very interesting for live coding or playing on stage. A few remarks:
 - it would be much better if the function could be called again, indefinitely, in rhythm.
 - it would be nice if we could reevaluate that function to change its behavior, whenever you want.
 
-A *swimming function* is doing precisely doing this! It comes at a cost, a slightly different syntax. Evalute this:
+A *swimming function* is doing precisely doing that! It comes at a cost, a slightly different syntax. Evalute this:
 #+begin_src python
 @swim
 def hello_world():
@@ -2133,7 +2134,6 @@ def hello_world():
 #+end_src
 
 Your interpreter window will now be polluted by the message ~Hello, World!~ printing on repeat. This is a good sign! The function will now be repeated indefinitely, until you change something. Let's change something then:
-
 #+begin_src python
 @swim
 def hello_world():
@@ -2141,7 +2141,16 @@ def hello_world():
     again(hello_world)
 #+end_src
 
-Now it prints ~Goodbye, World!~. You can alter a swimming function whenever you can. This is really the beginning of a rabit hole of the things you can do using *swimming functions*. To illustrate that, think of the shorthand notation we mentioned earlier: ~Pa >> d('bd')~. This is a *swimming function* in disguise!
+Now it prints ~Goodbye, World!~. You can alter a swimming function whenever you want. Whenever you add ~@swim~ and ~again()~, you make the function recursive. It is calling itself again and again.
+
+You can stop a *swimming function* by changing the decorator:
+- ~@swim~: the function will loop.
+- ~@die~: the function stops looping.
+
+Let's stop our first *swimming function* then:
+#+begin_src python
+#+end_src
+
 
 ** Swimming rhythm
 

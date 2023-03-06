@@ -2,6 +2,8 @@
 #+SUBTITLE: 🫧 A Python Live Coding Instrument 🫧
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="gray/gray.css" />
 #+BEGIN_EXPORT html
+
+
 <script>
     // select #text-table-of-contents
     const menu = document.querySelector('#text-table-of-contents');
@@ -16,19 +18,6 @@
         item.innerHTML = `<details>${item.innerHTML}</details>`;
         // add summary tag around the a
         item.querySelector('a').outerHTML = `<summary>${item.querySelector('a').outerHTML}</summary>`;
-    });
-
-
-    // select divs startint with id outline-container-x
-    const outlines = document.querySelectorAll('div[id^="outline-container-"]');
-    // add details tag around them
-    outlines.forEach((outline) => {
-        outline.innerHTML = `<details>${outline.innerHTML}</details>`;
-    });
-    // inside each details tag, add summary tag around the h2
-    const details = document.querySelectorAll('details');
-    details.forEach((detail) => {
-        detail.querySelector('h2').outerHTML = `<summary>${detail.querySelector('h2').outerHTML}</summary>`;
     });
 </script>
 #+END_EXPORT

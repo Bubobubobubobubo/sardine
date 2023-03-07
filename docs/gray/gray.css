@@ -352,6 +352,7 @@ blockquote {
 pre {
         font-family: "monoid", "monospace";
         font-size: 80%;
+        line-height: 1.5;
         border: 0;
         box-shadow: none;
         overflow: auto;

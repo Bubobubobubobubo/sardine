@@ -9,8 +9,8 @@ USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
 
 # The folder needs to exist
-if not USER_DIR.exists(parents=True):
-    USER_DIR.mkdir()
+if not USER_DIR.exists():
+    USER_DIR.mkdir(parents=True)
 
 # The file needs to exist to actually log something
 if not LOG_FILE.exists():

@@ -181,6 +181,11 @@ def swim(func=None, /, *args, snap=0, **kwargs):
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
             runner = AsyncRunner(func.__name__)
+        elif not runner.is_running():
+            # Runner has likely stopped swimming, in which case
+            # we should make sure the old state doesn't pollute
+            # the new function when it's pushed
+            runner.reset_states()
 
         # Runners normally allow the same functions to appear in the stack,
         # but we will treat repeat functions as just reloading the runner

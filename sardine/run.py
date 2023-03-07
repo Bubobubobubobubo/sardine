@@ -194,6 +194,9 @@ def swim(
             If None, the function is immediately pushed and will
             run on its next interval.
             If `func` is an AsyncRunner, this parameter has no effect.
+        until (Optional[int]):
+            Specifies the number of iterations this function should run for.
+            This is a shorthand for using the `@for_()` decorator.
         **kwargs: Keyword arguments to be passed to `func.`
     """
 

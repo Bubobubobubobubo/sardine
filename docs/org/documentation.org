@@ -23,14 +23,14 @@
 
 
 #+begin_quote
-Sardine is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends by sharing code and tempo. *With Sardine you can*:
+Sardine is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. *With Sardine you can*:
 - Play synthesizers and audio samples using *SuperCollider*.
 - Control synthesizers through MIDI/OSC messages.
 - Interconnect audio/video softwares and/or sound engines.
 - Play collaboratively with your friends.
-- Extend your environment using any *Python* package.
+- Extend your musical environment using any *Python* package.
 
-*Sardine* is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. *Sardine* is made for music. It transforms *Python* in a musical instrument capable of sequencing any event in time. The code can be updated anytime while the program is running, a technique called *live coding*!
+*Sardine* is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. It transforms *Python* into a time-aware environment capable of sequencing any event with precision. Code can be updated anytime while the program still runs, a technique called *live coding*!
 #+end_quote
 
 
@@ -39,11 +39,11 @@ Sardine is a free/open-source software for Python 3.10+. It turns Python into a 
 #+attr_html: :width 800px
 file:what_is_sardine.png
 
-Sardine is a *Python based musical instrument*. While it may look like a typical Python library, it is best described as a modular live coding environment. *Sardine* will allow you to sequence synthesizers, audio samples and various messages used by software or hardware audio/video equipment. *Sardine* is leveraging *Python* as a way to build powerful and terse algorithmic sequences that you can type fast while on stage. *Sardine* is also embedding multiple small languages (the more the merrier!) allowing you to do that even faster, and with style!
+Sardine is a *Python based musical instrument*. While it may look like a typical Python library, it is best described as a modular live coding environment. You won't just *import* it and forget it, you will play it like a guitar or a trombone. *Sardine* will allow you to sequence synthesizers, audio samples and various messages used by software or hardware audio/video equipment. *Sardine* is leveraging *Python* as a way to build powerful and terse algorithmic sequences that you can type fast while on stage. *Sardine* is also embedding multiple small languages (the more the merrier!) allowing you to do that even faster, and with style!
 
 *Sardine* is using *Python* for its flexibility. *Python* is a very popular programming language for a good reason. It has a lot of different packages and it is very well supported pretty much everywhere :) You won't have any problem finding a good text editor or finding the right tools for the job.
 
-*Sardine* is used by a small community of musicians and artists from France. You can find more in the *Demonstration* section or get in touch with us on social medias, *Discord*, etc...
+A small community of musicians and artists in France (and even elsewhere) are using *Sardine*. You can find more by looking at the showcase section or by getting in touch with other *Sardine users* on social medias: *Discord*, etc...
 
 #+attr_html: :width 800px
 file:sardine_stack.svg
@@ -70,8 +70,7 @@ You can also find some *Sardine* related content by checking the [[https://cooki
 - [[https://remigeorges.fr/][Rémi Georges]]: the infamous Rémi Georges, the first *Sardine* user. A lover of old/ancient digital machines and emerit live-coder.
 
 ** Showcase
-*** Example Code
-**** Solstice
+*** Solstice
 
 This piece was submitted by *BuboBubo*. This is a 20 minutes performance that I did for the *TidalCycles* annual solstice stream. Three of the four tracks were rapidly composed before the stream. I've tried to highlight some of the new features we have worked on for the ~v.0.2.1~. I am sometimes playing additional keyboard on top of the code.
 
@@ -474,7 +473,7 @@ Pd >> None # d('bb:5~6', p='0.25, 0.125', legato=0.05)
 panic()
 #+end_src
 
-**** Zorba in Belleville
+*** Zorba in Belleville
 
 This code is taken from an algorave that took place at the *Zorba* (Belleville, Paris) in early november (2022). It is a very straightforward dance oriented performance that plays a lot with simple audio sample manipulations. As stated in the opening banner, this performance was meant to test the stability of *Sardine* after introducing new features and control mechanisms. Everything lives in the baba function, meaning that you only need to keep track one function during the whole performance.
 
@@ -1154,16 +1153,111 @@ def baba(d=0.5, i=0):
 panic()
 #+end_src
 
-**** Dumpster Dive
+*** Dumpster Dive
 
-*dumpsterDive* (*HighHarmnics*) is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The *Sardine* function uses the stacked samples model, where each sample line can be played alone or together with others.
+*dumpsterDive* (*HighHarmonics*) is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The *Sardine* function uses the stacked samples model, where each sample line can be played alone or together with others.
 
 - *Audio equipment:* Tascam DR-100, Rode shotgun mic: NTG4.
 - *Software:* Sardine
 - Dumpster samples are available via the [[https://github.com/Bubobubobubobubo/sardine-sounds][sardine-sounds]] repository.
+- *Sardine alpha version*
 
-**** Tribute to Jules Cipher
-**** Artificial Life
+#+begin_src python
+# Load audio effect and preset dictionaries first.
+# Play one or both lines from each section (basic, reverse rhythms, melodic patterns, bass, scrape). Explore combinations.
+
+c.bpm=60
+
+@swim
+def dumpsterDive(d=1, i=0):
+## basic samples - cycle thru the sounds used by all layers
+    S('dumpster:[0,1,4,2,5,3,.!2]', speed=1, amp=.5, **rev1, orbit=0).out(i, div=8)
+    #S('dumpster:[2,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **rev1, orbit=1).out(i, div=2) #**del1
+## reverse rhythms
+    #S('dumpster:1', begin=.065, end=.4, speed='-1', pan='[.14:.84,0.1],[.83:.15,0.1]', amp=.8, **rev0, orbit=2).out(i, div4)
+    #S('dumpster:0!2,.', begin=0, end=.85, speed='1,-1', pan='[.9:.1,0.2],[.1:.9,0.2]', amp=.6, **rev1, orbit=3).out(i, rate=1, div=2) #**del1,
+## melodic patterns
+    #S('dumpster:[1!2,4!2,5!2,4]', begin=.052, end=.088, freq='[414,240,620,.,500,380,820,750]', timescale=1.4, pan='[.1,.9]', amp=.95, **rev2, orbit=4).out(i, rate=1, div=1)
+    #S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.6, pan=.3, **rev1, orbit=5).out(i, rate=1, div=2)
+    #S('dumpster:[6!2,8!3,7!2]', octave='7', cut=1, pan=.3, amp=.9, **rev2, orbit=6).out(i, div=4)
+## bass - choose one or the other
+    #S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7).out(i, rate=1, div=4)
+    #S('dumpster:2', octave='[4.8:5.1,.04],[4.6:4.8,.04]', amp=.95, **rev1, orbit=8).out(i, div=4)
+## scrape
+    #S('dumpster:[5,.,5]', octave='6', cut=1, amp=1.2, **del1, **rev1, orbit=8).out(i, rate=.5, div=4)
+    #S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **rev2, orbit=9).out(i, rate=1, div=1) #**del2
+## presets
+    #returnGroove['bass1'].out(i, rate=1, div=4)
+    #returnGroove['melody2'].out(i, rate=1, div=2)
+    #closing['basic2'].out(i, div=2)
+    #closing['basic2a'].out(i, rate=2, div=2) ## div=1
+    #closing['scrape2'].out(i, rate=1, div=2)
+    #c.bpm = P('[60:90,.03]', i) #accelerate tempo at the end
+
+    a(dumpsterDive, d=1/8, i=i+1)
+
+######################################################
+#hush(dumpsterDive)
+
+######################## LOAD THESE FIRST - python dictionarys referenced in dumpsterDive function #################
+c.bpm=60
+## audio effects
+rev0 = {'room':.8, 'size':0.5, 'dry':0.5}
+rev1 = {'room':.9, 'size':0.6, 'dry':0.4}
+rev2 = {'room':1.5, 'size':0.7, 'dry':0.4}
+rev3 = {'room':2, 'size':0.8, 'dry':0.3}
+
+del0 = {'delay':0.5, 'delaytime':0.3, 'delayfeedback':0.5, 'triode':0}
+del1 = {'delay':0.5, 'delaytime':0.4, 'delayfeedback':0.6}
+del2 = {'delay':0.5, 'delaytime':0.25, 'delayfeedback':0.8}
+
+#Presets
+returnGroove = {'bass1':  S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7),
+    'melody2': S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.4, pan=.3, **rev1, orbit=5) }
+closing = {'basic2': S('dumpster:[12,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **del1, **rev1, orbit=1),
+    'basic2a': S('dumpster:[0,5,3,4,3,0]', speed='[2.01:1.96,.01],[1.96:2.01,.01]', pan='[.99:.01,0.3],[.01:.99,0.3]', amp=.7, **rev1, **del2, orbit=1),
+    'scrape2': S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **del2, **rev2, orbit=9) }
+#+end_src
+
+*** Artificial Life
+
+Experimental use of the *Taichi* numerical simulation and graphics language for live visuals and artificial life simulation. Made by [[https://jackarmitage.com/][Jack Armitage]]. For more info, see the [[https://github.com/Intelligent-Instruments-Lab/iil-python-tools][iil-python-tools]]. Using an *alpha version of Sardine*. [[https://youtu.be/XSdHbPZSofo][Video n°1]], [[https://youtu.be/l6kx7lvGDy0][Video n°2]].
+
+#+begin_src python
+from sardine import *
+import taichi as ti
+import numpy as np
+import math
+import tulvera as tul
+
+ti.init(arch=ti.vulkan)
+c.bpm = 250
+c.link()
+resx = 1920
+resy = 1080
+n = 8192
+boids = tul.vera.Boids(resx, resy, n)
+window = ti.ui.Window("Boids", (resx, resy))
+canvas = window.get_canvas()
+
+@swim
+def gui_loop(d=0.5, i=0):
+    boids.update()
+    canvas.set_image(boids.world.to_numpy().astype(np.uint8))
+    window.show()
+    a(gui_loop, d=1/16, i=i+1)
+
+@swim
+def param_loop(d=16, i=0):
+    # boids.vis_radius[None] = P('40.0,80.0,150.0',i)
+    # boids.max_speed[None] = P('1.0,2.0,3.0',i)
+    boids.max_speed[None] = P('2*sin($/2)')
+    a(param_loop, d=8, i=i+1)
+
+hush()
+#+end_src
+
+
 * Installation
 ** Preliminary words
 
@@ -2963,9 +3057,9 @@ You might wonder what the ~FishBowl~ is actually doing behind the scene. Factual
 - Soft dependencies
 - Messaging system.
 
-** TODO Nudging and time-alignment
+** Nudging and time-alignment
 
-Synchronising computers or audio softwares together is extra difficult. Some people have built careers trying to tackle this problem. You are very unlikely to get proper synchronisation out of the box. It's not because *Sardine* is incapable of doing it, it's just that the topic is very complex and that there are lot of different places where things can go wrong.
+Synchronising computers and audio softwares together is a rather difficult process. Some people have built careers trying to tackle this problem. You are very unlikely to get proper synchronisation out of the box. It's not because *Sardine* is incapable of doing it, it's just that the topic is very complex and that there are lot of different places where things can go wrong.
 
 You already know about the *Ableton Link clock* that you can take advantage of to synchronise code or sound with your friends. It does 90% of the job. However, you might have to flick *Sardine* just a little to get it properly on time. Think of it as putting your finger on a vinyl disk while it is playing, just like a *DJ*.
 
@@ -2973,7 +3067,39 @@ You already know about the *Ableton Link clock* that you can take advantage of t
 - the ~dirt.nudge~ attribute can help you to add a little /delay/ to your *SuperDirt* output: ~dirt.nudge = 0.3~.
   - it is actually recommanded to do so in order to give time to the system to react to instructions in time!
 
+By preparing carefully before a session, you should be able to time-sync properly with your friends. The same also applies for recording! If you see ever see that *Sardine* is spitting out *MIDI* too soon or too late, you can even try an additional trick:
+
+#+begin_src python
+@swim(snap=0.5) # change this variable
+def midifun():
+    N('C5')
+    again(midifun)
+#+end_src
+
+The ~snap~ argument will start the function before or after the first beat of the measure. A ~snap~ of 0.5 means that we want to start half a beat after the beginning of the bar. It can be a negative value too.
+
 ** Swimming functions oddities
+
+*** Span argument in shorthand notation
+
+There are a few extra arguments that you can use in your functions to control time even more. These arguments, respectively ~snap~ and ~span~ are time-strecthing or time-shifting patterns.
+
+~span~ is meant to be used in conjunction with the shorthand syntax. The following patterns are identic. However, note that we are using ~span~. The first pattern is *1.5* times longer than the normal version, while the second one is 50% shorter than the normal version:
+#+begin_src python
+Pa >> d('voodoo, voodoo:4, linnhats:(rand*20)!4', span=1.5, p=0.5)
+Pb >> d('voodoo, voodoo:4, linnhats:(rand*20)!4', span=0.5, p=0.5, speed=2)
+#+end_src
+
+~span~ is used to compress or to extend the duration of a pattern. Play carefully with these as they might result in weird results, especially if you are playing with complex rhythms! They will take all of your rhythmic values and will try to make them match a given *timespan*.
+
+*** Snap argument for swimming functions
+
+~snap~ is an additional argument that you can give to your ~@swim~ decorator. ~snap~ will time-shift the beginning of your pattern around the first beat of the measure:
+- ~snap=1~ will start the pattern one beat after the beginning of the bar.
+- ~snap=-0.5~ will start the pattern half a beat before the beginning of the next bar.
+
+It is a useful function for shifting things around and for synchronising *Sardine* in some scenarios (recording, etc..).
+
 ** Sleeping and oversleeping
 
 *Sardine* has a few tricks up its sleeves. *Swimming functions* can mimick [[https://sonic-pi.net/][Sonic Pi]] ~sleep()~ method because why not! The ~sleep()~ method from *Python* (and from most programming languages) is very imprecise. It doesn't offer any guarantee on the duration of the sleep. Your program will halt and come back after a certain time, but not always when you need it the most. It won't be really helpful to write precise rhythms like we do in music. *Sonic Pi*, long time ago, acknowledged that issue. They did something about it.
@@ -3049,7 +3175,7 @@ def free(p=0.5, i=0):
     again(free, p=P('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
-Using this technique, you can easily generate rhythms or pattern data that you send to any *Python* function. Using ~P()~ is a good way to study *Sardine* patterns. You can just take a few minutes and study some specific patterns if you have a hard time understanding them. That's what I do sometimes when developping them :)
+Using this technique, you can easily generate rhythms or pattern data that you send to any *Python* function. Using ~P()~ is a good way to study *Sardine* patterns. You can just take a few minutes and study some specific patterns if you have a hard time understanding them. That's what I do sometimes when developping them :)
 
 ** SuperCollider interaction
 
@@ -3086,10 +3212,27 @@ SC("s.freeAll;")
 
 In the future, it is very likely that *Sardine* interaction with *SuperCollider* will be further refined. For the moment, it is only used as lightweight high-level layer on top of *SuperCollider* :)
 
-** TODO Writing presets
+** Writing presets
 
-- How to write presets using dictionaries
+You can use *Python* dictionaries to write presets for your patterns. It is very simple to do so using the ~**~ operator that allows you to map dictionaries as keywords. See for yourself:
+#+begin_src python
+padcc = { 'timbre': {'control' : 18, 'chan': 2}, 'time': {'control' : 19, 'chan': 2},
+        'metal': {'control' : 16, 'chan': 2}, 'fx': {'control' : 17, 'chan': 2}}
+basscc = { 'timbre': {'control' : 18, 'chan': 0}, 'time': {'control' : 19, 'chan': 0},
+        'cutoff': {'control' : 16, 'chan': 0}, 'fx': {'control' : 17, 'chan': 0}}
+jupcc = { 'decay': {'control' : 81, 'chan': 1}, 'time': {'control' : 19, 'chan': 1},
+        'cutoff': {'control' : 74, 'chan': 1}, 'resonance': {'control' : 71, 'chan': 1}}
 
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
+    CC(**jupcc['cutoff'], value=100) # Here, I am injecting stuff
+    CC(**jupcc['decay'], value=80)
+    N("[G6]-[0:12]", chan=1, vel=120, i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+#+end_src
 
 * Audio engine Reference
 

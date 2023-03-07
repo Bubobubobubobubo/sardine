@@ -1799,7 +1799,7 @@ In the past, people have been running *Sardine* code on many different text edit
 
 We know this is working, but there is no documentation about it or the one we have is outdated!
 
-* Basics
+* Getting started
 ** Starting Sardine
 
 Before starting *Sardine*, you need understand what *Sardine* is and where it sits on your system:
@@ -2028,68 +2028,7 @@ bowl.resume()
 print(clock)
 #+end_src
 
-** Basic of Senders
-
-Previously, you might have noticed that we used ~d()~ without talking about its true nature!
-
-~d()~ is what we call a *Sender*. It is a special function that takes care of sending messages to your musical applications or audio tools. It also provides an interface to any pattern language that you'd like to use. Basically, *senders are a gate to the outside world*.
-
-*Senders* are numerous, and more can be created depending on your needs. By default, there are a couple of pre-declared ones that you will be using *all the time*:
-- ~D()~ and ~d()~: *SuperDirt* sender.
-- ~N()~ and ~n()~: *MIDI* notes.
-- ~CC()~ and ~cc()~: *MIDI* control messages.
-- ~PC()~ and ~pc()~: *MIDI* program changes.
-
-These *senders* both exist in uppercase and lowercase. Why is that?
-- *UPPERCASE* players are the basic *senders*.
-- *lowercase* players are to be used with the shorthand notation: ~Pa >> d('bd')~.
-
-There are some additional *senders* that you can use to play with the *Ziffers* patterning language:
-- ~ZD()~ or ~zd()~: the *Ziffers SuperDirt* senders.
-- ~ZN()~ or ~zn()~: the *Ziffers MIDI* note senders.
-
-The following example is highlighting the very basic usage of these *senders*:
-  #+begin_src python
-Pa >> n('C5, E5, G5', p=0.25) # playing a chord, one note every 1/4 of a beat.
-Pb >> cc(ctrl=20, chan=0, value='rand*127') # sending a random MIDI control on ctrl 20, channel 0
-Pc >> d('tabla, tabla:') # Playing audio samples of an indian tabla
-  #+end_src
-
-** Player arguments
-
-Every *sender* is specialised for a task. Every *sender* will have its own special arguments. Some of them can also be aliased (/e.g/ ~vel~ for ~velocity~). Learning these arguments is part of learning the *Sardine* instrument. There is no way around it!
-
-*** MIDI Arguments
-
-There are multiple *senders* for *MIDI* because there are different *MIDI* messages you can write. To each messsage its sender.
-
-- ~N("pattern", velocity, channel, duration)~: the *sender* for MIDI notes.
-  - ~velocity~ or ~vel~: how hard the note is played, from 0 to 127.
-  - ~channel~ or ~chan~: on which channel to play the note (from 0 to 15).
-  - ~duration~ or ~dur~: for how long to play the note (in beats).
-
-
-- ~CC(control, channel, value)~: the *sender* for MIDI control changes.
-  - ~control~ or ~ctrl~: number of the control to target (0 to 127).
-  - ~channel~ or ~chan~: on which channel to send the control.
-  - ~value~ or ~val~: value of that control (0 to 127).
-
-
-- ~PC(program, channel)~: the *sender* for *MIDI* program changes.
-  - ~program~ or ~prog~: program number to send.
-  - ~channel~ or ~chan~: on which channel to send the control.
-
-There is also a special ~SY~ sender that is very experimental and is used to control some very specific gear. I have currently no plan to open it for others to play but you can still send Sysex messages by using private methods of the ~midi~ object. The basic senders should cover 99% of your needs. If ever you were to miss one, it is easy to add them. Just contact me!
-
-*** SuperDirt Arguments
-
-There is only one *sender* for *SuperDirt*: ~D()~ or ~d()~. This sender is a basic interface to *SuperDirt*, allowing you to play sounds or synthesizers and to add effects to them. You will notice that the *SuperDirt* sender can take any number of arguments. It all depends on how much arguments your synthesizers can take and on how precise you want to be in the description of a specific musical event.
-
-- ~D("pattern", orbit=0)~: the *sender* for *SuperDirt*.
-  - ~orbit~ : channel the sound will played on (mono or stereo).
-
-The concept of ~orbit~ is just a way to precise on which channel of the audio console some specific effects should be applied. Assigning an orbit to an event guarantees that the sound you want to play (reverb amount, low-pass filter, etc...) will only be local and not global to every other pattern currently playing. This concept of ~orbit~ is an important concept specific to *SuperDirt*.
-
+* Basics
 ** Swimming functions
 
 *Sardine* very existence is tied to the notion of *swimming functions*. A *swimming function* is a specific type of function that can easily be modified and updated *on the fly*, whenever you want. Strictly speaking, a *swimming function* is a *temporally recursive function*, a construct used by many programming languages in the realm of music and digital art. This way of writing functions is extremely interesting. People have been playing with the concept for more than 30 years now. If you dig deep enough, you will find that the concept of *temporal recursive functions* is at the very base of computer music systems such as *SuperCollider*.
@@ -2188,7 +2127,7 @@ This is *the stereotypical swimming function* and *you need to learn it by heart
 
 ** Swimming rhythm
 
-This is the end of the road! This last section will teach you the last basic concepts you need to understand to truly master *Sardine*! You should now know:
+This section will teach you the last basic concepts you need to understand to truly master *Sardine*! By reading what comes before, you should now know:
 - how to evaluate and update your code anytime you want.
 - how to play sounds and send notes to your synthesizers and instruments.
 - how to play with the shorthand syntax and with *swimming functions*.
@@ -2265,7 +2204,6 @@ And it will now jump between 100 different positions. You can also start to play
 - freezing an iterator, resuming it based on a condition.
 - etc...
 
-
 *** Divisor and rate
 
 And now it becomes truly bizarre. What if we had some other tools to control how fast we iterate over our musical sequence?
@@ -2274,89 +2212,67 @@ I told you about ~i~ (the ~iterator~) but it also comes to the party with some f
 - the ~rate~ will count how many times you need to increment your number for it to move upwards or backwards by 1. It will basically make it much harder or much easier to increase or decrease the index of your patterns.
 - the ~divisor~ will just refuse to play some events if the iterator ~modulo~ the ~divisor~ is equal to zero. Doesn't make sense to you? Think rhythm generator. Try to experiment with this :)
 
-* Diving Deeper
+** Basic of Senders
 
-This section is dedicated to a deeper-dive in the *Sardine* system for *users willing to learn more after reading the basics section*. Some knowledge of the syntax is required and the content of this section is written assuming that basic concepts are well understood.
+Previously, you might have noticed that we used ~d()~ without talking about its true nature!
 
-** The FishBowl
+~d()~ is what we call a *Sender*. It is a special function that takes care of sending messages to your musical applications or audio tools. It also provides an interface to any pattern language that you'd like to use. Basically, *senders are a gate to the outside world*.
 
-The ~FishBowl~ is central to the *Sardine* system. As its name might suggest, it is what holds everything together. Properly speaking, it is the environment, the water, what makes the fishes swim :) The system is composed of some *hard dependencies* and many *soft dependencies*. *Hard dependencies* are important components like the *clock* or the *parser*. They are needed all the time. As such, you can't really remove them or everything would fall apart. *Soft dependencies* are the various *senders* or I/O components that you use to perform your music. Some of them are installed based on the content of your configuration, some can be created on the fly later on.
+*Senders* are numerous, and more can be created depending on your needs. By default, there are a couple of pre-declared ones that you will be using *all the time*:
+- ~D()~ and ~d()~: *SuperDirt* sender.
+- ~N()~ and ~n()~: *MIDI* notes.
+- ~CC()~ and ~cc()~: *MIDI* control messages.
+- ~PC()~ and ~pc()~: *MIDI* program changes.
 
-*** Hard dependencies
+These *senders* both exist in uppercase and lowercase. Why is that?
+- *UPPERCASE* players are the basic *senders*.
+- *lowercase* players are to be used with the shorthand notation: ~Pa >> d('bd')~.
 
-Core components cannot be removed from the ~FishBowl~. However, they can be swapped! It means that you can all of the sudden rip off the current *clock* and switch to a new one. The system might hiccup a bit but it will recover! To do so, note that you can use two important methods:
-- ~bowl.swap_clock(clock: "BaseClock")~: swaps a clock. ~InternalClock()~ and ~LinkClock()~ are the two clocks currently implemented. The latter is used for synchronisation with every device capable of using the Ableton Link protocol.
-- ~bowl.swap_parser(parser: "BaseParser")~: switch from a parser to another parser. There is no reason to do that because there is only one parser for the moment but it might be useful in the future.
+There are some additional *senders* that you can use to play with the *Ziffers* patterning language:
+- ~ZD()~ or ~zd()~: the *Ziffers SuperDirt* senders.
+- ~ZN()~ or ~zn()~: the *Ziffers MIDI* note senders.
 
-*** Soft dependencies
+The following example is highlighting the very basic usage of these *senders*:
+  #+begin_src python
+Pa >> n('C5, E5, G5', p=0.25) # playing a chord, one note every 1/4 of a beat.
+Pb >> cc(ctrl=20, chan=0, value='rand*127') # sending a random MIDI control on ctrl 20, channel 0
+Pc >> d('tabla, tabla:2') # Playing audio samples of an indian tabla
+  #+end_src
 
-This is where the fun begins. Pretty much everything in the *Sardine* system is a modular component that can be added or removed. Take a look at the ~run.py~ file if you want to see how the system is first initialized. By default, Sardine is proposing a small collection of *handlers* / *senders* that will allow you to send or receive *MIDI*, *OSC* or *SuperDirt* messages. Some other handlers are used for various internal functions that you might not care about. Take a look at the following code detailing how to add modular components:
+** Player arguments
 
-#+begin_src python
-# Adding a MIDI Out handler: sending MIDI notes
-# control changes, program changes, etc...
-midi = MidiHandler(port_name=str(config.midi)) # new instance of the Handler
-bowl.add_handler(midi) # adding the handler to the FishBowl
+Every *sender* is specialised for a task. Every *sender* will have its own special arguments. Some of them can also be aliased (/e.g/ ~vel~ for ~velocity~). Learning these arguments is part of learning the *Sardine* instrument. There is no way around it!
 
-# OSC Loop: internal component used for handling OSC messages
-osc_loop = OSCLoop() # new instance of the Handler
-bowl.add_handler(osc_loop)  # adding the handler to the FishBowl
+*** MIDI Arguments
 
-# OSC Handler: dummy OSC handler
-dummy_osc = OSCHandler(
-    ip="127.0.0.1",
-    port=12345,
-    name="My OSC sender",
-    ahead_amount=0.0,
-    loop=osc_loop,
-)
+There are multiple *senders* for *MIDI* because there are different *MIDI* messages you can write. To each messsage its sender.
 
-# Aliasing some methods from the handlers for later :)
-M = midi.send
-CC = midi.send_control_changes
-PC = midi.send_program_changes
-O = dummy_osc.send
-#+end_src
-
-Please take note of the ~bowl.add_handler method~. If you don't add your component to the ~FishBowl~, your component will inevitably crash! This is a fairly common mistake, especially if you are working in a hurry.
+- ~N("pattern", velocity, channel, duration)~: the *sender* for MIDI notes.
+  - ~velocity~ or ~vel~: how hard the note is played, from 0 to 127.
+  - ~channel~ or ~chan~: on which channel to play the note (from 0 to 15).
+  - ~duration~ or ~dur~: for how long to play the note (in beats).
 
 
-*** Messaging system
-
-You might wonder what the ~FishBowl~ is actually doing behind the scene. Factually, it allows component to talk with each other by sharing a reference to the bowl. It means that any component can send a message to any other component. It also means that this same component can promptly react to any event dispatched through the ~FishBowl~. Internal messages are sent using the ~bowl.dispatch(message_type: str, *args)~ method. This is how messages such as ~bowl.('pause')~, ~bowl.('resume')~, ~bowl.('stop')~ and ~bowl.('play')~ are able to stop and resume everything when needed. They are messages dispatched to the ~FishBowl~ making everyone aware that a major event occured.
-
-
-
+- ~CC(control, channel, value)~: the *sender* for MIDI control changes.
+  - ~control~ or ~ctrl~: number of the control to target (0 to 127).
+  - ~channel~ or ~chan~: on which channel to send the control.
+  - ~value~ or ~val~: value of that control (0 to 127).
 
 
-- Introduction to the concept.
-- Hard dependencies
-- Soft dependencies
-- Messaging system.
+- ~PC(program, channel)~: the *sender* for *MIDI* program changes.
+  - ~program~ or ~prog~: program number to send.
+  - ~channel~ or ~chan~: on which channel to send the control.
 
-** Nudging and time-alignment
+There is also a special ~SY~ sender that is very experimental and is used to control some very specific gear. I have currently no plan to open it for others to play but you can still send Sysex messages by using private methods of the ~midi~ object. The basic senders should cover 99% of your needs. If ever you were to miss one, it is easy to add them. Just contact me!
 
-- Nudging for better synchronisation
-- Introducing latencies
+*** SuperDirt Arguments
 
-** Swimming functions oddities
-** Oversleeping
+There is only one *sender* for *SuperDirt*: ~D()~ or ~d()~. This sender is a basic interface to *SuperDirt*, allowing you to play sounds or synthesizers and to add effects to them. You will notice that the *SuperDirt* sender can take any number of arguments. It all depends on how much arguments your synthesizers can take and on how precise you want to be in the description of a specific musical event.
 
-- What oversleeping is
+- ~D("pattern", orbit=0)~: the *sender* for *SuperDirt*.
+  - ~orbit~ : channel the sound will played on (mono or stereo).
 
-** Patterning everything
-
-- Learning about ~P()~.
-- Observing patterns.
-
-** SuperCollider interaction
-
-- opening up SC windows.
-- sending code to SC.
-
-** Writing presets
-
-- How to write presets using dictionaries
+The concept of ~orbit~ is just a way to precise on which channel of the audio console some specific effects should be applied. Assigning an orbit to an event guarantees that the sound you want to play (reverb amount, low-pass filter, etc...) will only be local and not global to every other pattern currently playing. This concept of ~orbit~ is an important concept specific to *SuperDirt*.
 
 * Pattern Languages
 ** Sardine Pattern Language
@@ -3035,6 +2951,158 @@ def weird(instrument: str, ziffer: str, *args, **kwargs):
     	_weird(instrument, ziffer, *args, **kwargs)
 	swim(test_function())
 #+end_src
+
+* Diving Deeper
+
+This section is dedicated to a deeper-dive in the *Sardine* system for *users willing to learn more after reading the basics section*. Some knowledge of the syntax is required and the content of this section is written assuming that basic concepts are well understood.
+
+** The FishBowl
+
+The ~FishBowl~ is central to the *Sardine* system. As its name might suggest, it is what holds everything together. Properly speaking, it is the environment, the water, what makes the fishes swim :) The system is composed of some *hard dependencies* and many *soft dependencies*. *Hard dependencies* are important components like the *clock* or the *parser*. They are needed all the time. As such, you can't really remove them or everything would fall apart. *Soft dependencies* are the various *senders* or I/O components that you use to perform your music. Some of them are installed based on the content of your configuration, some can be created on the fly later on.
+
+*** Hard dependencies
+
+Core components cannot be removed from the ~FishBowl~. However, they can be swapped! It means that you can all of the sudden rip off the current *clock* and switch to a new one. The system might hiccup a bit but it will recover! To do so, note that you can use two important methods:
+- ~bowl.swap_clock(clock: "BaseClock")~: swaps a clock. ~InternalClock()~ and ~LinkClock()~ are the two clocks currently implemented. The latter is used for synchronisation with every device capable of using the Ableton Link protocol.
+- ~bowl.swap_parser(parser: "BaseParser")~: switch from a parser to another parser. There is no reason to do that because there is only one parser for the moment but it might be useful in the future.
+
+*** Soft dependencies
+
+This is where the fun begins. Pretty much everything in the *Sardine* system is a modular component that can be added or removed. Take a look at the ~run.py~ file if you want to see how the system is first initialized. By default, Sardine is proposing a small collection of *handlers* / *senders* that will allow you to send or receive *MIDI*, *OSC* or *SuperDirt* messages. Some other handlers are used for various internal functions that you might not care about. Take a look at the following code detailing how to add modular components:
+
+#+begin_src python
+# Adding a MIDI Out handler: sending MIDI notes
+# control changes, program changes, etc...
+midi = MidiHandler(port_name=str(config.midi)) # new instance of the Handler
+bowl.add_handler(midi) # adding the handler to the FishBowl
+
+# OSC Loop: internal component used for handling OSC messages
+osc_loop = OSCLoop() # new instance of the Handler
+bowl.add_handler(osc_loop)  # adding the handler to the FishBowl
+
+# OSC Handler: dummy OSC handler
+dummy_osc = OSCHandler(
+    ip="127.0.0.1",
+    port=12345,
+    name="My OSC sender",
+    ahead_amount=0.0,
+    loop=osc_loop,
+)
+
+# Aliasing some methods from the handlers for later :)
+M = midi.send
+CC = midi.send_control_changes
+PC = midi.send_program_changes
+O = dummy_osc.send
+#+end_src
+
+Please take note of the ~bowl.add_handler method~. If you don't add your component to the ~FishBowl~, your component will inevitably crash! This is a fairly common mistake, especially if you are working in a hurry.
+
+
+*** Messaging system
+
+You might wonder what the ~FishBowl~ is actually doing behind the scene. Factually, it allows component to talk with each other by sharing a reference to the bowl. It means that any component can send a message to any other component. It also means that this same component can promptly react to any event dispatched through the ~FishBowl~. Internal messages are sent using the ~bowl.dispatch(message_type: str, *args)~ method. This is how messages such as ~bowl.('pause')~, ~bowl.('resume')~, ~bowl.('stop')~ and ~bowl.('play')~ are able to stop and resume everything when needed. They are messages dispatched to the ~FishBowl~ making everyone aware that a major event occured.
+
+
+
+
+
+- Introduction to the concept.
+- Hard dependencies
+- Soft dependencies
+- Messaging system.
+
+** Nudging and time-alignment
+
+- Nudging for better synchronisation
+- Introducing latencies
+
+** Swimming functions oddities
+** Sleeping and oversleeping
+
+*Sardine* has a few tricks up its sleeves. *Swimming functions* can mimick [[https://sonic-pi.net/][Sonic Pi]] ~sleep()~ method because why not! The ~sleep()~ method from *Python* (and from most programming languages) is very imprecise. It doesn't offer any guarantee on the duration of the sleep. Your program will halt and come back after a certain time, but not always when you need it the most. It won't be really helpful to write precise rhythms like we do in music. *Sonic Pi*, long time ago, acknowledged that issue. They did something about it.
+
+Following its model, *Sardine* is overriding the default ~sleep()~ method. You can use the new version just like the old one. The interface is very similar. However, it will allow you to write precise rhythms:
+
+#+begin_src python
+@swim
+def super_sleeping(p=2, i=0):
+    D('bd')
+    sleep(1)
+    D('cp')
+    again(super_sleeping, p=2, i=i+1)
+#+end_src
+
+Let me explain what I just wrote:
+- we are using a regular *swimming function*. The syntax is untouched.
+- we use a central ~sleep(1)~ statement to make a pause in our pattern.
+- we do the recursion after a period of ~two beats~.
+
+There is something a bit un-intuitive about this. Strictly speaking, *the sleep method is not halting anything, it just report the events coming after it to some point in the future*. Read this twice!
+
+It means that you can ~sleep()~ for some time but the function will not end if the recursion is coming much later. If will just defer the execution of what comes after the sleep and wait until the function is done looping:
+
+#+begin_src python
+clock.tempo = 100
+@swim
+def super_sleeping(p=2, i=0):
+    D('bd')
+    sleep(0.25)
+    D('{cp, sn}')
+    D('tabla')
+    # ...
+    # Nothing happens
+    # ...
+    again(super_sleeping, p=2, i=i+1)
+
+#+end_src
+
+There is a last thing to know about *sleeping*. You can *oversleep* the duration of you function. You can defer an event so hard that it will be deferred after the end of your *swimming function*:
+
+
+** Patterning everything
+
+- Learning about ~P()~.
+- Observing patterns.
+
+** SuperCollider interaction
+
+If you are using *SuperDirt*, you are also somehow using *SuperCollider*. Most of the time, you can't really know about this because the process handling *SuperCollider* is invisible. Everytime you start *Sardine*, you also incidentally start *SuperCollider* and *SuperDirt* with only one command. *SuperCollider* is a very exciting programming language and audio server. Since its first publication in 1996, this software has been adopted by many musicians worldwide because of its robustness and performance. Some people are *live coding* directly in *SuperCollider* because they can handle its verbosity and complexity. Most of the time, people are developing high-level layers to communicate more easily with *SuperCollider* just like we do.
+
+To get a better understanding of the *Sardine* environment, think about it this way:
+- *Sardine* is an independant layer on top of everything. It can do *MIDI* and *OSC* alone.
+- *SuperDirt* is a specialised audio engine designed to make *live coding* on *SuperCollider* simpler.
+- *SuperCollider* is the fundamental audio server that receives all the information and processes audio.
+
+#+attr_html: :width 800px
+file:usage.png
+
+
+We can't do the audio synthesis or the scheduling directly in *Python*. The language is not fast enough to handle most of it and we must rely on external software to make things work smoothly. However, we can collaborate with it very easily.
+
+It means that *Sardine* has a few commands that will help you get the most out of *SuperCollider*:
+- ~SC.scope()~ will open an /oscilloscope/ pop-up window to visualise all your audio channels.
+- ~SC.freqscope()~ will open a frequency analyzer pop-up window to visualise your audio output.
+- ~SC.info()~ will open a general pop-up window that can help you with a few things:
+  - monitoring your CPU usage.
+  - monitoring the audio volume.
+  - recording sound on the server.
+
+It does not end here. You can also execute arbitrary code written in *SCLang*, *SuperCollider's* programming language. To do so, simply pass a string to the ~SC()~ object:
+
+#+begin_src python
+# Play a sinewave at 200hz
+SC("a = play({SinOsc.ar(200) * 0.25});")
+
+# Stop that sinewave
+SC("s.freeAll;")
+#+end_src
+
+In the future, it is very likely that *Sardine* interaction with *SuperCollider* will be further refined. For the moment, it is only used as lightweight high-level layer on top of *SuperCollider* :)
+
+** Writing presets
+
+- How to write presets using dictionaries
 
 * Audio engine Reference
 

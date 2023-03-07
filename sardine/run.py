@@ -4,6 +4,7 @@ from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .sequences import ListParser
+from functools import wraps
 from .logger import print
 from pathlib import Path
 import importlib
@@ -20,6 +21,10 @@ except ImportError:
 
 P = ParamSpec("P")  # NOTE: name is similar to surfboards
 T = TypeVar("T")
+
+
+
+
 
 #######################################################################################
 # READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
@@ -371,6 +376,21 @@ class Delay:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if not self.delayFirst:
             sleep(self.duration)
+
+PS = ParamSpec("P")
+T = TypeVar("T")
+
+def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
+    """Allows to play a swimming function x times. It swims for_ n iterations."""
+    def decorator(func: Callable[PS, T]) -> Callable[PS, T]:
+        @wraps(func)
+        def wrapper(*args: PS.args, **kwargs: PS.kwargs) -> T:
+            nonlocal n
+            n -= 1
+            if n >= 0:
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 #######################################################################################

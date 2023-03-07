@@ -25,14 +25,14 @@
 
 
 #+begin_quote
-Sardine is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. *With Sardine you can*:
+[[https://github.com/Bubobubobubobubo/sardine][Sardine]] is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. *With Sardine you can*:
 - Play synthesizers and audio samples using *SuperCollider*.
 - Control synthesizers through MIDI/OSC messages.
 - Interconnect audio/video softwares and/or sound engines.
 - Play collaboratively with your friends.
 - Extend your musical environment using any *Python* package.
 
-*Sardine* is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. It transforms *Python* into a time-aware environment capable of sequencing any event with precision. Code can be updated anytime while the program still runs, a technique called *live coding*!
+[[https://github.com/Bubobubobubobubo/sardine][Sardine]] is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. It transforms *Python* into a time-aware environment capable of sequencing any event with precision. Code can be updated anytime while the program still runs, a technique called *live coding*!
 #+end_quote
 
 
@@ -1742,7 +1742,7 @@ s.reboot {
 
 SuperDirt treats a wildcard (~*~) at the end of the path to mean that there are named subdirectories. If you want to load just one sample directory, omit the wildcard.
 
-* Text Editor
+* Text Editors
 
 Text editors are particularly important to get the most out of *Sardine*. Remember that this is a tool for *live coding* and that you will need to setup everything to feel comfortable. *Sardine* can support most text editors and IDEs. I have been using *Sardine* using *Vim*, *Neovim*, *Emacs*, *VSCode* and of course... the integrated text editor. This editor is provided mostly for workshops and demos. If you are planning for a gig or anything serious, please consider using and learning a real text editor.
 
@@ -2909,7 +2909,7 @@ You can write chord/sequence inversions using the ~^~ syntax. It will accept any
 def notes(p=0.2, i=0):
     D('pluck', midinote='disco(braid(C5+ 10|20|30')), i=i)
     again(notes, p=0.2, i=i+1)
-#+end_src python
+#+end_src
 
 You can use arithmetic operators on notes like if they were numbers. Think about it twice. There are many things that are numbers in *Sardine*. It might be fun.
 
@@ -2932,18 +2932,17 @@ There a few rules to understand about polyphony and polyphonic messages. These r
 
 - The *size* of a polyphonic event -- meaning the number of messages sent for one occurence of an event -- is equal to the length of the largest polyphonic pattern you declared.
 
-In the first example, we have a 4-5 note polyphony. Every polyphonic element from our pattern is a major 9 or 7 chord (_e.g_ ~[62, 66, 69, 73, 76]~). It means that if you have a polyphony of ~2~ somewhere and a polyphony of ~4~ elsewhere, your first polyphony will be distributed over the second one:
+In the first example, we have a 4-5 note polyphony. Every polyphonic element from our pattern is a major 9 or 7 chord (/e.g/ ~[62, 66, 69, 73, 76]~). It means that if you have a polyphony of ~2~ somewhere and a polyphony of ~4~ elsewhere, your first polyphony will be distributed over the second one:
 
 #+begin_quote
 PATTERN:
 1) [1,2,3,4]
 2) [0,1]
 
-RESULT:
+RESULT (POLYPHONY):
 1) [1,2,3,4]
 2) [0,1,0,1]
 
-   POLYPHONY
 #+end_quote
 
 To illustrate the preceding rule we just talked about, here is a truly bizarre example. Half of our chord is played by a tuned bassdrum, the other half by a piano. Even though this may look odd, this is fully compliant with how parameters are handled by *Sardine*.

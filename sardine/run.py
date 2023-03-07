@@ -175,7 +175,7 @@ def swim(
 
 
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
-def swim(func=None, /, *args, snap=0, until: Optional[int], **kwargs):
+def swim(func=None, /, *args, snap=0, until: Optional[int] = None, **kwargs):
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.

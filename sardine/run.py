@@ -19,7 +19,7 @@ except ImportError:
     ziffers_imported: bool = False
 
 
-P = ParamSpec("P")  # NOTE: name is similar to surfboards
+PS = ParamSpec("PS")
 T = TypeVar("T")
 
 
@@ -133,8 +133,6 @@ for player in player_names:
 #######################################################################################
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
 
-PS = ParamSpec("P")
-T = TypeVar("T")
 
 def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
     """Allows to play a swimming function x times. It swims for_ n iterations."""
@@ -151,31 +149,36 @@ def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
 
 @overload
 def swim(
-    func: Union[Callable[P, T], AsyncRunner],
+    func: Union[Callable[PS, Any], AsyncRunner],
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
-    *args: P.args,
+    *args: PS.args,
     snap: Optional[Union[float, int]] = 0,
-    until: Optional[int],
-    **kwargs: P.kwargs,
+    until: Optional[int] = None,
+    **kwargs: PS.kwargs,
 ) -> AsyncRunner:
     ...
 
 
 @overload
 def swim(
-    func: None,
-    /,
-    *args: P.args,
+    *args,
     snap: Optional[Union[float, int]] = 0,
-    until: Optional[int],
-    **kwargs: P.kwargs,
-) -> Callable[[Callable[P, T]], AsyncRunner]:
+    until: Optional[int] = None,
+    **kwargs,
+) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]:
     ...
 
 
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
-def swim(func=None, /, *args, snap=0, until: Optional[int] = None, **kwargs):
+def swim(
+    func: Optional[Union[Callable, AsyncRunner]] = None,
+    /,
+    *args,
+    snap: Optional[Union[float, int]] = 0,
+    until: Optional[int] = None,
+    **kwargs,
+):
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.
@@ -194,7 +197,7 @@ def swim(func=None, /, *args, snap=0, until: Optional[int] = None, **kwargs):
         **kwargs: Keyword arguments to be passed to `func.`
     """
 
-    def decorator(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
+    def decorator(func: Union[Callable, AsyncRunner], /) -> AsyncRunner:
         if isinstance(func, AsyncRunner):
             func.update_state(*args, **kwargs)
             bowl.scheduler.start_runner(func)

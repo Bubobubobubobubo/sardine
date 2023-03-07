@@ -1257,7 +1257,6 @@ def param_loop(d=16, i=0):
 hush()
 #+end_src
 
-
 * Installation
 ** Preliminary words
 
@@ -1592,7 +1591,7 @@ SY2 = your_midi.send_sysex  # For MIDI Sysex messages
 
 if ziffers_imported:
     ZN2 = midi.send_ziffers  # Connecting the new Ziffers parser
-#+end_src python
+#+end_src
 
 You now have access to an interface to play *notes*, *control changes*, *program changes* and *sysex* messages. If you want to use the shorthand notation, you will have to do one extra step:
 
@@ -1601,20 +1600,22 @@ You now have access to an interface to play *notes*, *control changes*, *program
 # syntax for swimming functions
 
 def sy2(*args, **kwargs):
-    return play(your_midi, your_midi.send_sysex, *args, **kwargs)
+    return _play_factory(your_midi, your_midi.send_sysex, *args, **kwargs)
 
 def n2(*args, **kwargs):
-    return play(your_midi, your_midi.send, *args, **kwargs)
+    return _play_factory(your_midi, your_midi.send, *args, **kwargs)
 
 def zn2(*args, **kwargs):
-    return play(your_midi, your_midi.send_ziffers, *args, **kwargs)
+    return _play_factory(your_midi, your_midi.send_ziffers, *args, **kwargs)
 
 def cc2(*args, **kwargs):
-    return play(your_midi, your_midi.send_control, *args, **kwargs)
+    return _play_factory(your_midi, your_midi.send_control, *args, **kwargs)
 
 def pc2(*args, **kwargs):
-    return play(your_midi, your_midi.send_program, *args, **kwargs)
+    return _play_factory(your_midi, your_midi.send_program, *args, **kwargs)
 #+end_src
+
+The ~_play_factory()~ method is not a function you are supposed to use directly. This function is mapping a *sender* (~d()~, ~n()~) to a function that can be understood by a *player* (~Pa~, ~Pb~).
 
 This is everything you need to open new *MIDI* ports and replicate the normal behavior of the *Sardine* *MIDI* port. If you want to go even further, feel free to deep dive into the ~midi~ object itself. It might contain some sweet methods that you want to use!
 

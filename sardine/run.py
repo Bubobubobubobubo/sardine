@@ -382,32 +382,32 @@ if ziffers_imported:
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
 SY = midi.send_sysex  # For MIDI Sysex messages
-play = Player.play
+_play_factory = Player._play_factory
 
 def sy(*args, **kwargs):
-    return play(midi, midi.send_sysex, *args, **kwargs)
+    return _play_factory(midi, midi.send_sysex, *args, **kwargs)
 
 def n(*args, **kwargs):
-    return play(midi, midi.send, *args, **kwargs)
+    return _play_factory(midi, midi.send, *args, **kwargs)
 
 def zn(*args, **kwargs):
-    return play(midi, midi.send_ziffers, *args, **kwargs)
+    return _play_factory(midi, midi.send_ziffers, *args, **kwargs)
 
 
 def cc(*args, **kwargs):
-    return play(midi, midi.send_control, *args, **kwargs)
+    return _play_factory(midi, midi.send_control, *args, **kwargs)
 
 def pc(*args, **kwargs):
-    return play(midi, midi.send_program, *args, **kwargs)
+    return _play_factory(midi, midi.send_program, *args, **kwargs)
 
 if config.superdirt_handler:
     D = dirt.send
     if ziffers_imported:
         ZD = dirt.send_ziffers
     def d(*args, **kwargs):
-        return play(dirt, dirt.send, *args, **kwargs)
+        return _play_factory(dirt, dirt.send, *args, **kwargs)
     def zd(*args, **kwargs):
-        return play(dirt, dirt.send_ziffers, *args, **kwargs)
+        return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
 
 
 

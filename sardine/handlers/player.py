@@ -64,7 +64,7 @@ class Player(BaseHandler):
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
     @alias_param(name="timespan", alias="span")
-    def play(
+    def _play_factory(
         sender: Sender,
         send_method: Callable[P, T],
         *args: P.args,

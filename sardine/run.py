@@ -133,6 +133,21 @@ for player in player_names:
 #######################################################################################
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
 
+PS = ParamSpec("P")
+T = TypeVar("T")
+
+def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
+    """Allows to play a swimming function x times. It swims for_ n iterations."""
+    def decorator(func: Callable[PS, T]) -> Callable[PS, T]:
+        @wraps(func)
+        def wrapper(*args: PS.args, **kwargs: PS.kwargs) -> T:
+            nonlocal n
+            n -= 1
+            if n >= 0:
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 
 @overload
 def swim(
@@ -141,6 +156,7 @@ def swim(
     # NOTE: AsyncRunner doesn't support generic args/kwargs
     *args: P.args,
     snap: Optional[Union[float, int]] = 0,
+    until: Optional[int],
     **kwargs: P.kwargs,
 ) -> AsyncRunner:
     ...
@@ -152,13 +168,14 @@ def swim(
     /,
     *args: P.args,
     snap: Optional[Union[float, int]] = 0,
+    until: Optional[int],
     **kwargs: P.kwargs,
 ) -> Callable[[Callable[P, T]], AsyncRunner]:
     ...
 
 
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
-def swim(func=None, /, *args, snap=0, **kwargs):
+def swim(func=None, /, *args, snap=0, until: Optional[int], **kwargs):
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.
@@ -182,6 +199,9 @@ def swim(func=None, /, *args, snap=0, **kwargs):
             func.update_state(*args, **kwargs)
             bowl.scheduler.start_runner(func)
             return func
+
+        if until is not None:
+            func = for_(until)(func)
 
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
@@ -377,20 +397,6 @@ class Delay:
         if not self.delayFirst:
             sleep(self.duration)
 
-PS = ParamSpec("P")
-T = TypeVar("T")
-
-def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
-    """Allows to play a swimming function x times. It swims for_ n iterations."""
-    def decorator(func: Callable[PS, T]) -> Callable[PS, T]:
-        @wraps(func)
-        def wrapper(*args: PS.args, **kwargs: PS.kwargs) -> T:
-            nonlocal n
-            n -= 1
-            if n >= 0:
-                return func(*args, **kwargs)
-        return wrapper
-    return decorator
 
 
 #######################################################################################

@@ -1,6 +1,8 @@
 #+title: 🐟 Sardine 🐟
 #+SUBTITLE: 🫧 A Python Live Coding Instrument 🫧
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="gray/gray.css" />
+#+EXPORT_FILE_NAME: index.html
+
 #+BEGIN_EXPORT html
 <script>
     // select #text-table-of-contents

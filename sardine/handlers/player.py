@@ -140,6 +140,10 @@ class Player(BaseHandler):
         else:
             self.again(pattern=pattern, p=dur)
 
+    def stop(self):
+        """Stop the player by removing the Player"""
+        self.env.scheduler.stop_runner(self.runner)
+
     def push(self, pattern: Optional[PatternInformation]):
         """
         Managing lifetime of the pattern, similar to managing a swimming function

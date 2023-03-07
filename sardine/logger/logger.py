@@ -8,7 +8,11 @@ APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
 
-# The file needs to exist to actually log something
+# The folder needs to exist
+if not USER_DIR.exists(parents=True):
+    USER_DIR.mkdir()
+
+# The file needs to exist to actually log something
 if not LOG_FILE.exists():
     LOG_FILE.touch()
 

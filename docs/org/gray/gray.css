@@ -1,20 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@300;400&display=swap');
+@font-face {
+  font-family: compagnon;
+  src: url(Compagnon-Roman.otf) format('truetype');
+}
+@font-face {
+  font-family: compagnon-medium;
+  src: url(Compagnon-Medium.otf) format('truetype');
+}
+@font-face {
+  font-family: modern;
+  src: url(lmroman10-regular.otf) format('truetype');
+}
+@font-face {
+  font-family: monoid;
+  src: url(Monoisome-Regular.ttf) format('truetype');
+}
 
 
 
 body {
     padding-left: 5%;
     padding-right: 5%;
-    font-family: 'Source Serif Pro', serif;
-    font-size: 16px;
+    font-family: "modern", Helvetica, Arial, sans-serif;
+    font-size: 22px;
     text-align: justify;
     text-justify: inter-word;
     line-height: 1.15;
     color: #404040;
-	background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #E0FFFF , #F9F9FB, #B4DDED);
-	background-size: 900% 900%;
 	animation: gradient 45s ease infinite;
 	height: 100vh;
+    background: #d3ddea;
 }
 
 li {
@@ -29,17 +44,19 @@ p {
 }
 
 code {
-        font-family: "Inconsolata", "monospace";
-        font-size: 16px;
+        font-family: "monoid", "monospace";
+        font-size: 14px;
     }
 
 p>code, li>code {
-        background-color: #eee;
-        padding: 0.25em;
+        background-color: #414173;
+        padding: 0.45em;
+        color: white;
+        border-radius: 5px;
     }
 
 h1, h2, h3 {
-        font-family: "Source Serif Pro", Helvetica, Arial, sans-serif;
+        font-family: "compagnon", Helvetica, Arial, sans-serif;
     }
 
 h1 {
@@ -47,11 +64,10 @@ h1 {
 }
 
 b {
-        font-weight: 900;
-        color: #6434A3;
-        text-shadow: 1px 0 #888888;
-        letter-spacing:2px;
-        font-weight:bold;
+        font-weight: 300;
+        /*! color: #575768; */
+        /*! text-shadow: 1px 0 #888888; */
+        /*! letter-spacing:2px; */
 }
 
 .title {
@@ -59,20 +75,20 @@ b {
 }
 
 span.subtitle {
-        font-size: 20px;
+        font-size: 40px;
 }
 
 h2 {
-        border-style: dotted none;
+        /*! border-style: dotted none; */
         padding-top: 0.5em;
         padding-bottom: 1em;
         font-size: 1.75em;
     }
 
 h3 {
-        margin-top: 2em;
+        margin-top: 1em;
         font-size: 1.5em;
-        border-bottom: dotted;
+        /*! border-bottom: dotted; */
         padding-bottom: 0.5em;
     }
 
@@ -113,16 +129,16 @@ a:visited:hover {
     }
 
 a[href^="http"] {
-        background: #bff;
+        background: #fff;
     }
 
 a[href^="http"]:visited {
-        background: #dff;
+        background: #fff;
     }
 
 a[href^="http"]:link:hover,
 a[href^="http"]:visited:hover {
-        background: #0ff;
+        background: #fff;
     }
 
 a[href^="http"]:after {
@@ -138,26 +154,29 @@ a[href^="http"]:after {
 
 #table-of-contents a:link,
 #table-of-contents a:visited {
-        color: black;
+        color: white;
         background: transparent;
         transition: all .2s ease-in-out;
     }
 
-#table-of-contents>a:hover {
+#table-of-contents> a:hover {
         transform: scale(1.1);
 }
 
-
 #table-of-contents {
         line-height: 1.15;
+        font-size: 20px;
         overflow: scroll; /* Show scrollbars */
 	    background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #E0FFFF, #F9F9FB, #B4DDED);
 	    background-size: 900% 900%;
-	    animation: gradient 45s ease infinite;
+	    /*! animation: gradient 45s ease infinite; */
 }
 
 #table-of-contents h2 {
         border-bottom: 0;
+        text-align: none;
+        font-size: 1.5em;
+        text-justify: none;
     }
 
 
@@ -331,8 +350,8 @@ blockquote {
     }
 
 pre {
-        font-family: "Inconsolata", "monospace";
-        font-size: 100%;
+        font-family: "monoid", "monospace";
+        font-size: 80%;
         border: 0;
         box-shadow: none;
         overflow: auto;
@@ -355,52 +374,32 @@ pre.example {
 pre {
         background-color: #f8f8f8;
         background-size: 8px 8px;
-        background-image: linear-gradient(135deg, transparent 25%, rgba(0, 0, 0, 0.02) 25%, rgba(0, 0, 0, 0.02) 50%, transparent 50%, transparent 75%, rgba(0, 0, 0, 0.02) 75%, rgba(0, 0, 0, 0.02));
-    }
+}
 
 pre.src {
         padding: 0.5em;
-    }
+}
+
 
 pre.src:before {
-        display: block;
+        display: none;
         position: absolute;
-        background-color: #ccccd0;
+        background-color: #fff;
         top: 0;
         right: 0;
         padding: 0.25em 0.5em;
         border-bottom-left-radius: 8px;
         border: 0;
-        color: white;
-        font-size: 80%;
+        color: #9765d9;
+        font-size: 50%;
     }
 
-pre.src-python {
-        color: black;
-    }
-
-pre.src-plantuml:before {
-        content: "UML";
-    }
-
-pre.src-javascript:before {
-        content: "JS";
-    }
-
-pre.src-clojure:before {
-        content: "CLJ";
-    }
-
-pre.src-c:before {
-        content: "C";
+pre.src-python:before {
+        content: "Py";
     }
 
 pre.src-sh:before {
         content: "Shell";
-    }
-
-pre.src-es:before {
-        content: "ES";
     }
 
 span.org-string {
@@ -460,7 +459,7 @@ div.figure {
     }
 
 .todo, .done {
-        font-family: "Source Serif Pro", Helvetica, Arial, sans-serif;
+        font-family: monospace;
         font-weight: normal;
         padding: 0 0.25em;
         border-radius: 2em;
@@ -476,26 +475,30 @@ div.figure {
         color: white;
     }
 
-pre                                      {background-color:#FFFFFF;}
+pre {
+        background-color: #2b2842;
+        color: #cdcdcd;
+        border-radius: 10px;
+}
 pre span.org-builtin                     {color:#006FE0;font-weight:bold;}
-pre span.org-string                      {color:#008000;}
-pre span.org-keyword                     {color:#0000FF;}
+pre span.org-string                      {color:#d75082;}
+pre span.org-keyword                     {color:#9B9BFF;}
 pre span.org-variable-name               {color:#BA36A5;}
-pre span.org-function-name               {color:#006699;}
-pre span.org-type                        {color:#6434A3;}
+pre span.org-function-name               {color:#1ee118;}
+pre span.org-type                        {color:#9765D9;}
 pre span.org-preprocessor                {color:#808080;font-weight:bold;}
 pre span.org-constant                    {color:#D0372D;}
-pre span.org-comment-delimiter           {color:#8D8D84;}
-pre span.org-comment                     {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-1            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-2            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-3            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-4            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-5            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-6            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-7            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-8            {color:#8D8D84;font-style:italic}
-pre span.org-outshine-level-9            {color:#8D8D84;font-style:italic}
+pre span.org-comment-delimiter           {color:#cdcdcd;}
+pre span.org-comment                     {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-1            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-2            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-3            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-4            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-5            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-6            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-7            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-8            {color:#cdcdcd;font-style:italic}
+pre span.org-outshine-level-9            {color:#cdcdcd;font-style:italic}
 pre span.org-rainbow-delimiters-depth-1  {color:#707183;}
 pre span.org-rainbow-delimiters-depth-2  {color:#7388d6;}
 pre span.org-rainbow-delimiters-depth-3  {color:#909183;}
@@ -513,11 +516,11 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
                 text-align: center;
                 margin: 0.5em 0 1em 0;
             }
-    
+
         h2 {
                 margin-top: 3em;
             }
-    
+
         #table-of-contents {
                 position: fixed;
                 top: 0;
@@ -526,23 +529,21 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
                 margin-bottom: 1em;
                 width: 290px;
                 height: 100vh;
-                font-size: 14px;
-             	background: linear-gradient(-90deg, #FFFFFF, #F0F8FF, #E0FFFF, #F9F9FB, #B4DDED);
-	            background-size: 800% 800%;
-	            animation: gradient 45s ease infinite;
-
+                font-size: 18px;
                 overlow-x: hidden;
                 overlow-y: auto;
+                background: #2b2842;
+                color: white;
             }
-    
+
         #table-of-contents h2 {
                 margin-top: 0;
             }
-    
+
         #table-of-contents code {
                 font-size: 12px;
             }
-    
+
         div#content {
                 margin-left: 320px;
                 max-width: 1100px;
@@ -557,16 +558,16 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
         html, body {
                 font-size: 14px;
             }
-    
+
         #table-of-contents {
                 display: none;
             }
-    
+
         h1.title {
                 margin-left: 0%;
                 text-align: center;
             }
-    
+
         div#content {
                 margin-left: 5%;
                 max-width: 90%;
@@ -578,33 +579,33 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
     }
 
 @media print {
-    
+
         body {
                 color: black;
             }
-    
+
         @page {
                 margin: 25mm;
             }
-    
+
         h2, h3 {
                 page-break-before: always;
                 margin-top: 0;
             }
-    
+
         table {
                 page-break-inside: avoid;
             }
-    
+
         a:visited {
                 color: black;
                 background: #ff8;
             }
-    
+
         a[href^="http"]:visited {
-            background: #bff;
+            background: #fff;
         }
-    
+
         div.notice:before {
             display: none;
         }

@@ -2,8 +2,6 @@
 #+SUBTITLE: 🫧 A Python Live Coding Instrument 🫧
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="gray/gray.css" />
 #+BEGIN_EXPORT html
-
-
 <script>
     // select #text-table-of-contents
     const menu = document.querySelector('#text-table-of-contents');
@@ -21,10 +19,11 @@
     });
 </script>
 #+END_EXPORT
+#+OPTIONS: toc:2          (only include two levels in TOC)
+
 
 #+begin_quote
-
-*With Sardine you can*:
+Sardine is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends by sharing code and tempo. *With Sardine you can*:
 - Play synthesizers and audio samples using *SuperCollider*.
 - Control synthesizers through MIDI/OSC messages.
 - Interconnect audio/video softwares and/or sound engines.
@@ -32,10 +31,6 @@
 - Extend your environment using any *Python* package.
 
 *Sardine* is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. *Sardine* is made for music. It transforms *Python* in a musical instrument capable of sequencing any event in time. The code can be updated anytime while the program is running, a technique called *live coding*!
-
-| *It's just Python!*                                                                                                                 | *Collaborative*                                                                                                                     | *Free/Open Source Software*                                                                                                         |
-|-------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------|
-| Sardine is just timed Python. Customize your workflow using all the packages and libraries you like! Sardine can be extended for other purposes! Pattern your connected teapot! Crash in rhythm! | Sardine can be synchronized using the MIDI or the Link Protocol. Play with other musicians, sync your code with other instruments and music/video softwares. | Sardine is a collaborative effort! You can be a part of development by contributing with code, documentation or anything you'd like to share with the Sardine community. |
 #+end_quote
 
 
@@ -96,8 +91,7 @@ jupcc = { 'decay': {'control' : 81, 'chan': 1},
 dirt._ahead_amount = 0.4
 
 #######################################################################
-#█▀▀ █▀█ █▀▀ █▄░█ █▀▀ █░█   ▀█▀ █▀█ █░█ █▀▀ █░█   █▀ ▄▀█ █▀▄▀█ █▄▄ ▄▀█#
-#█▀░ █▀▄ ██▄ █░▀█ █▄▄ █▀█   ░█░ █▄█ █▄█ █▄▄ █▀█   ▄█ █▀█ █░▀░█ █▄█ █▀█#
+# FRENCH TOUCH SAMBA
 #######################################################################
 
 PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
@@ -157,8 +151,7 @@ Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C5@fifths', shape=0.5,
         cut=1, p=0.25, orbit=1)
 
 ###################################################################
-# █▀▀ ▄▀█ █▀█ █▀█ ▀█▀ ▀█▀ █▀▀   █ █▄░█ ▀█▀ █▀▀ █▀█ █░░ █░█ █▀▄ █▀▀#
-# █▄▄ █▀█ █▀▄ █▄█ ░█░ ░█░ ██▄   █ █░▀█ ░█░ ██▄ █▀▄ █▄▄ █▄█ █▄▀ ██▄#
+# CAROTTE INTERLUDE
 ###################################################################
 
 panic()
@@ -285,8 +278,7 @@ D('girls:2')
 
 
 #####################################################################
-# █▀▀ █▀█ █▀▄▀█ █▀█ █░█ ▀█▀ █▀▀ █▀█   █░░ ▄▀█ █▀▄▀█ █▀▀ █▄░█ ▀█▀ █▀█#
-# █▄▄ █▄█ █░▀░█ █▀▀ █▄█ ░█░ ██▄ █▀▄   █▄▄ █▀█ █░▀░█ ██▄ █░▀█ ░█░ █▄█#
+# COMPUTER LAMENTO
 #####################################################################
 
 @swim
@@ -446,8 +438,7 @@ panic()
 
 
 ##################################################################
-# █░█ █▀█ █░░ ▄▀█ █ █░░ █░░ █▀▀   █▀▄ █▀▀   █▄▄ █▀█ █▀▀ █▀ █▀ █▀▀#
-# ▀▄▀ █▄█ █▄▄ █▀█ █ █▄▄ █▄▄ ██▄   █▄▀ ██▄   █▄█ █▀▄ ██▄ ▄█ ▄█ ██▄#
+# VOLAILLE DE BRESSE
 ##################################################################
 
 Pa >> d('juppad:12|51', begin='r', amp=0.20, speed='1', legato=4,
@@ -490,61 +481,6 @@ This code is taken from an algorave that took place at the *Zorba* (Belleville, 
 Sounds are extracted from a very heavy sound library, lazy-loaded when needed. This is how I like to make music, extracting a lof of raw audio files from my hard disk :)
 
 #+begin_src python
-# ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████
-# █░░░░░░░░░░░░░░█░░░░░░░░░░░░░░█░░░░░░░░░░░░░░░░███░░░░░░░░░░░░███░░░░░░░░░░█░░░░░░██████████░░░░░░█░░░░░░░░░░░░░░█
-# █░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀▄▀░░███░░▄▀▄▀▄▀▄▀░░░░█░░▄▀▄▀▄▀░░█░░▄▀░░░░░░░░░░██░░▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█
-# █░░▄▀░░░░░░░░░░█░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░░░▄▀░░███░░▄▀░░░░▄▀▄▀░░█░░░░▄▀░░░░█░░▄▀▄▀▄▀▄▀▄▀░░██░░▄▀░░█░░▄▀░░░░░░░░░░█
-# █░░▄▀░░█████████░░▄▀░░██░░▄▀░░█░░▄▀░░████░░▄▀░░███░░▄▀░░██░░▄▀░░███░░▄▀░░███░░▄▀░░░░░░▄▀░░██░░▄▀░░█░░▄▀░░█████████
-# █░░▄▀░░░░░░░░░░█░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░░░▄▀░░███░░▄▀░░██░░▄▀░░███░░▄▀░░███░░▄▀░░██░░▄▀░░██░░▄▀░░█░░▄▀░░░░░░░░░░█
-# █░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀▄▀▄▀░░███░░▄▀░░██░░▄▀░░███░░▄▀░░███░░▄▀░░██░░▄▀░░██░░▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█
-# █░░░░░░░░░░▄▀░░█░░▄▀░░░░░░▄▀░░█░░▄▀░░░░░░▄▀░░░░███░░▄▀░░██░░▄▀░░███░░▄▀░░███░░▄▀░░██░░▄▀░░██░░▄▀░░█░░▄▀░░░░░░░░░░█
-# █████████░░▄▀░░█░░▄▀░░██░░▄▀░░█░░▄▀░░██░░▄▀░░█████░░▄▀░░██░░▄▀░░███░░▄▀░░███░░▄▀░░██░░▄▀░░░░░░▄▀░░█░░▄▀░░█████████
-# █░░░░░░░░░░▄▀░░█░░▄▀░░██░░▄▀░░█░░▄▀░░██░░▄▀░░░░░░█░░▄▀░░░░▄▀▄▀░░█░░░░▄▀░░░░█░░▄▀░░██░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░░░░░░░░░█
-# █░░▄▀▄▀▄▀▄▀▄▀░░█░░▄▀░░██░░▄▀░░█░░▄▀░░██░░▄▀▄▀▄▀░░█░░▄▀▄▀▄▀▄▀░░░░█░░▄▀▄▀▄▀░░█░░▄▀░░██░░░░░░░░░░▄▀░░█░░▄▀▄▀▄▀▄▀▄▀░░█
-# █░░░░░░░░░░░░░░█░░░░░░██░░░░░░█░░░░░░██░░░░░░░░░░█░░░░░░░░░░░░███░░░░░░░░░░█░░░░░░██████████░░░░░░█░░░░░░░░░░░░░░█
-# ██████████████████████████████████████████████████████████████████████████████████████████████████████████████████
-
-# █▀▀ █▀█ ▄▀█ █▀ █░█   ▀█▀ █▀▀ █▀ ▀█▀   █░█ █▀▀ █▀█ █▀ █ █▀█ █▄░█   ▄▀█ █░░ █▀█ █░█ ▄▀█   █▀█ ░ █▀█ █▀█ █▀█ █▀█ ▄█
-# █▄▄ █▀▄ █▀█ ▄█ █▀█   ░█░ ██▄ ▄█ ░█░   ▀▄▀ ██▄ █▀▄ ▄█ █ █▄█ █░▀█   █▀█ █▄▄ █▀▀ █▀█ █▀█   █▄█ ▄ █▄█ █▄█ █▄█ █▄█ ░█
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@&&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@@@@@@....,.....,..,,,,,,,,,,,,,*(&@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@@@&.,,,,/*//////////**,*.*,*..,***,,,,**********/(%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@@(..,*//**/***,,,,,(%((%%,/,%%%%(****,,.,,********,,,*/*/*****///(%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@@ .,(/////*,,,,,,,/%%%(*.((,/%%(/.((/%/%//,//,/#%(*****************,,*****///////(&@@@@@@@@@@@@@@@@@@@@@@@@
-# @@@@@@@@ ./(//*,*,,**,,,,,,,,,,*,*,,**,*/#%%%%%,*#(*(,,(*%(,(*,/*(%(#,/%%/****************,*//*//****/&@@@@@@@@@@@@
-# @@@@@@@ .(##***,*,,,,,,,,,,,,,,,,,,,,,*,*,,****,*,****,*(%%%/##/(%,./*//(%(,(%(./((/,*%**************.,****%@@@@@@@
-# @@@@@@.*///*********,*,**,,*,,,,,,,%%%%%((#%%%%%,,(%%%%%%%%%%%##%%#,,**/%&%%(/,&(,((/#%%%*,,,,,,,,,,,,,,,..***(@@@@
-# @@@@@%/**/*****,,***,,,,,,,,,,,%%%%##/##%%%%%%%%%%%#((**###%%%%####%#####%#(,,********/#%***,,,,,,,,,,,,,,,,.,**/@@
-# @@@@@,/**,**************,,,,,*%%%/.((*%*/,/((*#./*. .. ..*,/(##/*,,###*/#/(#%%%#(#,*,#%%%%%%%%%/,,*,,,,,,,,,,..***@
-# @@@@ ,/**********,*******,,,,*,% #*,,//#%(.#*,,**#,(##(/**##%##%##/,/#%(//(//,.(#(#%#((,#%%##*##%%%,,,,,,,,,,,. ***
-# @@@ .,///*******,*,*,**,,**,,*,,*./ /((..((/(%,,/#(/(/*,*#,.*#/###%%##/**/(/(/.(//%%%%%/###%##,,,%%%***,,,,,,.. .**
-# @@@...////*************,***,,,/(((((*.(., #*(  *(..#/(/*(///(##(#(####(/#(*##%(/((%%%%%%%/((#%%%%%%%#***,,,**,   ,*
-# @@,..../(//********,,***,,,***(((((( ((*((,,##,,,/###(//*(##((((((#(,       ,(%%#%%,.,(####%###,/%&******,*,*,   .(
-# @@*/.,..*(*/***********,*,,*,,,,,**(.((.(((((((((**,(%%%%%%%%###########(*//(#((//*/. *,/(#%##,.,******,**,*,,   ,%
-# @@,/*,*.,..(***************,,*,,,*,#*&(**(,* ((  .(((((..((((/********,,*,****/((((((,***********************,   *(
-# @/,*/**,,*,,...,*,,*,*,..,,*,,,,,,*,*,**,(#&(,*,/((./(( (( /(. ...(((*../( (#((((((((((**********************  .*#,
-# @, *//********/.,,.........,,,,,,,,,,*,,..,,,**,,**##(%&#*****/((#(((((((((((/*,***************************,...**%#
-# @% ,*/******//////////**/****,.,,.........,,**/*,,,,,,,,,,,*,*******,************************************,.. **,#,@
-# @@* .********/*///////////*/////////*********,,,,,,***//*//////***,*,,,,,,****************************,... ,***/#/@
-# @@@#/..********///////////**/*,*,/#.//////////////**********,,.,,**********//*,,,,,,,.,***********,.....,*/*,*(#(&@
-# @@@@@&(*,,******///////./,//**/.**//////,/***,/#,,//**,/.////////******/***,,..,,*,...,,**/*,,**,*//*/*****/((#%*@@
-# @@@@@@@@%/(/,,,***///////*,,**/**////,**/*/,,**////**///***./*//.*/////////////*******/*,,******,,*//#/(//(((##*%@@
-# @@@@@@@@@@@@@((/(((((/*,,,**//****///**,*//****///***.*//**////***////*(%%##%%/&&&///////////////(((((((((((###*@@@
-# @@@@@@@@@@@@@@@@@@@@@@&#/(#####(((//*,,,,**/***//******,,***///**./*/**%%&&&###((&&%**//////////(((((((((((((/*@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&#/(####((((/**,,,,**/////****////****/%###%/%&***////////(((((((((((((/,(@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&#/#####(((/(/*,,,,***///****///****/////////(((((((((/**(&@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&(/#####(((((/*,,,******///////((((//**#(%@@@@@@@@@
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@&((#####((((#%&%%##%%#%@@@@@@@@@@@@@@
-
-# ███████████████████████████████████████████████████████████████████████████████████████████████████████████████████
-#
-# █▀▄▀█ █▀▀ █▀█ █▀▀ █   ▀█▀ █░█ █▀▀ █▀█ █▀█ █░█ █ █░░ █▀▀   █░█░█ ▄▀█ █░░ █░░ █▀▀ ▀█   █  █  █
-# █░▀░█ ██▄ █▀▄ █▄▄ █   ░█░ █▀█ ██▄ █▄█ █▀▀ █▀█ █ █▄▄ ██▄   ▀▄▀▄▀ █▀█ █▄▄ █▄▄ ██▄ █▄   ▄  ▄  ▄
-#
-# ███████████████████████████████████████████████████████████████████████████████████████████████████████████████████
-
-
 # ██████████████████████████████████████████████████████████████████████████████
 # █                                                                            █
 # █  █   ▄▄   █▀█ ▄▀█ █▀▄▀█ █▀▀ █▀█   █▀ ▄▀█ █▄░█ █▀   █▀█ ▄▀█ █▀▄▀█ █▀▀       █
@@ -1238,21 +1174,26 @@ Don't let any error happen un-noticed! If you see an error, then there must be a
 As funny as it may sound, I am not the owner of the ~sardine~ package on Pypi. *Sardine* is named ~sardine-system~. Some people sometimes end up installing a totally unrelated tool!
 
 ** Windows
-
-*Preparing your environment*
+*** Preparing your environment
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 The first step to install *Sardine* is to prepare your system to make some sounds :)
 
 - Install the latest [[https://www.python.org/][Python]] version for your OS (currently l3.11). *Sardine* will not work with a Python older than 3.10. Be careful with distribution provided Python versions, they are not yours! Install [[https://github.com/pyenv/pyenv][Pyenv]] or use [[https://docs.python.org/3/library/venv.html][virtual environments]] to keep everything nice and tidy!
 - Install [[https://supercollider.github.io/][SuperCollider]], the default audio backend used by *Sardine*.
   - Once this step is over, open *SCIDE* (or click on the *SuperCollider* icon) and type:
-    #+begin_src sclang
-    Quarks.install("SuperDirt");
-    #+end_src
+#+begin_src sclang
+Quarks.install("SuperDirt");
+#+end_src
   - Press *Shift + Enter* and wait for the installation to be done! Close *SuperCollider* when done.
 - (**Optional**) You can also install [[https://github.com/supercollider/sc3-plugins][sc3plugins]] to get more audio effects and synthesizers!
 
-*Installing Sardine*
+*** Installing Sardine
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 To install *Sardine*, you can either:
 - install the development version (recommanded -> *up to date*).
@@ -1283,21 +1224,26 @@ cd ziffers-python && python -m pip install --editable .
 #+end_src
 
 ** MacOS
-
-*Preparing your environment*
+*** Preparing your environment
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 The first step to install *Sardine* is to prepare your system to make some sounds :)
 
 - Install the latest [[https://www.python.org/][Python]] version for your OS (currently l3.11). *Sardine* will not work with a Python older than 3.10. Be careful with distribution provided Python versions, they are not yours! Install [[https://github.com/pyenv/pyenv][Pyenv]] or use [[https://docs.python.org/3/library/venv.html][virtual environments]] to keep everything nice and tidy!
 - Install [[https://supercollider.github.io/][SuperCollider]], the default audio backend used by *Sardine*.
   - Once this step is over, open *SCIDE* (or click on the *SuperCollider* icon) and type:
-    #+begin_src sclang
-    Quarks.install("SuperDirt");
-    #+end_src
+#+begin_src sclang
+Quarks.install("SuperDirt");
+#+end_src
   - Press *Shift + Enter* and wait for the installation to be done! Close *SuperCollider* when done.
 - (**Optional**) You can also install [[https://github.com/supercollider/sc3-plugins][sc3plugins]] to get more audio effects and synthesizers!
 
-*Installing Sardine*
+*** Installing Sardine
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 To install *Sardine*, you can either:
 - install the development version (recommanded -> *up to date*).
@@ -1328,21 +1274,26 @@ cd ziffers-python && python -m pip install --editable .
 #+end_src
 
 ** Linux
-
-*Preparing your environment*
+*** Preparing your environment
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 The first step to install *Sardine* is to prepare your system to make some sounds :)
 
 - Install the latest [[https://www.python.org/][Python]] version for your OS (currently l3.11). *Sardine* will not work with a Python older than 3.10. Be careful with distribution provided Python versions, they are not yours! Install [[https://github.com/pyenv/pyenv][Pyenv]] or use [[https://docs.python.org/3/library/venv.html][virtual environments]] to keep everything nice and tidy!
 - Install [[https://supercollider.github.io/][SuperCollider]], the default audio backend used by *Sardine*.
   - Once this step is over, open *SCIDE* (or click on the *SuperCollider* icon) and type:
-    #+begin_src sclang
-    Quarks.install("SuperDirt");
-    #+end_src
+#+begin_src sclang
+Quarks.install("SuperDirt");
+#+end_src
   - Press *Shift + Enter* and wait for the installation to be done! Close *SuperCollider* when done.
 - (**Optional**) You can also install [[https://github.com/supercollider/sc3-plugins][sc3plugins]] to get more audio effects and synthesizers!
 
-*Installing Sardine*
+*** Installing Sardine
+:PROPERTIES:
+:NOTOC: t
+:END:
 
 To install *Sardine*, you can either:
 - install the development version (recommanded -> *up to date*).
@@ -1698,7 +1649,7 @@ SuperDirt treats a wildcard (~*~) at the end of the path to mean that there are 
 
 Text editors are particularly important to get the most out of *Sardine*. Remember that this is a tool for *live coding* and that you will need to setup everything to feel comfortable. *Sardine* can support most text editors and IDEs. I have been using *Sardine* using *Vim*, *Neovim*, *Emacs*, *VSCode* and of course... the integrated text editor. This editor is provided mostly for workshops and demos. If you are planning for a gig or anything serious, please consider using and learning a real text editor.
 
-*** Fishery Web
+** Fishery Web
 
 You don't need a text editor to play with *Sardine*. Just start the software by typing ~fishery web~. Optionally, you can specify the ~--port~ and  ~--???~ arguments. Your web browser will promptly open, generally at ~https://localhost:8000~. Your code will automatically be saved in your configuration folder, under the ~buffer/~ folder, meaning you can retrieve it later for a new session!
 
@@ -1712,7 +1663,7 @@ fishery web --port 12345
 
 *Pre v0.2.3 version:* note that you have to manually build the text editor to be able to use it. In the ~/fishery/client~ directory, run ~yarn install~ and ~yarn run build~ to build the text editor. This should only be runned once everytime you install *Sardine*.
 
-*** Flok
+** Flok
 
 *Sardine* has been integrated to [[https://github.com/munshkr/flok][Flok]], a collaborative text editor for live coding. Using ~Flok~, you can easily share a *Sardine* session with other musicians and visualists. ~Flok~ *is not an online version of Sardine*. You will still need to install it locally to have sound. However, if you are playing together with some friends in a single room, one only needs to have *Sardine* installed and active! To use ~Flok~, follow the following instructions:
 - Install [[https://github.com/munshkr/flok][Flok]] on your computer if you want to use the audio backend (*Sardine* itself)!
@@ -1722,7 +1673,7 @@ fishery web --port 12345
 
 To be 100% sure that everything will work perfectly, please use *Firefox*. *Chrome* has been reported not to work well with *MacOS*.
 
-*** VSCode
+** VSCode
 
 [[https://code.visualstudio.com/][VSCode]] is a powerful and all-devouring code editor developed by **Microsoft**. It is the most widely spread code editor out there with millions of users, thousands of plugins and corporate support. *VSCode* is more than capable of handling *Sardine* sessions and there are multiple ways to configure everything for it.
 
@@ -1733,7 +1684,7 @@ To be 100% sure that everything will work perfectly, please use *Firefox*. *Chro
 
 This is a simple yet effective way of using *Sardine* while retaining all the power of *VSCode* at your fingertips!
 
-*** Vim / Neovim
+** Vim / Neovim
 
 *NeoVim* (and by extension *Vim*) is the editor I currently use on stage but its target audience is mostly developers, old Unix gurus and command-line users. *Vim* is a modal text editor with multiple modes for editing and jumping around in the source code. It can be extended using plugins and tweaked to your liking. Quite powerful, but it requires some learning to be proficient. The process for working with *Sardine* from *Neovim* is pretty straightforward:
 
@@ -1744,7 +1695,7 @@ This is a simple yet effective way of using *Sardine* while retaining all the po
 4) work in the other one and use ~C-c C-c~ (~Control+C~ twice) to send code from one side to the other.
    - *slime* will probably ask you which job to target, just press enter!
 
-*** (Doom) Emacs
+** (Doom) Emacs
 
 I am using *Doom Emacs* for many things in my life: writing this documentation, writing manuscripts and papers and.. playing some music with *Sardine*. The venerable *Emacs* is -- of course -- able to manage *Sardine*! Please use the ~python.el~ plugin. This mode will allow you to pipe easily your code from a text buffer to a running interpeter. The plugin is adding quality-of-life features for working with *Python* in general but also makes working with a *REPL* much easier and much more convenient. If you are new to the vast world of *Emacs*, it is probably worthwhile to take a look at [[https://github.com/doomemacs/doomemacs][Doom Emacs]] or [[https://github.com/syl20bnr/spacemacs][Spacemacs]], both being equally great. I will not dive into more details. If you are able to configure *Emacs*, you will be able to configure your editor for *Sardine* :).
 
@@ -1790,7 +1741,7 @@ The following code is the one I use for running *Sardine* using *Doom Emacs*. It
 (global-set-key (kbd "C-c C-s") #'sardine/stop-code)
 #+end_src
 
-*** Others
+** Others
 
 
 In the past, people have been running *Sardine* code on many different text editors and platforms:
@@ -2557,7 +2508,7 @@ def test_extend_repeat(p=0.5, i=0):
 The variant `!!` now makes sense. It allows you to repeat each individual value in a list `x` times.
 #+end_src
 
-*** Function Library
+*** TODO Function Library
 *** TODO Conditions
 
 Every function from the function library can be applied conditionnally. It means that every function can be applied based on a probability or based on a deterministic event (~e.g.~ being on beat 1).
@@ -3012,10 +2963,15 @@ You might wonder what the ~FishBowl~ is actually doing behind the scene. Factual
 - Soft dependencies
 - Messaging system.
 
-** Nudging and time-alignment
+** TODO Nudging and time-alignment
 
-- Nudging for better synchronisation
-- Introducing latencies
+Synchronising computers or audio softwares together is extra difficult. Some people have built careers trying to tackle this problem. You are very unlikely to get proper synchronisation out of the box. It's not because *Sardine* is incapable of doing it, it's just that the topic is very complex and that there are lot of different places where things can go wrong.
+
+You already know about the *Ableton Link clock* that you can take advantage of to synchronise code or sound with your friends. It does 90% of the job. However, you might have to flick *Sardine* just a little to get it properly on time. Think of it as putting your finger on a vinyl disk while it is playing, just like a *DJ*.
+
+- the ~midi.nudge~ attribute can help you to add a little /delay/ to your MIDI output: ~midi.nudge = 0.2~.
+- the ~dirt.nudge~ attribute can help you to add a little /delay/ to your *SuperDirt* output: ~dirt.nudge = 0.3~.
+  - it is actually recommanded to do so in order to give time to the system to react to instructions in time!
 
 ** Swimming functions oddities
 ** Sleeping and oversleeping
@@ -3059,11 +3015,41 @@ def super_sleeping(p=2, i=0):
 
 There is a last thing to know about *sleeping*. You can *oversleep* the duration of you function. You can defer an event so hard that it will be deferred after the end of your *swimming function*:
 
+#+begin_src python
+clock.tempo = 100
+@swim
+def super_sleeping(p=2, i=0):
+    D('cp', speed='[1:5,0.25]', i=i)
+    sleep(0.75)
+    D('linnhats', speed='[1:5,0.25]', i=i)
+    again(super_sleeping, p=0.5, i=i+1)
+#+end_src
+
+In the example above, the ~linnhats~ sound is deferred to later, and later means on the *next loop* of our *swimming function*. Rhythms piling up on top of rhythms!
 
 ** Patterning everything
 
-- Learning about ~P()~.
-- Observing patterns.
+You can use the ~P()~ object to get a generic interface to *Sardine* patterns. This object can be used just anywhere you would like to see a pattern. It means that you can contaminate your *Python* functions or anything in your code with them. Under the hood, *Sardine* patterns are spitting out valid *Python* integers, floats or strings.
+
+#+begin_src python
+@swim
+def free(p=0.5, i=0):
+    print(P('1,2,3,4', i))
+    again(free, p=0.5, i=i+1)
+#+end_src
+
+In the example above, we are just using a *swimming function* to print the result of a pattern in the interpreter window. Note that ~P()~ can take your basic iterator arguments as always (~P(pattern, iterator, divisor, rate)~.
+
+We can do the same thing but using ~P()~ in a strategic location, replacing the static value for ~p~:
+
+#+begin_src python
+@swim
+def free(p=0.5, i=0):
+    D('cp')
+    again(free, p=P('0.5!4, 0.25!2', i), i=i+1)
+#+end_src
+
+Using this technique, you can easily generate rhythms or pattern data that you send to any *Python* function. Using ~P()~ is a good way to study *Sardine* patterns. You can just take a few minutes and study some specific patterns if you have a hard time understanding them. That's what I do sometimes when developping them :)
 
 ** SuperCollider interaction
 
@@ -3100,9 +3086,10 @@ SC("s.freeAll;")
 
 In the future, it is very likely that *Sardine* interaction with *SuperCollider* will be further refined. For the moment, it is only used as lightweight high-level layer on top of *SuperCollider* :)
 
-** Writing presets
+** TODO Writing presets
 
 - How to write presets using dictionaries
+
 
 * Audio engine Reference
 
@@ -3373,6 +3360,13 @@ Contributions of any sort are really welcome! I am not a professional developer 
 ** About this website
 
 This website is maintained using [[https://orgmode.org/][Org Mode]], a wonderful tool for documentation. The whole documentation is a monolithic ~.org~ file that you can find (and edit!) on GitHub. The styling is plain CSS, using a customized [[https://github.com/fniessen/org-html-themes][gray]] theme.
+
+I am using some very nice custom fonts:
+- [[http://velvetyne.fr/fonts/compagnon/][Compagnon Font]], used in headers.
+- [[https://tug.org/FontCatalogue/latinmodernroman/][Latin Modern Roman]], used for text.
+- [[https://larsenwork.com/monoid/][Monoid]], used for code.
+
+Some help was provided by Yassin Siouda and Raphaël Bastide for CSS design.
 
 ** Sardine Strategies
 

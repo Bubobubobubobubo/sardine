@@ -2,6 +2,7 @@
 #+SUBTITLE: 🫧 A Python Live Coding Instrument 🫧
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="gray/gray.css" />
 #+EXPORT_FILE_NAME: index.html
+#+OPTIONS: toc:2          (only include two levels in TOC)
 
 #+BEGIN_EXPORT html
 <script>
@@ -21,8 +22,6 @@
     });
 </script>
 #+END_EXPORT
-#+OPTIONS: toc:2          (only include two levels in TOC)
-
 
 #+begin_quote
 [[https://github.com/Bubobubobubobubo/sardine][Sardine]] is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. *With Sardine you can*:
@@ -34,6 +33,7 @@
 
 [[https://github.com/Bubobubobubobubo/sardine][Sardine]] is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. It transforms *Python* into a time-aware environment capable of sequencing any event with precision. Code can be updated anytime while the program still runs, a technique called *live coding*!
 #+end_quote
+
 
 
 * Presentation
@@ -70,1194 +70,6 @@ There are multiple pages on the internet to share your new-found passion about *
 You can also find some *Sardine* related content by checking the [[https://cookie.paris][Cookie Collective]] website. There are some users documenting their art practice and their love/hate relationship with *Sardine*:
 - [[https://raphaelforment.fr][BuboBubo]] (Raphaël Maurice Forment): I created the *Sardine* live coding environment and I am live coding as well.
 - [[https://remigeorges.fr/][Rémi Georges]]: the infamous Rémi Georges, the first *Sardine* user. A lover of old/ancient digital machines and emerit live-coder.
-
-** Showcase
-*** Solstice
-
-This piece was submitted by *BuboBubo*. This is a 20 minutes performance that I did for the *TidalCycles* annual solstice stream. Three of the four tracks were rapidly composed before the stream. I've tried to highlight some of the new features we have worked on for the ~v.0.2.1~. I am sometimes playing additional keyboard on top of the code.
-
-#+begin_src python
-padcc = { 'timbre': {'control' : 18, 'chan': 2},
-        'time': {'control' : 19, 'chan': 2},
-        'metal': {'control' : 16, 'chan': 2},
-        'fx': {'control' : 17, 'chan': 2}}
-basscc = { 'timbre': {'control' : 18, 'chan': 0},
-        'time': {'control' : 19, 'chan': 0},
-        'cutoff': {'control' : 16, 'chan': 0},
-        'fx': {'control' : 17, 'chan': 0}}
-jupcc = { 'decay': {'control' : 81, 'chan': 1},
-        'time': {'control' : 19, 'chan': 1},
-        'cutoff': {'control' : 74, 'chan': 1},
-        'resonance': {'control' : 71, 'chan': 1}}
-dirt._ahead_amount = 0.4
-
-#######################################################################
-# FRENCH TOUCH SAMBA
-#######################################################################
-
-PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
-
-Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
-
-Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
-
-Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
-
-Pb >> None
-Pc >> None
-Pc >> d('bip:rand*20', speed=2,
-        cut=0, p=0.25, orbit=1, shape=0.5, hcutoff='[500:15000,1000]')
-
-# ---
-
-PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
-Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
-Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
-Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
-Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,A5',
-        cut=1, p=0.25, orbit=1, shape=0.5)
-Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C3,C4,G3,G4,A4,A5', shape=0.5,
-        cut=1, p=0.25, orbit=1)
-
-# ---
-
-Pa >> None
-Pb >> None
-Pc >> None
-Pd >> None
-
-PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
-Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
-Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
-Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
-Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,G5',
-        cut=1, p=0.25, orbit=1, shape=0.5)
-Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C5@fifths', shape=0.5,
-        cut=1, p=0.25, orbit=1)
-
-Pa >> None
-Pb >> None
-Pc >> None
-Pd >> None
-PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]", speed='2!4,4!4')
-
-
-PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
-Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
-Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
-Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
-Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,G5',
-        cut=1, p=0.25, orbit=1, shape=0.5)
-Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C5@fifths', shape=0.5,
-        cut=1, p=0.25, orbit=1)
-
-###################################################################
-# CAROTTE INTERLUDE
-###################################################################
-
-panic()
-
-@swim
-def baba(p=0.5, i=0):
-    D('juppad:54, juppad:55', cutoff=2000, begin=0.1,
-      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
-      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
-    D('boop:rand*20', shape=0.4,
-      midinote='G4|G5,Bb5,F6, G4|G5,Bb5,G6', i=i, r=0.25, d=2)
-    D('boop:rand*40')
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    # D('f', shape=0.4, i=i, d=4)
-    # D('f:3', amp='[0:0.4,0.05]', legato='0.01~0.2', i=i)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i, d=1)
-    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
-      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
-    D('.., p:6, ., .., p:3, ..', legato=0.5, shape=0.7, i=i)
-    D('bip:rand*20', midinote='adisco((G|[G,G|Ab|G5])!2)', i=i, d=2)
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    D('f, f, ..', shape=0.4, i=i, d=4)
-    D('f:4', amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
-    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
-      squiz=2, orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    D('f', shape=0.4, i=i, d=4)
-    D('f:8~12', speed='4~8', amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i, d=1)
-    D('laz:rand*20',
-            speed="1, 2,4",  hcutoff='3000~6000',
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4, i=i, d=0.25)
-    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
-      squiz='0!4,2',
-      orbit=2, cut=0, legato=1.1, i=i, d=8, r=1)
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    # D('f', shape=0.4, i=i, d=4)
-    # D('f:3', speed=4, amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
-    D('laz:rand*20',
-            speed="1, 2,4",  hcutoff=6000,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4, i=i, d=1, r=0.25)
-    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
-      pan='r', speed='1|2|4', leslie=1, lesliespeed=8,
-      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
-    again(baba, p=1/4, i=i+1)
-
-@swim
-def baba(p=0.5, i=0):
-    D('f', shape=0.4, i=i, d=4)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
-    D('conga:rand*20', speed="[1,2,4]/4", hcutoff='500~1000', shape=0.4,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=1, r=0.25)
-    D('kit2:3', shape=0.5, i=i, d=8)
-    D('., kit2:10, ., kit2:9!2', shape=0.5, i=i, d=2)
-    again(baba, p=1/4, i=i+1)
-
-
-@swim
-def baba(p=0.5, i=0):
-    D('f', shape=0.4, i=i, d=4)
-    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
-    D('conga:rand*20', speed="[1,2,4]/4", hcutoff='500~1000', shape=0.4,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=1, r=0.25)
-    D('conga:rand*20', speed="[1,2,4]/2", hcutoff='2000', shape=0.4,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=2, r=0.5)
-    D('kit2:3', shape=0.5, i=i, d=8)
-    D('., kit2:10, ., kit2:9!2', shape=0.5, i=i, d=2)
-    again(baba, p=1/4, i=i+1)
-
-# Ici on joue uniquement avec les percus et on lave les oreilles
-
-@swim
-def baba(p=0.5, i=0):
-    D('f:3', amp='[0:0.2,0.01]', legato='0.1~0.5', i=i)
-    D('.., p:(5|10), .', legato=0.5, i=i, d=1)
-    D('m|c:[4:9]', legato=0.2, i=i, d='4!12, 3!12')
-    D('jupbass:[1:100]', # -> lost into jupfx
-            cutoff=3000, # ->
-            shape=0.5,
-            pan='sin($/40)', # -> X
-            legato=0.2, # ->
-            begin='r', i=i)
-    again(baba, p=1/4, i=i+1)
-
-
-@swim
-def baba(p=0.5, i=0):
-    D('a', shape=0.7, i=i, d=4)
-    D('c', shape=0.7, i=i, d=3)
-    D('d:7', orbit=3, room=0.2, size=0.8, dry=0.2, i=i, d=8)
-    D('hhh:3', amp='[0:0.2, 0.01]', legato='0.1~0.5', i=i)
-    D('f:3', amp='[0:0.2,0.01]', legato='0.1~0.5', i=i)
-    D('.., p:(5|10), .', legato=0.5, i=i, d=1)
-    D('m|c:[4:9]', legato=0.2, i=i, d='4!12, 3!12')
-    D('jupbass:[1:100]', # -> lost into jupfx
-            cutoff=3000, # ->
-            shape=0.5,
-            pan='sin($/40)', # -> X
-            legato=0.2, # ->
-            begin='r', i=i)
-    again(baba, p=1/4, i=i+1)
-
-panic()
-D('girls:2')
-
-
-#####################################################################
-# COMPUTER LAMENTO
-#####################################################################
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
-    CC(**jupcc['cutoff'], value=100)
-    CC(**jupcc['decay'], value=80)
-    N("[G6]-[0:12]", chan=1, vel=120, i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("[G6|D5]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    CC(**padcc['timbre'], value='50~120')
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
-    N("[G7]-[0:12]", chan=2, vel=120, i=i, r=0.25/1)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    CC(**padcc['timbre'], value='(90~100)-10') # go down
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4) # middle voice
-    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
-    N("pal(C|C5|C6@minor)", d=2,
-      chan=2, vel='50~100', i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    CC(**padcc['timbre'], value='(70~110)') # go down
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
-    N("pal(C|C5|C6@minor)", d=2,
-      chan=2, vel='50~100', i=i, r=0.25/2)
-    CC(**basscc['timbre'], value='rand*127')
-    CC(**basscc['fx'], value='80')
-    CC(**basscc['cutoff'], value='[1:127,20]')
-    N("disco(pal(C3|C5|C4@minor))", d=1,
-      chan=0, vel='(50~100)-30', i=i, r=0.25)
-    again(structure, p=0.5, i=i+1)
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
-    CC(**basscc['cutoff'], value=127, i=i)
-    N("pal(C|C5|C6@minor)", d=2,
-      chan=2, vel='50~100', i=i, r=0.25/2)
-    N("disco(pal(C3|C5|C4@minor))", d=1,
-      chan=0, vel='50~100', i=i, r=0.25)
-    D('ff', d='3, 3, 2', i=i, cutoff=2500)
-    D('s, u, n, d, o, w, n', d='3, 3, 2', i=i, p=0.5)
-    D('kk:2~8, bb:1~9', legato=0.2, d='2, 3, 1!4', i=i,
-      speed='0.25, 0.5!5, 1!8')
-    again(structure, p=0.5, i=i+1)
-
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3", chan=2, vel=120, i=i)
-    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
-    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
-    CC(**basscc[pick('timbre', 'cutoff')], value='20~120', i=i)
-    CC(**basscc[pick('time')], value='20', i=i)
-    N("pal(C|C5|C6@minor)", d=2,
-      chan=2, vel='50~100', i=i, r=0.25/2)
-    N("disco(pal(C4|C6|C5@minor))", d=1,
-      chan=0, vel='50~100', i=i, r=0.25)
-    D('ff', d='3, 3, 2', i=i, cutoff=2500)
-    D('s, u, n, d, o, w, n', d='3, 3, 2', i=i, p=0.5)
-    D('kk:2~8, bb:1~9', legato=0.2, d='2, 3, 1!4', i=i,
-      speed='0.25, 0.5!5, 1!8')
-    again(structure, p=0.5, i=i+1)
-
-Pb >> d('g,o,o,d,b,y,e,t,r,a,c,k', d='1', p=0.5, orbit=2, cut=0)
-
-@swim
-def structure(p=0.5, i=0):
-    N("C2,C3, F2, F3", chan=2, vel=120, i=i)
-    N("G5,G4, Ab5, Ab4", chan=2, vel=120, i=i, r=0.25/4)
-    N("Eb4, F4, G4, Eb4, Eb5, Eb4, Eb5", chan=2, vel='50~100', i=i, r=0.25/2)
-    N("pal(F|F5|G6@minor)", d=2,
-      chan=2, vel='50~100', i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-
-Pc >> d('s, u, n, d, o, w, n', d='3, 3, 2', p='0.25!16, 0.5!4', orbit=3, cut=1, speed='2,4')
-
-@swim
-def structure(p=0.5, i=0):
-    N("pal(F|F4|G3@minor)", d=2,
-      chan=2, vel='100~120', i=i, r=0.25/2)
-    N("pal(F|F5|G6@minor)", d=2,
-      chan=2, vel='100~120', i=i, r=0.25/2)
-    again(structure, p=0.5, i=i+1)
-
-############################################################
-# IDEE POUR UN TROISIEME MORCEAU
-############################################################
-
-silence(structure)
-Pc >> None
-@swim(snap=0)
-def baba(p=0.5, i=0):
-    D('ff', i=i, d=4, shape=0.5)
-    D('s:[1:20]', i=i, d=3, speed='1|1|2|4', legato=0.4, pan='r')
-    D('l:[1:20]', i=i, d=2, speed='1|1|2|4', legato=0.2, pan='r')
-    D('jupfx:[0:20]', midinote='rev(C3, Eb3, G, Bb4|Bb5)',
-      room=0.5, size=0.21, dry=0.12, orbit=3, amp=0.25,
-      i=i, d=2, speed='1|1|2|4', legato=0.08, pan='r')
-    again(baba, p=0.25, i=i+1)
-
-
-Pb >> None
-@swim(snap=0)
-def baba(p=0.5, i=0):
-    D('long', orbit=3, cut=1, begin='r', i=i)
-    D('ff', i=i, d=4)
-    D('kit2:[1,20]', legato=0.1, i=i, d='3!32, 4!16', speed='1,2')
-    again(baba, p=0.25, i=i+1)
-
-
-@swim(snap=0)
-def baba(p=0.5, i=0):
-    D('ulh:60', orbit=3, cut=1, begin='r', i=i)
-    D('ff', i=i, d=4)
-    D('ff:9', i=i, d=8, orbit=2)
-    if sometimes():
-        D('ff:rand*40', i=i, d=2, orbit=2, legato=0.1)
-    else:
-        D('bb|gg:rand*40', speed='<1,2>,4', i=i, d=1, orbit=2, legato='0.01~0.2')
-    D('kit2:[1,20]', legato=0.1, i=i, d='3!32, 4!16', speed='1,2')
-    again(baba, p=0.25, i=i+1)
-# Change p to 2, I don't know why but it is working
-
-panic()
-
-
-##################################################################
-# VOLAILLE DE BRESSE
-##################################################################
-
-Pa >> d('juppad:12|51', begin='r', amp=0.20, speed='1', legato=4,
-        room=0.5, orbit=3, dry=0.2, size=0.8,
-        midinote='Do,Fa,Ab3,Eb4', cutoff=4000)
-
-Pb >> d('bip:rand*50', begin='0,0.2,0.5', amp=0.45, speed='2',
-        room=0.5, orbit=3, dry=0.2, size=0.8,
-        legato=0.18, midinote='adisco(Do,Fa,Ab3,Eb4)', cutoff=8000, p=0.5)
-
-Pd >> d('ff:4', shape=0.5, speed=1, p=0.5, cutoff='[200:2000,100]', amp=0.5)
-
-
-Pa >> d('juppad:12|51', begin='r', amp=0.20, speed='1', legato=4,
-        room=0.5, orbit=3, dry=0.2, size=0.8,
-        midinote='Do,Fa,Ab3,Eb4', cutoff=4000)
-Pb >> d('bip:rand*50', begin='0,0.2,0.5', amp=0.45, speed='2',
-        room=0.5, orbit=3, dry=0.2, size=0.8,
-        legato=0.18, midinote='adisco(Do,Fa,Ab3,Eb4)', cutoff=8000, p=0.5)
-Pc >> d('ff', shape=0.5, speed=1, p=1, cutoff='[2000:5000,100]')
-Pc >> d('nn:4~8', legato=0.2,
-        shape=0.5, speed='1,2', p=0.5, cutoff='[2000:5000,100]')
-Pe >> d('ff', shape=0.5, speed=1, p=2, cutoff='[200:2000,100]')
-
-Pc >> d('[f,i,s,h,e,s]:[1:20]', shape=0.5, p=0.5, legato=0.02, pan='r')
-Pd >> d('euclid([gg:rand*20]!8, 5,8)', shape=0.5, speed=4,
-        p=0.5, cutoff='5000', resonance='0.1,0.2')
-
-Pb >> None # d('j, a, j, a', orbit=2, p='1,0.5')
-Pc >> None # d('f, l, o, w, e, e:rand*4', shape=0.5)
-Pd >> None # d('bb:5~6', p='0.25, 0.125', legato=0.05)
-
-panic()
-#+end_src
-
-*** Zorba in Belleville
-
-This code is taken from an algorave that took place at the *Zorba* (Belleville, Paris) in early november (2022). It is a very straightforward dance oriented performance that plays a lot with simple audio sample manipulations. As stated in the opening banner, this performance was meant to test the stability of *Sardine* after introducing new features and control mechanisms. Everything lives in the baba function, meaning that you only need to keep track one function during the whole performance.
-
-Sounds are extracted from a very heavy sound library, lazy-loaded when needed. This is how I like to make music, extracting a lof of raw audio files from my hard disk :)
-
-#+begin_src python
-# ██████████████████████████████████████████████████████████████████████████████
-# █                                                                            █
-# █  █   ▄▄   █▀█ ▄▀█ █▀▄▀█ █▀▀ █▀█   █▀ ▄▀█ █▄░█ █▀   █▀█ ▄▀█ █▀▄▀█ █▀▀       █
-# █  █   ░░   █▀▄ █▀█ █░▀░█ ██▄ █▀▄   ▄█ █▀█ █░▀█ ▄█   █▀▄ █▀█ █░▀░█ ██▄       █
-# █                                                                            █
-# ██████████████████████████████████████████████████████████████████████████████
-
-@swim
-def baba(d=0.5, i=0):
-    S('juppad:3, juppad:4', cutoff=5000, begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('juppad:3, juppad:4', cutoff=5000, begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25) # up
-    # S('bip:rand*20', shape=0.4, midinote='quant([0,3,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    S('boop:rand*40').out()
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    # S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    # S('hhh:3', amp='[0:0.4,0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    # S('.., p:6, ., .., p:3, ..', legato=0.5, shape=0.7).out(i, 1)
-    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
-    # S('bip:rand*20', midinote='adisco((C|[C,F|Ab])!2)').out(i, 2) # petit surplus harmonique
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f, f, ..', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
-            legato=1.1, speed='1',
-            crush=4).out(i, 8, 0.25) # -> ici il y a de la réduction
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('laz:rand*20',
-            speed="1, 2,4",  hcutoff=6000,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
-            legato=1.1, speed='1, 2',
-            crush=4).out(i, 8, 0.25) # -> ici il y a de la réduction
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('laz:rand*20',
-            speed="1, 2,4",  hcutoff=6000,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
-            pan='r',
-            legato=1.1, speed='1|2|4', leslie=1, lesliespeed=8,
-            crush=12).out(i, 8, 0.25) # -> ici il y a de la réduction
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('., f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    # S('juppad:3, juppad:4', orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
-    S('laz:rand*20',
-            speed="1, 2,4",  hcutoff=3000, legato=1,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    S('juppad:3, juppad:4',
-            speed=0.75, squiz=2,
-            orbit=2, cut=0,
-            legato=1.1).out(i, 8, 0.25)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f', shape=0.7).out(i, 4)
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    S('juppad:3, juppad:4',
-            speed=0.75, squiz=2,
-            orbit=2, cut=0,
-            legato=1.1).out(i, 8, 0.25)
-    S('kit2:3', shape=0.5).out(i, 8)
-    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f', shape=0.7).out(i, 4)
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    S('conga:rand*20', speed="[1,2,2]/2", hcutoff=1000, shape=0.7,
-              room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.5)
-    # S('juppad:3, juppad:4', # commenter ce bloc
-    #         speed=0.75, squiz=2,
-    #         orbit=2, cut=0,
-    #         legato=1.1).out(i, 8, 0.25)
-    S('kit2:3', shape=0.5).out(i, 8)
-    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    # S('f', shape=0.7).out(i, 4)
-    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
-    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
-            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    # S('euclid(conga:rand*20, 12,16)', speed="[1,2,4]/2", hcutoff=1000, shape=0.7,
-    #         room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
-    # S('juppad:3, juppad:4', # commenter ce bloc
-    #         speed=0.75, squiz=2,
-    #         orbit=2, cut=0,
-    #         legato=1.1).out(i, 8, 0.25)
-    S('kit2:3', shape=0.5).out(i, 8)
-    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-# Remonter à la ligne 167 pour plus de fun
-
-#############################################################################
-## ICI RUPTURE VERS L'INCLUSION DES FOUND SOUNDS
-#############################################################################
-
-@swim
-def baba(d=0.5, i=0):
-    # S('f', shape=0.7, cutoff=100).out(i, 8)
-    S('hhh:3', amp='[0:0.2,0.01]', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:(5|10), .', legato=0.5).out(i, 1)
-    S('m|c:[4:9]', legato=0.2).out(i, P('4!12, 3!12', i))
-    S('lost:[1:100]', # -> lost into jupfx
-            cutoff=9000, # ->
-            shape=0.5,
-            pan='sin($/40)', # -> X
-            legato=0.3, # ->
-            begin='r').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-# Inclure
-@swim
-def baba(d=0.5, i=0):
-    S('a', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
-    S('c', shape=0.7).out(i, 3) # -> monter shape pour les harmoniques
-    S('d:7', orbit=3, room=0.2, size=0.8, dry=0.2).out(i, 8)
-    S('hhh:3', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('.., p:5, .', legato=0.5).out(i, 1) # -> refaire entrer ça
-    S('m|c:[4:9]', legato=0.2).out(i, P('4!12, 3!12', i))
-    S('lost:[1:100]', # -> lost into jupfx
-            cutoff=9000, # ->
-            shape=0.5,
-            pan='sin($/40)', # -> X
-            legato=0.9, # ->
-            begin='r').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0): # potentiomètre du réel
-    S('a', shape=0.7).out(i, P('4!12, 5!12', i)) # -> monter shape pour les harmoniques
-    S('c', shape=0.7).out(i, 3) # -> monter shape pour les harmoniques
-    # S('c', shape=0.7).out(i, P('3!12, 2!12, 5!12',i)) # -> monter shape pour les harmoniques
-    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
-    S('d:4, d:5, .', legato=0.5).out(i, 3)
-    S('m|g:[4:9]', legato=0.2).out(i, P('4!12, 1!24', i))
-    S('long|(lost:rand*8)', # -> lost into jupfx
-            midinote='C',
-            cutoff=4000, # ->
-            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
-            legato='0.1|0.2|0.7|0.1',
-            cut=1, orbit=2, room=0.5, size=0.2, dry=0.1,
-            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-# Ici on peut explorer des choses plus ambient et se perdre un peu
-
-@swim
-def baba(d=0.5, i=0): # potentiomètre du réel
-    S('a', cutoff=200, shape=0.7).out(i, P('4!12, 5!12', i))
-    # S('c', cutoff=100, shape=0.7).out(i, 3)
-    # S('c', shape=0.7).out(i, P('3!12, 2!12, 5!12',i))
-    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
-    # S('d:4, d:5, .', legato=0.5).out(i, 3)
-    S('m|g:[4:9]', legato=0.2).out(i, P('4!12, 1!24', i))
-    S('long|(lost:rand*8)', # -> lost into jupfx
-            midinote='C',
-            cutoff=4000, # ->
-            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
-            legato='[0.1|0.2|0.7|0.1]+0.6', # -> facteur de fun
-            cut='1|0, 1|0, 1!4', orbit=2, room=0.5, size=0.2, dry=0.1,
-            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    # S('f', shape=0.5).out(i, 4)
-    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
-    # S('d:4, d:5, .', legato=0.5).out(i, 3)
-    # S('d:{4,9}', legato=0.5).out(i, 4)
-    # S('z', shape=0.8).out(i, 4)
-    S('hhh:12', hcutoff=500, speed='[1:10]', shape=0.8).out(i, 1)
-    # S('kit5:[6!4,7!2,5!5,4]', shape=0.8).out(i, 3)
-    # S('q:rand*8', shape=0.4).out(i, P('1!12, 2!8', i))
-    S('long:1', # -> lost into jupfx
-            midinote='C',
-            cutoff=4000, # ->
-            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
-            legato='0.1|0.2|0.3|0.1',
-            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    # S('f', shape=0.5).out(i, 4)
-    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
-    # S('d:4, d:5, .', legato=0.5).out(i, 3)
-    # S('d:{4,9}', legato=0.5).out(i, 4)
-    # S('z', shape=0.8).out(i, 4)
-    S('hhh:12', hcutoff=500, speed='[1:10]', shape=0.8).out(i, 1)
-    # S('kit5:[6!4,7!2,5!5,4]', shape=0.8).out(i, 3)
-    # S('q:rand*8', shape=0.4).out(i, P('1!12, 2!8', i))
-    S('long:1', # -> lost into jupfx
-            midinote='C',
-            cutoff=4000, # ->
-            pan='[0:0.5, 0.1], [0.5: 1, 0.1]', # -> X
-            legato='0.1|0.2|0.3|0.1',
-            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
-    a(baba, d=1/8, i=i+1)
-
-panic()
-
-S('lost').out()
-
-S('lost:2').out()
-
-# Fêter Halloween
-
-S('lost:7', legato=7, speed=0.5, release=7).out()
-
-S('lost:0', legato=7, speed=0.5, release=7).out()
-
-S('lost:3', legato=7, speed=0.5, release=7).out()
-
-panic()
-
-# ██████████████████████████████████████████████████████████████████████████████
-# █                                                                            █
-# █     █ █   ▄▄   █░█ ▄▀█ █░█ ▄▀█ █░░ █ █▄░█ ▄▀█                              █
-# █     █ █   ░░   █▀█ █▀█ ▀▄▀ █▀█ █▄▄ █ █░▀█ █▀█                              █
-# █                                                                            █
-# ██████████████████████████████████████████████████████████████████████████████
-
-
-@swim
-def baba(d=0.5, i=0):
-    # S('bip:rand*20', shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    # S('bip:rand*20+20', shape=0.4, midinote='quant([0+12|24,3,6,10]+62, C@minor), quant([0,3,10]+62|74, F@minor)').out(i, 3, 0.25)
-    S('boop:rand*40').out()
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('bip:rand*20',
-            orbit=2, room=0.7, size='r', dry='0.1',
-            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    S('bip:rand*20+20',
-            orbit=2, room=0.5, size='r', dry='0.1',
-            shape=0.4, midinote='quant([0+12|24,3,6,10]+62, C@minor), quant([0,3,10]+62|74, F@minor)').out(i, 3, 0.25)
-    S('boop:rand*40').out()
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('bip:rand*20',
-            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    S('bip:rand*20, boop:rand*200',
-            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
-    S('(ff):rand*20', # ulh electrowave ff
-            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('ff', shape=0.5).out(i, 4)
-    S('ll', shape=0.5).out(i, 4)
-    S('gameboysnare', cutoff=800).out(i, 8)
-    S('., hhh:rand*40', hcutoff=9000).out(i, 1)
-    S('., hhh:rand*40', hcutoff=9000, speed='1~50').out(i, 1)
-    S('bip:rand*20',
-            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    S('bip:rand*20, boop:rand*200',
-            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
-    S('(ulh):rand*20', # ulh electrowave ff
-            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
-    a(baba, d=1/8, i=i+1)
-
-# <-> des allers retours
-
-@swim
-def baba(d=0.5, i=0):
-    # S('ff, gg:rand*29', shape=0.8, leslie=1, leslierate=5, lesliespeed=2).out(i, 2)
-    # S('ll', shape=0.8).out(i, 4)
-    S('gameboysnare', cutoff=800).out(i, 8)
-    # S('., hhh:rand*40', hcutoff=9000).out(i, 1)
-    S('., hhh:rand*40', hcutoff=9000, speed='1~50').out(i, 1)
-    # S('bip:rand*20', lesliespeed='2*8', leslierate='rand*5', leslie=1,
-    #         orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-    #         shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
-    S('bip:rand*20, boop:rand*200', lesliespeed='2*8', leslierate='rand*5', leslie=1,
-            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
-    S('(ulh):rand*20', # ulh electrowave ff
-            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
-            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
-    a(baba, d=1/8, i=i+1)
-
-# --|--> transition du coq à l'âne
-
-@swim
-def baba(d=0.5, i=0):
-    S('m, ..., m, ...', shape=0.5).out(i, 2)
-    S('rev([s,a,l,u,t, z,o,r,b,a]:rand*8)',
-            legato=0.1, pan='tan(r/100)', accelerate=0.2,
-            room=0.1, dry=0.1, size=0.1,
-    ).out(i, 2)
-    S('perca:[1:20], ..',
-            speed=2 if rarely() else 'rand*4',
-    ).out(i, 2)
-    a(baba, d=1/16, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('m, ..., m, ...', shape=0.5).out(i, 2)
-    S('long:13', shape=0.5,
-            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
-            cut=1, legato=2).out(i, 8, 0.25)
-    S('perca:[1:20], ..', speed=2).out(i, 2)
-    a(baba, d=1/16, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('f, ..., f, ...').out(i, 2)
-    S('gg, ...', shape=0.5, orbit=4, room=0.2, size=0.2, dry=0.2).out(i, 2)
-    S('perca:[1: 20], ..', speed='1+rand*4', cutoff='200+rand*8000').out(i, 2)
-    S('perca:[20: 1], .', speed='0.1+sin($)', cutoff='200+rand*8000').out(i, 3)
-    S('long:13', shape=0.7,
-            begin='0.1, 0.2, 0.3, 0.5',
-            orbit=3,
-            cut=1).out(i, 8, 0.25) # 0.5 0.6
-    a(baba, d=1/16, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('m, ..., m, ...', shape=0.5).out(i, 2)
-    S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
-    S('long:13', shape=0.5,
-            begin='0.6, 0.5, 0.42, 0.6, 0.7', orbit=3,
-            cut=1, legato=2).out(i, 8, 0.25)
-    S('q:[1:20], ..', speed=2).out(i, 2)
-    a(baba, d=1/16, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('m, ..., m, ...', shape=0.5).out(i, 2)
-    S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
-    S('long:13', shape=0.5,
-            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
-            cut=1, legato=2).out(i, 8, 0.25)
-    S('q:[1:20], ..', speed=2).out(i, 2)
-    a(baba, d=1/16, i=i+1)
-
-# une petite transition jsp
-
-@swim
-def baba(d=0.5, i=0):
-    # S('m, ..., m, ...', shape=0.5).out(i, 2)
-    # S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
-    S('jupfx:rand*20', shape=0.5, hcutoff='200 + rand*8000',
-            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
-            cut=1, legato=2).out(i, 8, 0.25)
-    S('q:[1:20], ..', speed=2).out(i, 2)
-    a(baba, d=1/16, i=i+1)
-
-# Débrouille toi
-
-
-# ██████████████████████████████████████████████████████████████████████████████
-# █                                                                            █
-# █ █ █ █   ▄▄   ▀█▀ ▄▀█ █▀█ ▀█▀ █▀▀   █ █▄░█ ▀█▀ █▀█   ▀█▀ █▀▀ █▀█            █
-# █ █ █ █   ░░   ░█░ █▀█ █▀▄ ░█░ ██▄   █ █░▀█ ░█░ █▄█   ░█░ ██▄ █▀▄            █
-# █                                                                            █
-# █ █▀ ▄▀█ █ █▄░█ ▀█▀ ▄▄ █▀▀ ▀█▀ █ █▀▀ █▄░█ █▄░█ █▀▀                           █
-# █ ▄█ █▀█ █ █░▀█ ░█░ ░░ ██▄ ░█░ █ ██▄ █░▀█ █░▀█ ██▄                           █
-# █                                                                            █
-# ██████████████████████████████████████████████████████████████████████████████
-
-,*,,,,,,,,,,,,.,,,,..*****,,.  .. ,*,.   . ..        ........,,,.,,,,,,,,,,.,,.*
-*(**/**,/*(**,**///**,,*////*,,..,,//.. ..,       . ....,,,,,,,,**********(//(((
-*/***/***,/******/,. . ....,,,,..,,**.   ...     ..,.....,,.,,,,,*********(((//*
-*((*//**,,/,,,,,*,.  .. ....,,,.../#%%%%#(,..    .,,,....,...,,,,.,,,,**,,****(/
-*****/,,*,**,**,,,...,.,.,*/#%%%%%%%%%%%%%%%#(. .,,..,,...,...,..,..,,,,****/***
-*//,**//*****/**,.....%#%&&%%&&&&%&%%%%%%%%%%%%##%#...... ,,..,..*.,,,,/**/*,,**
-*//*,,*,,******,,/,,.#%&&&&&&&&&&&&&%#%&%%&%%%%###%( .. ..,,..,,,..,,..,.****,**
-*//*,,,,****,,,,,,,,#%&&&&&&&%&%&%%%%&&&%&&&%%%%%###(#*  ....,,,,.,........,,**,
-*//*****,***...... #%&%&&&%&%%&%%%%#%%%&&&&&%%%%%%%%%%%#**,*,....,,.,*.......,,,
-*/*******,,,......#%%&%&%&&&%%%&&%%%%%#%%%%%%%%%###%%#%%(,,,,*, ....   ,..,,,,./
-*/*****,,*,.....,(&&&%&&&%(***(&**,****,,*((##%/#/#%%%#%%(////**,,......,,,,,.*,
-*/*,,,,,,.,*, ..#%%&&&&%#/***************,**,... .*#%%%%%#//*.,..........,*/*,.,
-*/****,,,...,.,.#%&&&&%(/********,,,****,***,...   ,/%%#(*.............,.,,,..,*
-*/**,,,,,,,,....,%%%&&&/**/////***,**/***,,*,*,...  ./(#,...,..,.,,..,,,,...,,,*
-*/****,**,**,*,..*%&&&/**#(///(//((/*/*,**/////***,..#%(, .....,.....,,. ....,*,
-*//**********,,,,//%%%**//(%#&%#////(,,#/*(*###*/*.../#(/,.,.,,.. ... .   .,,..,
-*//*///**,,,,***,,//%%***/((((((//((,,,,((/(((//.*...,#/,...,,.,...,.. .,......,
-*///(**//*****/***,(%#****///**/****,,,,.,**,,,,,.,,,(#*..,,...,.. ............,
-*//*/*,,**,,,,**/***#%(**********/****,....,,,,,.....#(*,,......,.  .,,.,**,,,..
-*//*/*,*/**,*,,,,,,.,##//**********,**,,..,,,,....  ,((******//(*.....*,,.,....*
-*//*///**//,,.**,..,,,%#***********((/./(,*,,,,. ..,*((,,,....,,..,.,,,*,.,...,*
-/#/((***/,***,,,.,,,**(((***,*,****((#/*/,,,...   .,(#,,.......  ..,,,***,,,.,.*
-*((/(/***.*,,,..,.,*,//(#(//****//(((((/(///.*...,.//(/***,.,*..  ....,***,...,*
-*((//*,,,,,.......,,..,*(##(//***//((//(*(*,*,...,*/*,... ..    .  ......,..,.,,
-/((((/,,,,...........,,**/(#((/**/***/*,,,***,.,.////*******,,.,,.   .... ...,.,
-*(((/*,,,,,,,./, .......*,,/###(/********,,.,*(*,.,,.....,,,..     ..  ......,..
-*((//**,,.,,****,.,,,...*%(..(###%#((((((//(#(/.   ,.*,,,,..,..   ..... ......,.
-*((///*,.,*,****...,*/.&&&%,.,,*(##%%%%%%%##(/.   .%#((,.,.., ...........,,,,,,.
-/(/(**,,,..,,,,,**/**/&&@&&&/*,/.,*((((((((. ...,(%#%%%%%,,,,.......   ...,.,,,,
-*(//**,***,**,*****(%&&&@&&@&%*,.,,*//(((/,..,/%%%%%%%%%%##*,*,...............,.
-*(//***,,*/,*,,(&&&&@&@@@&&&&(,,,,,,,*(#,,,,,,*#%%%%%%%%%%%%%#**.........,/*****
-*(///****,,(&&&&@@@@@@&&@&&&&##%&&&&&&&&&&&&%##%%&&&%%&%%%%%%%#(%(/*....***,*,,,
-*((((((&@&&&&@@@@&&@&@&&&&&%%&&&&&@&&&&&@@@&&%%%%%%%%%%%%%#%%#%%*,,...,,,*,,***,
-/%&%&@&%&@@@@@&&&&&%%&&@&&&@&&@@&&&#,,,,,##&%(%%&%%%%#%%##%/.  /#/...,,..,,,,...
-/&&&%&&&&&%&&@&&&&&&&&&&&&&&%#%&&&&%(.,,,,,,/&&&&%%%%%##**,. ,,/,.,.,.*,*,(#&(..
-/&&%#%%%###%&@&&&&&%%%%%%%&&&&&%&%&%*,.,,...%%%&%%%(%#*,,.,,./,,.,,,./(#(*#(%(#(
-/&&@&@&%&@@@&@&&&%(#%%%#%&&&&&&&%%&&%#.... %%%%&&%#(*,,...(/,,,*,(%%###(####/*%(
-/&@@@&@&&#%##&%(/*/(#%%%#%&@&&%#%%&&%&%,./&&&%%%#***....**,*/*%%%%&%(#%#####(/(*
-/#%&@%%##&&&%(/((,,(%&%#%%%&&%%#%#%%&%&%&&&&%%(*.....(.*.,/#%%%&%%%%###%#%%###(.
-/######/(%%&%(%%#(((/#%&@&&&&&%&&%%&&%&&&&&%/,,.. ,.,.,(#%&%&%%%&%%%#%%%(((//%%(
-/%%%#(#%%%%%%%%#######(((%&&@&&%%%%%&&%%%(,,,,..,,,(%%&&%#%%%####((%#%(/(#%#(#**
-/%%%%%%%&&&%&&%%%%#(((((((#*%&@&%%&&%%%/,*,,.*,//&%%&%%%%&&%####(/*#%(/(#%%#**,*
-/&&%&%%%%%%%##%%###(#((#*#%((//(////***/*.**##%%%#%##%&%#(##%%%%#*/#//*/#(/#(***
-# C'EST PIERRE BONNARD, IL FAUT ALLER LE VOIR.
-
-
-@swim
-def baba(d=0.5, i=0):
-    M(velocity='90~110', note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    M(velocity='90~110|70', dur='15~20', note="F', ..., G'', ..., [D, E, F, A]+12").out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    M(velocity='90~110|90', dur='15~20', note="F., ..., F.., ...").out(i, 2)
-    M(velocity='90~110|90', dur='15~20', note="F., A, .., F.., ...").out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-# <-> alterner
-
-@swim
-def baba(d=0.5, i=0):
-    M(dur='2~5', note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    M(dur='2~5', note='disco(inrot(C@maj7, F@maj7))').out(i, 5)
-    M(dur='2~12', note='adisco(inrot(inrot(C@maj7, F@maj7), G@fifths))').out(i, 4)
-    a(baba, d=1/8, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    M(note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    if rarely():
-        M(note='disco(inrot(C@maj7, F@maj7))').out(i, 5)
-    if sometimes():
-        M(note='adisco(inrot(inrot(C@maj7, F@maj7), G@fifths))').out(i, 4)
-    a(baba, d=1/8, i=i+1)
-
-
-c._midi_nudge = 0.30
-
-@swim
-def baba(d=0.5, i=0):
-    S('ff').out(i, 4)
-    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
-    M(velocity='90~110|90', dur='15~20', note="F., ..., F.., ...").out(i, 2)
-    M(velocity='90~110|90', dur='15~20', note="F., A, .., F.., ...").out(i, 2)
-    a(baba, d=1/8, i=i+1)
-
-
-
-# ██████████████████████████████████████████████████████████████████████████████
-# █                                                                            █
-# █  █ █░█   ▄▄   █░░ █▀▀   █▀█ █ ▄▀█ █▄░█ █▀█   ▄▀█ █▄░█ ▄▀█ █░░ █▀█          █
-# █  █ ▀▄▀   ░░   █▄▄ ██▄   █▀▀ █ █▀█ █░▀█ █▄█   █▀█ █░▀█ █▀█ █▄▄ █▄█          █
-# █                                                                            █
-# ██████████████████████████████████████████████████████████████████████████████
-
-panic()
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[1,2,1,2,4,5,4,6]', legato=1).out(i, 8)
-    S('long:42', begin='r', cut=1).out(i, 8)
-    a(baba, d=1/32, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    if sometimes():
-        S('z:6' if random() > 0.5 else 'z:7', shape=0.9, hcutoff=7000).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[1,2~10,1,2,4~10,5,4,6]', legato=1).out(i, 8)
-    S('long:42', begin='r', cut=1).out(i, 8)
-    a(baba, d=1/32, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    # Ce truc est quand même giga fade :'(((((((((((((
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    if sometimes():
-        S('z:6' if random() > 0.5 else 'z:7', shape=0.9, hcutoff=7000).out(i, 4)
-    # Du du du du dudududududu dudu du du dud udu dudu
-    a(baba, d=1/32, i=i+1)
-
-# Réponse :
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[0, 1,2,1,2,4,5,4,6,7,8, 1, 0]', legato=1).out(i, 8)
-    S('long:42', begin='r', cut=1).out(i, 8)
-    S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    if sometimes():
-        S('z:6' if random() > 0.1 else 'z:7',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    if sometimes():
-        S('dd:6|7|8' if random() > 0.5 else 'j:0~7',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('long:20~33', begin='r', cut=1).out(i, 8)
-    S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    if sometimes():
-        S('z:6' if random() > 0.1 else 'z:8~400',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    if sometimes():
-        S('dd:6|7|8' if random() > 0.5 else 'z:7~200',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    # S('long:42', begin='{0,2,0.4}', cut=1).out(i, 16)
-    S('long:42', begin='[0:1, 0.08]', cut=1).out(i, 16) # -> éplucher comme un oignon (solo de fichier .wav)
-    # S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
-    # S('jupbass:28|44, jupbass:28', octave=4,
-    #     legato=1, cut=1, orbit=3).out(i, 24, 1)
-    if sometimes():
-        S('z:6' if random() > 0.1 else 'z:8~400',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    if sometimes():
-        S('dd:6|7|8' if random() > 0.5 else 'z:7~200',
-                pan='r',
-                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('long:10~33', begin='r', cut=1, speed="1~8").out(i, 8)
-    S('long:20~46', begin='r', cut=1, speed="1~8").out(i, 8)
-    a(baba, d=1/32, i=i+1)
-
-# Réponse :
-
-@swim
-def baba(d=0.5, i=0):
-    S('kit2:[0, 1,2, 0, 1,2,4,5,4,0,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('long:103', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 16)
-    S('long:20', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 8)
-    a(baba, d=1/32, i=i+1)
-
-
-@swim
-def baba(d=0.5, i=0):
-    S('cc').out(i, 12)
-    S('kit2:[0, 1,2, 0, 1,2,4,5,4,0,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
-    S('long:103', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 16)
-    S('long:20', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 8)
-    a(baba, d=1/32, i=i+1)
-
-@swim
-def baba(d=0.5, i=0):
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
-    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
-    S('long:40', begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    S('long:40', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    if sometimes():
-        S('z:6', shape=0.9, hcutoff=5000).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-panic()
-
-@swim
-def baba(d=0.5, i=0):
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
-    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
-    S('long:26', amp=0.5, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    S('long:26', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    if sometimes():
-        S('z:6', shape=0.9).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-# Variation 3
-@swim
-def baba(d=0.5, i=0):
-    S('jupbass:28|44, jupbass:28', octave=4,
-        legato=1, cut=1, orbit=3).out(i, 24, 1)
-    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
-    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
-    S('long:40', begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    S('long:40', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
-    if sometimes():
-        S('z:6', shape=0.9).out(i, 4)
-    a(baba, d=1/32, i=i+1)
-
-panic()
-#+end_src
-
-*** Dumpster Dive
-
-*dumpsterDive* (*HighHarmonics*) is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The *Sardine* function uses the stacked samples model, where each sample line can be played alone or together with others.
-
-- *Audio equipment:* Tascam DR-100, Rode shotgun mic: NTG4.
-- *Software:* Sardine
-- Dumpster samples are available via the [[https://github.com/Bubobubobubobubo/sardine-sounds][sardine-sounds]] repository.
-- *Sardine alpha version*
-
-#+begin_src python
-# Load audio effect and preset dictionaries first.
-# Play one or both lines from each section (basic, reverse rhythms, melodic patterns, bass, scrape). Explore combinations.
-
-c.bpm=60
-
-@swim
-def dumpsterDive(d=1, i=0):
-## basic samples - cycle thru the sounds used by all layers
-    S('dumpster:[0,1,4,2,5,3,.!2]', speed=1, amp=.5, **rev1, orbit=0).out(i, div=8)
-    #S('dumpster:[2,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **rev1, orbit=1).out(i, div=2) #**del1
-## reverse rhythms
-    #S('dumpster:1', begin=.065, end=.4, speed='-1', pan='[.14:.84,0.1],[.83:.15,0.1]', amp=.8, **rev0, orbit=2).out(i, div4)
-    #S('dumpster:0!2,.', begin=0, end=.85, speed='1,-1', pan='[.9:.1,0.2],[.1:.9,0.2]', amp=.6, **rev1, orbit=3).out(i, rate=1, div=2) #**del1,
-## melodic patterns
-    #S('dumpster:[1!2,4!2,5!2,4]', begin=.052, end=.088, freq='[414,240,620,.,500,380,820,750]', timescale=1.4, pan='[.1,.9]', amp=.95, **rev2, orbit=4).out(i, rate=1, div=1)
-    #S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.6, pan=.3, **rev1, orbit=5).out(i, rate=1, div=2)
-    #S('dumpster:[6!2,8!3,7!2]', octave='7', cut=1, pan=.3, amp=.9, **rev2, orbit=6).out(i, div=4)
-## bass - choose one or the other
-    #S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7).out(i, rate=1, div=4)
-    #S('dumpster:2', octave='[4.8:5.1,.04],[4.6:4.8,.04]', amp=.95, **rev1, orbit=8).out(i, div=4)
-## scrape
-    #S('dumpster:[5,.,5]', octave='6', cut=1, amp=1.2, **del1, **rev1, orbit=8).out(i, rate=.5, div=4)
-    #S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **rev2, orbit=9).out(i, rate=1, div=1) #**del2
-## presets
-    #returnGroove['bass1'].out(i, rate=1, div=4)
-    #returnGroove['melody2'].out(i, rate=1, div=2)
-    #closing['basic2'].out(i, div=2)
-    #closing['basic2a'].out(i, rate=2, div=2) ## div=1
-    #closing['scrape2'].out(i, rate=1, div=2)
-    #c.bpm = P('[60:90,.03]', i) #accelerate tempo at the end
-
-    a(dumpsterDive, d=1/8, i=i+1)
-
-######################################################
-#hush(dumpsterDive)
-
-######################## LOAD THESE FIRST - python dictionarys referenced in dumpsterDive function #################
-c.bpm=60
-## audio effects
-rev0 = {'room':.8, 'size':0.5, 'dry':0.5}
-rev1 = {'room':.9, 'size':0.6, 'dry':0.4}
-rev2 = {'room':1.5, 'size':0.7, 'dry':0.4}
-rev3 = {'room':2, 'size':0.8, 'dry':0.3}
-
-del0 = {'delay':0.5, 'delaytime':0.3, 'delayfeedback':0.5, 'triode':0}
-del1 = {'delay':0.5, 'delaytime':0.4, 'delayfeedback':0.6}
-del2 = {'delay':0.5, 'delaytime':0.25, 'delayfeedback':0.8}
-
-#Presets
-returnGroove = {'bass1':  S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7),
-    'melody2': S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.4, pan=.3, **rev1, orbit=5) }
-closing = {'basic2': S('dumpster:[12,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **del1, **rev1, orbit=1),
-    'basic2a': S('dumpster:[0,5,3,4,3,0]', speed='[2.01:1.96,.01],[1.96:2.01,.01]', pan='[.99:.01,0.3],[.01:.99,0.3]', amp=.7, **rev1, **del2, orbit=1),
-    'scrape2': S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **del2, **rev2, orbit=9) }
-#+end_src
-
-*** Artificial Life
-
-Experimental use of the *Taichi* numerical simulation and graphics language for live visuals and artificial life simulation. Made by [[https://jackarmitage.com/][Jack Armitage]]. For more info, see the [[https://github.com/Intelligent-Instruments-Lab/iil-python-tools][iil-python-tools]]. Using an *alpha version of Sardine*. [[https://youtu.be/XSdHbPZSofo][Video n°1]], [[https://youtu.be/l6kx7lvGDy0][Video n°2]].
-
-#+begin_src python
-from sardine import *
-import taichi as ti
-import numpy as np
-import math
-import tulvera as tul
-
-ti.init(arch=ti.vulkan)
-c.bpm = 250
-c.link()
-resx = 1920
-resy = 1080
-n = 8192
-boids = tul.vera.Boids(resx, resy, n)
-window = ti.ui.Window("Boids", (resx, resy))
-canvas = window.get_canvas()
-
-@swim
-def gui_loop(d=0.5, i=0):
-    boids.update()
-    canvas.set_image(boids.world.to_numpy().astype(np.uint8))
-    window.show()
-    a(gui_loop, d=1/16, i=i+1)
-
-@swim
-def param_loop(d=16, i=0):
-    # boids.vis_radius[None] = P('40.0,80.0,150.0',i)
-    # boids.max_speed[None] = P('1.0,2.0,3.0',i)
-    boids.max_speed[None] = P('2*sin($/2)')
-    a(param_loop, d=8, i=i+1)
-
-hush()
-#+end_src
 
 * Installation
 ** Preliminary words
@@ -3517,6 +2329,1194 @@ def test_fx(p=0.25, i=0):
 ** Hidden Gems
 
 There are hidden gems in the *SuperDirt* engine. Note that you can also customize it with your own effects. This documentation, thus, is only covering the tip of the iceberg.
+
+* Showcase
+** Solstice
+
+This piece was submitted by *BuboBubo*. This is a 20 minutes performance that I did for the *TidalCycles* annual solstice stream. Three of the four tracks were rapidly composed before the stream. I've tried to highlight some of the new features we have worked on for the ~v.0.2.1~. I am sometimes playing additional keyboard on top of the code. [[https://www.youtube.com/watch?v=bM5FXw-5N8s][Performance Video]].
+
+#+begin_src python
+padcc = { 'timbre': {'control' : 18, 'chan': 2},
+        'time': {'control' : 19, 'chan': 2},
+        'metal': {'control' : 16, 'chan': 2},
+        'fx': {'control' : 17, 'chan': 2}}
+basscc = { 'timbre': {'control' : 18, 'chan': 0},
+        'time': {'control' : 19, 'chan': 0},
+        'cutoff': {'control' : 16, 'chan': 0},
+        'fx': {'control' : 17, 'chan': 0}}
+jupcc = { 'decay': {'control' : 81, 'chan': 1},
+        'time': {'control' : 19, 'chan': 1},
+        'cutoff': {'control' : 74, 'chan': 1},
+        'resonance': {'control' : 71, 'chan': 1}}
+dirt._ahead_amount = 0.4
+
+#######################################################################
+# FRENCH TOUCH SAMBA
+#######################################################################
+
+PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
+
+Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
+
+Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
+
+Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
+
+Pb >> None
+Pc >> None
+Pc >> d('bip:rand*20', speed=2,
+        cut=0, p=0.25, orbit=1, shape=0.5, hcutoff='[500:15000,1000]')
+
+# ---
+
+PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
+Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
+Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
+Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
+Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,A5',
+        cut=1, p=0.25, orbit=1, shape=0.5)
+Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C3,C4,G3,G4,A4,A5', shape=0.5,
+        cut=1, p=0.25, orbit=1)
+
+# ---
+
+Pa >> None
+Pb >> None
+Pc >> None
+Pd >> None
+
+PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
+Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
+Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
+Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
+Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,G5',
+        cut=1, p=0.25, orbit=1, shape=0.5)
+Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C5@fifths', shape=0.5,
+        cut=1, p=0.25, orbit=1)
+
+Pa >> None
+Pb >> None
+Pc >> None
+Pd >> None
+PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]", speed='2!4,4!4')
+
+
+PE >> d('long:3', cut=1, begin="[0.0:0.6,0.1]")
+Pc >> d('ff:4!3, gg:12', cut=1, p=0.25, orbit=1, shape=0.5)
+Pb >> d('f!7', cut=0, p=1, orbit=2, shape=0.5)
+Pd >> d('g:10', p='.5, .5, .25', orbit=2, shape=0.5, speed='2,2,1!2,4')
+Pf >> d('bip:rand*50', speed=2, midinote='C5,C5,G5,G5',
+        cut=1, p=0.25, orbit=1, shape=0.5)
+Pg >> d('bip:rand*50', squiz=4, speed=1, midinote='C5@fifths', shape=0.5,
+        cut=1, p=0.25, orbit=1)
+
+###################################################################
+# CAROTTE INTERLUDE
+###################################################################
+
+panic()
+
+@swim
+def baba(p=0.5, i=0):
+    D('juppad:54, juppad:55', cutoff=2000, begin=0.1,
+      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
+      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
+    D('boop:rand*20', shape=0.4,
+      midinote='G4|G5,Bb5,F6, G4|G5,Bb5,G6', i=i, r=0.25, d=2)
+    D('boop:rand*40')
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    # D('f', shape=0.4, i=i, d=4)
+    # D('f:3', amp='[0:0.4,0.05]', legato='0.01~0.2', i=i)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i, d=1)
+    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
+      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
+    D('.., p:6, ., .., p:3, ..', legato=0.5, shape=0.7, i=i)
+    D('bip:rand*20', midinote='adisco((G|[G,G|Ab|G5])!2)', i=i, d=2)
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    D('f, f, ..', shape=0.4, i=i, d=4)
+    D('f:4', amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
+    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
+      squiz=2, orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    D('f', shape=0.4, i=i, d=4)
+    D('f:8~12', speed='4~8', amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i, d=1)
+    D('laz:rand*20',
+            speed="1, 2,4",  hcutoff='3000~6000',
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4, i=i, d=0.25)
+    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
+      squiz='0!4,2',
+      orbit=2, cut=0, legato=1.1, i=i, d=8, r=1)
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    # D('f', shape=0.4, i=i, d=4)
+    # D('f:3', speed=4, amp='[0:0.4, 0.05]', legato='0.1~0.5', i=i)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
+    D('laz:rand*20',
+            speed="1, 2,4",  hcutoff=6000,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4, i=i, d=1, r=0.25)
+    D('juppad:54, juppad:55', cutoff=5000, begin=0.1,
+      pan='r', speed='1|2|4', leslie=1, lesliespeed=8,
+      orbit=2, cut=0, legato=1.1, i=i, d=8, r=0.25)
+    again(baba, p=1/4, i=i+1)
+
+@swim
+def baba(p=0.5, i=0):
+    D('f', shape=0.4, i=i, d=4)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
+    D('conga:rand*20', speed="[1,2,4]/4", hcutoff='500~1000', shape=0.4,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=1, r=0.25)
+    D('kit2:3', shape=0.5, i=i, d=8)
+    D('., kit2:10, ., kit2:9!2', shape=0.5, i=i, d=2)
+    again(baba, p=1/4, i=i+1)
+
+
+@swim
+def baba(p=0.5, i=0):
+    D('f', shape=0.4, i=i, d=4)
+    D('.., p:5, .', legato=0.5, shape=0.7, i=i)
+    D('conga:rand*20', speed="[1,2,4]/4", hcutoff='500~1000', shape=0.4,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=1, r=0.25)
+    D('conga:rand*20', speed="[1,2,4]/2", hcutoff='2000', shape=0.4,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.5, i=i, d=2, r=0.5)
+    D('kit2:3', shape=0.5, i=i, d=8)
+    D('., kit2:10, ., kit2:9!2', shape=0.5, i=i, d=2)
+    again(baba, p=1/4, i=i+1)
+
+# Ici on joue uniquement avec les percus et on lave les oreilles
+
+@swim
+def baba(p=0.5, i=0):
+    D('f:3', amp='[0:0.2,0.01]', legato='0.1~0.5', i=i)
+    D('.., p:(5|10), .', legato=0.5, i=i, d=1)
+    D('m|c:[4:9]', legato=0.2, i=i, d='4!12, 3!12')
+    D('jupbass:[1:100]', # -> lost into jupfx
+            cutoff=3000, # ->
+            shape=0.5,
+            pan='sin($/40)', # -> X
+            legato=0.2, # ->
+            begin='r', i=i)
+    again(baba, p=1/4, i=i+1)
+
+
+@swim
+def baba(p=0.5, i=0):
+    D('a', shape=0.7, i=i, d=4)
+    D('c', shape=0.7, i=i, d=3)
+    D('d:7', orbit=3, room=0.2, size=0.8, dry=0.2, i=i, d=8)
+    D('hhh:3', amp='[0:0.2, 0.01]', legato='0.1~0.5', i=i)
+    D('f:3', amp='[0:0.2,0.01]', legato='0.1~0.5', i=i)
+    D('.., p:(5|10), .', legato=0.5, i=i, d=1)
+    D('m|c:[4:9]', legato=0.2, i=i, d='4!12, 3!12')
+    D('jupbass:[1:100]', # -> lost into jupfx
+            cutoff=3000, # ->
+            shape=0.5,
+            pan='sin($/40)', # -> X
+            legato=0.2, # ->
+            begin='r', i=i)
+    again(baba, p=1/4, i=i+1)
+
+panic()
+D('girls:2')
+
+
+#####################################################################
+# COMPUTER LAMENTO
+#####################################################################
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
+    CC(**jupcc['cutoff'], value=100)
+    CC(**jupcc['decay'], value=80)
+    N("[G6]-[0:12]", chan=1, vel=120, i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("[G6|D5]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    CC(**padcc['timbre'], value='50~120')
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
+    N("[G7]-[0:12]", chan=2, vel=120, i=i, r=0.25/1)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    CC(**padcc['timbre'], value='(90~100)-10') # go down
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4) # middle voice
+    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
+    N("pal(C|C5|C6@minor)", d=2,
+      chan=2, vel='50~100', i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    CC(**padcc['timbre'], value='(70~110)') # go down
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
+    N("pal(C|C5|C6@minor)", d=2,
+      chan=2, vel='50~100', i=i, r=0.25/2)
+    CC(**basscc['timbre'], value='rand*127')
+    CC(**basscc['fx'], value='80')
+    CC(**basscc['cutoff'], value='[1:127,20]')
+    N("disco(pal(C3|C5|C4@minor))", d=1,
+      chan=0, vel='(50~100)-30', i=i, r=0.25)
+    again(structure, p=0.5, i=i+1)
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
+    CC(**basscc['cutoff'], value=127, i=i)
+    N("pal(C|C5|C6@minor)", d=2,
+      chan=2, vel='50~100', i=i, r=0.25/2)
+    N("disco(pal(C3|C5|C4@minor))", d=1,
+      chan=0, vel='50~100', i=i, r=0.25)
+    D('ff', d='3, 3, 2', i=i, cutoff=2500)
+    D('s, u, n, d, o, w, n', d='3, 3, 2', i=i, p=0.5)
+    D('kk:2~8, bb:1~9', legato=0.2, d='2, 3, 1!4', i=i,
+      speed='0.25, 0.5!5, 1!8')
+    again(structure, p=0.5, i=i+1)
+
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("Eb4, F4, G4", chan=2, vel='50~100', i=i, r=0.25/2)
+    CC(**basscc[pick('timbre', 'cutoff')], value='20~120', i=i)
+    CC(**basscc[pick('time')], value='20', i=i)
+    N("pal(C|C5|C6@minor)", d=2,
+      chan=2, vel='50~100', i=i, r=0.25/2)
+    N("disco(pal(C4|C6|C5@minor))", d=1,
+      chan=0, vel='50~100', i=i, r=0.25)
+    D('ff', d='3, 3, 2', i=i, cutoff=2500)
+    D('s, u, n, d, o, w, n', d='3, 3, 2', i=i, p=0.5)
+    D('kk:2~8, bb:1~9', legato=0.2, d='2, 3, 1!4', i=i,
+      speed='0.25, 0.5!5, 1!8')
+    again(structure, p=0.5, i=i+1)
+
+Pb >> d('g,o,o,d,b,y,e,t,r,a,c,k', d='1', p=0.5, orbit=2, cut=0)
+
+@swim
+def structure(p=0.5, i=0):
+    N("C2,C3, F2, F3", chan=2, vel=120, i=i)
+    N("G5,G4, Ab5, Ab4", chan=2, vel=120, i=i, r=0.25/4)
+    N("Eb4, F4, G4, Eb4, Eb5, Eb4, Eb5", chan=2, vel='50~100', i=i, r=0.25/2)
+    N("pal(F|F5|G6@minor)", d=2,
+      chan=2, vel='50~100', i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+
+Pc >> d('s, u, n, d, o, w, n', d='3, 3, 2', p='0.25!16, 0.5!4', orbit=3, cut=1, speed='2,4')
+
+@swim
+def structure(p=0.5, i=0):
+    N("pal(F|F4|G3@minor)", d=2,
+      chan=2, vel='100~120', i=i, r=0.25/2)
+    N("pal(F|F5|G6@minor)", d=2,
+      chan=2, vel='100~120', i=i, r=0.25/2)
+    again(structure, p=0.5, i=i+1)
+
+############################################################
+# IDEE POUR UN TROISIEME MORCEAU
+############################################################
+
+silence(structure)
+Pc >> None
+@swim(snap=0)
+def baba(p=0.5, i=0):
+    D('ff', i=i, d=4, shape=0.5)
+    D('s:[1:20]', i=i, d=3, speed='1|1|2|4', legato=0.4, pan='r')
+    D('l:[1:20]', i=i, d=2, speed='1|1|2|4', legato=0.2, pan='r')
+    D('jupfx:[0:20]', midinote='rev(C3, Eb3, G, Bb4|Bb5)',
+      room=0.5, size=0.21, dry=0.12, orbit=3, amp=0.25,
+      i=i, d=2, speed='1|1|2|4', legato=0.08, pan='r')
+    again(baba, p=0.25, i=i+1)
+
+
+Pb >> None
+@swim(snap=0)
+def baba(p=0.5, i=0):
+    D('long', orbit=3, cut=1, begin='r', i=i)
+    D('ff', i=i, d=4)
+    D('kit2:[1,20]', legato=0.1, i=i, d='3!32, 4!16', speed='1,2')
+    again(baba, p=0.25, i=i+1)
+
+
+@swim(snap=0)
+def baba(p=0.5, i=0):
+    D('ulh:60', orbit=3, cut=1, begin='r', i=i)
+    D('ff', i=i, d=4)
+    D('ff:9', i=i, d=8, orbit=2)
+    if sometimes():
+        D('ff:rand*40', i=i, d=2, orbit=2, legato=0.1)
+    else:
+        D('bb|gg:rand*40', speed='<1,2>,4', i=i, d=1, orbit=2, legato='0.01~0.2')
+    D('kit2:[1,20]', legato=0.1, i=i, d='3!32, 4!16', speed='1,2')
+    again(baba, p=0.25, i=i+1)
+# Change p to 2, I don't know why but it is working
+
+panic()
+
+
+##################################################################
+# VOLAILLE DE BRESSE
+##################################################################
+
+Pa >> d('juppad:12|51', begin='r', amp=0.20, speed='1', legato=4,
+        room=0.5, orbit=3, dry=0.2, size=0.8,
+        midinote='Do,Fa,Ab3,Eb4', cutoff=4000)
+
+Pb >> d('bip:rand*50', begin='0,0.2,0.5', amp=0.45, speed='2',
+        room=0.5, orbit=3, dry=0.2, size=0.8,
+        legato=0.18, midinote='adisco(Do,Fa,Ab3,Eb4)', cutoff=8000, p=0.5)
+
+Pd >> d('ff:4', shape=0.5, speed=1, p=0.5, cutoff='[200:2000,100]', amp=0.5)
+
+
+Pa >> d('juppad:12|51', begin='r', amp=0.20, speed='1', legato=4,
+        room=0.5, orbit=3, dry=0.2, size=0.8,
+        midinote='Do,Fa,Ab3,Eb4', cutoff=4000)
+Pb >> d('bip:rand*50', begin='0,0.2,0.5', amp=0.45, speed='2',
+        room=0.5, orbit=3, dry=0.2, size=0.8,
+        legato=0.18, midinote='adisco(Do,Fa,Ab3,Eb4)', cutoff=8000, p=0.5)
+Pc >> d('ff', shape=0.5, speed=1, p=1, cutoff='[2000:5000,100]')
+Pc >> d('nn:4~8', legato=0.2,
+        shape=0.5, speed='1,2', p=0.5, cutoff='[2000:5000,100]')
+Pe >> d('ff', shape=0.5, speed=1, p=2, cutoff='[200:2000,100]')
+
+Pc >> d('[f,i,s,h,e,s]:[1:20]', shape=0.5, p=0.5, legato=0.02, pan='r')
+Pd >> d('euclid([gg:rand*20]!8, 5,8)', shape=0.5, speed=4,
+        p=0.5, cutoff='5000', resonance='0.1,0.2')
+
+Pb >> None # d('j, a, j, a', orbit=2, p='1,0.5')
+Pc >> None # d('f, l, o, w, e, e:rand*4', shape=0.5)
+Pd >> None # d('bb:5~6', p='0.25, 0.125', legato=0.05)
+
+panic()
+#+end_src
+
+** Zorba in Belleville
+
+This code is taken from an algorave that took place at the *Zorba* (Belleville, Paris) in early november (2022). It is a very straightforward dance oriented performance that plays a lot with simple audio sample manipulations. As stated in the opening banner, this performance was meant to test the stability of *Sardine* after introducing new features and control mechanisms. Everything lives in the baba function, meaning that you only need to keep track one function during the whole performance. [[https://www.youtube.com/watch?v=MOctz3-fHUo][Performance video]]
+
+Sounds are extracted from a very heavy sound library, lazy-loaded when needed. This is how I like to make music, extracting a lof of raw audio files from my hard disk :)
+
+#+begin_src python
+# ██████████████████████████████████████████████████████████████████████████████
+# █                                                                            █
+# █  █   ▄▄   █▀█ ▄▀█ █▀▄▀█ █▀▀ █▀█   █▀ ▄▀█ █▄░█ █▀   █▀█ ▄▀█ █▀▄▀█ █▀▀       █
+# █  █   ░░   █▀▄ █▀█ █░▀░█ ██▄ █▀▄   ▄█ █▀█ █░▀█ ▄█   █▀▄ █▀█ █░▀░█ ██▄       █
+# █                                                                            █
+# ██████████████████████████████████████████████████████████████████████████████
+
+@swim
+def baba(d=0.5, i=0):
+    S('juppad:3, juppad:4', cutoff=5000, begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('juppad:3, juppad:4', cutoff=5000, begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25) # up
+    # S('bip:rand*20', shape=0.4, midinote='quant([0,3,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    S('boop:rand*40').out()
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    # S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    # S('hhh:3', amp='[0:0.4,0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    # S('.., p:6, ., .., p:3, ..', legato=0.5, shape=0.7).out(i, 1)
+    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
+    # S('bip:rand*20', midinote='adisco((C|[C,F|Ab])!2)').out(i, 2) # petit surplus harmonique
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f, f, ..', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
+            legato=1.1, speed='1',
+            crush=4).out(i, 8, 0.25) # -> ici il y a de la réduction
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('laz:rand*20',
+            speed="1, 2,4",  hcutoff=6000,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
+            legato=1.1, speed='1, 2',
+            crush=4).out(i, 8, 0.25) # -> ici il y a de la réduction
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    S('hhh:3', amp='[0:0.4, 0.05]', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('laz:rand*20',
+            speed="1, 2,4",  hcutoff=6000,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    S('juppad:3, juppad:4', begin=0.1, orbit=2, cut=0,
+            pan='r',
+            legato=1.1, speed='1|2|4', leslie=1, lesliespeed=8,
+            crush=12).out(i, 8, 0.25) # -> ici il y a de la réduction
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('., f', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    # S('juppad:3, juppad:4', orbit=2, cut=0, legato=1.1).out(i, 8, 0.25)
+    S('laz:rand*20',
+            speed="1, 2,4",  hcutoff=3000, legato=1,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    S('juppad:3, juppad:4',
+            speed=0.75, squiz=2,
+            orbit=2, cut=0,
+            legato=1.1).out(i, 8, 0.25)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f', shape=0.7).out(i, 4)
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    S('juppad:3, juppad:4',
+            speed=0.75, squiz=2,
+            orbit=2, cut=0,
+            legato=1.1).out(i, 8, 0.25)
+    S('kit2:3', shape=0.5).out(i, 8)
+    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f', shape=0.7).out(i, 4)
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    S('conga:rand*20', speed="[1,2,2]/2", hcutoff=1000, shape=0.7,
+              room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.5)
+    # S('juppad:3, juppad:4', # commenter ce bloc
+    #         speed=0.75, squiz=2,
+    #         orbit=2, cut=0,
+    #         legato=1.1).out(i, 8, 0.25)
+    S('kit2:3', shape=0.5).out(i, 8)
+    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    # S('f', shape=0.7).out(i, 4)
+    S('.., p:5, .', legato=0.5, shape=0.7).out(i, 1)
+    S('conga:rand*20', speed="[1,2,4]/4", hcutoff=2000, shape=0.7,
+            room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    # S('euclid(conga:rand*20, 12,16)', speed="[1,2,4]/2", hcutoff=1000, shape=0.7,
+    #         room=0.5, size=0.2, dry=0.1, orbit=3, amp=0.4).out(i, 1, 0.25)
+    # S('juppad:3, juppad:4', # commenter ce bloc
+    #         speed=0.75, squiz=2,
+    #         orbit=2, cut=0,
+    #         legato=1.1).out(i, 8, 0.25)
+    S('kit2:3', shape=0.5).out(i, 8)
+    S('., kit2:10, ., kit2:9!2', shape=0.5).out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+# Remonter à la ligne 167 pour plus de fun
+
+#############################################################################
+## ICI RUPTURE VERS L'INCLUSION DES FOUND SOUNDS
+#############################################################################
+
+@swim
+def baba(d=0.5, i=0):
+    # S('f', shape=0.7, cutoff=100).out(i, 8)
+    S('hhh:3', amp='[0:0.2,0.01]', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:(5|10), .', legato=0.5).out(i, 1)
+    S('m|c:[4:9]', legato=0.2).out(i, P('4!12, 3!12', i))
+    S('lost:[1:100]', # -> lost into jupfx
+            cutoff=9000, # ->
+            shape=0.5,
+            pan='sin($/40)', # -> X
+            legato=0.3, # ->
+            begin='r').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+# Inclure
+@swim
+def baba(d=0.5, i=0):
+    S('a', shape=0.7).out(i, 4) # -> monter shape pour les harmoniques
+    S('c', shape=0.7).out(i, 3) # -> monter shape pour les harmoniques
+    S('d:7', orbit=3, room=0.2, size=0.8, dry=0.2).out(i, 8)
+    S('hhh:3', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('.., p:5, .', legato=0.5).out(i, 1) # -> refaire entrer ça
+    S('m|c:[4:9]', legato=0.2).out(i, P('4!12, 3!12', i))
+    S('lost:[1:100]', # -> lost into jupfx
+            cutoff=9000, # ->
+            shape=0.5,
+            pan='sin($/40)', # -> X
+            legato=0.9, # ->
+            begin='r').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0): # potentiomètre du réel
+    S('a', shape=0.7).out(i, P('4!12, 5!12', i)) # -> monter shape pour les harmoniques
+    S('c', shape=0.7).out(i, 3) # -> monter shape pour les harmoniques
+    # S('c', shape=0.7).out(i, P('3!12, 2!12, 5!12',i)) # -> monter shape pour les harmoniques
+    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
+    S('d:4, d:5, .', legato=0.5).out(i, 3)
+    S('m|g:[4:9]', legato=0.2).out(i, P('4!12, 1!24', i))
+    S('long|(lost:rand*8)', # -> lost into jupfx
+            midinote='C',
+            cutoff=4000, # ->
+            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
+            legato='0.1|0.2|0.7|0.1',
+            cut=1, orbit=2, room=0.5, size=0.2, dry=0.1,
+            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+# Ici on peut explorer des choses plus ambient et se perdre un peu
+
+@swim
+def baba(d=0.5, i=0): # potentiomètre du réel
+    S('a', cutoff=200, shape=0.7).out(i, P('4!12, 5!12', i))
+    # S('c', cutoff=100, shape=0.7).out(i, 3)
+    # S('c', shape=0.7).out(i, P('3!12, 2!12, 5!12',i))
+    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
+    # S('d:4, d:5, .', legato=0.5).out(i, 3)
+    S('m|g:[4:9]', legato=0.2).out(i, P('4!12, 1!24', i))
+    S('long|(lost:rand*8)', # -> lost into jupfx
+            midinote='C',
+            cutoff=4000, # ->
+            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
+            legato='[0.1|0.2|0.7|0.1]+0.6', # -> facteur de fun
+            cut='1|0, 1|0, 1!4', orbit=2, room=0.5, size=0.2, dry=0.1,
+            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    # S('f', shape=0.5).out(i, 4)
+    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
+    # S('d:4, d:5, .', legato=0.5).out(i, 3)
+    # S('d:{4,9}', legato=0.5).out(i, 4)
+    # S('z', shape=0.8).out(i, 4)
+    S('hhh:12', hcutoff=500, speed='[1:10]', shape=0.8).out(i, 1)
+    # S('kit5:[6!4,7!2,5!5,4]', shape=0.8).out(i, 3)
+    # S('q:rand*8', shape=0.4).out(i, P('1!12, 2!8', i))
+    S('long:1', # -> lost into jupfx
+            midinote='C',
+            cutoff=4000, # ->
+            pan='[0:0.5, 0.1], [0.5:1, 0.1]', # -> X
+            legato='0.1|0.2|0.3|0.1',
+            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    # S('f', shape=0.5).out(i, 4)
+    # S('hhh', amp='{0, 0.2, 0.01}', legato='0.1~0.5').out(i) # -> hhh ramp
+    # S('d:4, d:5, .', legato=0.5).out(i, 3)
+    # S('d:{4,9}', legato=0.5).out(i, 4)
+    # S('z', shape=0.8).out(i, 4)
+    S('hhh:12', hcutoff=500, speed='[1:10]', shape=0.8).out(i, 1)
+    # S('kit5:[6!4,7!2,5!5,4]', shape=0.8).out(i, 3)
+    # S('q:rand*8', shape=0.4).out(i, P('1!12, 2!8', i))
+    S('long:1', # -> lost into jupfx
+            midinote='C',
+            cutoff=4000, # ->
+            pan='[0:0.5, 0.1], [0.5: 1, 0.1]', # -> X
+            legato='0.1|0.2|0.3|0.1',
+            begin='[0:1,0.01], [1:0,0.01]').out(i) # -> begin r ou {0, 1, 0.1}
+    a(baba, d=1/8, i=i+1)
+
+panic()
+
+S('lost').out()
+
+S('lost:2').out()
+
+# Fêter Halloween
+
+S('lost:7', legato=7, speed=0.5, release=7).out()
+
+S('lost:0', legato=7, speed=0.5, release=7).out()
+
+S('lost:3', legato=7, speed=0.5, release=7).out()
+
+panic()
+
+# ██████████████████████████████████████████████████████████████████████████████
+# █                                                                            █
+# █     █ █   ▄▄   █░█ ▄▀█ █░█ ▄▀█ █░░ █ █▄░█ ▄▀█                              █
+# █     █ █   ░░   █▀█ █▀█ ▀▄▀ █▀█ █▄▄ █ █░▀█ █▀█                              █
+# █                                                                            █
+# ██████████████████████████████████████████████████████████████████████████████
+
+
+@swim
+def baba(d=0.5, i=0):
+    # S('bip:rand*20', shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    # S('bip:rand*20+20', shape=0.4, midinote='quant([0+12|24,3,6,10]+62, C@minor), quant([0,3,10]+62|74, F@minor)').out(i, 3, 0.25)
+    S('boop:rand*40').out()
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('bip:rand*20',
+            orbit=2, room=0.7, size='r', dry='0.1',
+            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    S('bip:rand*20+20',
+            orbit=2, room=0.5, size='r', dry='0.1',
+            shape=0.4, midinote='quant([0+12|24,3,6,10]+62, C@minor), quant([0,3,10]+62|74, F@minor)').out(i, 3, 0.25)
+    S('boop:rand*40').out()
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('bip:rand*20',
+            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    S('bip:rand*20, boop:rand*200',
+            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
+    S('(ff):rand*20', # ulh electrowave ff
+            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('ff', shape=0.5).out(i, 4)
+    S('ll', shape=0.5).out(i, 4)
+    S('gameboysnare', cutoff=800).out(i, 8)
+    S('., hhh:rand*40', hcutoff=9000).out(i, 1)
+    S('., hhh:rand*40', hcutoff=9000, speed='1~50').out(i, 1)
+    S('bip:rand*20',
+            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+            shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    S('bip:rand*20, boop:rand*200',
+            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
+    S('(ulh):rand*20', # ulh electrowave ff
+            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
+    a(baba, d=1/8, i=i+1)
+
+# <-> des allers retours
+
+@swim
+def baba(d=0.5, i=0):
+    # S('ff, gg:rand*29', shape=0.8, leslie=1, leslierate=5, lesliespeed=2).out(i, 2)
+    # S('ll', shape=0.8).out(i, 4)
+    S('gameboysnare', cutoff=800).out(i, 8)
+    # S('., hhh:rand*40', hcutoff=9000).out(i, 1)
+    S('., hhh:rand*40', hcutoff=9000, speed='1~50').out(i, 1)
+    # S('bip:rand*20', lesliespeed='2*8', leslierate='rand*5', leslie=1,
+    #         orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+    #         shape=0.4, midinote='quant([0+12|24,3,6,10]+50, C@minor), quant([0,3,10]+50, F@minor)').out(i, 1, 0.25)
+    S('bip:rand*20, boop:rand*200', lesliespeed='2*8', leslierate='rand*5', leslie=1,
+            orbit=2, room=0.7, size='r', dry='0.1', legato=1,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+80, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 3, 1)
+    S('(ulh):rand*20', # ulh electrowave ff
+            orbit=2, room=0.7, size='r', dry='0.1', legato=0.2, hcutoff=500,
+            shape=0.4, midinote='quant([0+12|24,1~20,6,0~20]+50, C@minor), quant([0~20,3,10]+50, F@minor)').out(i, 2, 1)
+    a(baba, d=1/8, i=i+1)
+
+# --|--> transition du coq à l'âne
+
+@swim
+def baba(d=0.5, i=0):
+    S('m, ..., m, ...', shape=0.5).out(i, 2)
+    S('rev([s,a,l,u,t, z,o,r,b,a]:rand*8)',
+            legato=0.1, pan='tan(r/100)', accelerate=0.2,
+            room=0.1, dry=0.1, size=0.1,
+    ).out(i, 2)
+    S('perca:[1:20], ..',
+            speed=2 if rarely() else 'rand*4',
+    ).out(i, 2)
+    a(baba, d=1/16, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('m, ..., m, ...', shape=0.5).out(i, 2)
+    S('long:13', shape=0.5,
+            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
+            cut=1, legato=2).out(i, 8, 0.25)
+    S('perca:[1:20], ..', speed=2).out(i, 2)
+    a(baba, d=1/16, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('f, ..., f, ...').out(i, 2)
+    S('gg, ...', shape=0.5, orbit=4, room=0.2, size=0.2, dry=0.2).out(i, 2)
+    S('perca:[1: 20], ..', speed='1+rand*4', cutoff='200+rand*8000').out(i, 2)
+    S('perca:[20: 1], .', speed='0.1+sin($)', cutoff='200+rand*8000').out(i, 3)
+    S('long:13', shape=0.7,
+            begin='0.1, 0.2, 0.3, 0.5',
+            orbit=3,
+            cut=1).out(i, 8, 0.25) # 0.5 0.6
+    a(baba, d=1/16, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('m, ..., m, ...', shape=0.5).out(i, 2)
+    S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
+    S('long:13', shape=0.5,
+            begin='0.6, 0.5, 0.42, 0.6, 0.7', orbit=3,
+            cut=1, legato=2).out(i, 8, 0.25)
+    S('q:[1:20], ..', speed=2).out(i, 2)
+    a(baba, d=1/16, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('m, ..., m, ...', shape=0.5).out(i, 2)
+    S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
+    S('long:13', shape=0.5,
+            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
+            cut=1, legato=2).out(i, 8, 0.25)
+    S('q:[1:20], ..', speed=2).out(i, 2)
+    a(baba, d=1/16, i=i+1)
+
+# une petite transition jsp
+
+@swim
+def baba(d=0.5, i=0):
+    # S('m, ..., m, ...', shape=0.5).out(i, 2)
+    # S('hhh:rand*49', amp=0.3, hcutoff='sin(i.i/40)*7000').out(i, 2)
+    S('jupfx:rand*20', shape=0.5, hcutoff='200 + rand*8000',
+            begin='0.5, 0.5, 0.42, 0.5!2, 0.6', orbit=3,
+            cut=1, legato=2).out(i, 8, 0.25)
+    S('q:[1:20], ..', speed=2).out(i, 2)
+    a(baba, d=1/16, i=i+1)
+
+# Débrouille toi
+
+
+# ██████████████████████████████████████████████████████████████████████████████
+# █                                                                            █
+# █ █ █ █   ▄▄   ▀█▀ ▄▀█ █▀█ ▀█▀ █▀▀   █ █▄░█ ▀█▀ █▀█   ▀█▀ █▀▀ █▀█            █
+# █ █ █ █   ░░   ░█░ █▀█ █▀▄ ░█░ ██▄   █ █░▀█ ░█░ █▄█   ░█░ ██▄ █▀▄            █
+# █                                                                            █
+# █ █▀ ▄▀█ █ █▄░█ ▀█▀ ▄▄ █▀▀ ▀█▀ █ █▀▀ █▄░█ █▄░█ █▀▀                           █
+# █ ▄█ █▀█ █ █░▀█ ░█░ ░░ ██▄ ░█░ █ ██▄ █░▀█ █░▀█ ██▄                           █
+# █                                                                            █
+# ██████████████████████████████████████████████████████████████████████████████
+
+,*,,,,,,,,,,,,.,,,,..*****,,.  .. ,*,.   . ..        ........,,,.,,,,,,,,,,.,,.*
+*(**/**,/*(**,**///**,,*////*,,..,,//.. ..,       . ....,,,,,,,,**********(//(((
+*/***/***,/******/,. . ....,,,,..,,**.   ...     ..,.....,,.,,,,,*********(((//*
+*((*//**,,/,,,,,*,.  .. ....,,,.../#%%%%#(,..    .,,,....,...,,,,.,,,,**,,****(/
+*****/,,*,**,**,,,...,.,.,*/#%%%%%%%%%%%%%%%#(. .,,..,,...,...,..,..,,,,****/***
+*//,**//*****/**,.....%#%&&%%&&&&%&%%%%%%%%%%%%##%#...... ,,..,..*.,,,,/**/*,,**
+*//*,,*,,******,,/,,.#%&&&&&&&&&&&&&%#%&%%&%%%%###%( .. ..,,..,,,..,,..,.****,**
+*//*,,,,****,,,,,,,,#%&&&&&&&%&%&%%%%&&&%&&&%%%%%###(#*  ....,,,,.,........,,**,
+*//*****,***...... #%&%&&&%&%%&%%%%#%%%&&&&&%%%%%%%%%%%#**,*,....,,.,*.......,,,
+*/*******,,,......#%%&%&%&&&%%%&&%%%%%#%%%%%%%%%###%%#%%(,,,,*, ....   ,..,,,,./
+*/*****,,*,.....,(&&&%&&&%(***(&**,****,,*((##%/#/#%%%#%%(////**,,......,,,,,.*,
+*/*,,,,,,.,*, ..#%%&&&&%#/***************,**,... .*#%%%%%#//*.,..........,*/*,.,
+*/****,,,...,.,.#%&&&&%(/********,,,****,***,...   ,/%%#(*.............,.,,,..,*
+*/**,,,,,,,,....,%%%&&&/**/////***,**/***,,*,*,...  ./(#,...,..,.,,..,,,,...,,,*
+*/****,**,**,*,..*%&&&/**#(///(//((/*/*,**/////***,..#%(, .....,.....,,. ....,*,
+*//**********,,,,//%%%**//(%#&%#////(,,#/*(*###*/*.../#(/,.,.,,.. ... .   .,,..,
+*//*///**,,,,***,,//%%***/((((((//((,,,,((/(((//.*...,#/,...,,.,...,.. .,......,
+*///(**//*****/***,(%#****///**/****,,,,.,**,,,,,.,,,(#*..,,...,.. ............,
+*//*/*,,**,,,,**/***#%(**********/****,....,,,,,.....#(*,,......,.  .,,.,**,,,..
+*//*/*,*/**,*,,,,,,.,##//**********,**,,..,,,,....  ,((******//(*.....*,,.,....*
+*//*///**//,,.**,..,,,%#***********((/./(,*,,,,. ..,*((,,,....,,..,.,,,*,.,...,*
+/#/((***/,***,,,.,,,**(((***,*,****((#/*/,,,...   .,(#,,.......  ..,,,***,,,.,.*
+*((/(/***.*,,,..,.,*,//(#(//****//(((((/(///.*...,.//(/***,.,*..  ....,***,...,*
+*((//*,,,,,.......,,..,*(##(//***//((//(*(*,*,...,*/*,... ..    .  ......,..,.,,
+/((((/,,,,...........,,**/(#((/**/***/*,,,***,.,.////*******,,.,,.   .... ...,.,
+*(((/*,,,,,,,./, .......*,,/###(/********,,.,*(*,.,,.....,,,..     ..  ......,..
+*((//**,,.,,****,.,,,...*%(..(###%#((((((//(#(/.   ,.*,,,,..,..   ..... ......,.
+*((///*,.,*,****...,*/.&&&%,.,,*(##%%%%%%%##(/.   .%#((,.,.., ...........,,,,,,.
+/(/(**,,,..,,,,,**/**/&&@&&&/*,/.,*((((((((. ...,(%#%%%%%,,,,.......   ...,.,,,,
+*(//**,***,**,*****(%&&&@&&@&%*,.,,*//(((/,..,/%%%%%%%%%%##*,*,...............,.
+*(//***,,*/,*,,(&&&&@&@@@&&&&(,,,,,,,*(#,,,,,,*#%%%%%%%%%%%%%#**.........,/*****
+*(///****,,(&&&&@@@@@@&&@&&&&##%&&&&&&&&&&&&%##%%&&&%%&%%%%%%%#(%(/*....***,*,,,
+*((((((&@&&&&@@@@&&@&@&&&&&%%&&&&&@&&&&&@@@&&%%%%%%%%%%%%%#%%#%%*,,...,,,*,,***,
+/%&%&@&%&@@@@@&&&&&%%&&@&&&@&&@@&&&#,,,,,##&%(%%&%%%%#%%##%/.  /#/...,,..,,,,...
+/&&&%&&&&&%&&@&&&&&&&&&&&&&&%#%&&&&%(.,,,,,,/&&&&%%%%%##**,. ,,/,.,.,.*,*,(#&(..
+/&&%#%%%###%&@&&&&&%%%%%%%&&&&&%&%&%*,.,,...%%%&%%%(%#*,,.,,./,,.,,,./(#(*#(%(#(
+/&&@&@&%&@@@&@&&&%(#%%%#%&&&&&&&%%&&%#.... %%%%&&%#(*,,...(/,,,*,(%%###(####/*%(
+/&@@@&@&&#%##&%(/*/(#%%%#%&@&&%#%%&&%&%,./&&&%%%#***....**,*/*%%%%&%(#%#####(/(*
+/#%&@%%##&&&%(/((,,(%&%#%%%&&%%#%#%%&%&%&&&&%%(*.....(.*.,/#%%%&%%%%###%#%%###(.
+/######/(%%&%(%%#(((/#%&@&&&&&%&&%%&&%&&&&&%/,,.. ,.,.,(#%&%&%%%&%%%#%%%(((//%%(
+/%%%#(#%%%%%%%%#######(((%&&@&&%%%%%&&%%%(,,,,..,,,(%%&&%#%%%####((%#%(/(#%#(#**
+/%%%%%%%&&&%&&%%%%#(((((((#*%&@&%%&&%%%/,*,,.*,//&%%&%%%%&&%####(/*#%(/(#%%#**,*
+/&&%&%%%%%%%##%%###(#((#*#%((//(////***/*.**##%%%#%##%&%#(##%%%%#*/#//*/#(/#(***
+# C'EST PIERRE BONNARD, IL FAUT ALLER LE VOIR.
+
+
+@swim
+def baba(d=0.5, i=0):
+    M(velocity='90~110', note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    M(velocity='90~110|70', dur='15~20', note="F', ..., G'', ..., [D, E, F, A]+12").out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    M(velocity='90~110|90', dur='15~20', note="F., ..., F.., ...").out(i, 2)
+    M(velocity='90~110|90', dur='15~20', note="F., A, .., F.., ...").out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+# <-> alterner
+
+@swim
+def baba(d=0.5, i=0):
+    M(dur='2~5', note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    M(dur='2~5', note='disco(inrot(C@maj7, F@maj7))').out(i, 5)
+    M(dur='2~12', note='adisco(inrot(inrot(C@maj7, F@maj7), G@fifths))').out(i, 4)
+    a(baba, d=1/8, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    M(note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    if rarely():
+        M(note='disco(inrot(C@maj7, F@maj7))').out(i, 5)
+    if sometimes():
+        M(note='adisco(inrot(inrot(C@maj7, F@maj7), G@fifths))').out(i, 4)
+    a(baba, d=1/8, i=i+1)
+
+
+c._midi_nudge = 0.30
+
+@swim
+def baba(d=0.5, i=0):
+    S('ff').out(i, 4)
+    M(velocity='90~110', dur=1, note='inrot(C@maj7, F@maj7)-12').out(i, 2)
+    M(velocity='90~110|90', dur='15~20', note="F., ..., F.., ...").out(i, 2)
+    M(velocity='90~110|90', dur='15~20', note="F., A, .., F.., ...").out(i, 2)
+    a(baba, d=1/8, i=i+1)
+
+
+
+# ██████████████████████████████████████████████████████████████████████████████
+# █                                                                            █
+# █  █ █░█   ▄▄   █░░ █▀▀   █▀█ █ ▄▀█ █▄░█ █▀█   ▄▀█ █▄░█ ▄▀█ █░░ █▀█          █
+# █  █ ▀▄▀   ░░   █▄▄ ██▄   █▀▀ █ █▀█ █░▀█ █▄█   █▀█ █░▀█ █▀█ █▄▄ █▄█          █
+# █                                                                            █
+# ██████████████████████████████████████████████████████████████████████████████
+
+panic()
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[1,2,1,2,4,5,4,6]', legato=1).out(i, 8)
+    S('long:42', begin='r', cut=1).out(i, 8)
+    a(baba, d=1/32, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    if sometimes():
+        S('z:6' if random() > 0.5 else 'z:7', shape=0.9, hcutoff=7000).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[1,2~10,1,2,4~10,5,4,6]', legato=1).out(i, 8)
+    S('long:42', begin='r', cut=1).out(i, 8)
+    a(baba, d=1/32, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    # Ce truc est quand même giga fade :'(((((((((((((
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    if sometimes():
+        S('z:6' if random() > 0.5 else 'z:7', shape=0.9, hcutoff=7000).out(i, 4)
+    # Du du du du dudududududu dudu du du dud udu dudu
+    a(baba, d=1/32, i=i+1)
+
+# Réponse :
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[0, 1,2,1,2,4,5,4,6,7,8, 1, 0]', legato=1).out(i, 8)
+    S('long:42', begin='r', cut=1).out(i, 8)
+    S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    if sometimes():
+        S('z:6' if random() > 0.1 else 'z:7',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    if sometimes():
+        S('dd:6|7|8' if random() > 0.5 else 'j:0~7',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('long:20~33', begin='r', cut=1).out(i, 8)
+    S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    if sometimes():
+        S('z:6' if random() > 0.1 else 'z:8~400',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    if sometimes():
+        S('dd:6|7|8' if random() > 0.5 else 'z:7~200',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    # S('long:42', begin='{0,2,0.4}', cut=1).out(i, 16)
+    S('long:42', begin='[0:1, 0.08]', cut=1).out(i, 16) # -> éplucher comme un oignon (solo de fichier .wav)
+    # S('long:42~46', begin='r', cut=1, speed=0.5).out(i, 8)
+    # S('jupbass:28|44, jupbass:28', octave=4,
+    #     legato=1, cut=1, orbit=3).out(i, 24, 1)
+    if sometimes():
+        S('z:6' if random() > 0.1 else 'z:8~400',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    if sometimes():
+        S('dd:6|7|8' if random() > 0.5 else 'z:7~200',
+                pan='r',
+                legato=1, shape=0.9, hcutoff=7000).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('long:10~33', begin='r', cut=1, speed="1~8").out(i, 8)
+    S('long:20~46', begin='r', cut=1, speed="1~8").out(i, 8)
+    a(baba, d=1/32, i=i+1)
+
+# Réponse :
+
+@swim
+def baba(d=0.5, i=0):
+    S('kit2:[0, 1,2, 0, 1,2,4,5,4,0,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('long:103', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 16)
+    S('long:20', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 8)
+    a(baba, d=1/32, i=i+1)
+
+
+@swim
+def baba(d=0.5, i=0):
+    S('cc').out(i, 12)
+    S('kit2:[0, 1,2, 0, 1,2,4,5,4,0,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('kit3:[1,2,1,2,4,5,4,6,1,2,3,1,2,3,2,3,4,5~8!5]', legato=1).out(i, 8)
+    S('long:103', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 16)
+    S('long:20', begin='0.1, 0.5', cut=1, speed="1~8").out(i, 8)
+    a(baba, d=1/32, i=i+1)
+
+@swim
+def baba(d=0.5, i=0):
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
+    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
+    S('long:40', begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    S('long:40', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    if sometimes():
+        S('z:6', shape=0.9, hcutoff=5000).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+panic()
+
+@swim
+def baba(d=0.5, i=0):
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
+    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
+    S('long:26', amp=0.5, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    S('long:26', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    if sometimes():
+        S('z:6', shape=0.9).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+# Variation 3
+@swim
+def baba(d=0.5, i=0):
+    S('jupbass:28|44, jupbass:28', octave=4,
+        legato=1, cut=1, orbit=3).out(i, 24, 1)
+    S('kit4:rand*20', legato=0.4, begin=0.01).out(i, 12)
+    S('kit3:[1,2,1,2,4,5,4,6]').out(i, 8)
+    S('long:40', begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    S('long:40', speed=1.01, begin='0.60!4, 0.555!2, 0.27!4, 0.25!2', orbit=2, cut=1).out(i, 32)
+    if sometimes():
+        S('z:6', shape=0.9).out(i, 4)
+    a(baba, d=1/32, i=i+1)
+
+panic()
+#+end_src
+
+** Dumpster Dive
+
+*dumpsterDive* (*HighHarmonics*) is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The *Sardine* function uses the stacked samples model, where each sample line can be played alone or together with others. [[https://www.youtube.com/embed/ZcdXgeqJI2E][Performance Video]].
+
+- *Audio equipment:* Tascam DR-100, Rode shotgun mic: NTG4.
+- *Software:* Sardine
+- Dumpster samples are available via the [[https://github.com/Bubobubobubobubo/sardine-sounds][sardine-sounds]] repository.
+- *Sardine alpha version*
+
+#+begin_src python
+# Load audio effect and preset dictionaries first.
+# Play one or both lines from each section (basic, reverse rhythms, melodic patterns, bass, scrape). Explore combinations.
+
+c.bpm=60
+
+@swim
+def dumpsterDive(d=1, i=0):
+## basic samples - cycle thru the sounds used by all layers
+    S('dumpster:[0,1,4,2,5,3,.!2]', speed=1, amp=.5, **rev1, orbit=0).out(i, div=8)
+    #S('dumpster:[2,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **rev1, orbit=1).out(i, div=2) #**del1
+## reverse rhythms
+    #S('dumpster:1', begin=.065, end=.4, speed='-1', pan='[.14:.84,0.1],[.83:.15,0.1]', amp=.8, **rev0, orbit=2).out(i, div4)
+    #S('dumpster:0!2,.', begin=0, end=.85, speed='1,-1', pan='[.9:.1,0.2],[.1:.9,0.2]', amp=.6, **rev1, orbit=3).out(i, rate=1, div=2) #**del1,
+## melodic patterns
+    #S('dumpster:[1!2,4!2,5!2,4]', begin=.052, end=.088, freq='[414,240,620,.,500,380,820,750]', timescale=1.4, pan='[.1,.9]', amp=.95, **rev2, orbit=4).out(i, rate=1, div=1)
+    #S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.6, pan=.3, **rev1, orbit=5).out(i, rate=1, div=2)
+    #S('dumpster:[6!2,8!3,7!2]', octave='7', cut=1, pan=.3, amp=.9, **rev2, orbit=6).out(i, div=4)
+## bass - choose one or the other
+    #S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7).out(i, rate=1, div=4)
+    #S('dumpster:2', octave='[4.8:5.1,.04],[4.6:4.8,.04]', amp=.95, **rev1, orbit=8).out(i, div=4)
+## scrape
+    #S('dumpster:[5,.,5]', octave='6', cut=1, amp=1.2, **del1, **rev1, orbit=8).out(i, rate=.5, div=4)
+    #S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **rev2, orbit=9).out(i, rate=1, div=1) #**del2
+## presets
+    #returnGroove['bass1'].out(i, rate=1, div=4)
+    #returnGroove['melody2'].out(i, rate=1, div=2)
+    #closing['basic2'].out(i, div=2)
+    #closing['basic2a'].out(i, rate=2, div=2) ## div=1
+    #closing['scrape2'].out(i, rate=1, div=2)
+    #c.bpm = P('[60:90,.03]', i) #accelerate tempo at the end
+
+    a(dumpsterDive, d=1/8, i=i+1)
+
+######################################################
+#hush(dumpsterDive)
+
+######################## LOAD THESE FIRST - python dictionarys referenced in dumpsterDive function #################
+c.bpm=60
+## audio effects
+rev0 = {'room':.8, 'size':0.5, 'dry':0.5}
+rev1 = {'room':.9, 'size':0.6, 'dry':0.4}
+rev2 = {'room':1.5, 'size':0.7, 'dry':0.4}
+rev3 = {'room':2, 'size':0.8, 'dry':0.3}
+
+del0 = {'delay':0.5, 'delaytime':0.3, 'delayfeedback':0.5, 'triode':0}
+del1 = {'delay':0.5, 'delaytime':0.4, 'delayfeedback':0.6}
+del2 = {'delay':0.5, 'delaytime':0.25, 'delayfeedback':0.8}
+
+#Presets
+returnGroove = {'bass1':  S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7),
+    'melody2': S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.4, pan=.3, **rev1, orbit=5) }
+closing = {'basic2': S('dumpster:[12,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **del1, **rev1, orbit=1),
+    'basic2a': S('dumpster:[0,5,3,4,3,0]', speed='[2.01:1.96,.01],[1.96:2.01,.01]', pan='[.99:.01,0.3],[.01:.99,0.3]', amp=.7, **rev1, **del2, orbit=1),
+    'scrape2': S('dumpster:[5,.,5]', octave='[6!3,6.62,5.4]', cut=1, amp=.9, **del2, **rev2, orbit=9) }
+#+end_src
+
+** Artificial Life
+
+Experimental use of the *Taichi* numerical simulation and graphics language for live visuals and artificial life simulation. Made by [[https://jackarmitage.com/][Jack Armitage]]. For more info, see the [[https://github.com/Intelligent-Instruments-Lab/iil-python-tools][iil-python-tools]]. Using an *alpha version of Sardine*. [[https://youtu.be/XSdHbPZSofo][Video n°1]], [[https://youtu.be/l6kx7lvGDy0][Video n°2]].
+
+#+begin_src python
+from sardine import *
+import taichi as ti
+import numpy as np
+import math
+import tulvera as tul
+
+ti.init(arch=ti.vulkan)
+c.bpm = 250
+c.link()
+resx = 1920
+resy = 1080
+n = 8192
+boids = tul.vera.Boids(resx, resy, n)
+window = ti.ui.Window("Boids", (resx, resy))
+canvas = window.get_canvas()
+
+@swim
+def gui_loop(d=0.5, i=0):
+    boids.update()
+    canvas.set_image(boids.world.to_numpy().astype(np.uint8))
+    window.show()
+    a(gui_loop, d=1/16, i=i+1)
+
+@swim
+def param_loop(d=16, i=0):
+    # boids.vis_radius[None] = P('40.0,80.0,150.0',i)
+    # boids.max_speed[None] = P('1.0,2.0,3.0',i)
+    boids.max_speed[None] = P('2*sin($/2)')
+    a(param_loop, d=8, i=i+1)
+
+hush()
+#+end_src
 
 * About
 ** Why Sardine?

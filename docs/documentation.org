@@ -947,6 +947,11 @@ def hello_world():
 
 Even though the function is fully written, it will not play anymore. Try to rewrite ~@swim~ again to make it start anew. You can also try to remove some parts of the function (the call to ~again()~) to see what happens. Try to familiarise yourself with *swimming functions* because they are exciting!
 
+If you don't like that syntax, you can also just call the ~.stop()~ method on any *swimming function* to make it stop:
+#+begin_src python
+hello_world.stop()
+#+end_src
+
 You might be wondering what happens if a function is invalid. Under pressure, on stage, you can easily write a function that just doesn't make sense. Here is a fictional one written by an animal suddenly falling on the keyboard:
 #+begin_src python
 @swim
@@ -1733,7 +1738,6 @@ def notes(p=0.2, i=0):
 You can use arithmetic operators on notes like if they were numbers. Think about it twice. There are many things that are numbers in *Sardine*. It might be fun.
 
 *** Polyphony
-
 **** Note polyphony
 
 #+begin_src python

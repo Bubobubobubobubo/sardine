@@ -19,7 +19,7 @@ except ImportError:
     ziffers_imported: bool = False
 
 
-PS = ParamSpec("PS")
+ParamSpec = ParamSpec("PS")
 T = TypeVar("T")
 
 
@@ -134,11 +134,11 @@ for player in player_names:
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
 
 
-def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
+def for_(n: int) -> Callable[[Callable[ParamSpec, T]], Callable[ParamSpec, T]]:
     """Allows to play a swimming function x times. It swims for_ n iterations."""
-    def decorator(func: Callable[PS, T]) -> Callable[PS, T]:
+    def decorator(func: Callable[ParamSpec, T]) -> Callable[ParamSpec, T]:
         @wraps(func)
-        def wrapper(*args: PS.args, **kwargs: PS.kwargs) -> T:
+        def wrapper(*args: ParamSpec.args, **kwargs: ParamSpec.kwargs) -> T:
             nonlocal n
             n -= 1
             if n >= 0:
@@ -149,13 +149,13 @@ def for_(n: int) -> Callable[[Callable[PS, T]], Callable[PS, T]]:
 
 @overload
 def swim(
-    func: Union[Callable[PS, Any], AsyncRunner],
+    func: Union[Callable[ParamSpec, Any], AsyncRunner],
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
-    *args: PS.args,
+    *args: ParamSpec.args,
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
-    **kwargs: PS.kwargs,
+    **kwargs: ParamSpec.kwargs,
 ) -> AsyncRunner:
     ...
 

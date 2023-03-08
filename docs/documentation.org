@@ -2006,14 +2006,17 @@ We know how to play basic sounds, but we don't know why this is happening. How u
 Pa >> d('bd, cp')
 #+end_src
 
-This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for new users.
+This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for new users:
+- ~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. There are 48 players by default.
+- ~>>~ is an operator used to tell the player that we are assigning it a pattern to play.
 
-~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. There are 48 players by default:
 #+begin_src python
+# List of all the players
 all_players = [Pa, Pb, Pc..., PA, PB, PC, ...]
 #+end_src
 
 This pattern can take *any number of arguments*. These arguments will help to precise the timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... *a sandwich of values*. Here is a more complex pattern based on the one we saw earlier:
+
 #+begin_src python
 Pa >> d('bd, cp', speed='1,2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4, 0.25')
 

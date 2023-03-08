@@ -108,6 +108,7 @@ class SuperDirtHandler(Sender):
             "bpq": "resonance",
             "res": "resonance",
             "midi": "midinote",
+            "n": "midinote",
             "oct": "octave",
             "accel": "accelerate",
             "leg": "legato",

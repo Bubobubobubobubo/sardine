@@ -1748,7 +1748,11 @@ Text editors are particularly important to get the most out of *Sardine*. Rememb
 
 ** Fishery Web
 
-You don't need a text editor to play with *Sardine*. Just start the software by typing ~fishery web~. Optionally, you can specify the ~--port~ and  ~--???~ arguments. Your web browser will promptly open, generally at ~https://localhost:8000~. Your code will automatically be saved in your configuration folder, under the ~buffer/~ folder, meaning you can retrieve it later for a new session!
+You don't need a text editor to play with *Sardine*. Just start the software by typing ~fishery web~. Optionally, you can specify the ~--port~ and  ~--host~ arguments. Your web browser will promptly open, generally at ~https://localhost:8000~. The text editor is also handling files automatically:
+- text files will be retrieved from the `USER_DIR/buffer` folder everytime you load the application.
+- text files will be saved to the `USER_DIR/buffer` folder everytime you stop writing.
+
+Note that one of the panels is named ~*~. This panel is the scratch buffer, a file that will never be saved. Be careful if you write inside it as you will not be able to retrieve your code :)
 
 #+begin_src shell
 fishery web
@@ -3101,6 +3105,28 @@ Pb >> d('voodoo, voodoo:4, linnhats:(rand*20)!4', span=0.5, p=0.5, speed=2)
 - ~snap=-0.5~ will start the pattern half a beat before the beginning of the next bar.
 
 It is a useful function for shifting things around and for synchronising *Sardine* in some scenarios (recording, etc..).
+
+
+*** The until argument for swimming functions
+
+*Sardine* now supports a special ~until~ argument in the ~@swim~ decorator. As it names suggests, this argument will loop the function ~n~ times and stop. This is a very useful trick to use for solos or one-shots events during your sessions:
+
+#+begin_src python
+# It's bouncing ball time!
+
+@swim(until=10)
+def baba(p=0.5, i=0):
+    D('sid:2',
+      legato=0.9,
+      speed=0.5,
+      lpf='[5000:200,400]',
+      i=i
+    )
+    print(i)
+    again(baba, p=P('[1:0.1,0.1]', i), i=i+1)
+#+end_src
+
+You can also pair it with the ~snap~ argument if you wish to!
 
 ** Sleeping and oversleeping
 

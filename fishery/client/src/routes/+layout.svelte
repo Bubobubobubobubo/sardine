@@ -231,12 +231,13 @@
 				{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 					<Tab>{name}</Tab>
 				{/each}
+        <Tab>Docs</Tab>
 			</TabList>
 
 		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 			<TabPanel>
 				<Editor 
-                extensions={extensions};
+          extensions={extensions};
 			  	bind:this={view}
 					doc={buffer}
 					bind:docStore={store}
@@ -247,6 +248,16 @@
 				/>
 			</TabPanel>
 		{/each}
+    <TabPanel>
+      <iframe
+        src="https://sardine.raphaelforment.fr"
+        title="Sardine website"
+        width="100%"
+        height="100vh"
+        frameborder="0"
+        sandbox="allow-same-origin"
+              onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
+    </TabPanel>
 		</Tabs>
 		<Console {logs}/>
 	</main>
@@ -269,5 +280,16 @@
 		margin: 0 auto;
 		box-sizing: border-box;
 	}
+
+ iframe {
+	 flex: 1;
+	 display: flex;
+	 flex-direction: column;
+	 margin: 0 auto;
+	 box-sizing: border-box;
+   height: 99vh;
+   width: 99vw;
+ }
+
 
 </style>

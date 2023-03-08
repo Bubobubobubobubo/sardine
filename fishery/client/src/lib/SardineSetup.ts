@@ -21,6 +21,7 @@ export const SardineBasicSetup = (() => [
     SardineTheme,
     python(),
     lineNumbers(),
+    history(),
     indentUnit.of("    "),
     highlightActiveLineGutter(),
     highlightSpecialChars(),
@@ -33,6 +34,7 @@ export const SardineBasicSetup = (() => [
     keymap.of([
     ...defaultKeymap,
     ...foldKeymap,
+    ...historyKeymap,
     ...lintKeymap
     ])
     ]

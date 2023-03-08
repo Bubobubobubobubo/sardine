@@ -35,7 +35,6 @@
 #+end_quote
 
 
-
 * Presentation
 ** What is Sardine?
 #+attr_html: :width 800px
@@ -1430,9 +1429,106 @@ The variant `!!` now makes sense. It allows you to repeat each individual value 
 #+end_src
 
 *** TODO Function Library
+
+The *Sardine* pattern language also supports... function calls! They look exactly like Python functions to the point where you might wonder what language you are actually working with. The function library used in *Sardine* is to be considered as a giant playground. It acts as a *de facto* repository for some processes that I find interesting when playing music with patterns. In the future, I hope that more people will come and add their functions to the library.
+
+Function calls are rather simple but there are some rules to follow depending on the function you call. The general rules are:
+- Calling functions work just like the regular Python syntax: ~sopr(1, 2, 3, 4)~.
+- Some functions take any amount of arguments, some have positional arguments.
+  - any amount: ~func(1,2,3,4,5,6,...)~
+  - positional: ~func(1,2)~ where ~1~ has a meaning and ~2~ has a meaning.
+- Some functions can take keyword arguments, such as ~disco([C4,D4,E4], depth=2)~.
+
+To know how to use a function, it is best to refer to this documentation. You can't expect your code editor to tell you because ~strings~ are not really considered as code! I will always provide indications on how to call the function, telling you the role of each argument. ~...~ means that the function can take any number of arguments. I will always indicate the return type of the function.
+
+**** Simple functions
+
+Simple functions are mathematical functions that can be applied on any number token. They are generally very simple operations that you might find on a digital calculator or on any interface capable of computation:
+
+| Function name |  Arguments                 | Description                                  | Return type      |
+| sin           | x, ...                     | Sinusoïd function                            | 1 or more Number |
+| cos           | x, ...                     | Cosinus function                             | 1 or more Number |
+| tan           | x, ...                     | Tangent function                             | 1 or more Number |
+| abs           | x, ...                     | Absolute function                            | 1 or more Number |
+| max           | x, ...                     | Maximum function                             | Number           |
+| min           | x, ...                     | Minimal function                             | Number           |
+| mean          | x, ...                     | Arithmetic mean function                     | Number           |
+| scale         | [], imin, imax, omin, omax | Scaling a list from range to range           | List             |
+| quant         | [], []                     | Quantize the first list to values in second  | List             |
+| clamp         | x, y, z                    | Simple clamping function (x between y and z) | List or Number   |
+
+Example of application:
+#+begin_src python
+@swim
+def demo(p=1/4, i=0):
+    D('moog:5', lpf='sin($)*2500', res='cos($)/2', i=i, legato=0.1)
+    D('cp', speed='0+abs(-rand*5)', d=8, i=i)
+    again(demo, p=1/8, i=i+1)
+#+end_src
+
+These functions are the bread and butter of a good high-speed *Sardine* pattern. They will allow you to create *signal-like* value generators (/e.g/ *Low frequency oscillators*). They are also very nice to use in connjunction with ~$~ or any timed value. You will find many creative ways to use them (especially by combining with arithmetic operators).
+
+**** Euclidian and mask functions
+
+This category is made of functions that apply a mask on a pattern. This mask is a boolean mask that will either leave the pattern as is or replace some values by a silence. The euclidian rhythm generator lives in this category. I know that you were looking for it :)
+
+| Function name |  Arguments                 | Description                        | Return type |
+| euclid        | x, pulses, steps, rotation | Euclidian rhythm                   | List        |
+| eu            | //                         | //                                 | //          |
+| mask          | [], []                     | Boolean mask applied on a list     | List        |
+| vanish        | [], percentage             | Remove x% of elements from pattern | List        |
+
+Example of application:
+#+begin_src python
+@swim
+def demo(p=1/8, i=0):
+    D('eu(drum, 5, 8)', i=i)
+    D('eu([cp, linnhats], 3, 8)', i=i)
+    D('eu(voodoo:rand*5, 5, 16)', i=i, r=0.5)
+    again(demo, p=1/4, i=i+1)
+#+end_src
+
+You will notice that you can now generate some interesting rhythm by combining the euclidian rhythms with ~rate~ and ~div~. The quirks of the *Sardine* pattern system will also generate very surprising rhythms, especially when playing with lists of audio samples.
+
+
+
+dmitri
+voice
+sopr
+quant
+disco
+bass
+sopr
+invert
+aspeed
+expand
+pal
+rev
+leave
+insertp
+insert
+insertprot
+insertrot
+shuf
 *** TODO Conditions
 
 Every function from the function library can be applied conditionnally. It means that every function can be applied based on a probability or based on a deterministic event (~e.g.~ being on beat 1).
+
+#+begin_quote
+
+TO DOCUMENT
+
+# Pure conditions
+"not": self.library.not_condition,
+"if": self.library.simple_condition,
+"while": self.library.while_condition,
+"in": self.library.in_condition,
+# Boolean functions
+"beat": self.library.beat,
+"every": self.library.every,
+"proba": self.library.proba,
+"phase": self.library.phase,
+#+end_quote
 
 *** Amphibian
 

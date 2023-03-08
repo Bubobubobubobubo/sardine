@@ -1743,7 +1743,7 @@ def poly(p=0.5, i=0):
     again(poly, p=P('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
-- You can use the ~<~ and ~>~ delimiters to make parts of your pattern polyphonic.
+- You can use the ~{~ and ~}~ delimiters to make parts of your pattern polyphonic.
   - There is *note polyphony*, aka when multiple notes are played together.
   - There is *parametric polyphonic*, aka when the same event is played multiple times with different parameters.
 
@@ -1769,7 +1769,7 @@ To illustrate the preceding rule we just talked about, here is a truly bizarre e
 #+begin_src python
 @swim
 def poly(p=0.5, i=0):
-    D('<[bd, superpiano]>', cutoff=500, midinote='<D@maj9>, <G@maj7^0>, <D@maj9>, <G@dim7^1>', i=i, d=2, r=0.25)
+    D('{[bd, superpiano]}', cutoff=500, midinote='{D@maj9}, {G@maj7^0}, {D@maj9}, {G@dim7^1}', i=i, d=2, r=0.25)
     again(poly, p=Pat('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
@@ -1788,7 +1788,7 @@ def poly(p=0.5, i=0):
     again(poly, p=0.5/2, i=i+1)
 #+end_src
 
-Everything can become polyphonic. Just wrap anything between ~{~ and ~}~ and you will return x events, one for each value. It allows you to be very creative with patterns.
+Everything can become polyphonic. Just wrap anything between ~{~ and ~}~ and you will return the same event piled up multiple times with different parameters. It allows you to be very creative with patterns.
 
 ** Ziffers
 *** What is Ziffers?

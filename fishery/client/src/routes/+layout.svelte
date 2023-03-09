@@ -41,9 +41,6 @@
       .then(response => response.json())
       .then((data: object) => {
         for (let [key, value] of Object.entries(data)) {
-          key = key.replace(/buffer/g, "");
-          key = key.replace(/.py/g, "");
-          key = "[" + key + "]"
           SARDINE_BUFFERS[key] = value.toString();
         };
       });
@@ -56,12 +53,12 @@
 	/*
 	 * This function will be called periodically to send the current state
 	 * of all the text buffers to the Flask server. They will be parsed to
-	 * text files and saved in the APPDIRS/buffers folder for later usage.
-	 */ 
+	 * text files and saved in the APPDIRS/buffers folder for later usage.///
+	 */
 	function saveBuffers(buffers: object) {
 		fetch("http://localhost:8000/save", {
-				method: "POST", 
-				body: JSON.stringify(buffers),
+				method: "POST",
+				body: buffers,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"}
 				}
@@ -121,7 +118,7 @@
           runnerService.executeCode(code + "\n");
           console.log("Saving code buffers!")
           saveBuffers(SARDINE_BUFFERS);
-          console.log(SARDINE_BUFFERS);
+          console.log("Saving ok!")
       }
 
       // Keybinding to switch from Emacs mode to Vim Mode
@@ -161,12 +158,8 @@
   function handleBufferChange({ detail: {tr} }) {
     // Getting the currently active tab through introspection
     let tab = get(activeTab);
-
-    // We ignore the scratch buffer!
-    if (tab !== 0 && tr._doc.text) {
-      // Writing the content of the buffer to the internal dict.
-        SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
-    }
+    SARDINE_BUFFERS["buffer"+(tab-1)+".py"] = tr._doc.text.join('\n');
+    console.log(SARDINE_BUFFERS)
   }
 
   function saveAsTextFile() {
@@ -182,7 +175,7 @@
     console.log('Spawning the basic tutorial');
     let tab = get(activeTab);
     // We change the buffer but we need to trigger a redraw as well
-    SARDINE_BUFFERS["["+(tab-1)+"]"] = tutorialText;
+    SARDINE_BUFFERS["buffer"+activeTab+".py"] = tutorialText;
     view._setText(tutorialText);
   }
 
@@ -197,6 +190,15 @@
           body: {}
       });
   }
+
+  function trimBufferName(name: string) {
+    return "[" + name.replace('.py', '').replace('buffer', '') + "]"
+  }
+
+  function panelMoved() {
+    view.refreshEditorSize();
+  }
+
 </script>
 
 <div class="app">
@@ -212,12 +214,18 @@
     <Tabs>
       <TabList>
         {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-					<Tab>{name}</Tab>
+					<Tab>{trimBufferName(name)}</Tab>
 				{/each}
         <Tab>Docs</Tab>
 			</TabList>
 
-      <VSplitPane topPanelSize="75%" downPanelSize="25%" minTopPaneSize="50px" minDownPaneSize="50px">
+      <VSplitPane
+        topPanelSize="75%"
+        downPanelSize="25%"
+        minTopPaneSize="50px"
+        minDownPaneSize="50px"
+        updateCallback={() => {panelMoved()}}
+      >
         <top slot="top">
           {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
             <TabPanel>
@@ -252,6 +260,7 @@
   </main>
 </div>
 <style>
+
 
 	.app {
 		display: flex;

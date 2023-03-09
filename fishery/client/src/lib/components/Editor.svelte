@@ -221,7 +221,7 @@
           effects: StateEffect.appendConfig.of([
           ViewPlugin.define((view) => {
               view.dom.classList.add('editor')
-              view.dom.style.height = '70vh'
+              // view.dom.style.height = '70vh'
               view.dom.style.width = '99vw'
               return {}
           }),
@@ -230,14 +230,24 @@
       
       return true
     }
+
+    export function refreshEditorSize () {
+      console.log('Resizing Editor')
+      view.dispatch({
+        effects: StateEffect.appendConfig.of([
+          ViewPlugin.define((view) => {
+            // view.dom.style.height = '70vh'
+            view.dom.style.width = '99vw'
+            return {}
+          }),
+        ]),
+      })
+    }
     
     $: if (_mounted && doc !== undefined) {
       const inited = _initEditorView(doc)
       dispatchDocStore(doc)
     }
-    
-    
-
 </script>
     
 <div class="codemirror" 
@@ -247,20 +257,5 @@
 </div>
     
 <style>
-    .codemirror {
-      display: contents;
-      height: auto;
-    }
-
-    .CodeMirror {
-      border: 1px solid #eee;
-      height: auto;
-      max-height:100px;
-    }
-
-    .CodeMirror-scroll {
-      height: auto;
-      max-height:100px;
-    }
 
 </style>

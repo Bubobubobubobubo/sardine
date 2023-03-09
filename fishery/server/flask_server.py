@@ -126,6 +126,18 @@ def server_factory(console):
     app.logger.disabled = True  # Disable some of the logging
     CORS(app, resources={r"/*": {"origins": "*"}})
 
+    @app.route('/save', methods=['POST'])
+    def save_files_to_disk() -> str:
+        data = request.get_json(silent=False)
+        if data:
+            for key, content in data.items():
+                with open(USER_DIR / "buffers" / f"{key}",
+                          'w', encoding='utf-8') as new_file:
+                    new_file.write(content)
+            return "OK"
+        else:
+            return "FAILED"
+
     @app.post('/open_folder')
     def open_folder():
         """Open Sardine Default Folder using the default file Explorer"""
@@ -183,20 +195,6 @@ def server_factory(console):
         files.headers.add('Access-Control-Allow-Origin', '*')
         return files
 
-    @app.route('/save', methods=['POST'])
-    def save_files_to_disk() -> str:
-        data = request.get_json(silent=True)
-
-        if data:
-            # Iterating over the dictionary we just received and dispatching
-            # to text files :)
-            for key, content in data.items():
-                # Writing the file itself
-                with open(USER_DIR / "buffers" / f"{key}.py", 'w') as new_file:
-                    new_file.write(content)
-            return "OK"
-        else:
-            return "FAILED"
 
     return app
 

@@ -163,10 +163,16 @@ def server_factory(console):
     def execute():
         code = request.json['code']
         try:
-            # console.resetbuffer()
+            # If `code` contains multiple statements, an exception occurs but
+            # code.InteractiveInterpreter.runsource swallows it.
+            # This means `console`s buffer will fill up with garbage and break
+            # any subsequent correctly-formed statements.
+            # So, reset the buffer first.
+            console.resetbuffer()
             console.push(code)
             return { 'code': code }
         except Exception as e:
+            # Due to the above, there's no way to send a SyntaxError back to the client.
             return { 'error': str(e) }
         
     # Serve App

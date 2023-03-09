@@ -3,7 +3,7 @@ from .utils import config_line_printer, get_snap_deadline, sardine_intro
 from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
-from .sequences import ListParser
+from .sequences import ListParser, ziffers_factory
 from functools import wraps
 from .logger import print
 from pathlib import Path
@@ -430,7 +430,6 @@ def n(*args, **kwargs):
 def zn(*args, **kwargs):
     return _play_factory(midi, midi.send_ziffers, *args, **kwargs)
 
-
 def cc(*args, **kwargs):
     return _play_factory(midi, midi.send_control, *args, **kwargs)
 
@@ -446,7 +445,8 @@ if config.superdirt_handler:
     def zd(*args, **kwargs):
         return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
 
-
+if ziffers_imported:
+    zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

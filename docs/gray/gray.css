@@ -15,13 +15,20 @@
   font-family: monoid;
   src: url(Monoisome-Regular.ttf) format('truetype');
 }
+@font-face {
+  font-family: Latitude;
+ src:   url(https://remigeorges.fr/styles/Latitude/Latitude-Regular.otf) format("opentype"), 
+        url(https://remigeorges.fr/styles/Latitude/Latitude-Regular.ttf) format("truetype"),     
+        url(https://remigeorges.fr/styles/Latitude/Latitude-Regular.woff2) format("woff2"), 
+        url(https://remigeorges.fr/styles/Latitude/Latitude-Regular.woff) format("woff") 
+       }
 
 
 
 body {
     padding-left: 5%;
     padding-right: 5%;
-    font-family: "modern", Helvetica, Arial, sans-serif;
+    font-family: "Latitude", Helvetica, Arial, sans-serif;
     font-size: 22px;
     text-align: justify;
     text-justify: inter-word;

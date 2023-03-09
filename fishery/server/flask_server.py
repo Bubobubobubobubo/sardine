@@ -106,8 +106,8 @@ class WebServer():
         # Start the application
         app.run(
             host=self.host, 
-            port=self.port, 
-            use_reloader=False, 
+            port=self.port,
+            use_reloader=False,
             debug=False
         )
 
@@ -117,8 +117,9 @@ class WebServer():
 
     def open_in_browser(self):
         import webbrowser
-        print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:5000[/yellow][/red]")
-        webbrowser.open(f"http://{self.host}:{self.port}")
+        address = f"http://{self.host}:{self.port}"
+        print(f"[red]Opening embedded editor at: [yellow]{address}[/yellow][/red]")
+        webbrowser.open(address)
 
 
 def server_factory(console):
@@ -162,6 +163,7 @@ def server_factory(console):
     def execute():
         code = request.json['code']
         try:
+            # console.resetbuffer()
             console.push(code)
             return { 'code': code }
         except Exception as e:

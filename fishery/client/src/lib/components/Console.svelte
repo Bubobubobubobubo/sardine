@@ -27,7 +27,6 @@
     
     .console{
         color: white;
-        border-top: dashed white 1px;
     }
 
     .console-header{
@@ -53,13 +52,13 @@
     }
 
     .console-content{
-        font-size: 12px;
-        height: 10vh;
+        font-size: 14px;
+        height: 100%;
         overflow-y: scroll;
     }
 
     .console-content ul{
-        font-size: 12px;
+        font-size: 14px;
         list-style: none;
         padding: 0;
         margin: 0;

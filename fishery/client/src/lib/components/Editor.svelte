@@ -249,6 +249,18 @@
 <style>
     .codemirror {
       display: contents;
+      height: auto;
     }
-    
+
+    .CodeMirror {
+      border: 1px solid #eee;
+      height: auto;
+      max-height:100px;
+    }
+
+    .CodeMirror-scroll {
+      height: auto;
+      max-height:100px;
+    }
+
 </style>

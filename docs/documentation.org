@@ -809,27 +809,30 @@ This pattern will play the first, second and third sample from the ~voodoo~ fold
 - You can call a specific sample by using a specific number: ~bd:4~.
 - ~"names"~ can refer to a synth or a sample. There is no difference.
 
-** Sound Patterns
+** Sound Patterns & Players
 
-We know how to play basic sounds, but we don't know why this is happening. How unfortunate! Remember for a moment about the pattern we wrote before:
+The Player is the most basic way to create patterns - it uses a shorthand syntax, and uses patterns and arguments to make musical output.
 
 #+begin_src python
-Pa >> d('bd, cp')
+Pa >> d('bd, cp', p=0.5)
 #+end_src
 
-This line is using a shorthand syntax for writing down patterns. This is a useful syntax to master, especially for new users:
-- ~Pa~ is a player. ~Pa~ wants to eat a pattern. ~d()~ is providing him a pattern. There are 48 players by default.
-- ~>>~ is an operator used to tell the player that we are assigning it a pattern to play.
+- ~Pa~ is a player - it acts on a pattern.
+- ~d()~ is a sender and provides the pattern. It takes any number of arguments.
+- ~>>~ is an operator that assigns the pattern to the player.
+- ~p=0.5~ is an argument where p is shorthand for period.
+
+There are 48 players by default:
 
 #+begin_src python
-# List of all the players
-all_players = [Pa, Pb, Pc..., PA, PB, PC, ...]
+# List of all players
+all_players = [Pa, Pb, Pc ...Pz, PA, PB, PC, ... PZ]
 #+end_src
 
-This pattern can take *any number of arguments*. These arguments will help to precise the timbre, rhythm and pitch of your pattern. A *Sardine* pattern is... *a sandwich of values*. Here is a more complex pattern based on the one we saw earlier:
+Pattern arguments control the rhythm, pitch and timbre of the pattern. A *Sardine* pattern is *a sandwich of values*. Here is a player with a more detailed pattern:
 
 #+begin_src python
-Pa >> d('bd, cp', speed='1,2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4, 0.25')
+Pa >> d('bd, cp', speed='1,2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4, 0.25!2')
 
 # This is easier to read
 Pa >> d('bd, cp',
@@ -838,27 +841,28 @@ Pa >> d('bd, cp',
         room=0.5,
         dry=0.25,
         size=0.1,
-        p='0.5!4, 0.25'
+        period='0.5!4, 0.25!2'
 )
 #+end_src
 
-- ~p~ for *period*: the rhythm of each step in *beats*. It can be a number or *string*.
-  - This value is always relative to the tempo!
-- ~shape~, ~room~, etc.: parameters of the audio sampler, helping us to shape the sound.
+- ~p~ or ~period~: the rhythm of each step in *beats*. It can be a number (single value) or *string* (pattern).
+  - Period is always relative to the tempo.
+  - Here the period is a string, which makes this a pattern. 0.5 and 0.25 divide the beat, and '0.5!4' means to repeat that step division 4 times.
+  - The note values 'bd, cp' are applied to the step divisions of the period.
+- ~shape~, ~room~, etc.: these are parameters of the audio sampler, helping us to shape the sound.
 
 There are two types of arguments you can give to a pattern:
-- *pattern-relative*: They will teach the system how your pattern will unfold in time (~period~, ~divisor~, ~rate~, etc).
-- *instrument-relative :* arguments specific to *SuperDirt* / *MIDI* / *OSC*. They will help to precise what output you would like to get out of your pattern.
+- *pattern-relative*: these arguments determine how the pattern unfolds in time. These include: ~period~, ~divisor~, ~rate~).
+- *instrument-relative:* these arguments control parameters specific to *SuperDirt* / *MIDI* / *OSC*. For the SuperDirt sampler parameters, refer to the *Audio Engine Reference* in the sidebar.
 
-To know the complete list of all the possible parameters, you will have to refer to the *SuperDirt Reference* included in the sidebar! Note that you can also add more parameters later on if you tweak your audio engine.
-
-As you might have noticed already, there is a difference between arguments that are plain numbers and arguments that are specified as a string (in green). The difference is that numbers are just numbers but strings are interpreted as *patterns*. They move in time with each step. It means that the following pattern: ~"0.5!4, 0.25!2"~ is in fact: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~. Don't focus too much on it for the moment, we will come back to it later on! There is much depth to what a pattern is and what you can do with them.
+Numbers vs Strings
+It is important to know how numbers differ from strings. Numbers are just numbers and can be integers or floats (decimals). Strings are interpreted as *patterns* that are evaluated based on the syntax used. They move in time with each step. In the example above the pattern ~"0.5!4, 0.25!2"~ when interpreted becomes: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~.
 
 *Summary:*
-- *Patterns* are a complete description of an algorithmic musical pattern: *pitch*, *timbre*, *rhythm*, etc.
-- *Patterns* are collection of values or other patterns.
-- *Patterns* can take an undefinite amount of arguments.
-- *Patterns* can use a special syntax in between ~strings~ for writing better patterns.
+- Players (Pa) are used together with an operator (>>) and pattern sender.
+- *Patterns* are a complete description of an algorithmic musical expression: *pitch*, *timbre*, *rhythm*, etc.
+- *Patterns* are a collection of values or other patterns and can take an indefinite amount of arguments.
+- *Patterns* use a special syntax as ~'strings'~.
 
 ** Tempo and playback
 

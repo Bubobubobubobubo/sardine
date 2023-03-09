@@ -16,10 +16,12 @@
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
 	import { keymap } from "@codemirror/view";
   import { tutorialText } from '$lib/text/TutorialText';
-  import { HSplitPane, VSplitPane } from 'svelte-split-pane';
+	import { Pane, Splitpanes } from 'svelte-splitpanes';
+
 
 
 	let inputted_characters = 0;
+  let editorHeight, editorWidth;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
@@ -196,6 +198,7 @@
   }
 
   function panelMoved() {
+    console.log(editorHeight, editorWidth)
     view.refreshEditorSize();
   }
 
@@ -219,14 +222,8 @@
         <Tab>Docs</Tab>
 			</TabList>
 
-      <VSplitPane
-        topPanelSize="75%"
-        downPanelSize="25%"
-        minTopPaneSize="50px"
-        minDownPaneSize="50px"
-        updateCallback={() => {panelMoved()}}
-      >
-        <top slot="top">
+      <Splitpanes horizontal=True pushOtherPanes=True>
+        <Pane maxSize=90 minSize=10 snapSize= 10>
           {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
             <TabPanel>
               <Editor
@@ -251,11 +248,11 @@
               sandbox="allow-same-origin"
               onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
           </TabPanel>
-        </top>
-        <down slot="down">
+        </Pane>
+        <Pane minSize=10 maxSize=90 snapSize=10>
           <Console {logs}/>
-        </down>
-      </VSplitPane>
+        </Pane>
+      </Splitpanes>
     </Tabs>
   </main>
 </div>
@@ -289,4 +286,39 @@
  }
 
 
+ .splitpanes {
+   background-color: #f8f8f8;
+ }
+
+ .splitpanes__splitter {
+	 background-color: #ccc;
+	 position: relative;
+ }
+
+ .splitpanes__splitter:before {
+	 content: '';
+	 position: absolute;
+	 left: 0;
+	 top: 0;
+	 transition: opacity 0.4s;
+	 background-color: rgba(255, 0, 0, 0.3);
+	 opacity: 0;
+	 z-index: 1;
+ }
+
+ .splitpanes__splitter:hover:before {
+	 opacity: 1;
+ }
+
+ .splitpanes--vertical > .splitpanes__splitter:before {
+	 left: -30px;
+	 right: -30px;
+	 height: 100%;
+ }
+
+ .splitpanes--horizontal > .splitpanes__splitter:before {
+	 top: -30px;
+	 bottom: -30px;
+	 width: 100%;
+ }
 </style>

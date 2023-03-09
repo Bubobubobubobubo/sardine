@@ -34,14 +34,6 @@
 			>
 				<Button text={"Mode ["+$editorMode+"]"}/>
 			</span>
-
-			<a 
-				href="https://sardine.raphaelforment.fr" 
-				target="_blank"
-				rel="noreferrer"
-			>
-				<Button text="Open Docs" />
-			</a>
 		</div>
 	</nav>
 </header>

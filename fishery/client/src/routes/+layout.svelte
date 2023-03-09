@@ -15,9 +15,9 @@
   import { SardineBasicSetup } from '$lib/SardineSetup';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
 	import { keymap } from "@codemirror/view";
-	import { listen, onIdle } from 'svelte-idle';
-	import { default_buffer } from '$lib/text/DummyText';
-    import { tutorialText } from '$lib/text/TutorialText';
+  import { tutorialText } from '$lib/text/TutorialText';
+  import { HSplitPane, VSplitPane } from 'svelte-split-pane';
+
 
 	let inputted_characters = 0;
 
@@ -41,12 +41,15 @@
       .then(response => response.json())
       .then((data: object) => {
         for (let [key, value] of Object.entries(data)) {
-          SARDINE_BUFFERS["["+key[0]+"]"] = value.toString();
+          key = key.replace(/buffer/g, "");
+          key = key.replace(/.py/g, "");
+          key = "[" + key + "]"
+          SARDINE_BUFFERS[key] = value.toString();
         };
       });
   }
 
- fetchLocalFiles()
+  fetchLocalFiles()
 	
 	// Fetching from the local server to grab the content of the files.
 
@@ -64,12 +67,8 @@
 				}
 		)
 		.then(response => response);
-        // There is nothing I can do with the response... 
+    // There is nothing I can do with the response...
 	};
-
-	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
-	/* We are populating it with some dummy information gathered from DummyText.ts  */ 
-	SARDINE_BUFFERS["[*]"] = default_buffer;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 	// Initialise state of the code editor: we don't know anything about the state of anything.
@@ -87,20 +86,20 @@
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
 		})
-        editorMode.subscribe(value => {
-            if (value == 'vim') {
-                console.log('Switch to VIM Mode.')
-                tick().then(() => {
-                    view.addVim();
-                });
-            } else {
-                console.log('Switch to Emacs Mode.')
-                tick().then(() => {
-                    view.removeVim();
-                });
-            }
-        });
-    });
+    editorMode.subscribe(value => {
+        if (value == 'vim') {
+            console.log('Switch to VIM Mode.')
+            tick().then(() => {
+                view.addVim();
+            });
+        } else {
+            console.log('Switch to Emacs Mode.')
+            tick().then(() => {
+                view.removeVim();
+            });
+        }
+     });
+  });
 
  /**
   * Intercepting keypresses and triggering action. The current events are covered:
@@ -119,7 +118,10 @@
       if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
           event.preventDefault(); // Prevents the addition of a new line
           const code = view.getSelectedLines();
-          runnerService.executeCode(code + "\n\n");
+          runnerService.executeCode(code + "\n");
+          console.log("Saving code buffers!")
+          saveBuffers(SARDINE_BUFFERS);
+          console.log(SARDINE_BUFFERS);
       }
 
       // Keybinding to switch from Emacs mode to Vim Mode
@@ -165,12 +167,6 @@
       // Writing the content of the buffer to the internal dict.
         SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
     }
-
-    // Everytime the user enters more than 50 characters, save the files to the disk!
-    inputted_characters += 1;
-    if (inputted_characters % 50 == 0) {
-      saveBuffers(SARDINE_BUFFERS);
-    }
   }
 
   function saveAsTextFile() {
@@ -201,68 +197,60 @@
           body: {}
       });
   }
-
-  // This will trigger a save rather frequently. This value needs some finetuning
-  // to be less aggressive! I wonder what effect it can have on performances.
-  listen({
-      timer: 10,
-      cycle: 500
-  });
-  onIdle(() => {
-      saveBuffers(SARDINE_BUFFERS);
-  });
-
-
 </script>
 
 <div class="app">
-	<Header 
-		on:play={handlePlay}
-		on:stop={handleStop}
-		on:save={saveAsTextFile}
-		on:users={() => console.log("Users")}
-        on:tutorial={spawnTutorial}
-        on:folder={openSardineFolder}
+  <Header
+    on:play={handlePlay}
+    on:stop={handleStop}
+    on:save={saveAsTextFile}
+    on:users={() => console.log("Users")}
+    on:tutorial={spawnTutorial}
+    on:folder={openSardineFolder}
 	/>
-
-	<main> 
-		<Tabs>
-			<TabList>
-				{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
+	<main>
+    <Tabs>
+      <TabList>
+        {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 					<Tab>{name}</Tab>
 				{/each}
         <Tab>Docs</Tab>
 			</TabList>
 
-		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-			<TabPanel>
-				<Editor 
-          extensions={extensions};
-			  	bind:this={view}
-					doc={buffer}
-					bind:docStore={store}
-					bind:effects={codeMirrorState}
-					on:keydown={keyDownHandler}
-					on:keyup={keyUpHandler}
-					on:change={handleBufferChange}
-				/>
-			</TabPanel>
-		{/each}
-    <TabPanel>
-      <iframe
-        src="https://sardine.raphaelforment.fr"
-        title="Sardine website"
-        width="100%"
-        height="100vh"
-        frameborder="0"
-        sandbox="allow-same-origin"
+      <VSplitPane topPanelSize="75%" downPanelSize="25%" minTopPaneSize="50px" minDownPaneSize="50px">
+        <top slot="top">
+          {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
+            <TabPanel>
+              <Editor
+                extensions={extensions};
+                bind:this={view}
+                doc={buffer}
+                bind:docStore={store}
+                bind:effects={codeMirrorState}
+                on:keydown={keyDownHandler}
+                on:keyup={keyUpHandler}
+                on:change={handleBufferChange}
+              />
+            </TabPanel>
+          {/each}
+          <TabPanel>
+            <iframe
+              src="https://sardine.raphaelforment.fr"
+              title="Sardine website"
+              width="100%"
+              height="100vh"
+              frameborder="0"
+              sandbox="allow-same-origin"
               onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
-    </TabPanel>
-		</Tabs>
-		<Console {logs}/>
-	</main>
+          </TabPanel>
+        </top>
+        <down slot="down">
+          <Console {logs}/>
+        </down>
+      </VSplitPane>
+    </Tabs>
+  </main>
 </div>
-
 <style>
 
 	.app {

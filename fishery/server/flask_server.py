@@ -25,10 +25,11 @@ logging.getLogger("werkzeug").disabled = True
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
-FILENAMES = [
-        "0.py", "1.py", "2.py", "3.py",
-        "4.py", "5.py", "6.py", "7.py",
-        "8.py", "9.py", "10.py",
+FILENAMES = ["buffer0.py", "buffer1.py",
+             "buffer2.py", "buffer3.py",
+             "buffer4.py", "buffer5.py",
+             "buffer6.py", "buffer7.py",
+             "buffer8.py", "buffer9.py"
 ]
 
 # We need to create the log file if it doesn't already exist
@@ -56,8 +57,9 @@ class WebServer():
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
-                print(f'Creating file {str(filename)}!')
-                Path(check_file).touch()
+                print(f'Creating file {str(filename)} as utf-8!')
+                with open(check_file, "w", encoding="utf-8") as f:
+                    f.write("")
             else:
                 print(f'Loading file {str(filename)}')
 
@@ -76,8 +78,9 @@ class WebServer():
                 (USER_DIR / "buffers").mkdir()
                 for filename in FILENAMES:
                     print(f"Creating file {filename}.py.")
-                    Path(USER_DIR / "buffers" / filename).touch()
-                    buffer_files[filename] = ""
+                    with open(filename, "w", encoding="utf-8") as f:
+                        f.write("")
+                    buffer_files[filename] = f"{filename}"
                     return buffer_files
             except FileExistsError or OSError:
                 print("[red]Fishery was not able to create web editor files![/red]")
@@ -87,7 +90,12 @@ class WebServer():
             self.check_buffer_files()
             buffer_folder = Path(USER_DIR / "buffers")
             for file in os.listdir(buffer_folder):
-                with open((buffer_folder / file).as_posix(), 'r') as buffer:
+                # .DS_Store files on MacOS killing the mood
+                if str(file).startswith("."):
+                    continue
+                print(f"Nom du fichier: {file}")
+                with open((buffer_folder / file).as_posix(),
+                          'r', encoding='utf-8') as buffer:
                     buffer_files[file] = buffer.read()
             return buffer_files
 
@@ -172,7 +180,6 @@ def server_factory(console):
                 with open((buffer_directory / file_name).as_posix(), 'r') as f:
                     files[file_name] = f.read()
         files = jsonify(files)
-        print(files)
         files.headers.add('Access-Control-Allow-Origin', '*')
         return files
 
@@ -181,10 +188,9 @@ def server_factory(console):
         data = request.get_json(silent=True)
 
         if data:
-            # Iterating over the dictionary we just received and dispatching to text files :)
+            # Iterating over the dictionary we just received and dispatching
+            # to text files :)
             for key, content in data.items():
-                # We need to strip the key first because it is formatted in a weird way.
-                key = ''.join(c for c in key if c not in "[]")
                 # Writing the file itself
                 with open(USER_DIR / "buffers" / f"{key}.py", 'w') as new_file:
                     new_file.write(content)

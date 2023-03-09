@@ -41,6 +41,7 @@
 		"file-saver": "^2.0.5",
 		"svelte-fa": "^3.0.3",
 		"svelte-idle": "^2.0.3",
-		"svelte-markdown": "^0.2.3"
+		"svelte-markdown": "^0.2.3",
+		"svelte-split-pane": "^0.1.2"
 	}
 }

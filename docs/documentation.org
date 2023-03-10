@@ -3640,7 +3640,7 @@ Contributions of any sort are really welcome! I am not a professional developer 
 This website is maintained using [[https://orgmode.org/][Org Mode]], a wonderful tool for documentation. The whole documentation is a monolithic ~.org~ file that you can find (and edit!) on GitHub. The styling is plain CSS, using a customized [[https://github.com/fniessen/org-html-themes][gray]] theme.
 
 I am using some very nice custom fonts:
-- [[http://velvetyne.fr/fonts/compagnon/][Compagnon Font]], used in headers.
+- [[http://velvetyne.fr/fonts/latitude/][Latitude]], used in headers.
 - [[https://tug.org/FontCatalogue/latinmodernroman/][Latin Modern Roman]], used for text.
 - [[https://larsenwork.com/monoid/][Monoid]], used for code.
 

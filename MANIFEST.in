@@ -1,0 +1,5 @@
+graft fishery
+graft sardine
+
+prune **/__pycache__
+prune **/node_modules

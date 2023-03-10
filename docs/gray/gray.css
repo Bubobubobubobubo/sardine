@@ -1,8 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@300;400&display=swap');
-
 @font-face {
   font-family: Latitude;
-  src: url(https://remigeorges.fr/styles/Latitude/Latitude-Regular.ttf) format('truetype');
+  src: url('Latitude-Regular.ttf') format('truetype');
 }
 
 @font-face {

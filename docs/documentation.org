@@ -748,11 +748,11 @@ Evaluating code takes some practice. There are some pitfalls to avoid:
 
 ** Samples and Synths
 
-Why were we hearing a bassdrum and then a clap? Where does the rhythm comes from? *Sardine* is based on the *SuperDirt* audio engine. This is *SuperDirt*'s doing. *SuperDirt* expects to receive information about audio samples and synthesizers using a simple messaging system. *SuperDirt* expects to receive information about audio samples and synthesizers using a string (~bd~, ~cp~, etc.).
+The sounds from *Sardine* are generated from the *SuperDirt* audio engine, which runs in [[https://supercollider.github.io/][SuperColider]]. *SuperDirt* comes with a standard sample set and a group of synthesizers. *SuperDirt* receives information about audio samples and synthesizers from a string (~'bd'~, ~'cp'~, ~'tech:2'~).
 
-When you say ~Pa >> d('bd')~, the sound played will be the first audio sample contained in a folder called ~bd~. By default, there are a lot of samples automatically loaded by *SuperDirt*:
+*SuperDirt* default samples:
 #+begin_src text
-217 existing sample banks:
+(Numbers show how many samples in each bank.)
 808 (6) 808bd (25) 808cy (25) 808hc (5) 808ht (5) 808lc (5) 808lt (5) 808mc (5)
 808mt (5) 808oh (5) 808sd (25) 909 (1) ab (12) ade (10) ades2 (9) ades3 (7)
 ades4 (6) alex (2) alphabet (26) amencutup (32) armora (7) arp (2) arpy (11)
@@ -780,34 +780,29 @@ speedupdown (9) stab (23) stomp (10) subroc3d (11) sugar (2) sundance (6) tabla 
 tabla2 (46) tablex (3) tacscan (22) tech (13) techno (7) tink (5) tok (4) toys (13)
 trump (11) ul (10) ulgab (5) uxay (3) v (6) voodoo (5) wind (10) wobble (1) world (3)
 xmas (1) yeah (31)
-... file reading complete. Required 444 MB of memory.
 #+end_src
 
-It means that you can replace ~bd~ by ~tech~ and it will work! You can summon any audio sample you like.
-
-The same syntax is used to call synthesizers:
-#+begin_src python
-# You will need sc3_plugins for it to work
-Pa >> d('supersaw, superpiano')
-
-silence(Pa)
-#+end_src
-
-These synths are labelled ~super~ because they come installed by default with *SuperDirt*. You can write your own synthesizers using [[https://supercollider.github.io/][SuperColider]] and add them to your setup. That's what experimented players do. They have custom libraries full of synthesizers and audio samples! For now, we will stick to default.
-
-For audio samples, note that you can also be more specific about the file you want to select:
+Each sample bank is a folder with individual sample files. A colon after the name designates the individual sample in that folder. Without a colon, SuperDirt will use the first file (~'bd'~ = ~'bd:0'~).
 #+begin_src python
 Pa >> d('voodoo:0, voodoo:1, voodoo:2')
-
 silence(Pa)
 #+end_src
 
-This pattern will play the first, second and third sample from the ~voodoo~ folder. The sample count starts at *0* and never ends. Don't be afraid of adding a very high number, it will wrap around! It wont crash!
+This pattern plays the first, second and third sample from the ~voodoo~ folder. The sample counter starts at *0* and wraps back to *0* when it reaches the last sample number, so higher numbers will work.
+
+The same syntax is used for *SuperDirt* synthesizers:
+#+begin_src python
+# Requires sc3_plugins
+Pa >> d('supersaw, superpiano')
+Pb >> d('supersaw, superpiano', midinote='[60,62,63,67]')
+
+silence()
+#+end_src
 
 *Summary:*
-- You can call synthesizers of samples using ~"strings"~.
-- You can call a specific sample by using a specific number: ~bd:4~.
-- ~"names"~ can refer to a synth or a sample. There is no difference.
+- You call synthesizers and samples using ~"strings"~.
+- You call a specific sample by using the colon syntax  ~bd:4~.
+- ~"names"~ can refer to a synth or a sample.
 
 ** Sound Patterns & Players
 
@@ -866,37 +861,24 @@ It is important to know how numbers differ from strings. Numbers are just number
 
 ** Tempo and playback
 
-*Sardine* will always try to execute code based on a timing given by its clock. The clock is always there, from the moment you start the software until the moment you exit. The clock is the main mechanism that takes your code and makes it live. There are currently two different clocks you can use:
-- *the internal clock:* Your regular system clock.
-- *the external clock:* A special clock *for synchronisation on the network*.
+Sardine executes code based on timing given by its clock. The clock starts with Sardine and runs until Sardine exits. There are two clocks:
+- *internal clock:* Your regular system clock.
+- *external clock:* A special clock *for synchronisation on the network*. (See Diving Deeper)
 
-These clocks have the same interface! If you learn how to use one of them, you know how to use them all.
+Clock commands:
+- ~clock.tempo~ reports the current tempo in bpm.
+- ~clock.tempo = 140~ sets tempo to 140 bpm.
+Position in time:
+- ~clock.phase~ Position in phase (0.0 - 1.0).
+- ~clock.beat~ Cumulative number of beats (note: doesn't reset at each bar.)
+- ~clock.bar~ Cumulative number of bars.
+- ~clock.time~ time elapsed since start in seconds (monotonic time)
+- ~clock~ shows elapsed time, tempo, beats per bar
 
-If you type ~clock~ in your *fishery* window, you will get a similar message:
-#+begin_src python
-<InternalClock running time=1.9 tempo=135 beats_per_bar=4>
-#+end_src
-Time has passed since the beginning of time. We are currently sailing, and you can see that the clock is active.
-
-Here are some attributes that you might find interesting :
-
-- ~clock.tempo~ : reports the current tempo.
-  - to change the tempo, you can type ~clock.tempo = 140~
-- ~clock.phase~ / ~clock.beat~ / ~clock.bar~
-  - our position in time, from the smallest division to the largest division. You will be able to use these attributes later on for composing in time!
-- ~clock.time~: the most basic representation of time (monotonic time)
-
-You can pause, resume, restart or stop your code at any given time using the ~bowl~:
-- ~bowl.pause()~ / ~bowl.resume()~ : pause and resume.
-~ ~bowl.stop()~ / ~bowl.start()~: stop and play.
-
-#+begin_src python
-print(clock)
-bowl.pause()
-print(clock)
-bowl.resume()
-print(clock)
-#+end_src
+Controlling playback
+Bowl commands can be used to start/stop the clock, which will also impact any Player output.
+- ~bowl.pause()~ / ~bowl.resume()~ : pause and resume runnnig code and stops/resumes the clock.
+- ~bowl.stop()~ / ~bowl.start()~: stop and play. (Start does not restart the clock.)
 
 * Basics
 ** Swimming functions
@@ -2099,6 +2081,10 @@ def super_sleeping(p=2, i=0):
 #+end_src
 
 In the example above, the ~linnhats~ sound is deferred to later, and later means on the *next loop* of our *swimming function*. Rhythms piling up on top of rhythms!
+
+** External Clock TODO
+
+In addition to the internal clock, there is a special clock for synchronisation on the network.
 
 ** Patterning everything
 

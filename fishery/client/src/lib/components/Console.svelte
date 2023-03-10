@@ -19,7 +19,7 @@
     <div class="console-content" bind:this={consoleView}>
         <ul>
             {#each logs as log }
-                <li>{log}</li>
+                <li><pre>{log}</pre></li>
             {/each}
         </ul>
     </div>
@@ -55,23 +55,27 @@
     }
 
     .console-content{
-        font-size: 14px;
+        font-size: 16px;
         height: 100%;
         overflow-y: scroll;
     }
 
     .console-content ul{
-        font-size: 14px;
+        font-size: 16px;
         list-style: none;
         padding: 0;
         margin: 0;
-        background: #2b2b2b;
+        background: #black;
         color: #e6e6e6;
     }
 
     .console-content li{
         font-size: 14px;
         padding: 0px 15px;
+    }
+
+    .splitpanes.default-theme .splitpanes__pane {
+        background-color: black;
     }
 
     /*

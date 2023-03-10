@@ -221,7 +221,7 @@
           effects: StateEffect.appendConfig.of([
           ViewPlugin.define((view) => {
               view.dom.classList.add('editor')
-              // view.dom.style.height = '70vh'
+              view.dom.style.height = '50%'
               view.dom.style.width = '99vw'
               return {}
           }),
@@ -231,19 +231,6 @@
       return true
     }
 
-    export function refreshEditorSize () {
-      console.log('Resizing Editor')
-      view.dispatch({
-        effects: StateEffect.appendConfig.of([
-          ViewPlugin.define((view) => {
-            // view.dom.style.height = '70vh'
-            view.dom.style.width = '99vw'
-            return {}
-          }),
-        ]),
-      })
-    }
-    
     $: if (_mounted && doc !== undefined) {
       const inited = _initEditorView(doc)
       dispatchDocStore(doc)
@@ -257,5 +244,9 @@
 </div>
     
 <style>
+
+ .codemirror {
+   background-color: black;
+ }
 
 </style>

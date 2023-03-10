@@ -200,9 +200,7 @@
         return "[" + name.replace('.py', '').replace('buffer', '') + "]"
     }
 
-    function panelMoved() {
-        console.log(editorHeight, editorWidth)
-        view.refreshEditorSize();
+    function handleResize(...args) {
     }
 
 </script>
@@ -225,8 +223,13 @@
                 <Tab>Docs</Tab>
             </TabList>
 
-            <Splitpanes horizontal=True pushOtherPanes=True>
-                <Pane maxSize=90 minSize=10 snapSize=10>
+            <Splitpanes
+                horizontal=True
+                style="height: 100vh; background-color: black"
+                pushOtherPanes=False
+                theme="sardine"
+            >
+                <Pane maxSize={90} minSize={10} snapSize={10}>
                     {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
                         <TabPanel>
                             <Editor
@@ -252,7 +255,7 @@
                                 onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
                     </TabPanel>
                 </Pane>
-                <Pane minSize=10 maxSize=90 snapSize=10>
+                <Pane minSize={10} maxSize={90} snapSize={10}>
                     <Console {logs}/>
                 </Pane>
             </Splitpanes>
@@ -261,67 +264,113 @@
 </div>
 <style>
 
+ :global(.splitpanes.sardine .splitpanes__pane) {
+     background-color: #black;
+ }
 
-    .app {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        color: white;
-        background-color: black;
-    }
+ .splitpanes.sardine .splitpanes__splitter {
+     background-color: #fff;
+     box-sizing: border-box;
+     position: relative;
+     flex-shrink: 0;
+ }
 
-    main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        margin: 0 auto;
-        box-sizing: border-box;
-    }
+ :global(.splitpanes.sardine .splitpanes__splitter:before), :global(.splitpanes.sardine .splitpanes__splitter:after) {
+     content: "";
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     background-color: rgba(0, 0, 0, 0.15);
+     transition: background-color 0.3s;
+ }
 
-    iframe {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        margin: 0 auto;
-        box-sizing: border-box;
-        height: 99vh;
-        width: 99vw;
-    }
+ :global(.splitpanes.sardine .splitpanes__splitter:hover:before), :global(.splitpanes.sardine .splitpanes__splitter:hover:after) {
+     background-color: rgba(0, 0, 0, 0.25);
+ }
 
+ :global(.splitpanes.sardine .splitpanes__splitter:first-child) {
+     cursor: auto;
+ }
 
-    .splitpanes {
-        background-color: #f8f8f8;
-    }
+ :global(.sardine.splitpanes .splitpanes .splitpanes__splitter) {
+     z-index: 1;
+ }
 
-    .splitpanes__splitter {
-        background-color: #ccc;
-        position: relative;
-    }
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter) {
+     width: 7px;
+     border-left: 1px solid #eee;
+     cursor: col-resize;
+}
 
-    .splitpanes__splitter:before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        transition: opacity 0.4s;
-        background-color: rgba(255, 0, 0, 0.3);
-        opacity: 0;
-        z-index: 1;
-    }
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:after),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:after) {
+     transform: translateY(-50%);
+     width: 1px;
+     height: 30px;
+ }
 
-    .splitpanes__splitter:hover:before {
-        opacity: 1;
-    }
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:before) {
+     margin-left: -2px;
+ }
 
-    .splitpanes--vertical > .splitpanes__splitter:before {
-        left: -30px;
-        right: -30px;
-        height: 100%;
-    }
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:after),
+ :global(.sardine.splitpanes--vertical > .splitpanes__splitter:after) {
+     margin-left: 1px;
+ }
 
-    .splitpanes--horizontal > .splitpanes__splitter:before {
-        top: -30px;
-        bottom: -30px;
-        width: 100%;
-    }
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter) {
+     height: 7px;
+     border-top: 1px solid #eee;
+     cursor: row-resize;
+ }
+
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after) {
+     transform: translateX(-50%);
+     width: 30px;
+     height: 1px;
+ }
+
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before) {
+     margin-top: -2px;
+ }
+
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after),
+ :global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after) {
+     margin-top: 1px;
+ }
+
+ .app {
+     display: flex;
+     flex-direction: column;
+     min-height: 99vh;
+     color: black;
+     background-color: black;
+ }
+
+ main {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     margin: 0 auto;
+     box-sizing: border-box;
+ }
+
+ iframe {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     margin: 0 auto;
+     box-sizing: border-box;
+     height: 99vh;
+     width: 99vw;
+ }
 </style>

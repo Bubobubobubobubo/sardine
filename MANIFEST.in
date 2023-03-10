@@ -1,5 +1,7 @@
 graft fishery
 graft sardine
 
+prune **/.svelte-kit
 prune **/__pycache__
+prune **/build
 prune **/node_modules

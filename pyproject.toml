@@ -55,12 +55,20 @@ dependencies = [
     "exceptiongroup>=1.0.4",
 ]
 
+[tool.setuptools]
+# We don't want MANIFEST.in to affect the wheel distribution
+include-package-data = false
+
 [tool.setuptools.dynamic]
 version = { attr = "sardine.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["fishery", "sardine"]
+include = ["fishery**", "sardine**"]
 namespaces = false
+
+[tool.setuptools.package-data]
+"sardine.sequences.sardine_parser" = ["*.lark"]
+"sardine.superdirt" = ["*.scd"]
 
 [tool.isort]
 profile = "black"

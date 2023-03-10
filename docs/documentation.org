@@ -1890,22 +1890,31 @@ When I first created *Sardine*, I told myself that having something like *Ziffer
 
 You can start *Sardine* without installing *Ziffers*. It will work. The *Ziffers* layer will not be activated and you will lose some functionalities!
 
+To install [[https://github.com/Bubobubobubobubo/ziffers-python][clone Ziffers]] from github and run pip install:
+
+#
+git clone https://github.com/Bubobubobubobubo/ziffers-python
+cd ziffers-python
+python -m pip install -e.
+#
+
 *** Testing a Ziffers without looping
 
 #+begin_src python
-def _weird(instrument: str, ziffer: str, *args, **kwargs):
-	"""Play a ziffer ZD pattern once"""
-	zif = len(z(ziffer))
-    pattern = lambda x: ZD(instrument, ziffer, *args, **kwargs, i=x)
-	for i in range(zif):
-    	dur = pattern(i)
-		sleep(dur)
+# Play ziffers once
+zplay("0 1 2 3 4")
 
-def weird(instrument: str, ziffer: str, *args, **kwargs):
-	def test_function():
-    	_weird(instrument, ziffer, *args, **kwargs)
-	swim(test_function())
+# Use parameters to change key and scale
+zplay("q (0,4) 3 e 2 5 3 1", key="D", scale="Minor")
 #+end_src
+
+#+begin_src python
+@swim
+def ziff(p=1):
+    zplay("q 4 2 6 9")
+    again(ziff, p=1)
+#+end_src
+
 
 * Diving Deeper
 

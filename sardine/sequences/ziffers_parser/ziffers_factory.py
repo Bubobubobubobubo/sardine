@@ -32,7 +32,7 @@ def _play_ziffers(D, N, sleep, ziffer: str, *args, **kwargs):
         sleep(cur.beat)
 
 
-def create_zplay(D, N, sleep, swim):
+def create_zplay(D, N, sleep, swim, polyphonic=False):
     """Builder for zplay function"""
 
     def _zplay(ziffer: str, *args, **kwargs):
@@ -40,9 +40,9 @@ def create_zplay(D, N, sleep, swim):
 
         def dynamic_function():
             _play_ziffers(D, N, sleep, ziffer, *args, **kwargs)
-
         fun = dynamic_function
-        fun.__name__ = f"ziffers_{uuid.uuid4().hex}"
+        if polyphonic:
+            fun.__name__ = f"ziffers_{uuid.uuid4().hex}"
         swim(fun)
 
     return _zplay

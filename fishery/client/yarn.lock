@@ -818,6 +818,13 @@ eslint@^8.28.0:
     strip-json-comments "^3.1.0"
     text-table "^0.2.0"
 
+esm-env-robust@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/esm-env-robust/-/esm-env-robust-0.0.3.tgz#ef95644dde2f2bd750dec4366a43950b3dc3ed50"
+  integrity sha512-90Gnuw2DALOqlL1581VxP3GHPUNHX9U+fQ+8FNcTTFClhY5gEggAAnJ3q1b2Oq23knRsjv8YpNeMRPaMLUymOA==
+  dependencies:
+    esm-env "^1.0.0"
+
 esm-env@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/esm-env/-/esm-env-1.0.0.tgz#b124b40b180711690a4cb9b00d16573391950413"
@@ -1578,6 +1585,13 @@ svelte-split-pane@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/svelte-split-pane/-/svelte-split-pane-0.1.2.tgz#aae94c583fdcf80e3ceaefc31755f3c49886e6a8"
   integrity sha512-JluEydC9v2DetyhlwCF3CdqAkET8XPHP7WeWbl4lVLOg55avDOhoS5U6BRhvWd104HOqhUcCSz+7Nveyjmzjeg==
+
+svelte-splitpanes@^0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/svelte-splitpanes/-/svelte-splitpanes-0.7.13.tgz#e8514aeb31e291d9dee382557a41b945c22b8b53"
+  integrity sha512-LiAf4OEZqRJanoax9mextXtQ0JzrdCqX2tOgVO+yJu2XNyGz5j5fGbw8+5AXgOasPi/m1nv8n2Lt+XYFRfvIGg==
+  dependencies:
+    esm-env-robust "^0.0.3"
 
 svelte@^3.54.0:
   version "3.55.1"

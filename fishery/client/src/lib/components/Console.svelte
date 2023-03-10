@@ -27,7 +27,6 @@
     
     .console{
         color: white;
-        border-top: dashed white 1px;
     }
 
     .console-header{
@@ -42,38 +41,39 @@
         padding: 4px;
         cursor: pointer;
     }
+
     h3:hover {
         color: black;
         background-color: white;
         transition: all 0.2s ease-in-out;
     }
+
     h3.active {
         color: black;
         background-color: white;
     }
 
     .console-content{
-        font-size: 12px;
-        height: 10vh;
+        font-size: 14px;
+        height: 100%;
         overflow-y: scroll;
     }
 
     .console-content ul{
-        font-size: 12px;
+        font-size: 14px;
         list-style: none;
         padding: 0;
         margin: 0;
     }
 
     .console-content li{
-        font-size: 12px;
+        font-size: 14px;
         padding: 0px 15px;
     }
 
-    /*.console-content li:nth-child(odd){
+    /*
+    .console-content li:nth-child(odd){
         background-color: #333;
     }
     */
-
-
 </style>

@@ -16,10 +16,12 @@
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
 	import { keymap } from "@codemirror/view";
   import { tutorialText } from '$lib/text/TutorialText';
-  import { HSplitPane, VSplitPane } from 'svelte-split-pane';
+	import { Pane, Splitpanes } from 'svelte-splitpanes';
+
 
 
 	let inputted_characters = 0;
+  let editorHeight, editorWidth;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
@@ -41,9 +43,6 @@
       .then(response => response.json())
       .then((data: object) => {
         for (let [key, value] of Object.entries(data)) {
-          key = key.replace(/buffer/g, "");
-          key = key.replace(/.py/g, "");
-          key = "[" + key + "]"
           SARDINE_BUFFERS[key] = value.toString();
         };
       });
@@ -56,12 +55,12 @@
 	/*
 	 * This function will be called periodically to send the current state
 	 * of all the text buffers to the Flask server. They will be parsed to
-	 * text files and saved in the APPDIRS/buffers folder for later usage.
-	 */ 
+	 * text files and saved in the APPDIRS/buffers folder for later usage.///
+	 */
 	function saveBuffers(buffers: object) {
 		fetch("http://localhost:8000/save", {
-				method: "POST", 
-				body: JSON.stringify(buffers),
+				method: "POST",
+				body: buffers,
 				headers: {
 					"Content-type": "application/json; charset=UTF-8"}
 				}
@@ -121,7 +120,7 @@
           runnerService.executeCode(code + "\n");
           console.log("Saving code buffers!")
           saveBuffers(SARDINE_BUFFERS);
-          console.log(SARDINE_BUFFERS);
+          console.log("Saving ok!")
       }
 
       // Keybinding to switch from Emacs mode to Vim Mode
@@ -161,12 +160,8 @@
   function handleBufferChange({ detail: {tr} }) {
     // Getting the currently active tab through introspection
     let tab = get(activeTab);
-
-    // We ignore the scratch buffer!
-    if (tab !== 0 && tr._doc.text) {
-      // Writing the content of the buffer to the internal dict.
-        SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
-    }
+    SARDINE_BUFFERS["buffer"+(tab-1)+".py"] = tr._doc.text.join('\n');
+    console.log(SARDINE_BUFFERS)
   }
 
   function saveAsTextFile() {
@@ -182,7 +177,7 @@
     console.log('Spawning the basic tutorial');
     let tab = get(activeTab);
     // We change the buffer but we need to trigger a redraw as well
-    SARDINE_BUFFERS["["+(tab-1)+"]"] = tutorialText;
+    SARDINE_BUFFERS["buffer"+activeTab+".py"] = tutorialText;
     view._setText(tutorialText);
   }
 
@@ -197,6 +192,16 @@
           body: {}
       });
   }
+
+  function trimBufferName(name: string) {
+    return "[" + name.replace('.py', '').replace('buffer', '') + "]"
+  }
+
+  function panelMoved() {
+    console.log(editorHeight, editorWidth)
+    view.refreshEditorSize();
+  }
+
 </script>
 
 <div class="app">
@@ -212,13 +217,13 @@
     <Tabs>
       <TabList>
         {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-					<Tab>{name}</Tab>
+					<Tab>{trimBufferName(name)}</Tab>
 				{/each}
         <Tab>Docs</Tab>
 			</TabList>
 
-      <VSplitPane topPanelSize="75%" downPanelSize="25%" minTopPaneSize="50px" minDownPaneSize="50px">
-        <top slot="top">
+      <Splitpanes horizontal=True pushOtherPanes=True>
+        <Pane maxSize=90 minSize=10 snapSize= 10>
           {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
             <TabPanel>
               <Editor
@@ -243,15 +248,16 @@
               sandbox="allow-same-origin"
               onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
           </TabPanel>
-        </top>
-        <down slot="down">
+        </Pane>
+        <Pane minSize=10 maxSize=90 snapSize=10>
           <Console {logs}/>
-        </down>
-      </VSplitPane>
+        </Pane>
+      </Splitpanes>
     </Tabs>
   </main>
 </div>
 <style>
+
 
 	.app {
 		display: flex;
@@ -280,4 +286,39 @@
  }
 
 
+ .splitpanes {
+   background-color: #f8f8f8;
+ }
+
+ .splitpanes__splitter {
+	 background-color: #ccc;
+	 position: relative;
+ }
+
+ .splitpanes__splitter:before {
+	 content: '';
+	 position: absolute;
+	 left: 0;
+	 top: 0;
+	 transition: opacity 0.4s;
+	 background-color: rgba(255, 0, 0, 0.3);
+	 opacity: 0;
+	 z-index: 1;
+ }
+
+ .splitpanes__splitter:hover:before {
+	 opacity: 1;
+ }
+
+ .splitpanes--vertical > .splitpanes__splitter:before {
+	 left: -30px;
+	 right: -30px;
+	 height: 100%;
+ }
+
+ .splitpanes--horizontal > .splitpanes__splitter:before {
+	 top: -30px;
+	 bottom: -30px;
+	 width: 100%;
+ }
 </style>

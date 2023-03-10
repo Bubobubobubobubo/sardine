@@ -22,18 +22,18 @@
     let inputted_characters = 0;
     let editorHeight, editorWidth;
 
-    /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+ /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     Initialise a list of code buffers by fetching them from the server.  We are fetching files
     from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
     up with our own TS-defined local text buffers before populating the tabs. The same mecha-
     nism in reverse is used for saving.
     =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    */
+  */
 
-    // This is the data structure we use for storing text throughout the editor. It is basically
-    // a dictionary mapping of the APPDIRS/buffers directory structure.
+ // This is the data structure we use for storing text throughout the editor. It is basically
+ // a dictionary mapping of the APPDIRS/buffers directory structure.
     interface Dictionary<T> {
-        [Key: string]: T;
+     [Key: string]: T;
     }
 
     let SARDINE_BUFFERS: Dictionary<string> = {};

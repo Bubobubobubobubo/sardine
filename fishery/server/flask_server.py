@@ -11,6 +11,7 @@ from flask_cors import CORS
 from pathlib import Path
 from rich import print
 from appdirs import *
+import mimetypes
 import logging
 import os
 
@@ -19,7 +20,7 @@ import os
 import flask.cli    
 flask.cli.show_server_banner = lambda *args: None
 logging.getLogger("werkzeug").disabled = True
-
+mimetypes.add_type('text/css', '.css')
 
 
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"

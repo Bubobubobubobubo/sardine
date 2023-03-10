@@ -850,8 +850,7 @@ There are two types of arguments you can give to a pattern:
 - *pattern-relative*: these arguments determine how the pattern unfolds in time. These include: ~period~, ~divisor~, ~rate~).
 - *instrument-relative:* these arguments control parameters specific to *SuperDirt* / *MIDI* / *OSC*. For the SuperDirt sampler parameters, refer to the *Audio Engine Reference* in the sidebar.
 
-Numbers vs Strings
-It is important to know how numbers differ from strings. Numbers are just numbers and can be integers or floats (decimals). Strings are interpreted as *patterns* that are evaluated based on the syntax used. They move in time with each step. In the example above the pattern ~"0.5!4, 0.25!2"~ when interpreted becomes: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~.
+*Numbers vs Strings:* It is important to know how numbers differ from strings. Numbers are just numbers and can be integers or floats (decimals). Strings are interpreted as *patterns* that are evaluated based on the syntax used. They move in time with each step. In the example above the pattern ~"0.5!4, 0.25!2"~ when interpreted becomes: ~[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]~.
 
 *Summary:*
 - Players (Pa) are used together with an operator (>>) and pattern sender.
@@ -2082,9 +2081,20 @@ def super_sleeping(p=2, i=0):
 
 In the example above, the ~linnhats~ sound is deferred to later, and later means on the *next loop* of our *swimming function*. Rhythms piling up on top of rhythms!
 
-** External Clock TODO
+** External Clock
 
-In addition to the internal clock, there is a special clock for synchronisation on the network.
+Sardine lets you chose between two clocks: the ~InternalClock~ and the ~LinkClock~:
+- the ~InternalClock~ is a monotonic clock tied to your system time. It is the default time used by your system.
+- the ~LinkClock~ is an interface to the [[https://www.ableton.com/en/link/][Ableton Link]] link protocol.
+
+You can use ~sardine-config~ to change which clock your *Sardine* is using.
+
+Because clocks share the same interface, there is no visible difference to using one VS the other. However, only the ~LinkClock~ will allow proper synchronisation with outside peers.
+
+To synchronise, you simply need to share a local network with any other application (or *Sardine* instance) using the Ableton Link protocol. If nothing is blocking the signal (firewall, network protection), your *Sardine* will automatically try to match with the tempo of all the other applications around.
+The tempo given by Ableton Link is an average tempo that adjusts itself according to the tempo given by everyone. There is no master instance and no passive instance that just listens like MIDI. This means that anyone can submit a tempo change, and that this change will apply to all players.
+
+Internally, the Link clock is implemented differently. In order for it to work with Sardine, a task is started in the background. This task will regularly (several times per second) fetch new information about the temporal position of the clock and propagate this information to all Sardine components that need it.
 
 ** Patterning everything
 

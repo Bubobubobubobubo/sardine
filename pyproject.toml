@@ -87,7 +87,7 @@ Documentation = "https://sardine.raphaelforment.fr"
 fishery = 'fishery.__main__:main'
 sardine-config-python = 'sardine.cli.main:edit_python_configuration'
 sardine-config-superdirt = 'sardine.cli.main:edit_superdirt_configuration'
-sardine-config = 'sardine.cli.main:main'
+sardine-config = 'sardine.cli:main'
 
 [tool.black]
 target_version = ['py311']

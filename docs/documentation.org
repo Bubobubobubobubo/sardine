@@ -559,21 +559,25 @@ Text editors are particularly important to get the most out of *Sardine*. Rememb
 
 ** Fishery Web
 
-You don't need a text editor to play with *Sardine*. Just start the software by typing ~fishery web~. Optionally, you can specify the ~--port~ and  ~--host~ arguments. Your web browser will promptly open, generally at ~https://localhost:8000~. The text editor is also handling files automatically:
-- text files will be retrieved from the `USER_DIR/buffer` folder everytime you load the application.
-- text files will be saved to the `USER_DIR/buffer` folder everytime you stop writing.
+You don't need a text editor to play with *Sardine*. Just start *Sardine* with its own text editor by typing ~fishery web~. You can optionally the ~--port~ and  ~--host~ arguments for fine-tuning your local server. Your web browser will open as a result of typing the command. Our text editor is a web application living in your web browser, generally at ~https://localhost:8000~. The text editor is simple but has a few nice features:
+- multi-pane / multi-buffer editing.
+- access to the Sardine documentation.
+- normal editing mode or [[https://en.wikipedia.org/wiki/Vim_(text_editor)][Vim]] mode.
+- quick access to play/pause, etc...
+- console for logging.
 
-Note that one of the panels is named ~*~. This panel is the scratch buffer, a file that will never be saved. Be careful if you write inside it as you will not be able to retrieve your code :)
+The text editor also handles its own set of text files automatically. You can retrieve them inside the *Sardine* folder (see the appropriate section).
+
+For now, the application must be built manually in able to be used. In the ~/fishery/client~ directory, run ~yarn install~ and ~yarn run build~ to build the text editor. As you might guess, you need to install [[https://yarnpkg.com/][Yarn]] and also [[https://www.npmjs.com/][npm]]. These are tools used by Javascript developers to build their applications. These commands should only be runned once everytime you install *Sardine*.
 
 #+begin_src shell
 fishery web
 fishery web --port 12345
+fishery web --host 0.0.0.0 --port 8000
 #+end_src
 
 #+attr_html: :width 800px
 [[file:fishery_web.png]]
-
-*Pre v0.2.3 version:* note that you have to manually build the text editor to be able to use it. In the ~/fishery/client~ directory, run ~yarn install~ and ~yarn run build~ to build the text editor. This should only be runned once everytime you install *Sardine*.
 
 ** Flok
 

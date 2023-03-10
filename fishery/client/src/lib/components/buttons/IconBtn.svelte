@@ -5,8 +5,6 @@
         faCircleQuestion, faUserGroup, 
         faFolder, type IconDefinition
     } from '@fortawesome/free-solid-svg-icons';
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
 
     // Initialisation of props and events
     export let icon: string = "";
@@ -26,9 +24,7 @@
 
 <section>
     <button on:click>
-        <Fa 
-        class="" icon={icons[icon]} 
-         />
+        <Fa class="" icon={icons[icon]}/>
     </button>
 </section>
 

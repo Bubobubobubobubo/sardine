@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { tick } from "svelte";
+
     export let logs: Array<string> = [];
     export let autoScroll: boolean = true;
     let consoleView: HTMLDivElement;
@@ -64,6 +65,8 @@
         list-style: none;
         padding: 0;
         margin: 0;
+        background: #2b2b2b;
+        color: #e6e6e6;
     }
 
     .console-content li{

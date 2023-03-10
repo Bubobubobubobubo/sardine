@@ -1,324 +1,327 @@
 <script lang='ts'>
-  import FileSaver from 'file-saver';
-  import { tick } from 'svelte';
-	import type { EditorView } from '@codemirror/view';
-  import Editor from '$lib/components/Editor.svelte';
-	import _reconfigureExtensions from '$lib/components/Editor.svelte';
-	import Header from './Header.svelte';
-	import Console from '$lib/components/Console.svelte';
-	import { editorMode, activeTab } from '$lib/store';
-	import { get } from 'svelte/store';
-	import { vim } from "@replit/codemirror-vim";
-	import './styles.css';
-	import runnerService from '$lib/services/runnerService';
-	import { onMount } from 'svelte';
-  import { SardineBasicSetup } from '$lib/SardineSetup';
-	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
-	import { keymap } from "@codemirror/view";
-  import { tutorialText } from '$lib/text/TutorialText';
-	import { Pane, Splitpanes } from 'svelte-splitpanes';
+    import FileSaver from 'file-saver';
+    import {tick} from 'svelte';
+    import type {EditorView} from '@codemirror/view';
+    import Editor from '$lib/components/Editor.svelte';
+    import _reconfigureExtensions from '$lib/components/Editor.svelte';
+    import Header from './Header.svelte';
+    import Console from '$lib/components/Console.svelte';
+    import {editorMode, activeTab} from '$lib/store';
+    import {get} from 'svelte/store';
+    import {vim} from "@replit/codemirror-vim";
+    import './styles.css';
+    import runnerService from '$lib/services/runnerService';
+    import {onMount} from 'svelte';
+    import {SardineBasicSetup} from '$lib/SardineSetup';
+    import {Tabs, TabList, TabPanel, Tab} from '$lib/components/tabs/tabs';
+    import {keymap} from "@codemirror/view";
+    import {tutorialText} from '$lib/text/TutorialText';
+    import {Pane, Splitpanes} from 'svelte-splitpanes';
 
 
+    let inputted_characters = 0;
+    let editorHeight, editorWidth;
 
-	let inputted_characters = 0;
-  let editorHeight, editorWidth;
+    /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    Initialise a list of code buffers by fetching them from the server.  We are fetching files
+    from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
+    up with our own TS-defined local text buffers before populating the tabs. The same mecha-
+    nism in reverse is used for saving.
+    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    */
 
-	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
-	from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
-	up with our own TS-defined local text buffers before populating the tabs. The same mecha-
-	nism in reverse is used for saving.
-	=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	*/
+    // This is the data structure we use for storing text throughout the editor. It is basically
+    // a dictionary mapping of the APPDIRS/buffers directory structure.
+    interface Dictionary<T> {
+        [Key: string]: T;
+    }
 
-	// This is the data structure we use for storing text throughout the editor. It is basically
-	// a dictionary mapping of the APPDIRS/buffers directory structure.
-  interface Dictionary<T> { [Key: string]: T; }
-	let SARDINE_BUFFERS: Dictionary<string> = {};
+    let SARDINE_BUFFERS: Dictionary<string> = {};
 
-  async function fetchLocalFiles() {
-    let response = await fetch('http://localhost:8000/text_files', {
-		  method: 'GET',
-	  })
-      .then(response => response.json())
-      .then((data: object) => {
-        for (let [key, value] of Object.entries(data)) {
-          SARDINE_BUFFERS[key] = value.toString();
-        };
-      });
-  }
-
-  fetchLocalFiles()
-	
-	// Fetching from the local server to grab the content of the files.
-
-	/*
-	 * This function will be called periodically to send the current state
-	 * of all the text buffers to the Flask server. They will be parsed to
-	 * text files and saved in the APPDIRS/buffers folder for later usage.///
-	 */
-	function saveBuffers(buffers: object) {
-		fetch("http://localhost:8000/save", {
-				method: "POST",
-				body: buffers,
-				headers: {
-					"Content-type": "application/json; charset=UTF-8"}
-				}
-		)
-		.then(response => response);
-    // There is nothing I can do with the response...
-	};
-
-	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
-	// Initialise state of the code editor: we don't know anything about the state of anything.
-	// We don't really know what we are dealing with and the state is crazy complex. Fun ahead :)
-	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
-
-	let logs: string[] = [];
-	let extensions: any[] = [];
-	$: extensions = extensions;
-	let store;
-	let codeMirrorState;
-	let view: EditorView;
-
-	onMount((): void => {
-		runnerService.watchLogs((log) => {
-			logs = [...logs, log];
-		})
-    editorMode.subscribe(value => {
-        if (value == 'vim') {
-            console.log('Switch to VIM Mode.')
-            tick().then(() => {
-                view.addVim();
+    async function fetchLocalFiles() {
+        let response = await fetch('http://localhost:8000/text_files', {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then((data: object) => {
+                for (let [key, value] of Object.entries(data)) {
+                    SARDINE_BUFFERS[key] = value.toString();
+                }
             });
-        } else {
-            console.log('Switch to Emacs Mode.')
-            tick().then(() => {
-                view.removeVim();
-            });
+    }
+
+    fetchLocalFiles()
+
+    // Fetching from the local server to grab the content of the files.
+
+    /*
+     * This function will be called periodically to send the current state
+     * of all the text buffers to the Flask server. They will be parsed to
+     * text files and saved in the APPDIRS/buffers folder for later usage.///
+     */
+    function saveBuffers(buffers: object) {
+        fetch("http://localhost:8000/save", {
+                method: "POST",
+                body: JSON.stringify(buffers),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            }
+        )
+            .then(response => response);
+        // There is nothing I can do with the response...
+    };
+
+    /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+    // Initialise state of the code editor: we don't know anything about the state of anything.
+    // We don't really know what we are dealing with and the state is crazy complex. Fun ahead :)
+    /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+    let logs: string[] = [];
+    let extensions: any[] = [];
+    $: extensions = extensions;
+    let store;
+    let codeMirrorState;
+    let view: EditorView;
+
+    onMount((): void => {
+        runnerService.watchLogs((log) => {
+            logs = [...logs, log];
+        })
+        editorMode.subscribe(value => {
+            if (value == 'vim') {
+                console.log('Switch to VIM Mode.')
+                tick().then(() => {
+                    view.addVim();
+                });
+            } else {
+                console.log('Switch to Emacs Mode.')
+                tick().then(() => {
+                    view.removeVim();
+                });
+            }
+        });
+    });
+
+    /**
+     * Intercepting keypresses and triggering action. The current events are covered:
+     * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
+     * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
+     * @param event Keypress or combination of multiple keys
+     */
+    function keyDownHandler(event: KeyboardEvent): void {
+
+        // Cancel 'tab' from being used as a navigation key
+        if (event.key === "Tab") {
+            event.preventDefault();
         }
-     });
-  });
 
- /**
-  * Intercepting keypresses and triggering action. The current events are covered:
-  * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
-  * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
-  * @param event Keypress or combination of multiple keys
-  */
-  function keyDownHandler(event: KeyboardEvent): void {
+        // Shift + Enter or Ctrl + E (Rémi Georges mode)
+        if (event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
+            event.preventDefault(); // Prevents the addition of a new line
+            const code = view.getSelectedLines();
+            runnerService.executeCode(code + "\n");
+            console.log("Saving code buffers!")
+            saveBuffers(SARDINE_BUFFERS);
+            console.log("Saving ok!")
+        }
 
-      // Cancel 'tab' from being used as a navigation key
-      if (event.key === "Tab") {
-          event.preventDefault();
-      }
+        // Keybinding to switch from Emacs mode to Vim Mode
+        if (event.key === ' ' && event.ctrlKey) {
+            event.preventDefault(); // Prevents the addition of a newline.
+            editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
+        }
+    }
 
-      // Shift + Enter or Ctrl + E (Rémi Georges mode)
-      if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
-          event.preventDefault(); // Prevents the addition of a new line
-          const code = view.getSelectedLines();
-          runnerService.executeCode(code + "\n");
-          console.log("Saving code buffers!")
-          saveBuffers(SARDINE_BUFFERS);
-          console.log("Saving ok!")
-      }
+    /*
+    * Some events are hard to catch on key up but can be prevented by chasing
+    * key up events!
+    */
 
-      // Keybinding to switch from Emacs mode to Vim Mode
-      if(event.key === ' ' && event.ctrlKey) {
-          event.preventDefault(); // Prevents the addition of a newline.
-              editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
-      }
-  }
+    function keyUpHandler(event: KeyboardEvent): void {
+        // Prevent 'Esc' from defocusing the page (hard to catch)
+        if (event.key === "Escape" || event.keyCode === 27) {
+            event.preventDefault();
+        }
+    };
 
-  /*
-  * Some events are hard to catch on key up but can be prevented by chasing
-  * key up events!
-  */
+    /**
+     * Reacting to the play button by resuming the FishBowl.
+     */
+    function handlePlay() {
+        runnerService.executeCode("bowl.dispatch('resume')")
+    }
 
-  function keyUpHandler(event: KeyboardEvent): void {
-      // Prevent 'Esc' from defocusing the page (hard to catch)
-      if (event.key === "Escape" || event.keyCode === 27) {
-          event.preventDefault();
-      }
-  };
+    /**
+     * Reacting to the pause button by 'pausing' the FishBowl.
+     */
 
-  /**
-  * Reacting to the play button by resuming the FishBowl.
-  */
-  function handlePlay() {
-      runnerService.executeCode("bowl.dispatch('resume')")
-  }
+    function handleStop() {
+        runnerService.executeCode("bowl.dispatch('pause')")
+    }
 
-  /**
-   * Reacting to the pause button by 'pausing' the FishBowl.
-   */
+    function handleBufferChange({detail: {tr}}) {
+        // Getting the currently active tab through introspection
+        let tab = get(activeTab);
+        SARDINE_BUFFERS["buffer" + (tab - 1) + ".py"] = tr._doc.text.join('\n');
+        console.log(SARDINE_BUFFERS)
+    }
 
-  function handleStop() {
-      runnerService.executeCode("bowl.dispatch('pause')")
-  }
+    function saveAsTextFile() {
+        // Querying the content of the buffer
+        let file = new Blob(
+            [tr._doc.text.join('\n')],
+            {type: "text/plain;charset=utf-8"},
+        );
+        FileSaver.saveAs(file, "sardine.py");
+    }
 
-  function handleBufferChange({ detail: {tr} }) {
-    // Getting the currently active tab through introspection
-    let tab = get(activeTab);
-    SARDINE_BUFFERS["buffer"+(tab-1)+".py"] = tr._doc.text.join('\n');
-    console.log(SARDINE_BUFFERS)
-  }
+    function spawnTutorial() {
+        console.log('Spawning the basic tutorial');
+        const tab = get(activeTab);
+        // We change the buffer but we need to trigger a redraw as well
+        SARDINE_BUFFERS[`buffer${tab}.py`] = tutorialText;
+        view._setText(tutorialText);
+    }
 
-  function saveAsTextFile() {
-      // Querying the content of the buffer
-      let file = new Blob(
-          [tr._doc.text.join('\n')],
-          { type: "text/plain;charset=utf-8" },
-      );
-      FileSaver.saveAs(file, "sardine.py");
-  }
+    function openSardineFolder() {
+        // Will ask Flask to open the Sardine default folder
+        console.log("Opening Sardine Folder");
+        const response = fetch('http://localhost:8000/open_folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: {}
+        });
+    }
 
-  function spawnTutorial() {
-    console.log('Spawning the basic tutorial');
-    let tab = get(activeTab);
-    // We change the buffer but we need to trigger a redraw as well
-    SARDINE_BUFFERS["buffer"+activeTab+".py"] = tutorialText;
-    view._setText(tutorialText);
-  }
+    function trimBufferName(name: string) {
+        return "[" + name.replace('.py', '').replace('buffer', '') + "]"
+    }
 
- function openSardineFolder() {
-      // Will ask Flask to open the Sardine default folder
-      console.log("Opening Sardine Folder");
-      const response = fetch('http://localhost:8000/open_folder', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: {}
-      });
-  }
-
-  function trimBufferName(name: string) {
-    return "[" + name.replace('.py', '').replace('buffer', '') + "]"
-  }
-
-  function panelMoved() {
-    console.log(editorHeight, editorWidth)
-    view.refreshEditorSize();
-  }
+    function panelMoved() {
+        console.log(editorHeight, editorWidth)
+        view.refreshEditorSize();
+    }
 
 </script>
 
 <div class="app">
-  <Header
-    on:play={handlePlay}
-    on:stop={handleStop}
-    on:save={saveAsTextFile}
-    on:users={() => console.log("Users")}
-    on:tutorial={spawnTutorial}
-    on:folder={openSardineFolder}
-	/>
-	<main>
-    <Tabs>
-      <TabList>
-        {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-					<Tab>{trimBufferName(name)}</Tab>
-				{/each}
-        <Tab>Docs</Tab>
-			</TabList>
+    <Header
+            on:play={handlePlay}
+            on:stop={handleStop}
+            on:save={saveAsTextFile}
+            on:users={() => console.log("Users")}
+            on:tutorial={spawnTutorial}
+            on:folder={openSardineFolder}
+    />
+    <main>
+        <Tabs>
+            <TabList>
+                {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
+                    <Tab>{trimBufferName(name)}</Tab>
+                {/each}
+                <Tab>Docs</Tab>
+            </TabList>
 
-      <Splitpanes horizontal=True pushOtherPanes=True>
-        <Pane maxSize=90 minSize=10 snapSize= 10>
-          {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-            <TabPanel>
-              <Editor
-                extensions={extensions};
-                bind:this={view}
-                doc={buffer}
-                bind:docStore={store}
-                bind:effects={codeMirrorState}
-                on:keydown={keyDownHandler}
-                on:keyup={keyUpHandler}
-                on:change={handleBufferChange}
-              />
-            </TabPanel>
-          {/each}
-          <TabPanel>
-            <iframe
-              src="https://sardine.raphaelforment.fr"
-              title="Sardine website"
-              width="100%"
-              height="100vh"
-              frameborder="0"
-              sandbox="allow-same-origin"
-              onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
-          </TabPanel>
-        </Pane>
-        <Pane minSize=10 maxSize=90 snapSize=10>
-          <Console {logs}/>
-        </Pane>
-      </Splitpanes>
-    </Tabs>
-  </main>
+            <Splitpanes horizontal=True pushOtherPanes=True>
+                <Pane maxSize=90 minSize=10 snapSize=10>
+                    {#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
+                        <TabPanel>
+                            <Editor
+                                    extensions={extensions};
+                                    bind:this={view}
+                                    doc={buffer}
+                                    bind:docStore={store}
+                                    bind:effects={codeMirrorState}
+                                    on:keydown={keyDownHandler}
+                                    on:keyup={keyUpHandler}
+                                    on:change={handleBufferChange}
+                            />
+                        </TabPanel>
+                    {/each}
+                    <TabPanel>
+                        <iframe
+                                src="https://sardine.raphaelforment.fr"
+                                title="Sardine website"
+                                width="100%"
+                                height="100vh"
+                                frameborder="0"
+                                sandbox="allow-same-origin"
+                                onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';">
+                    </TabPanel>
+                </Pane>
+                <Pane minSize=10 maxSize=90 snapSize=10>
+                    <Console {logs}/>
+                </Pane>
+            </Splitpanes>
+        </Tabs>
+    </main>
 </div>
 <style>
 
 
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-		color: white;
-		background-color: black;
-	}
+    .app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        color: white;
+        background-color: black;
+    }
 
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
 
- iframe {
-	 flex: 1;
-	 display: flex;
-	 flex-direction: column;
-	 margin: 0 auto;
-	 box-sizing: border-box;
-   height: 99vh;
-   width: 99vw;
- }
+    iframe {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
+        box-sizing: border-box;
+        height: 99vh;
+        width: 99vw;
+    }
 
 
- .splitpanes {
-   background-color: #f8f8f8;
- }
+    .splitpanes {
+        background-color: #f8f8f8;
+    }
 
- .splitpanes__splitter {
-	 background-color: #ccc;
-	 position: relative;
- }
+    .splitpanes__splitter {
+        background-color: #ccc;
+        position: relative;
+    }
 
- .splitpanes__splitter:before {
-	 content: '';
-	 position: absolute;
-	 left: 0;
-	 top: 0;
-	 transition: opacity 0.4s;
-	 background-color: rgba(255, 0, 0, 0.3);
-	 opacity: 0;
-	 z-index: 1;
- }
+    .splitpanes__splitter:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        transition: opacity 0.4s;
+        background-color: rgba(255, 0, 0, 0.3);
+        opacity: 0;
+        z-index: 1;
+    }
 
- .splitpanes__splitter:hover:before {
-	 opacity: 1;
- }
+    .splitpanes__splitter:hover:before {
+        opacity: 1;
+    }
 
- .splitpanes--vertical > .splitpanes__splitter:before {
-	 left: -30px;
-	 right: -30px;
-	 height: 100%;
- }
+    .splitpanes--vertical > .splitpanes__splitter:before {
+        left: -30px;
+        right: -30px;
+        height: 100%;
+    }
 
- .splitpanes--horizontal > .splitpanes__splitter:before {
-	 top: -30px;
-	 bottom: -30px;
-	 width: 100%;
- }
+    .splitpanes--horizontal > .splitpanes__splitter:before {
+        top: -30px;
+        bottom: -30px;
+        width: 100%;
+    }
 </style>

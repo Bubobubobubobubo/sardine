@@ -61,6 +61,7 @@ target/
 poetry.lock
 .vim
 .vscode
+.idea
 
 # Svelte
 !fishery/client/src/lib

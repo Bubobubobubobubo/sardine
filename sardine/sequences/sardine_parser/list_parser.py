@@ -22,7 +22,6 @@ class ListParser(BaseParser):
         parser_type: str = "sardine",
         debug: bool = False,
     ):
-
         """
         ListParser is the main interface to the basic patterning langauge used in a very
         basic Sardine setup. ListParser is a programming language capable of handling

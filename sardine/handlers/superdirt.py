@@ -135,7 +135,6 @@ class SuperDirtHandler(Sender):
         rate: NumericElement = 1,
         **pattern: ParsableElement,
     ):
-
         if sound is None:
             return
 
@@ -171,7 +170,6 @@ class SuperDirtHandler(Sender):
         scale: str = "IONIAN",
         **pattern: ParsableElement,
     ) -> int | float:
-
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
 

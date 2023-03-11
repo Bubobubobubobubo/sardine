@@ -13,7 +13,6 @@ from .utils import map_binary_function, map_unary_function
 
 
 class FunctionLibrary:
-
     qualifiers = {
         "dim": [0, 3, 6, 12],
         "dim9": [0, 3, 6, 9, 14],
@@ -223,12 +222,10 @@ class FunctionLibrary:
 
     def in_condition(self, test_value, condition, **kwargs):
         """Return something from the pattern if the condition is met"""
-        print(
-            f"Testing if {int(test_value[0])} in {list(map(lambda x: int(x), condition))}"
-        )
-        return (
-            [1] if int(test_value[0]) in list(map(lambda x: int(x), condition)) else [0]
-        )
+        value = int(test_value[0])
+        condition_list = list(map(lambda x: int(x), condition))
+        print(f"Testing if {value} in {condition_list}")
+        return [1] if value in condition_list else [0]
 
     def not_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""

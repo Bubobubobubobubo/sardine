@@ -2325,6 +2325,8 @@ This is a weird granular effect probably intended to serve as a building block f
 |-----------+------------------------+---------------|
 | psrate    | Pitch-shift rate       | 0->x          |
 | psdisp    | Pitch-shift dispersion | 0->x          |
+| scram     | Weird spectral effect  | 0->x          |
+| binshift  | Spectral bin shifter   | 0->x          |
 
 #+begin_src python
 @swim

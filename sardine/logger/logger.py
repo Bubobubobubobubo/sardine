@@ -1,5 +1,7 @@
 from appdirs import *
 from pathlib import Path
+from rich.console import Console
+
 
 __all__ = ("print",)
 
@@ -20,6 +22,6 @@ file_console = Console(file=report_file)
 
 terminal_console = Console()
 
-
 def print(*args, **kwargs):
+    file_console.print(*args, **kwargs)
     terminal_console.print(*args, **kwargs)

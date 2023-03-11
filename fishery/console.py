@@ -24,9 +24,10 @@ APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
 
-# The file needs to exist to actually log something
+# The file needs to exist to actually log something
 if not LOG_FILE.exists():
     LOG_FILE.touch()
+
 
 class AsyncIOInteractiveConsole(code.InteractiveConsole):
     def __init__(self, locals: dict, loop: asyncio.BaseEventLoop):
@@ -106,7 +107,6 @@ async def run_forever():
 
 
 class ConsoleManager:
-
     def __init__(self):
         self.loop = sardine.event_loop.new_event_loop()
 
@@ -122,7 +122,6 @@ class ConsoleManager:
             repl_locals[key] = globals()[key]
 
         self.console = AsyncIOInteractiveConsole(repl_locals, self.loop)
-
 
     def start(self):
         try:

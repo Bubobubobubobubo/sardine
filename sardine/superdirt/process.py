@@ -20,7 +20,6 @@ class SuperDirtProcess:
     def __init__(
         self, startup_file: Optional[str] = None, preemptive=True, verbose=False
     ):
-
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()

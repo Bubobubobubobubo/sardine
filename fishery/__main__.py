@@ -22,6 +22,7 @@ def main(ctx: click.Context):
         console = ConsoleManager()
         console.start()
 
+
 # fishery web
 # fishery web --host
 # fishery web --port
@@ -56,13 +57,14 @@ def main(ctx: click.Context):
 )
 def web(host: str, port: int, no_browser: bool):
     from .server import WebServer
+
     consoleManager = ConsoleManager()
-    server = WebServer(host=host, port=port, )
+    server = WebServer(host=host, port=port)
     server.start_in_thread(consoleManager.console)
     if not no_browser:
         server.open_in_browser()
     consoleManager.start()
-    
+
 
 if __name__ == "__main__":
     main()

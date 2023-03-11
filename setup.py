@@ -53,16 +53,14 @@ class build_npm(Command, SubCommand):
         for path in self.yarn_projects:
             # FIXME: could files be built directly to build/lib/*/build instead
             #        of inside the sub-project directory?
+            build_path = Path(path) / "build"
             kwargs = {"cwd": path, "shell": True}
             subprocess.check_call(f'"{npx}" yarn install', **kwargs)
             subprocess.check_call(f'"{npx}" yarn run build', **kwargs)
 
-            build_path = Path(path) / "build"
-            shutil.copytree(
-                build_path,
-                self.build_lib / build_path,
-                dirs_exist_ok=True,
-            )
+            if not self.editable_mode:
+                output_path = self._get_output_path(path) / "build"
+                shutil.copytree(build_path, output_path, dirs_exist_ok=True)
 
     def get_source_files(self) -> list[str]:
         """
@@ -89,15 +87,14 @@ class build_npm(Command, SubCommand):
            in ``get_output_mapping()`` plus files that are generated during the build
            and don't correspond to any source file already present in the project.
         """
-        build_lib = Path(self.build_lib)
-
         files = []
         for path_str in self.yarn_projects:
-            build_path = build_lib / path_str / "build"
-            assert build_path.is_dir(), f"failed to build {path_str}"
+            output_path = self._get_output_path(path_str) / "build"
+            assert output_path.is_dir(), f"failed to build {path_str}"
 
-            for file in build_path.rglob("*"):
-                files.append(str(file))
+            for file in output_path.rglob("*"):
+                if file.is_file():
+                    files.append(str(file))
 
         return files
 
@@ -113,6 +110,11 @@ class build_npm(Command, SubCommand):
         return {}
 
     # Utility methods
+
+    def _get_output_path(self, path_str: str) -> Path:
+        if self.editable_mode:
+            return Path(path_str)
+        return Path(self.build_lib) / path_str
 
     def _has_projects(self) -> bool:
         if not self.yarn_projects:

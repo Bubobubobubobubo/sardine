@@ -317,13 +317,11 @@ def main():
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
 
     while True:
-
         menu_select = inquirer.select(
             message="Select an option", choices=MENU_CHOICES
         ).execute()
 
         if menu_select == "Exit":
-
             write_to_file = inquirer.confirm(
                 message="Do you wish to save and exit?"
             ).execute()

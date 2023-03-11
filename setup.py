@@ -74,7 +74,7 @@ class build_npm(Command, SubCommand):
         with all the files necessary to build the distribution.
         All files should be strings relative to the project root directory.
         """
-        # MANIFEST.in does this for us already?
+        # [tool.setuptools.packages.find] does this for us already?
         return []
 
     def get_outputs(self) -> list[str]:

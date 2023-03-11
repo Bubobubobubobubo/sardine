@@ -58,13 +58,10 @@ target/
 
 .DS_Store
 .nvim
+poetry.lock
 .vim
 .vscode
 .idea
-
-# Lock files
-poetry.lock
-yarn.lock
 
 # Svelte
 !fishery/client/src/lib

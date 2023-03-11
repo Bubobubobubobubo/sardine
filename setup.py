@@ -93,7 +93,8 @@ class build_npm(Command, SubCommand):
             assert output_path.is_dir(), f"failed to build {path_str}"
 
             for file in output_path.rglob("*"):
-                files.append(str(file))
+                if file.is_file():
+                    files.append(str(file))
 
         return files
 

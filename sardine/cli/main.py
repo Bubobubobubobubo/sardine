@@ -246,6 +246,7 @@ def _select_editor(config_file: dict) -> dict:
     config_file["editor"] = editor
     return config_file
 
+
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
     print(
@@ -316,14 +317,12 @@ def main():
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
 
     while True:
-
         menu_select = inquirer.select(
             message="Select an option",
-            choices=MENU_CHOICES
+            choices=MENU_CHOICES,
         ).execute()
 
         if menu_select == "Exit":
-
             write_to_file = inquirer.confirm(
                 message="Do you wish to save and exit?"
             ).execute()
@@ -348,7 +347,6 @@ def main():
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)
         elif menu_select == "Editor":
             USER_CONFIG = _select_editor(config_file=USER_CONFIG)
-
 
 
 if __name__ == "__main__":

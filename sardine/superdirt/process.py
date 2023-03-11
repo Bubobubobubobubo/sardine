@@ -20,7 +20,6 @@ class SuperDirtProcess:
     def __init__(
         self, startup_file: Optional[str] = None, preemptive=True, verbose=False
     ):
-
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
@@ -102,23 +101,19 @@ class SuperDirtProcess:
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
             print("\n")
             print(
-                    (
-                        f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
-                        + "\nrunning somewhere. It might be a mistake or a"
-                        + "\nzombie process. Run `Server.killAll` in an SC"
-                        + "\nwindow (can be the IDE of `sclang` in term..)"
-                    )
+                f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
+                + "\nrunning somewhere. It might be a mistake or a"
+                + "\nzombie process. Run `Server.killAll` in an SC"
+                + "\nwindow (can be the IDE of `sclang` in term..)"
             )
         if "Mismatched sample rates are not supported" in decoded_line:
             print("\n")
             print(
-                    (
-                        f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
-                        + "\nsure that your audio input sample rate and"
-                        + "\nyour audio output sample rate are the same."
-                        + "\nThis is usually modified in your OS audio"
-                        + "\nconfiguration menus. Reboot Sardine!"
-                    )
+                f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
+                + "\nsure that your audio input sample rate and"
+                + "\nyour audio output sample rate are the same."
+                + "\nThis is usually modified in your OS audio"
+                + "\nconfiguration menus. Reboot Sardine!"
             )
 
     async def monitor(self):

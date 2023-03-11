@@ -138,6 +138,7 @@ class Sender(BaseHandler):
         other than 1, patterns are only generated if the iterator is
         divisible by the divisor, and will otherwise yield zero messages.
         """
+
         # TODO: more examples for pattern_reduce()
         # TODO: document pattern_reduce() arguments
         def maybe_parse(val: ParsableElement) -> RecursiveElement:

@@ -1,8 +1,6 @@
-import fnmatch
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Iterable
 
 from setuptools import Command, setup
 from setuptools.command.build import SubCommand, build
@@ -14,13 +12,7 @@ class build_npm(Command, SubCommand):
     build_lib = "build/lib"
 
     yarn_projects: list[str]
-    """A list of project paths to be built with `yarn build` and copied."""
-
-    exclude_files: list[str] = [".svelte-kit", "node_modules"]
-    """
-    A list of glob patterns for excluding files or directories from each path
-    in `yarn_projects` when creating the source distribution.
-    """
+    """A list of project paths to be built with `yarn build` and installed."""
 
     # SubCommand protocol
 
@@ -59,6 +51,8 @@ class build_npm(Command, SubCommand):
             )
 
         for path in self.yarn_projects:
+            # FIXME: could files be built directly to build/lib/*/build instead
+            #        of inside the sub-project directory?
             kwargs = {"cwd": path, "shell": True}
             subprocess.check_call(f'"{npx}" yarn install', **kwargs)
             subprocess.check_call(f'"{npx}" yarn run build', **kwargs)
@@ -80,13 +74,8 @@ class build_npm(Command, SubCommand):
         with all the files necessary to build the distribution.
         All files should be strings relative to the project root directory.
         """
-        self._validate_project_paths()
-
-        files = []
-        for path_str in self.yarn_projects:
-            files.extend(self._get_source_for(Path(path_str)))
-
-        return files
+        # MANIFEST.in does this for us already?
+        return []
 
     def get_outputs(self) -> list[str]:
         """
@@ -124,16 +113,6 @@ class build_npm(Command, SubCommand):
         return {}
 
     # Utility methods
-
-    def _get_source_for(self, path: Path) -> Iterable[str]:
-        for file in path.iterdir():
-            if any(fnmatch.fnmatch(file.name, pat) for pat in self.exclude_files):
-                continue
-
-            if file.is_dir():
-                yield from self._get_source_for(file)
-            else:
-                yield str(file)
 
     def _has_projects(self) -> bool:
         if not self.yarn_projects:

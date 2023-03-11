@@ -56,7 +56,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-# We don't want MANIFEST.in to affect the wheel distribution
+# Explicitly declare data files in [tool.setuptools.package-data]
 include-package-data = false
 
 [tool.setuptools.dynamic]

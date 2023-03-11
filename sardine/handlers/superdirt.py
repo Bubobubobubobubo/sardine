@@ -40,7 +40,7 @@ class SuperDirtHandler(Sender):
 
         loop.add_child(self, setup=True)
 
-    # Ziffers implementation 
+    # Ziffers implementation
     @property
     def ziffers_parser(self):
         return self._ziffers_parser
@@ -96,6 +96,7 @@ class SuperDirtHandler(Sender):
 
     def _parse_aliases(self, pattern: dict):
         """Parse aliases for certain keys in the pattern (lpf -> cutoff)"""
+
         def rename_keys(initial_dictionary: dict, aliases: dict) -> dict:
             return dict([(aliases.get(k, k), v) for k, v in initial_dictionary.items()])
 
@@ -122,13 +123,12 @@ class SuperDirtHandler(Sender):
         }
         return rename_keys(pattern, aliases)
 
-
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Optional[StringElement|List[StringElement]],
+        sound: Optional[StringElement | List[StringElement]],
         orbit: NumericElement = 0,
         iterator: Number = 0,
         divisor: NumericElement = 1,
@@ -161,7 +161,7 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_ziffers(
         self,
-        sound: Optional[StringElement|List[StringElement]],
+        sound: Optional[StringElement | List[StringElement]],
         ziff: str,
         orbit: NumericElement = 0,
         iterator: Number = 0,
@@ -187,7 +187,7 @@ class SuperDirtHandler(Sender):
                     for pitch in ziffer.pitch_classes:
                         freq.append(pitch.freq)
                 except AttributeError:
-                    if ziffer.text == 'r':
+                    if ziffer.text == "r":
                         sound = "rest"
                     else:
                         sound = None  # the ziffers pattern takes precedence

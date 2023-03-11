@@ -9,7 +9,8 @@ from ..sequence import euclid
 from .chord import Chord
 from .utils import map_binary_function, map_unary_function
 
-# Type declarations
+# Type declarations
+
 
 class FunctionLibrary:
 
@@ -222,8 +223,12 @@ class FunctionLibrary:
 
     def in_condition(self, test_value, condition, **kwargs):
         """Return something from the pattern if the condition is met"""
-        print(f"Testing if {int(test_value[0])} in {list(map(lambda x: int(x), condition))}")
-        return [1] if int(test_value[0]) in list(map(lambda x: int(x), condition)) else [0]
+        print(
+            f"Testing if {int(test_value[0])} in {list(map(lambda x: int(x), condition))}"
+        )
+        return (
+            [1] if int(test_value[0]) in list(map(lambda x: int(x), condition)) else [0]
+        )
 
     def not_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
@@ -250,11 +255,9 @@ class FunctionLibrary:
             x[_ % len(x)] += -12 if how_many[0] <= 0 else 12
         return x
 
-
     def _remap(self, x, in_min, in_max, out_min, out_max):
         """Remapping a value from a [x, y] range to a [x', y'] range"""
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
 
     def scale(
         self,
@@ -474,7 +477,7 @@ class FunctionLibrary:
         """
         factor = factor[0]
 
-        def expand_number(number: Union[int, float]) -> int|float:
+        def expand_number(number: Union[int, float]) -> int | float:
             expansions = [0, -12, 12]
             return [number + (random.choice(expansions) * factor)]
 
@@ -576,7 +579,6 @@ class FunctionLibrary:
         collection = list(chain(*args))
         random.shuffle(collection)
         return collection
-
 
     def prob(self, prob: list, *x, **kwargs) -> list:
         """Return the pattern specified as second argument with probability"""

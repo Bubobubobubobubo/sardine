@@ -13,6 +13,7 @@ import sys
 
 try:
     from ziffers import z
+
     ziffers_imported: bool = True
 except ImportError:
     print("Install the ziffers package for using Ziffers patterns")
@@ -21,9 +22,6 @@ except ImportError:
 
 ParamSpec = ParamSpec("PS")
 T = TypeVar("T")
-
-
-
 
 
 #######################################################################################
@@ -84,18 +82,18 @@ try:
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f'{e}: [red]Invalid MIDI port![/red]')
+    print(f"{e}: [red]Invalid MIDI port![/red]")
 
 try:
     # MIDIIn Handler
     midi_in = MidiInHandler(
-        target=ControlTarget(channel=0, control=20),
-        port_name=config.midi)
+        target=ControlTarget(channel=0, control=20), port_name=config.midi
+    )
     bowl.add_handler(midi)
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f'{e}: [red]Invalid MIDI port![/red]')
+    print(f"{e}: [red]Invalid MIDI port![/red]")
 
 
 # OSC Loop: handles processing OSC messages
@@ -136,6 +134,7 @@ for player in player_names:
 
 def for_(n: int) -> Callable[[Callable[ParamSpec, T]], Callable[ParamSpec, T]]:
     """Allows to play a swimming function x times. It swims for_ n iterations."""
+
     def decorator(func: Callable[ParamSpec, T]) -> Callable[ParamSpec, T]:
         @wraps(func)
         def wrapper(*args: ParamSpec.args, **kwargs: ParamSpec.kwargs) -> T:
@@ -143,7 +142,9 @@ def for_(n: int) -> Callable[[Callable[ParamSpec, T]], Callable[ParamSpec, T]]:
             n -= 1
             if n >= 0:
                 return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -404,7 +405,6 @@ class Delay:
             sleep(self.duration)
 
 
-
 #######################################################################################
 # DEFINITION OF ALIASES
 
@@ -421,29 +421,38 @@ CC = midi.send_control  # For MIDI Control Change messages
 SY = midi.send_sysex  # For MIDI Sysex messages
 _play_factory = Player._play_factory
 
+
 def sy(*args, **kwargs):
     return _play_factory(midi, midi.send_sysex, *args, **kwargs)
+
 
 def n(*args, **kwargs):
     return _play_factory(midi, midi.send, *args, **kwargs)
 
+
 def zn(*args, **kwargs):
     return _play_factory(midi, midi.send_ziffers, *args, **kwargs)
+
 
 def cc(*args, **kwargs):
     return _play_factory(midi, midi.send_control, *args, **kwargs)
 
+
 def pc(*args, **kwargs):
     return _play_factory(midi, midi.send_program, *args, **kwargs)
+
 
 if config.superdirt_handler:
     D = dirt.send
     if ziffers_imported:
         ZD = dirt.send_ziffers
+
     def d(*args, **kwargs):
         return _play_factory(dirt, dirt.send, *args, **kwargs)
+
     def zd(*args, **kwargs):
         return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
+
 
 if ziffers_imported:
     zplay = ziffers_factory.create_zplay(D, N, sleep, swim)

@@ -72,10 +72,10 @@ class MidiHandler(Sender):
             "pitchwheel": self._pitch_wheel,
         }
 
-        # Reference to the ziffers parser if needed!
+        # Reference to the ziffers parser if needed!
         self._ziffers_parser = None
 
-    # Ziffers implementation 
+    # Ziffers implementation
     @property
     def ziffers_parser(self):
         return self._ziffers_parser
@@ -322,8 +322,9 @@ class MidiHandler(Sender):
             for k, v in message.items():
                 message[k] = int(v)
             self.call_timed(
-                deadline, self._sysex,
-                **{"data": [*data, *[int(message['value']) % optional_modulo]]}
+                deadline,
+                self._sysex,
+                **{"data": [*data, *[int(message["value"]) % optional_modulo]]},
             )
 
     @alias_param(name="channel", alias="chan")
@@ -351,11 +352,11 @@ class MidiHandler(Sender):
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
-            # Getting the ziffer pattern
+            # Getting the ziffer pattern
             ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
             try:
                 note = ziffer.note
-            except AttributeError: # if there is no note, it must be a silence
+            except AttributeError:  # if there is no note, it must be a silence
                 try:
                     note = ziffer.notes
                 except AttributeError:
@@ -363,7 +364,6 @@ class MidiHandler(Sender):
 
             if isinstance(note, list):
                 note = f"{{{', '.join([str(x) for x in note])}}}"
-
 
         pattern = {
             "note": note,

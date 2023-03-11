@@ -241,8 +241,7 @@ class CalculateTree(Transformer):
         Returns:
             list: Gathered arguments in a list
         """
-        return sum(args, start=[])*2
-
+        return sum(args, start=[]) * 2
 
     def get_time(self):
         """Return current clock time (tick) as integer"""

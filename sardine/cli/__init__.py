@@ -246,6 +246,7 @@ def _select_editor(config_file: dict) -> dict:
     config_file["editor"] = editor
     return config_file
 
+
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
     print(
@@ -318,8 +319,7 @@ def main():
     while True:
 
         menu_select = inquirer.select(
-            message="Select an option",
-            choices=MENU_CHOICES
+            message="Select an option", choices=MENU_CHOICES
         ).execute()
 
         if menu_select == "Exit":

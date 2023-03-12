@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { tick } from "svelte";
+ import { tick } from "svelte";
 
-    export let logs: Array<string> = [];
-    export let autoScroll: boolean = true;
-    let consoleView: HTMLDivElement;
+ export let logs: Array<string> = [];
+ export let autoScroll: boolean = true;
+ let consoleView: HTMLDivElement;
 
-    const scrollToTheBottomOfTheConsole = () => {
-        if(!autoScroll) return;
-        if(!consoleView) return;
-        consoleView.scrollTop = consoleView.scrollHeight;
-    }
+ const scrollToTheBottomOfTheConsole = () => {
+     if(!autoScroll) return;
+     if(!consoleView) return;
+     consoleView.scrollTop = consoleView.scrollHeight;
+ }
 
-    // watch for changes in the logs array and scroll to the bottom of the console
-    $:{logs; tick().then(() => {scrollToTheBottomOfTheConsole();})}
+ // watch for changes in the logs array and scroll to the bottom of the console
+ $:{logs; tick().then(() => {scrollToTheBottomOfTheConsole();})}
 </script>
 
 <div class="console">

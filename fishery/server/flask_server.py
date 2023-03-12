@@ -192,7 +192,13 @@ def server_factory(console):
     @app.route("/log")
     def progress_log():
         def generate():
-            for line in Pygtail(str(LOG_FILE), every_n=2):
+            for line in Pygtail(
+                    str(LOG_FILE),
+                    every_n=0,
+                    read_from_end=True,
+                    full_lines=False,
+                    encoding='utf-8'
+            ):
                 yield "data:" + str(line) + "\n\n"
 
         return Response(generate(), mimetype="text/event-stream")

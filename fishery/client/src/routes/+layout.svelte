@@ -225,7 +225,7 @@
 
             <Splitpanes
                 horizontal=True
-                style="height: 100vh; background-color: black"
+                style="height: 80vh; background-color: black"
                 pushOtherPanes=False
                 theme="sardine"
             >

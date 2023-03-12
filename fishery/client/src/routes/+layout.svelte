@@ -164,7 +164,6 @@
         // Getting the currently active tab through introspection
         let tab = get(activeTab);
         SARDINE_BUFFERS["buffer" + (tab - 1) + ".py"] = tr._doc.text.join('\n');
-        console.log(SARDINE_BUFFERS)
     }
 
     function saveAsTextFile() {
@@ -198,9 +197,6 @@
 
     function trimBufferName(name: string) {
         return "[" + name.replace('.py', '').replace('buffer', '') + "]"
-    }
-
-    function handleResize(...args) {
     }
 
 </script>

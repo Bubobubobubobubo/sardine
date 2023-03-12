@@ -61,7 +61,13 @@ class WebServer:
 
     def __init__(self, host="localhost", port=8000):
         self.host, self.port = host, port
+        self.reset_log_file()
         self.local_files = self.load_buffer_files()
+
+    def reset_log_file(self):
+        """Reset the log file on application start. Writing to the file
+        and immediately closing is effectively erasing the content."""
+        open(LOG_FILE, 'w', encoding='utf-8').close()
 
     def check_buffer_files(self) -> None:
         """This function will check the integrity of the buffer folder."""
@@ -194,8 +200,7 @@ def server_factory(console):
         def generate():
             for line in Pygtail(
                     str(LOG_FILE),
-                    every_n=0,
-                    read_from_end=True,
+                    every_n=1,
                     full_lines=False,
                     encoding='utf-8'
             ):

@@ -175,6 +175,7 @@ class Player(BaseHandler):
         elif not self.runner.is_running():
             # Assume we are queuing the first state
             self.iterator = 0
+            self.runner.reset_states()
 
         # Forcibly reset the interval shift back to 0 to make sure
         # the new pattern can be synchronized

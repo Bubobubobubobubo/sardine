@@ -1,15 +1,31 @@
-from dataclasses import dataclass
 from typing import Any, Callable, Optional, ParamSpec, TypeVar
-
-from ..base import BaseHandler
 from ..handlers.sender import Number, NumericElement, Sender
-from ..scheduler import AsyncRunner
 from ..utils import alias_param, get_snap_deadline, lerp
+from ..scheduler import AsyncRunner
+from dataclasses import dataclass
+from ..base import BaseHandler
+from functools import wraps
 
 __all__ = ("Player",)
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
+    """Allows to play a swimming function x times. It swims for_ n iterations."""
+
+    def decorator(func: Callable[P, T]) -> Callable[P, T]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+            nonlocal n
+            n -= 1
+            if n >= 0:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
 
 
 @dataclass
@@ -24,6 +40,7 @@ class PatternInformation:
     rate: NumericElement
     snap: Number
     timespan: Optional[float]
+    until: Optional[int]
 
 
 class Player(BaseHandler):
@@ -69,6 +86,7 @@ class Player(BaseHandler):
         send_method: Callable[P, T],
         *args: P.args,
         timespan: Optional[float] = None,
+        until: Optional[int] = None,
         period: NumericElement = 1,
         iterator: Optional[Number] = None,
         divisor: NumericElement = 1,
@@ -89,6 +107,7 @@ class Player(BaseHandler):
             rate,
             snap,
             timespan,
+            until,
         )
 
     def __rshift__(self, pattern: Optional[PatternInformation]) -> None:
@@ -164,7 +183,20 @@ class Player(BaseHandler):
         period = self.get_new_period(pattern)
 
         deadline = get_snap_deadline(self.env.clock, pattern.snap)
-        self.runner.push_deferred(deadline, self.func, pattern=pattern, p=period)
+        if pattern.until:
+            self.runner.push_deferred(
+                deadline,
+                for_(pattern.until)(self.func),
+                pattern=pattern,
+                p=period
+            )
+        else:
+            self.runner.push_deffered(
+                deadline,
+                self.func,
+                pattern=pattern,
+                p=period
+            )
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

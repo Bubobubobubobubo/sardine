@@ -1511,8 +1511,9 @@ TO DOCUMENT
 # Pure conditions
 "not": self.library.not_condition,
 "if": self.library.simple_condition,
+nif
 "while": self.library.while_condition,
-"in": self.library.in_condition,
+nwhile
 # Boolean functions
 "beat": self.library.beat,
 "every": self.library.every,
@@ -1854,7 +1855,6 @@ def ziff(p=1):
     zplay("q 4 2 6 9")
     again(ziff, p=1)
 #+end_src
-
 
 * Diving Deeper
 

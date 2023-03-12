@@ -22,7 +22,6 @@
     });
 </script>
 #+END_EXPORT
-
 #+begin_quote
 [[https://github.com/Bubobubobubobubo/sardine][Sardine]] is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. *With Sardine you can*:
 - Play synthesizers and audio samples using *SuperCollider*.
@@ -33,7 +32,6 @@
 
 [[https://github.com/Bubobubobubobubo/sardine][Sardine]] is designed to allow the exploration of algorithmic improvisation using a friendly syntax/environment. It transforms *Python* into a time-aware environment capable of sequencing any event with precision. Code can be updated anytime while the program still runs, a technique called *live coding*!
 #+end_quote
-
 
 * Presentation
 ** What is Sardine?
@@ -1480,46 +1478,85 @@ def demo(p=1/8, i=0):
 
 You will notice that you can now generate some interesting rhythm by combining the euclidian rhythms with ~rate~ and ~div~. The quirks of the *Sardine* pattern system will also generate very surprising rhythms, especially when playing with lists of audio samples.
 
+| Function name |  Arguments | Description | Return type |
+| dmitri        |            |             |             |
+| voice         |            |             |             |
+| sopr          |            |             |             |
+| quant         |            |             |             |
+| disco         |            |             |             |
+| bass          |            |             |             |
+| sopr          |            |             |             |
+| invert        |            |             |             |
+| aspeed        |            |             |             |
+| expand        |            |             |             |
+| pal           |            |             |             |
+| rev           |            |             |             |
+| leave         |            |             |             |
+| insertp       |            |             |             |
+| insert        |            |             |             |
+| insertprot    |            |             |             |
+| shuf          |            |             |             |
 
 
-dmitri
-voice
-sopr
-quant
-disco
-bass
-sopr
-invert
-aspeed
-expand
-pal
-rev
-leave
-insertp
-insert
-insertprot
-insertrot
-shuf
-*** TODO Conditions
+*** Conditions
 
-Every function from the function library can be applied conditionnally. It means that every function can be applied based on a probability or based on a deterministic event (~e.g.~ being on beat 1).
+Every function from the function library can be applied conditionally. To do so, use the special ~cond~ keyword. This keyword is available to every function. There are many types of conditions you can apply on your pattern and you can even create conditions manually. Conditions are working by providing them binary values:
+- ~1~ represents truth: ~True~.
+- ~0~ represents false: ~False~.
 
-#+begin_quote
+The function above will turn the sequence into a palindrome but only on beats 1 and 3:
+#+begin_src python
+Pa >> d('(pal F A C E ::cond (beat 0 2))')
+#+end_src
 
-TO DOCUMENT
 
-# Pure conditions
-"not": self.library.not_condition,
-"if": self.library.simple_condition,
-nif
-"while": self.library.while_condition,
-nwhile
-# Boolean functions
-"beat": self.library.beat,
-"every": self.library.every,
-"proba": self.library.proba,
-"phase": self.library.phase,
-#+end_quote
+In the Sardine Pattern Language, everything is a function, including the logical constructs themselves (~if~, ~while~). It means that you can also add conditions to your conditions, etc...
+
+**** If condition
+
+The ~if~ condition is a binary condition: it will execute something if true, something else if false. In the following example, the function will play a clap for every pair bar (2, 4, etc.) and another sample on every odd bar.
+
+#+begin_src python
+Pa >> d('(if (every 2) cp sid')
+#+end_src
+
+The ~nif~ function can be used to reverse the logic (/not if/).
+
+**** While condition
+
+The ~while~ condition is an unary condition: it will execute something if true, nothing at all if false. In the following example, the function will sometimes play a clap:
+
+#+begin_src python
+Pa >> d('(while rand*5>2 cp)')
+#+end_src
+
+In that specific case, as a demonstration, we craft our own condition by using the greater-than (~>~) operator.
+
+In the semblance of ~if~ and ~nif~, there is also a ~nwhile~ condition to reverse the condition logic.
+
+**** Special condition functions
+
+Some functions from the library can be used to build more complex conditions in conjunction with ~if~ or ~while~. Use them wisely:
+
+| Function name | Arguments                                | Result        |
+| beat          | 1 or more beats numbers to match         | True or False |
+| every         | 1 or more bars to match (modulo)         | True or False |
+| phase         | low and high phase value (0.0 < x < 1.0) | True or False |
+| proba         | Simple probability in %                  | True or False |
+
+The ~beat~ function is a great place to start. Let's play a clap on the start of the bar:
+#+begin_src python
+Pa >> d('(if (beat 0) cp)')
+#+end_src
+
+Let's add another beat to the equation. It will now also play on the following beat of the bar:
+#+begin_src python
+Pa >> d('(if (beat 0 1) cp)')
+#+end_src
+
+You get it. Other functions work similarly.
+
+These functions are cool but you might have guessed already that you can craft your own functions yourself if you are clever enough :) If you think of some cool functions to add, I'll be more than happy to include them into Sardine.
 
 *** Amphibian
 

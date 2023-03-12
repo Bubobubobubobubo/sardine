@@ -444,16 +444,28 @@ class CalculateTree(Transformer):
         return [1] if left[0] == right[0] else [0]
 
     def is_greater(self, left, right):
-        return [1] if left[0] > right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] > right[0] else [0]
 
     def is_greater_or_equal(self, left, right):
-        return [1] if left[0] >= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] >= right[0] else [0]
 
     def is_smaller(self, left, right):
-        return [1] if left[0] < right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] < right[0] else [0]
 
     def is_smaller_or_equal(self, left, right):
-        return [1] if left[0] <= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] <= right[0] else [0]
 
     def function_call(self, func_name, *args):
         """
@@ -496,14 +508,15 @@ class CalculateTree(Transformer):
 
         modifiers_list = {
             # Pure conditions
-            "not": self.library.not_condition,
-            "if": self.library.simple_condition,
-            "while": self.library.while_condition,
             "in": self.library.in_condition,
+            "if": self.library.binary_condition,
+            "nif": self.library.negative_binary_condition,
+            "while": self.library.unary_condition,
+            "nwhile": self.library.negative_unary_condition,
             # Boolean functions
             "beat": self.library.beat,
             "every": self.library.every,
-            "proba": self.library.proba,
+            "maybe": self.library.proba,
             "phase": self.library.phase,
             # Voice leading operations
             "dmitri": self.library.dmitri,
@@ -518,6 +531,8 @@ class CalculateTree(Transformer):
             # Boolean mask operations
             "euclid": self.library.euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,
+            "negative_euclid": self.library.negative_euclidian_rhythm,
+            "neu": self.library.negative_euclidian_rhythm,
             "mask": self.library.mask,
             "vanish": self.library.remove_x,
             "expand": self.library.expand,

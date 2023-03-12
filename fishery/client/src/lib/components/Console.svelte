@@ -69,9 +69,14 @@
         color: #e6e6e6;
     }
 
+    pre {
+        margin: 0em;
+        font-family: monospace;
+    }
+
     .console-content li{
         font-size: 14px;
-        padding: 0px 15px;
+        padding: 0px 5px;
     }
 
     .splitpanes.default-theme .splitpanes__pane {
@@ -80,7 +85,7 @@
 
     /*
     .console-content li:nth-child(odd){
-        background-color: #333;
+        background-color: #777777;
     }
     */
 </style>

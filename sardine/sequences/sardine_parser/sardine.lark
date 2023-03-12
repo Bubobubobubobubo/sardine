@@ -1,7 +1,5 @@
-// A pattern is a succession of things ////////////////////////////////////////
-
 ?start: pattern
-pattern: sum (SPACE* sum)* -> return_pattern
+pattern: sum sum* -> return_pattern
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -56,9 +54,9 @@ pattern: sum (SPACE* sum)* -> return_pattern
      | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
      | "[" sum ":" sum "]"                                 -> generate_ramp
      | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
-     | "[" sum (SPACE* sum)* SPACE? "]"                   -> make_list
-     | "[:" sum (SPACE* sum)* SPACE? ":]"                 -> make_list_repeat
-     | "{" sum (SPACE* sum)* SPACE? "}"                   -> make_chord
+     | "[" sum sum* "]"                   -> make_list
+     | "[:" sum sum* ":]"                 -> make_list_repeat
+     | "{" sum sum* "}"                   -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
 
@@ -67,13 +65,7 @@ pattern: sum (SPACE* sum)* -> return_pattern
 
 // Rules functions ////////////////////////////////////////////////////////////
 
-
-// ?function: "(" NAME sum* (SPACE+ sum)* keyword* ")" -> function_call
-
-// ?keyword: ("::" NAME atom)
-
 ?function: "(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
-
 
 
 // Rules concerning names /////////////////////////////////////////////////////
@@ -91,7 +83,7 @@ pattern: sum (SPACE* sum)* -> return_pattern
 
 ?name_atom: NAME                                          -> name
     | "(" name_sum ")"
-    | "[" name_sum (SPACE* name_sum)* SPACE? "]"           -> make_list
+    | "[" name_sum name_sum* "]"           -> make_list
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -134,13 +126,12 @@ NOTE: "A"|"La"|"B"|"Si"|"Ti"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."
-SPACE: /[\s\t\f\r\n]/+
 
-
+SPACE: /[\s\t\f\r\n]/
 %ignore SPACE
+
 %import common.LCASE_LETTER
 %import common.UCASE_LETTER
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT
 %import common.NUMBER
-%import common.WS_INLINE

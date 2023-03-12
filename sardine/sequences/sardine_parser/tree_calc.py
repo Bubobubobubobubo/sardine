@@ -461,7 +461,7 @@ class CalculateTree(Transformer):
         basic Python syntax. There are a few special keys you can use for conditional
         application of the function:
 
-        - do: apply the function only if boolean (represented by 1/0) is True. Condi-
+        - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
           tions can be chained as well for weirder chance / probability based operations
 
         """
@@ -473,8 +473,8 @@ class CalculateTree(Transformer):
         for _ in args:
             # print(f'Token: {_} (type: {type(_)})')
             # We need to determine if we are currently looking at a keyword and its
-            # value. If we have a repeating keyword, we will do our best to completely
-            # ignore it.
+            # value. If we have a repeating keyword, we will do our best to
+            # completely ignore it.
             if isinstance(_, Token):
                 if not _ in past_keywords:
                     current_keyname = str(_)

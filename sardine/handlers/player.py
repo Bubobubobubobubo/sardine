@@ -183,20 +183,12 @@ class Player(BaseHandler):
         period = self.get_new_period(pattern)
 
         deadline = get_snap_deadline(self.env.clock, pattern.snap)
-        if pattern.until:
-            self.runner.push_deferred(
-                deadline,
-                for_(pattern.until)(self.func),
-                pattern=pattern,
-                p=period
-            )
-        else:
-            self.runner.push_deffered(
-                deadline,
-                self.func,
-                pattern=pattern,
-                p=period
-            )
+        self.runner.push_deferred(
+            deadline,
+            for_(pattern.until)(self.func) if pattern.until else self.func,
+            pattern=pattern,
+            p=period
+        )
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

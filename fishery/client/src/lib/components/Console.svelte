@@ -56,7 +56,7 @@
 
     .console-content{
         font-size: 16px;
-        height: 100%;
+        height: 500px;
         overflow-y: scroll;
     }
 

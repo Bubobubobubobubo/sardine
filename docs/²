@@ -1532,7 +1532,7 @@ V.s = 60 # this is an amphibian variable
 @swim
 def fun():
     # Calling it and setting it to v.s + 5
-    N('v.s = v.s + 5')
+    N(note='v.s = v.s + 5')
     if random() > 0.8:
         V.s = 60 # resetting so it doesn't go too high
     again(fun)
@@ -1545,7 +1545,7 @@ def fun():
 @swim
 def fun(p=0.25):
     # Now having fun with it
-    N('v.s = v.s + 5|2') # more fun
+    N(note='v.s = v.s + 5|2') # more fun
     if random() > 0.8:
         v.s = 50
     again(fun, p=0.25)
@@ -1595,23 +1595,84 @@ def amphi_iter(p=0.25):
 
 Similarly, you can define the step value between each value by providing a list of two numbers. This is valid on both sides.
 
+**** The Function Library
+
+**Sardine** pattern notation now comes with a function library. These are functions that should be used directly in the pattern notation to alter a list or a pattern you are working on. They can take basically any input but you will soon figure that some are more specialised than others. This is the part of the language that is the more subject to changes in upcoming versions. That's why I am only talking about it now, at the bottom of a fairly long page.
+
+I want to explore how far you can go by introducing functional concepts to handle linear sequences. So far, only functions are available. The next step will be to introduce high-order functions and to build a small set of functional operations to pattern functions themselves. Only then will I be happy. I will base myself on that work to write a decent and complex function library.
+
+
+***** Sinus, Cosinus, Tangent
+
+- ~sin(x)~: *sinus of input* (single tokens or lists). Classic mathematical sinus function.
+- ~cos(x)~: *cosinus of input* (single tokens or lists). Classic mathematical cosinus function.
+- ~tan(x)~: *tangent of input* (single tokens or lists). Classic mathematical tangent function.
+
+***** Scaling, measuring
+
+- ~abs(x)~: Absolute value.
+- ~max(x)~: Maximum value of list or token itself.
+- ~min(x)~: Minimum value of list or token itself.
+- ~mean(x)~: Mean of list or token itself.
+- ~scale(z, x, y, x', y')~: Bring a value ~z~ from range ~x-y~ to range ~x'-y'~.
+- ~clamp(x, y, z)~: Clamp function, limit a value `x` to the minimum ~y~ to the maximum ~z~.
+
+***** Reversal, shuffling
+
+- ~rev(x)~: Reverse a list.
+- ~shuf(x)~: Shuffle a list.
+- ~pal(x)~: palindrome of list.
+- ~apal(x)~: palindrome of list without repetition of last value.
+
+***** Musical functions
+
+- ~disco(x)~: Disco function. Every pair note down an octave.
+- ~bass(x)~: The first note of list is down an octave (not very useful).
+- ~sopr(x)~: The last note of list is up an octave (not very useful).
+- ~quant(x, y)~: The last note of list is up an octave (not very useful).
+
+***** Voice Leading
+
+These are two voice leading algorithms. These are only temporary until I figure out a better solution. They usually take a list of four note chords and arrange the voice to minimise movement. They work great but they are not the funniest thing you've ever seen. I'll work on them to make it better!
+
+- ~voice(x)~: four-note voice leading algorithm. Naive implementation.
+- ~dmitri(x)~: four-note voice leading algorithm. Algorithm inspired by Dmitri Tymoczko's work.
+
+***** Probabilities 
+
+- ~vanish(x, y)~ : Takes a list ~x~, output only ~y~% of values from it.
+
+***** Booleans
+
+- ~euclid(a, b, c, d)~: Euclidian rhythm function applied to patterns. Takes a pattern ~a~, a number of pulses ~b~, a number of steps ~c~ and a rotation amount ~d~. Outputs a pattern where the absence of a pulse is a silence and where pulses are values from the pattern.
+
+- ~mask(x, y)~: Generalisation of the euclidian rhythm algorithm. Works for any pattern and list of booleans.
+
+***** Insertion and rotation
+
+
+- ~in(x, y)~:
+- ~inPat(x, y)~:
+- ~inrot(x, y)~:
+- ~inprot(x, y)~:
+
 *** Notes
 
 #+begin_src python
 @swim
 def notes(p=0.5, i=0):
-    D('pluck', midinote='C5 D5 E5 F5 G5', i=i)
+    D('pluck', midinote='C5,D5,E5,F5,G5', i=i)
     again(notes, p=0.5, i=i+1)
 #+end_src
 
 Notes are one of the primitives you can use in patterns. Notes will always be converted to some MIDI value (an integer value between ~0~ and ~127~). Notes will be converted to some MIDI value used by *SuperDirt*. If you need more precision, speak in hertzs (~freq=402.230239~).
 
 The syntax to write notes is the following:
-1) *[MANDATORY]* capital letter indicating the note name: ~C D E F G A B~. *Sardine* also supports the french notation system, so you can write ~Do Ré Mi Fa Sol La Si~ if it feels more natural to you.
+1) *[MANDATORY]* capital letter indicating the note name: ~C~, ~D~, ~E~, ~F~, ~G~, ~A~, ~B~. *Sardine* also supports the french notation system, so you can write ~Do, Ré, Mi, Fa, Sol, La, Si~ if it feels more natural to you.
 2) *[FACULTATIVE]* flat or sharp: ~#~, ~b~.
 3) *[FACULTATIVE]* octave number: ~0~..~9~.
 
-If you are a robot, you might prefer to speak in numbers. Because notes are turned into numbers, you can everything on them just like if they were numbers. It can be particularly useful to generate custom voicings or weirdly shaped chords that you want to transpose and invert around: ~{([0 4 7 9 10 11]+50)^1}~.
+If you are a robot, you might prefer to speak in numbers. Because notes are turned into numbers, you can everything on them just like if they were numbers. It can be particularly useful to generate custom voicings or weirdly shaped chords that you want to transpose and invert around: ~{([0,4,7,9,10,11]+50)^1}~.
 
 **** Note qualifiers
 
@@ -1624,9 +1685,9 @@ def notes(p=0.5, i=0):
 
 You can use the ~@~ operator to *qualify* a note. This will turn a note into a collection of notes based your initial note.
 
-~C@penta~ will summon a major pentatonic scale based on the middle C note: ~[60 62 64 67 69]~.
+~C@penta~ will summon a major pentatonic scale based on the middle C note: ~[60, 62, 64, 67, 69]~.
 
-Be careful while using them as they will instantly turn a single token into a list of x tokens. You might want to filter part of your newly generated collection or you will just play.. a chord or a scale. You will have to learn techniques to get better at summoning the exact materials you want and some processing by using functions might be needed to get a better result. Writing your patterns by hand is also an option if you are able to think and write down precise harmonic / melodic materials. Check out functions like ~(filt)~ or ~(quant)~.
+Be careful while using them as they will instantly turn a single token into a list of x tokens. You might want to filter part of your newly generated collection or you will just play.. a chord or a scale. You will have to learn techniques to get better at summoning the exact materials you want and some processing by using functions might be needed to get a better result. Writing your patterns by hand is also an option if you are able to think and write down precise harmonic / melodic materials. Check out functions like ~filt()~ or ~quant()~.
 
 Take note that the following list is not always perfectly up to date. Moreover, it can be particularly tricky for you to remember how I named some of the structures:
 
@@ -1745,7 +1806,7 @@ qualifiers = {
 #+begin_src python
 @swim
 def notes(p=0.5, i=0):
-    D('pluck', midinote='(disco C5@maj7^(0~4))', i=i)
+    D('pluck', midinote='disco(C5@maj7^(0~4))', i=i)
     again(notes, p=0.5, i=i+1)
 #+end_src
 
@@ -1756,7 +1817,7 @@ You can write chord/sequence inversions using the ~^~ syntax. It will accept any
 #+begin_src python
 @swim
 def notes(p=0.2, i=0):
-    D('pluck', midinote='(disco (braid C5 + 10|20|30))', i=i)
+    D('pluck', midinote='disco(braid(C5+ 10|20|30')), i=i)
     again(notes, p=0.2, i=i+1)
 #+end_src
 
@@ -1768,8 +1829,8 @@ You can use arithmetic operators on notes like if they were numbers. Think about
 #+begin_src python
 @swim
 def poly(p=0.5, i=0):
-    D('superpiano', cutoff=500, midinote='{D@maj9} {G@maj7^0} {D@maj9} {G@dim7^1}', i=i, d=2, r=0.25)
-    again(poly, p=P('0.5!4 0.25!2', i), i=i+1)
+    D('superpiano', cutoff=500, midinote='{D@maj9}, {G@maj7^0}, {D@maj9}, {G@dim7^1}', i=i, d=2, r=0.25)
+    again(poly, p=P('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
 - You can use the ~{~ and ~}~ delimiters to make parts of your pattern polyphonic.
@@ -1784,12 +1845,12 @@ In the first example, we have a 4-5 note polyphony. Every polyphonic element fro
 
 #+begin_quote
 PATTERN:
-1) [1 2 3 4]
-2) [0 1]
+1) [1,2,3,4]
+2) [0,1]
 
 RESULT (POLYPHONY):
-1) [1 2 3 4]
-2) [0 1 0 1]
+1) [1,2,3,4]
+2) [0,1,0,1]
 
 #+end_quote
 
@@ -1798,8 +1859,8 @@ To illustrate the preceding rule we just talked about, here is a truly bizarre e
 #+begin_src python
 @swim
 def poly(p=0.5, i=0):
-    D('{[bd  superpiano]}', cutoff=500, midinote='{D@maj9} {G@maj7^0} {D@maj9} {G@dim7^1}', i=i, d=2, r=0.25)
-    again(poly, p=Pat('0.5!4 0.25!2', i), i=i+1)
+    D('{[bd, superpiano]}', cutoff=500, midinote='{D@maj9}, {G@maj7^0}, {D@maj9}, {G@dim7^1}', i=i, d=2, r=0.25)
+    again(poly, p=Pat('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
 We have two clear alternations, one between the ~superpiano~ and ~bd~ sound sets, the other between the four or five values that form our chords. It is then natural that half of our polyphony will be composed from a tuned bassdrum and the remaining half from a tuned piano. Once you get use to this novel way of thinking about polyphonic patterns, you will see that it opens up some space for interesting polyphonic interactions between sounds :)
@@ -1811,8 +1872,8 @@ It is currently not possible to limit the number of voices generated by an event
 #+begin_src python
 @swim
 def poly(p=0.5, i=0):
-    D('drum:[1 6]', speed='{[1 rand]}  {[2 1.9]}', i=i, d=3)
-    D('drum:2', cutoff='{[500:2000 500]*(sin $%rand*80/40)*10}', i=i, d=2)
+    D('drum:[1,6]', speed='{[1,rand]}, {[2,1.9]}', i=i, d=3)
+    D('drum:2', cutoff='{[500:2000,500]*sin($%rand*80/40)*10}', i=i, d=2)
     D('bd', shape=0.5).out(i, 4)
     again(poly, p=0.5/2, i=i+1)
 #+end_src
@@ -1945,8 +2006,8 @@ There are a few extra arguments that you can use in your functions to control ti
 
 ~span~ is meant to be used in conjunction with the shorthand syntax. The following patterns are identic. However, note that we are using ~span~. The first pattern is *1.5* times longer than the normal version, while the second one is 50% shorter than the normal version:
 #+begin_src python
-Pa >> d('voodoo voodoo:4 linnhats:(rand*20)!4', span=1.5, p=0.5)
-Pb >> d('voodoo voodoo:4 linnhats:(rand*20)!4', span=0.5, p=0.5, speed=2)
+Pa >> d('voodoo, voodoo:4, linnhats:(rand*20)!4', span=1.5, p=0.5)
+Pb >> d('voodoo, voodoo:4, linnhats:(rand*20)!4', span=0.5, p=0.5, speed=2)
 #+end_src
 
 ~span~ is used to compress or to extend the duration of a pattern. Play carefully with these as they might result in weird results, especially if you are playing with complex rhythms! They will take all of your rhythmic values and will try to make them match a given *timespan*.
@@ -2011,7 +2072,7 @@ clock.tempo = 100
 def super_sleeping(p=2, i=0):
     D('bd')
     sleep(0.25)
-    D('{cp sn}')
+    D('{cp, sn}')
     D('tabla')
     # ...
     # Nothing happens
@@ -2056,7 +2117,7 @@ You can use the ~P()~ object to get a generic interface to *Sardine* patterns. T
 #+begin_src python
 @swim
 def free(p=0.5, i=0):
-    print(P('1 2 3 4', i))
+    print(P('1,2,3,4', i))
     again(free, p=0.5, i=i+1)
 #+end_src
 
@@ -2068,7 +2129,7 @@ We can do the same thing but using ~P()~ in a strategic location, replacing the 
 @swim
 def free(p=0.5, i=0):
     D('cp')
-    again(free, p=P('0.5!4 0.25!2', i), i=i+1)
+    again(free, p=P('0.5!4, 0.25!2', i), i=i+1)
 #+end_src
 
 Using this technique, you can easily generate rhythms or pattern data that you send to any *Python* function. Using ~P()~ is a good way to study *Sardine* patterns. You can just take a few minutes and study some specific patterns if you have a hard time understanding them. That's what I do sometimes when developping them :)
@@ -2121,8 +2182,8 @@ jupcc = { 'decay': {'control' : 81, 'chan': 1}, 'time': {'control' : 19, 'chan':
 
 @swim
 def structure(p=0.5, i=0):
-    N("C2 C3", chan=2, vel=120, i=i)
-    N("G5 G4", chan=2, vel=120, i=i, r=0.25/4)
+    N("C2,C3", chan=2, vel=120, i=i)
+    N("G5,G4", chan=2, vel=120, i=i, r=0.25/4)
     N("[G6]-[0:12]", chan=2, vel=120, i=i, r=0.25/2)
     CC(**jupcc['cutoff'], value=100) # Here, I am injecting stuff
     CC(**jupcc['decay'], value=80)
@@ -2177,7 +2238,7 @@ This is a pretty basic metallic sounding reverb. Not very usable but still.
 #+begin_src python
 @swim
 def test_fx(p=0.25):
-    D('hh', amp=1, room='(sin $.S)', dry=0.1, size='(sin $)')
+    D('hh', amp=1, room='sin($.S)', dry=0.1, size='sin($)')
     again(test_fx, p=0.25)
 
 #+end_src
@@ -2217,7 +2278,7 @@ def test_fx(p=0.25):
     D('jvbass',
             midinote='C|Eb|G|Bb',
             phaserrate='1~10',
-            phaserdepth='(sin $*2)', amp=1)
+            phaserdepth='sin($*2)', amp=1)
     again(test_fx, p=0.5)
 #+end_src
 
@@ -2252,7 +2313,7 @@ A simple tremolo effect.
 def test_fx(p=0.25, i=0):
     D('amencutup:[1:20]',
             tremolorate='16|32',
-            tremolodepth='[0.0~1.0 0.25]', i=i)
+            tremolodepth='[0.0~1.0,0.25]', i=i)
     again(test_fx, p=0.5, i=i+1)
 #+end_src
 
@@ -2331,8 +2392,8 @@ Another type of distortion. Emulating a triode distortion unit.
 @swim
 def test_fx(p=0.25):
     D('tabla:rand*200', cut=1,
-            triode='rand', # comment me
-            midinote='C|F|Bb|Eb5', amp=1)
+            triode='r', # comment me
+            midinote='C|F|Bb|E5b', amp=1)
     again(test_fx, p=0.5)
 #+end_src
 
@@ -2377,7 +2438,7 @@ Crush will.. crush your sound. You get it!
 #+begin_src python
 @swim
 def test_fx(p=0.25, i=0):
-    D('bd sn hh sn', crush=4, i=i)
+    D('bd, sn, hh, sn', crush=4, i=i)
     again(test_fx, p=0.5, i=i+1)
 #+end_src
 

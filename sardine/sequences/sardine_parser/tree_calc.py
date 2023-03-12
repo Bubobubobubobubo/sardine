@@ -508,7 +508,6 @@ class CalculateTree(Transformer):
 
         modifiers_list = {
             # Pure conditions
-            "in": self.library.in_condition,
             "if": self.library.binary_condition,
             "nif": self.library.negative_binary_condition,
             "while": self.library.unary_condition,

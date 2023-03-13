@@ -126,7 +126,7 @@ class SuperDirtHandler(Sender):
     def cycle_should_play(
             self,
             struct: Optional[tuple | int],
-            on: Optional[tuple | int]
+            on: Optional[tuple | int],
     ):
         """Determine if a function should play based
         on a cycle count from origin."""
@@ -137,22 +137,19 @@ class SuperDirtHandler(Sender):
 
         # If we only give an int, build the struct from 0
         if isinstance(struct, int):
-            struct = (0, struct)
+            struct = (1, struct)
 
-        # Converting values between false on and mod-influenced on
-        on = (self.env.clock.bar % (on+1) if isinstance(on, int) else
-              tuple(map(lambda x: self.env.clock.bar % (x+1), on)))
+        bar = self.env.clock.bar
+        group = struct[1]
 
-        def _check(low: int, high: int, on: int):
-            """This function will check if the on value is in
-            the boundaries of the time slice we previously se-
-            lected using struct."""
-            return low < (on % high) < high
+        elapsed_bars = bar // group
+        bar_in_current_group = bar - (elapsed_bars * group)
 
-        if isinstance(on, int):
-            return _check(struct[0], struct[1], on)
-        else:
-            return True in list(map(lambda x: _check(struct[0], x, struct[1]), on))
+        if isinstance(on, tuple):
+            return True if bar_in_current_group in tuple(x - 1 for x in on) else False
+        elif isinstance(on, int):
+            return bar_in_current_group == on
+
 
 
     @alias_param(name="iterator", alias="i")

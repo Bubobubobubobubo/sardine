@@ -179,8 +179,8 @@ class SuperDirtHandler(Sender):
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=pattern,
+        if self.apply_conditional_mask_to_bars(
+                pattern=pattern,
         ):
             return
 

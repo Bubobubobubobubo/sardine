@@ -227,9 +227,8 @@ class MidiHandler(Sender):
         if note is None:
             return
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=rest_of_pattern,
-        ):
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern):
             return
 
         pattern = {
@@ -270,8 +269,8 @@ class MidiHandler(Sender):
         if control is None:
             return
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=rest_of_pattern,
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern,
         ):
             return
 
@@ -301,8 +300,8 @@ class MidiHandler(Sender):
         if channel is None:
             return
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=rest_of_pattern,
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern,
         ):
             return
 
@@ -333,9 +332,9 @@ class MidiHandler(Sender):
         if data is None:
             return
 
-        # If the result of this cycle computation is false, we don't have to play at all
-        if not self.cycle_should_play(
-            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern,
         ):
             return
 
@@ -376,8 +375,8 @@ class MidiHandler(Sender):
         pared and mixed with the result of a ziffers message!
         """
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=rest_of_pattern,
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern,
         ):
             return
 

@@ -394,7 +394,7 @@ class MidiHandler(Sender):
                     note = "."
 
             if isinstance(note, list):
-                note = f"{{{', '.join([str(x) for x in note])}}}"
+                note = f"{{{' '.join([str(x) for x in note])}}}"
 
         pattern = {
             "note": note,

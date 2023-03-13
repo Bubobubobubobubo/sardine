@@ -11,6 +11,7 @@ __all__ = ("Player",)
 P = ParamSpec("P")
 T = TypeVar("T")
 
+
 def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """Allows to play a swimming function x times. It swims for_ n iterations."""
 
@@ -25,7 +26,6 @@ def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
         return wrapper
 
     return decorator
-
 
 
 @dataclass
@@ -188,7 +188,7 @@ class Player(BaseHandler):
             deadline,
             for_(pattern.until)(self.func) if pattern.until else self.func,
             pattern=pattern,
-            p=period
+            p=period,
         )
 
         self.env.scheduler.start_runner(self.runner)

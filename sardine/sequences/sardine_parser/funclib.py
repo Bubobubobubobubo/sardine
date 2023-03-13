@@ -216,7 +216,9 @@ class FunctionLibrary:
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_a if condition[0] >= 1 else pattern_b
 
-    def negative_binary_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
+    def negative_binary_condition(
+        self, condition, pattern_a=[None], pattern_b=[None], **kwargs
+    ):
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_b if condition[0] >= 1 else pattern_a
 
@@ -349,8 +351,6 @@ class FunctionLibrary:
                 new_collection.append(None)
 
         return new_collection
-
-
 
     def find_voice_leading(
         self,

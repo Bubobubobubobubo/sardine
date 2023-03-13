@@ -229,8 +229,8 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("loaf", None),
-                rest_of_pattern.get("on", None)):
+            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+        ):
             return
 
         pattern = {
@@ -273,8 +273,8 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("loaf", None),
-                rest_of_pattern.get("on", None)):
+            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+        ):
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
@@ -305,8 +305,8 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("loaf", None),
-                rest_of_pattern.get("on", None)):
+            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+        ):
             return
 
         pattern = {"channel": channel, "program": program}
@@ -338,8 +338,8 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("loaf", None),
-                rest_of_pattern.get("on", None)):
+            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+        ):
             return
 
         pattern = {"value": value}
@@ -381,8 +381,8 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("loaf", None),
-                rest_of_pattern.get("on", None)):
+            rest_of_pattern.get("loaf", None), rest_of_pattern.get("on", None)
+        ):
             return
 
         if not self._ziffers_parser:

@@ -7,13 +7,7 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from ..utils import alias_param
 from .osc_loop import OSCLoop
-from .sender import (
-    Number,
-    NumericElement,
-    ParsableElement,
-    Sender,
-    StringElement
-)
+from .sender import Number, NumericElement, ParsableElement, Sender, StringElement
 
 __all__ = ("SuperDirtHandler",)
 
@@ -146,7 +140,7 @@ class SuperDirtHandler(Sender):
             return
 
         if self.apply_conditional_mask_to_bars(
-                pattern=pattern,
+            pattern=pattern,
         ):
             return
 
@@ -187,8 +181,8 @@ class SuperDirtHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                pattern.get("loaf", None),
-                pattern.get("on", None)):
+            pattern.get("loaf", None), pattern.get("on", None)
+        ):
             return
 
         if not self._ziffers_parser:

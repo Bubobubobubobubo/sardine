@@ -142,13 +142,13 @@ class SuperDirtHandler(Sender):
         rate: NumericElement = 1,
         **pattern: ParsableElement,
     ):
+
         if sound is None:
             return
-    
-        # If the result of this cycle computation is false, we don't have to play at all
-        if not self.cycle_should_play(
-                pattern.get("loaf", None),
-                pattern.get("on", None)):
+
+        if not self.solve_mod_operations(
+                loaf=pattern.get("loaf", 0),
+                on=pattern.get("on", 0)):
             return
 
         # Replace some shortcut parameters by their real name

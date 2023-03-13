@@ -178,14 +178,15 @@ class Sender(BaseHandler):
             sub_pattern = {k: _maybe_index(v, i) for k, v in pattern.items()}
             yield from self.pattern_reduce(sub_pattern, iterator, divisor, rate)
 
-    def cycle_loaf(self, loaf: int, on: tuple | int) -> bool:
-
-        """
-        Will slice time in group of bars of size "loaf". Will
-        check if the current bar matches with one of the selected
-        bars in the sliced group (e.g. for a slice of 5, select
-        when we are on bar 1 and 3).
-        """
+    def cycle_should_play(
+            self,
+            loaf: Optional[int],
+            on: Optional[tuple | int],
+    ) -> bool:
+        """Determine if a function should play based
+        on a cycle count from origin."""
+        if loaf is None or on is None:
+            return True
 
         measure = self.env.clock.bar
         elapsed_bars = measure // loaf
@@ -196,29 +197,24 @@ class Sender(BaseHandler):
 
         return bar_in_current_group == on
 
-    def mod_cycles(self, on: int | tuple) -> bool:
-
-        """
-        Modulo operator working on bar numbers. This function will
-        be used with the "on" operator if no "loaf" argument is used
-        by the pattern.
-        """
-
-        on = on[0] if isinstance(on, tuple) else on
-        return self.env.clock.bar % on == 0
+    def mod_cycles(self, n: Optional[int] = None) -> bool:
+        """Will play every n cycles since origin"""
+        if n is None:
+            return True
+        return self.env.clock.bar % n == 0
 
     def solve_mod_operations(
-            self, loaf: int, on: int | tuple) -> bool:
-        """
-        Orchestrate the mod_cycles and cycle_loaf functions.
-        - mod_cycles: modulo operation for bars.
-        - cycle_loaf: more featureful version (see docstring).
-        """
-        if on == 0:
+            self,
+            loaf: Optional[int] = None,
+            on: Optional[int | tuple] = None
+    ) -> bool:
+        """Orchestrate the mod_cycles and cycle_should_play functions"""
+        if loaf and not on:
             return True
-        if on != 0 and loaf == 0:
-            return self.mod_cycles(on=on)
-        if on != 0 and loaf > 0:
-            return self.cycle_loaf(loaf=loaf, on=on)
-
-        return True
+        if loaf and on:
+            return self.cycle_should_play(
+                loaf=loaf, on=on)
+        if not loaf and on:
+            return self.mod_cycles(n=on)
+        if not loaf and not on:
+            return True

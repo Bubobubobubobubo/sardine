@@ -229,7 +229,7 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("struct", None),
+                rest_of_pattern.get("loaf", None),
                 rest_of_pattern.get("on", None)):
             return
 
@@ -273,7 +273,7 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("struct", None),
+                rest_of_pattern.get("loaf", None),
                 rest_of_pattern.get("on", None)):
             return
 
@@ -305,7 +305,7 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("struct", None),
+                rest_of_pattern.get("loaf", None),
                 rest_of_pattern.get("on", None)):
             return
 
@@ -338,7 +338,7 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("struct", None),
+                rest_of_pattern.get("loaf", None),
                 rest_of_pattern.get("on", None)):
             return
 
@@ -381,7 +381,7 @@ class MidiHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                rest_of_pattern.get("struct", None),
+                rest_of_pattern.get("loaf", None),
                 rest_of_pattern.get("on", None)):
             return
 
@@ -407,7 +407,9 @@ class MidiHandler(Sender):
             "channel": channel,
             "duration": duration,
         }
+
         deadline = self.env.clock.shifted_time
+
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["note"] is None:
                 continue

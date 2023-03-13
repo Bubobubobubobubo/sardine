@@ -147,7 +147,7 @@ class SuperDirtHandler(Sender):
     
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                pattern.get("struct", None),
+                pattern.get("loaf", None),
                 pattern.get("on", None)):
             return
 
@@ -188,7 +188,7 @@ class SuperDirtHandler(Sender):
 
         # If the result of this cycle computation is false, we don't have to play at all
         if not self.cycle_should_play(
-                pattern.get("struct", None),
+                pattern.get("loaf", None),
                 pattern.get("on", None)):
             return
 

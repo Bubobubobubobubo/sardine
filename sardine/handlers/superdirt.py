@@ -129,7 +129,6 @@ class SuperDirtHandler(Sender):
         }
         return rename_keys(pattern, aliases)
 
-
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
@@ -146,9 +145,9 @@ class SuperDirtHandler(Sender):
         if sound is None:
             return
 
-        if not self.solve_mod_operations(
-                loaf=pattern.get("loaf", 0),
-                on=pattern.get("on", 0)):
+        if self.apply_conditional_mask_to_bars(
+                pattern=pattern,
+        ):
             return
 
         # Replace some shortcut parameters by their real name

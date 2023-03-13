@@ -12,42 +12,52 @@
   src: url(Monoisome-Regular.ttf) format('truetype');
 }
 
+@font-face {
+	font-family: "spacemono";
+	src: url('SpaceMono-Regular.ttf') format('truetype');
+}
+
+
 
 
 body {
     padding-left: 5%;
     padding-right: 5%;
-    font-family: "modern", Helvetica, Arial, sans-serif;
+    /*  font-family: "modern", Helvetica, Arial, sans-serif; */
+    font-family: "spacemono";
     font-size: 22px;
     text-align: justify;
     text-justify: inter-word;
     line-height: 1.15;
-    color: #404040;
+    color: white;
 	animation: gradient 45s ease infinite;
 	height: 100vh;
-    background: #d3ddea;
+    background: black;
 }
 
 li {
     margin-top: 5px;
+    font-size: 105%;
     line-height: 1.5;
 }
 
 p {
     line-height: 150%;
+    font-size: 105%;
     text-align: justify;
     text-justify: inter-word;
 }
 
 code {
         font-family: "monoid", "monospace";
-        font-size: 12px;
+        /*  font-size: 12px; */
+        font-size: 70%;
     }
 
 p>code, li>code {
-        background-color: #414173;
+        background-color: white;
         padding: 0.45em;
-        color: white;
+        color: black;
         border-radius: 5px;
     }
 
@@ -150,7 +160,7 @@ a[href^="http"]:after {
 
 #table-of-contents a:link,
 #table-of-contents a:visited {
-        color: white;
+        color: black;
         background: transparent;
         transition: all .2s ease-in-out;
     }
@@ -163,9 +173,6 @@ a[href^="http"]:after {
         line-height: 1.15;
         font-size: 20px;
         overflow: scroll; /* Show scrollbars */
-	    background: linear-gradient(-45deg, #FFFFFF, #F0F8FF, #E0FFFF, #F9F9FB, #B4DDED);
-	    background-size: 900% 900%;
-	    /*! animation: gradient 45s ease infinite; */
 }
 
 #table-of-contents h2 {
@@ -339,6 +346,7 @@ div.NOTE:before {
 blockquote {
         padding: 10px 20px 20px 10px;
         border: 1px solid #ddd;
+        color: black;
         background: #F9F9FB;
         box-shadow: 5px 5px 5px #eee;
         border-radius: 5px;
@@ -473,29 +481,29 @@ div.figure {
     }
 
 pre {
-        background-color: #2b2842;
-        color: #cdcdcd;
+        background-color: white;
+        color: black;
         border-radius: 10px;
 }
-pre span.org-builtin                     {color:#006FE0;font-weight:bold;}
-pre span.org-string                      {color:#d75082;}
-pre span.org-keyword                     {color:#9B9BFF;}
-pre span.org-variable-name               {color:#BA36A5;}
-pre span.org-function-name               {color:#1ee118;}
+pre span.org-builtin                     {color:#6fb3d2;font-weight:bold;}
+pre span.org-string                      {color:#b5bd68;}
+pre span.org-keyword                     {color:#fc6d24;}
+pre span.org-variable-name               {color:#cc99cc;}
+pre span.org-function-name               {color:#fda331;}
 pre span.org-type                        {color:#9765D9;}
 pre span.org-preprocessor                {color:#808080;font-weight:bold;}
 pre span.org-constant                    {color:#D0372D;}
-pre span.org-comment-delimiter           {color:#cdcdcd;}
-pre span.org-comment                     {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-1            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-2            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-3            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-4            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-5            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-6            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-7            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-8            {color:#cdcdcd;font-style:italic}
-pre span.org-outshine-level-9            {color:#cdcdcd;font-style:italic}
+pre span.org-comment-delimiter           {color:#808080;}
+pre span.org-comment                     {color:#808080;font-style:italic}
+pre span.org-outshine-level-1            {color:#808080;font-style:italic}
+pre span.org-outshine-level-2            {color:#808080;font-style:italic}
+pre span.org-outshine-level-3            {color:#808080;font-style:italic}
+pre span.org-outshine-level-4            {color:#808080;font-style:italic}
+pre span.org-outshine-level-5            {color:#808080;font-style:italic}
+pre span.org-outshine-level-6            {color:#808080;font-style:italic}
+pre span.org-outshine-level-7            {color:#808080;font-style:italic}
+pre span.org-outshine-level-8            {color:#808080;font-style:italic}
+pre span.org-outshine-level-9            {color:#808080;font-style:italic}
 pre span.org-rainbow-delimiters-depth-1  {color:#707183;}
 pre span.org-rainbow-delimiters-depth-2  {color:#7388d6;}
 pre span.org-rainbow-delimiters-depth-3  {color:#909183;}
@@ -529,8 +537,8 @@ pre span.org-sh-quoted-exec              {color:#FF1493;}
                 font-size: 18px;
                 overlow-x: hidden;
                 overlow-y: auto;
-                background: #2b2842;
-                color: white;
+                background: white;
+                color: black;
             }
 
         #table-of-contents h2 {

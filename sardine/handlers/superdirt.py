@@ -123,6 +123,38 @@ class SuperDirtHandler(Sender):
         }
         return rename_keys(pattern, aliases)
 
+    def cycle_should_play(
+            self,
+            struct: Optional[tuple | int],
+            on: Optional[tuple | int]
+    ):
+        """Determine if a function should play based
+        on a cycle count from origin."""
+
+        # Always return True if the mechanism is not in use
+        if struct is None or on is None:
+            return True
+
+        # If we only give an int, build the struct from 0
+        if isinstance(struct, int):
+            struct = (0, struct)
+
+        # Converting values between false on and mod-influenced on
+        on = (self.env.clock.bar % (on+1) if isinstance(on, int) else
+              tuple(map(lambda x: self.env.clock.bar % (x+1), on)))
+
+        def _check(low: int, high: int, on: int):
+            """This function will check if the on value is in
+            the boundaries of the time slice we previously se-
+            lected using struct."""
+            return low < (on % high) < high
+
+        if isinstance(on, int):
+            return _check(struct[0], struct[1], on)
+        else:
+            return True in list(map(lambda x: _check(struct[0], x, struct[1]), on))
+
+
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
@@ -136,6 +168,10 @@ class SuperDirtHandler(Sender):
         **pattern: ParsableElement,
     ):
         if sound is None:
+            return
+    
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(pattern.get("struct", None), pattern.get("on", None)):
             return
 
         # Replace some shortcut parameters by their real name

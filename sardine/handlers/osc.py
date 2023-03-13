@@ -76,6 +76,11 @@ class OSCHandler(Sender):
         if address is None:
             return
 
+       if self.apply_conditional_mask_to_bars(
+            pattern=pattern,
+        ):
+            return
+
         pattern["address"] = address
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):

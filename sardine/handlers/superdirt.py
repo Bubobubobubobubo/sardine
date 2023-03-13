@@ -179,9 +179,8 @@ class SuperDirtHandler(Sender):
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
 
-        # If the result of this cycle computation is false, we don't have to play at all
-        if not self.cycle_should_play(
-            pattern.get("loaf", None), pattern.get("on", None)
+        if self.apply_conditional_mask_to_bars(
+            pattern=pattern,
         ):
             return
 

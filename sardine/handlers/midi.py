@@ -1,4 +1,4 @@
-from .sender import Number, NumericElement, Sender
+from .sender import Number, NumericElement, Sender, ParsableElement
 from typing import Optional, Union
 from ..utils import alias_param
 from ..logger import print
@@ -214,6 +214,7 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         """
         This method is responsible for preparing the pattern message before sending it
@@ -224,6 +225,12 @@ class MidiHandler(Sender):
         """
 
         if note is None:
+            return
+
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(
+                rest_of_pattern.get("loaf", None),
+                rest_of_pattern.get("on", None)):
             return
 
         pattern = {
@@ -254,6 +261,7 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         """
         Variant of the 'send' function specialized in sending control changes. See the
@@ -261,6 +269,12 @@ class MidiHandler(Sender):
         """
 
         if control is None:
+            return
+
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(
+                rest_of_pattern.get("loaf", None),
+                rest_of_pattern.get("on", None)):
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
@@ -284,8 +298,15 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         if channel is None:
+            return
+
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(
+                rest_of_pattern.get("loaf", None),
+                rest_of_pattern.get("on", None)):
             return
 
         pattern = {"channel": channel, "program": program}
@@ -310,8 +331,15 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         if data is None:
+            return
+
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(
+                rest_of_pattern.get("loaf", None),
+                rest_of_pattern.get("on", None)):
             return
 
         pattern = {"value": value}
@@ -344,11 +372,19 @@ class MidiHandler(Sender):
         rate: NumericElement = 1,
         scale: str = "IONIAN",
         key: str = "C4",
+        **rest_of_pattern: ParsableElement,
     ) -> int | float:
         """
         Alternative to the send method for the ziffers sender. The message will be pre-
         pared and mixed with the result of a ziffers message!
         """
+
+        # If the result of this cycle computation is false, we don't have to play at all
+        if not self.cycle_should_play(
+                rest_of_pattern.get("loaf", None),
+                rest_of_pattern.get("on", None)):
+            return
+
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
@@ -371,7 +407,9 @@ class MidiHandler(Sender):
             "channel": channel,
             "duration": duration,
         }
+
         deadline = self.env.clock.shifted_time
+
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["note"] is None:
                 continue

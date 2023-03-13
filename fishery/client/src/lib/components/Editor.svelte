@@ -221,7 +221,7 @@
           effects: StateEffect.appendConfig.of([
           ViewPlugin.define((view) => {
               view.dom.classList.add('editor')
-              view.dom.style.height = '50%'
+              view.dom.style.height = '10%'
               view.dom.style.width = '99vw'
               return {}
           }),

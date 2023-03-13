@@ -193,9 +193,9 @@ class FunctionLibrary:
 
     def every(self, *args, **kwargs):
         """
-        Inspired by the 'every' function in TidalCycles. Will return True if we are on
-        one of the targetted bar numbers. The upper limit for the modulo is determined
-        by the bar number we wish for itself.
+        Inspired by the 'every' function in TidalCycles. Will return True if the
+        current bar is the modulo of the targetted bar, false otherwise. Multiple
+        arguments are allowed (is it even useful?)
         """
 
         def inner_function(x) -> list:
@@ -212,11 +212,15 @@ class FunctionLibrary:
 
         return [1] if True in results else [0]
 
-    def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
+    def binary_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_a if condition[0] >= 1 else pattern_b
 
-    def while_condition(self, condition, pattern=[None], **kwargs):
+    def negative_binary_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
+        """If the condition is True, play pattern A, else play pattern B"""
+        return pattern_b if condition[0] >= 1 else pattern_a
+
+    def unary_condition(self, condition, pattern=[None], **kwargs):
         """While loop that returns nothing is the condition is not met"""
         return pattern if condition[0] >= 1 else [None]
 
@@ -227,7 +231,7 @@ class FunctionLibrary:
         print(f"Testing if {value} in {condition_list}")
         return [1] if value in condition_list else [0]
 
-    def not_condition(self, condition, pattern=[None], **kwargs):
+    def negative_unary_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
         return pattern if condition != [1] else [None]
 
@@ -306,6 +310,47 @@ class FunctionLibrary:
                 new_collection.append(None)
 
         return new_collection
+
+    def negative_euclidian_rhythm(
+        self,
+        collection: list,
+        pulses: list,
+        steps: list,
+        rotation: Optional[list] = None,
+        **kwargs,
+    ) -> list:
+        """
+        Apply an euclidian rhythm as a boolean mask on values from the collection.
+        True values will return the value itself, others will return a silence.
+        """
+        # This one-liner is creating a collection-length euclidian rhythm (repeating the rhythm)
+        boolean_mask = list(
+            islice(
+                cycle(
+                    euclid(
+                        pulses[0], steps[0], rotation[0] if rotation is not None else 0
+                    )
+                ),
+                len(collection) if len(collection) >= steps[0] else steps[0],
+            )
+        )
+
+        # reversing the euclidian pattern!
+        boolean_mask = list(map(lambda x: x ^ 1, boolean_mask))
+
+        new_collection = []
+
+        # Masking values
+        collection = list(islice(cycle(collection), steps[0]))
+        for item, mask in zip(collection, boolean_mask):
+            if mask == 1:
+                new_collection.append(item)
+            else:
+                new_collection.append(None)
+
+        return new_collection
+
+
 
     def find_voice_leading(
         self,

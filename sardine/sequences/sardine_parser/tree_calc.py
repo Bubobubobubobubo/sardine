@@ -444,16 +444,28 @@ class CalculateTree(Transformer):
         return [1] if left[0] == right[0] else [0]
 
     def is_greater(self, left, right):
-        return [1] if left[0] > right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] > right[0] else [0]
 
     def is_greater_or_equal(self, left, right):
-        return [1] if left[0] >= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] >= right[0] else [0]
 
     def is_smaller(self, left, right):
-        return [1] if left[0] < right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] < right[0] else [0]
 
     def is_smaller_or_equal(self, left, right):
-        return [1] if left[0] <= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] <= right[0] else [0]
 
     def function_call(self, func_name, *args):
         """
@@ -461,7 +473,7 @@ class CalculateTree(Transformer):
         basic Python syntax. There are a few special keys you can use for conditional
         application of the function:
 
-        - do: apply the function only if boolean (represented by 1/0) is True. Condi-
+        - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
           tions can be chained as well for weirder chance / probability based operations
 
         """
@@ -473,8 +485,8 @@ class CalculateTree(Transformer):
         for _ in args:
             # print(f'Token: {_} (type: {type(_)})')
             # We need to determine if we are currently looking at a keyword and its
-            # value. If we have a repeating keyword, we will do our best to completely
-            # ignore it.
+            # value. If we have a repeating keyword, we will do our best to
+            # completely ignore it.
             if isinstance(_, Token):
                 if not _ in past_keywords:
                     current_keyname = str(_)
@@ -496,14 +508,14 @@ class CalculateTree(Transformer):
 
         modifiers_list = {
             # Pure conditions
-            "not": self.library.not_condition,
-            "if": self.library.simple_condition,
-            "while": self.library.while_condition,
-            "in": self.library.in_condition,
+            "if": self.library.binary_condition,
+            "nif": self.library.negative_binary_condition,
+            "while": self.library.unary_condition,
+            "nwhile": self.library.negative_unary_condition,
             # Boolean functions
             "beat": self.library.beat,
             "every": self.library.every,
-            "proba": self.library.proba,
+            "maybe": self.library.proba,
             "phase": self.library.phase,
             # Voice leading operations
             "dmitri": self.library.dmitri,
@@ -518,6 +530,8 @@ class CalculateTree(Transformer):
             # Boolean mask operations
             "euclid": self.library.euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,
+            "negative_euclid": self.library.negative_euclidian_rhythm,
+            "neu": self.library.negative_euclidian_rhythm,
             "mask": self.library.mask,
             "vanish": self.library.remove_x,
             "expand": self.library.expand,

@@ -164,7 +164,6 @@
         // Getting the currently active tab through introspection
         let tab = get(activeTab);
         SARDINE_BUFFERS["buffer" + (tab - 1) + ".py"] = tr._doc.text.join('\n');
-        console.log(SARDINE_BUFFERS)
     }
 
     function saveAsTextFile() {
@@ -200,9 +199,6 @@
         return "[" + name.replace('.py', '').replace('buffer', '') + "]"
     }
 
-    function handleResize(...args) {
-    }
-
 </script>
 
 <div class="app">
@@ -225,7 +221,7 @@
 
             <Splitpanes
                 horizontal=True
-                style="height: 100vh; background-color: black"
+                style="height: 80vh; background-color: black"
                 pushOtherPanes=False
                 theme="sardine"
             >

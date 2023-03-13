@@ -1,9 +1,17 @@
 import asyncio
 from math import floor
-from typing import Callable, Generator, ParamSpec, TypeVar, Union
+from typing import (
+    Callable,
+    Generator,
+    ParamSpec,
+    TypeVar,
+    Union,
+    Optional
+)
 
 from ..base import BaseHandler
 from ..utils import maybe_coro
+from ..sequences import euclid
 
 __all__ = ("Sender",)
 
@@ -169,3 +177,151 @@ class Sender(BaseHandler):
         for i in range(max_length):
             sub_pattern = {k: _maybe_index(v, i) for k, v in pattern.items()}
             yield from self.pattern_reduce(sub_pattern, iterator, divisor, rate)
+
+    def cycle_loaf(self,
+                   loaf: Optional[int],
+                   on: Optional[tuple | int]
+    ) -> bool:
+
+        """
+        Will slice time in group of bars of size "loaf". Will
+        check if the current bar matches with one of the selected
+        bars in the sliced group (e.g. for a slice of 5, select
+        when we are on bar 1 and 3).
+        """
+
+        def mod_cycles(on: int | tuple) -> bool:
+
+            """
+            Modulo operator working on bar numbers. This function will
+            be used with the "on" operator if no "loaf" argument is used
+            by the pattern.
+            """
+
+            on = on[0] if isinstance(on, tuple) else on
+            return self.env.clock.bar % on == 0
+
+        if loaf is None and on is None:
+            return True
+
+        if loaf is None:
+            return mod_cycles(on=on)
+
+        measure = self.env.clock.bar
+        elapsed_bars = measure // loaf
+        bar_in_current_group = measure - (elapsed_bars * loaf)
+
+        if isinstance(on, tuple):
+            return bar_in_current_group in tuple(x - 1 for x in on)
+
+        return bar_in_current_group == (on - 1)
+
+    def euclid_bars(
+            self,
+            steps: int,
+            pulses: int,
+            rotation: Optional[int] = None,
+            negative: bool =False,
+    ):
+        """
+        Euclidian rhythm but on the measure level!
+        """
+        if rotation is None:
+            rotation = 0
+        euclidian_pattern = euclid(steps, pulses, rotation)
+        if negative:
+            euclidian_pattern = list(map(lambda x: x ^ 1, euclidian_pattern))
+        to_bars, len_in_bars = [], len(euclidian_pattern)
+
+        for count, value in enumerate(euclidian_pattern):
+            if value == 1:
+                to_bars.append(count+1)
+
+        return self.cycle_loaf(loaf=len_in_bars, on=tuple(to_bars))
+
+    def binary_bars(
+            self,
+            binary_pattern: list
+    ):
+        """
+        Euclidian rhythm but on the measure level!
+        """
+        # We can't tolerate any other thing than 1 and 0
+        if not all(e in [1, 0] for e in binary_pattern):
+            return False
+
+        to_bars, len_in_bars = [], len(binary_pattern)
+
+        for count, value in enumerate(binary_pattern):
+            if value == 1:
+                to_bars.append(count+1)
+
+        return self.cycle_loaf(loaf=len_in_bars, on=tuple(to_bars))
+
+
+    def key_deleter(
+            self,
+            dictionary: dict,
+            list_of_keys: list[str]
+    ):
+        """
+        Remove multiple keys from one dictionary in one-go
+        while taking care of possible index errors.
+        """
+        for key in list_of_keys:
+            try:
+                del dictionary[key]
+            except KeyError:
+                pass
+
+    def apply_conditional_mask_to_bars(
+            self,
+            pattern: ParsableElement) -> bool:
+
+        boolean_masks = []
+
+        # Cycle loaf
+        boolean_masks.append(
+            self.cycle_loaf(
+                loaf=pattern.get("loaf", None),
+                on=pattern.get("on", None)))
+
+        # Euclidian
+        if (
+                pattern.get("euclid", None) is not None
+                or pattern.get("eu", None) is not None
+        ):
+            steps, pulses = pattern.get('euclid')[0:2]
+            try:
+                rotation = pattern["euclid"][2]
+            except IndexError:
+                rotation = None
+            boolean_masks.append(self.euclid_bars(
+                steps, pulses, rotation))
+
+        # Negative euclidian
+        if (
+                pattern.get("neuclid", None) is not None
+                or pattern.get("neu", None) is not None
+        ):
+            steps, pulses = pattern.get('neuclid')[0:2]
+            try:
+                rotation = pattern["neuclid"][2]
+            except IndexError:
+                rotation = None
+            boolean_masks.append(self.euclid_bars(
+                steps, pulses, rotation, negative=True))
+
+        # Binary pattern
+        if pattern.get("binary", None) is not None:
+            boolean_masks.append(self.binary_bars(
+                binary_pattern=pattern['binary']
+            ))
+
+        # Cleaning up the messy keys
+        self.key_deleter(dictionary=pattern, list_of_keys=[
+            "euclid", "neuclid", "on", "loaf", "binary"
+        ])
+
+        # Returning if one False in the boolean masks
+        return False in boolean_masks

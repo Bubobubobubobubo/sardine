@@ -76,8 +76,8 @@ class OSCHandler(Sender):
         if address is None:
             return
 
-       if self.apply_conditional_mask_to_bars(
-            pattern=pattern,
+        if self.apply_conditional_mask_to_bars(
+                pattern=pattern,
         ):
             return
 

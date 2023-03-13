@@ -1,6 +1,14 @@
 import asyncio
 from math import floor
-from typing import Callable, Generator, ParamSpec, TypeVar, Union
+from typing import (
+    Callable,
+    Generator,
+    ParamSpec,
+    TypeVar,
+    Union,
+    Optional
+)
+
 
 from ..base import BaseHandler
 from ..utils import maybe_coro
@@ -169,3 +177,22 @@ class Sender(BaseHandler):
         for i in range(max_length):
             sub_pattern = {k: _maybe_index(v, i) for k, v in pattern.items()}
             yield from self.pattern_reduce(sub_pattern, iterator, divisor, rate)
+
+    def cycle_should_play(
+            self,
+            struct: Optional[int],
+            on: Optional[tuple | int],
+    ) -> bool:
+        """Determine if a function should play based
+        on a cycle count from origin."""
+        if struct is None or on is None:
+            return True
+
+        measure = self.env.clock.bar
+        elapsed_bars = measure // struct
+        bar_in_current_group = measure - (elapsed_bars * struct)
+
+        if isinstance(on, tuple):
+            return bar_in_current_group in tuple(x - 1 for x in on)
+
+        return bar_in_current_group == on

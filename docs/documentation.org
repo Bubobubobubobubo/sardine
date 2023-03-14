@@ -444,13 +444,6 @@ output_one = OSCHandler(
 )
 bowl.add_handler(output_one)
 
-output_two = OSCHandler(
-    ip="127.0.0.1", port=12346,
-    name="A second test connexion",
-    ahead_amount=0.0, loop=osc_loop,
-)
-bowl.add_handler(output_two)
-
 # Look who's here, the send functions as usual
 one = output_one.send
 two = output_two.send

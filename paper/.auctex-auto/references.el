@@ -20,6 +20,7 @@
     "roberts2018"
     "agential"
     "lark"
-    "ziffers"))
+    "ziffers"
+    "gpl"))
  '(or :bibtex :latex))
 

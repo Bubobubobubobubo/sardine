@@ -242,11 +242,11 @@ data-cites="cookiewebsite">(<span>“Cookie Collective”</span>
 2016)</span> and the <em>Digital Audio Community</em> from Lyon
 (France). Stemming from the demo and shader-coding scenes, <em>Cookie
 Collective</em>’s members are known for their complex multimedia
-performances. Each member typically rely on bespoke hybrid audio-visual
-setups ranging from low end computing devices to complex synthesizers
-and circuit-bent video mixers. The <em>Cookies</em> are also known for
-working in an improvised manner, customising setups for each venue
-depending on audience needs and expectations. This need for
+performances. Each member typically relies on bespoke hybrid
+audio-visual setups ranging from low end computing devices to complex
+synthesizers and circuit-bent video mixers. The <em>Cookies</em> are
+also known for working in an improvised manner, customising setups for
+each venue depending on audience needs and expectations. This need for
 customisation gave rise to the idea of a modular interface that could be
 used and mastered by every member of the collective, while allowing for
 jam-ready synchronisation with other musicians and live-coders. The
@@ -271,14 +271,14 @@ expressive capabilities on the other. Although these two tasks can be
 seen as related, the former has more to do with the inclusion of new
 users, while the latter has to do with creative exploration for the more
 experienced users. In order to strengthen the accurateness of our aim,
-we have chosen to present Sardine to various audiences (<a
+we have chosen to present Sardine to various audiences (at <a
 href="https://www.pycon.fr/2023/fr/talks/sprint.html#sardine-improvisation-musicale">PyCon
-France</a>, hackerspace workshops, informal musician meetings) in order
-to study user’s usage patterns and expectations when confronted to the
-software. This has led, in the last few months, to many fixes and
-improvements concerning multi-platform support, usability without a
-dedicated text editor, documentation, and much more.</p>
-<p>REVOIR ICI REVOIR ICI</p>
+France</a>, in hackerspace workshops or informal musician meetings) in
+order to study user’s usage patterns and expectations when confronted to
+the software. This has led to many multi-platform support fixes and
+improvements. This has also led to improve the usability of Sardine
+without a dedicated text editor or to improve the quality and quantity
+of documentation provided with the software.</p>
 <h1 data-number="3" id="sardine-implementation-and-installation"><span
 class="header-section-number">3</span> Sardine implementation and
 installation</h1>
@@ -610,7 +610,7 @@ available for composing patterns. For now one parser is supported in
 each instance of the <code>FishBowl</code>, and its use is optional.</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># standalone call to the parser, yielding one value per iteration (i acting as the index)</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>P(<span class="st">&#39;1 2 3 2~40, 5!4, C@fifths&#39;</span>, i<span class="op">=</span>i) </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>P(<span class="st">&#39;1 2 3 2~40  5!4  C@fifths&#39;</span>, i<span class="op">=</span>i) </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># several calls nested inside a more densely composed call to SuperDirt.</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&#39;amencutup:[1:10]&#39;</span>, legato<span class="op">=</span><span class="st">&#39;0.1~0.8&#39;</span>, room<span class="op">=</span><span class="st">&#39;0.5&#39;</span>, dry<span class="op">=</span><span class="st">&#39;[0.1,0.5:0.05]&#39;</span>, i<span class="op">=</span>i) </span></code></pre></div>
@@ -658,7 +658,10 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a hr
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>N(<span class="st">&#39;{C@maj7}&#39;</span>, vel<span class="op">=</span><span class="st">&#39;80~120&#39;</span>, chan<span class="op">=</span><span class="st">&#39;0|1|2&#39;</span>, i<span class="op">=</span>i)</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># SuperDirt call, picking samples &#39;0&#39; to &#39;20&#39; in order in the &#39;drum&#39; folder. Speed parameter</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ramping from 1 to 10 in increments of 2, shape is the sin function of current time divided by 2.</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20]&quot;</span>, speed<span class="op">=</span><span class="st">&#39;[1:10,2]&#39;</span>, shape<span class="op">=</span><span class="st">&#39;sin($)/2&#39;</span>, i<span class="op">=</span>i)</span></code></pre></div>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>D(<span class="st">&quot;drum:[0:20]&quot;</span>, speed<span class="op">=</span><span class="st">&#39;[1:10,2]&#39;</span>, shape<span class="op">=</span><span class="st">&#39;(sin $)/2&#39;</span>, i<span class="op">=</span>i)</span></code></pre></div>
+<h3 data-number="3.3.2" id="iteration-and-pattern-querying"><span
+class="header-section-number">3.3.2</span> Iteration and pattern
+querying</h3>
 <p>Querying values from the possible multiple patterns per <em>swimming
 function</em> is done by providing a single pattern-wide iterator
 (labelled <code>i</code>) as an argument to each sender. Indexing errors
@@ -669,48 +672,58 @@ patterns can be chosen depending on context: sequentially, in reverse,
 or using a random number generator. Additional arguments, namely
 <code>rate</code> and <code>div</code>, can help in specifying how the
 iterator will be applied to the gathered patterns, adding another
-quickly accessible layer of patterning. The rate argument
-(<code>rate</code> alias <code>r</code>) is used to compress or extend
-the number of iterations needed to move from a list index to the
-preceding/next. It is best understood as a process slowing down or
-speeding up the iteration over patterns. The divisor argument
-(<code>div</code> alias <code>d</code>) is a modulo operation between
-the iteration count and <code>div</code> that will determine if the
-current event is to be played. Other sender-level functions, similar in
-functionality to high-level functions applied to musical patterns from
-live coding languages such as TidalCycles, have also been experimented
-with in the most recent versions of Sardine. While the querying of
-pattern information is done by usage of iterators, this new set of
-function will use other available temporal information – such as current
-bar or phase – to apply a transform to a pattern based on a temporal
-condition. Based on our design experiments, the iterator-based pattern
-system is well suited to a system based on temporal recursion, partly as
-recursive operations are often used as iteration tools in functional
-approaches to programming. Multiple iterators can be used in the same
-pattern by playing around with the <code>P()</code> mechanism previously
-described. This allows for the creation of arbitrarily complex patterns
-composed of multiple values assigned to any parameter accessible through
-a given sender. Even though the list of features provided by the pattern
-language is dense, its architecture is not complex and allows for quick
-customisation and feature addition. As a downside, the Sardine Pattern
-Language syntax and mode of operation can prove particularly difficult
-to learn for new users as it requires a good understanding of both
-recursion and iteration, the two concepts being used extensively in the
-overall design of the basic components.</p>
-<h3 data-number="3.3.2"
+quickly accessible layer of patterning. The <code>rate</code> argument
+(aliased to <code>r</code>) is used to compress or extend the number of
+iterations needed to move from a list index to the preceding/next. It is
+best understood as a way to slow down or speed up the iteration over
+patterns. The <code>divisor</code> argument (aliased to <code>div</code>
+or <code>d</code>) is a modulo operation between the iteration count and
+<code>div</code> that will determine if the current event is to be
+played. Other sender-level functions, similar in functionality to
+high-level functions applied to musical patterns from live coding
+languages such as TidalCycles, have also been experimented with in the
+most recent versions of Sardine. While the querying of pattern
+information is done by usage of iterators, this new set of function will
+use other available temporal information – such as current bar or phase
+– to apply transformations to patterns based on a temporal
+condition.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="at">@swim</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> querying_flavors(p<span class="op">=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>, i<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;bd cp sn hh&#39;</span>, i<span class="op">=</span>i, r<span class="op">=</span><span class="fl">0.5</span>, d<span class="op">=</span><span class="dv">2</span>) <span class="co"># simple iterator: 0, 1, 2. </span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="co"># Custom rate and div</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;linnhats!4 jvbass&#39;</span>, i<span class="op">=-</span>i)      <span class="co"># reversed iterator: 0, -1, -2</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    D(<span class="st">&#39;bongo bongo:2&#39;</span>, i<span class="op">=</span><span class="st">&#39;rand*50&#39;</span>)   <span class="co"># random iterator: 0, 24, 5</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    again(querying_flavors, p<span class="op">=</span><span class="dv">1</span><span class="op">/</span><span class="dv">2</span>, i<span class="op">=</span>i<span class="op">+</span><span class="dv">1</span>)</span></code></pre></div>
+<p>The iterator-based pattern system appears to be well suited to a
+system based on temporal recursion, partly as recursive operations are
+often used as iteration tools in functional approaches to programming.
+Multiple iterators can be used in the same pattern by playing around
+with the <code>P()</code> mechanism previously described. This allows
+for the creation of arbitrarily complex patterns composed of multiple
+values assigned to any parameter accessible through a given sender. Even
+though the list of features provided by the pattern language is dense,
+its architecture is not complex and allows for quick customisation and
+feature addition. As a downside, the Sardine Pattern Language syntax and
+mode of operation can prove particularly difficult to learn for new
+users as it requires a good understanding of both recursion and
+iteration, the two concepts being used extensively in the overall design
+of the basic components. Being modal and modular in nature,
+understanding how to apply patterns to both <em>swimming functions</em>
+and <em>Players</em> (shorthand notation) can also prove difficult for
+new users.</p>
+<h3 data-number="3.3.3"
 id="planned-extensions-of-the-parser-mechanism"><span
-class="header-section-number">3.3.2</span> Planned extensions of the
+class="header-section-number">3.3.3</span> Planned extensions of the
 parser mechanism</h3>
-<p>The basic Sardine parser, in spite of its yet experimental status, is
+<p>The basic Sardine parser, in spite of its experimental status, is
 already useful for increasing the general playability of the system and
 for generating complex musical algorithmic patterns. Multiple extensions
 and refinements will come in future versions, specifically aimed at
 making the pattern language more easy to write and less error prone for
 the end-user. New additions will come in two categories, the first
 focusing on additions and improvements to this pattern language, and the
-second on adding new or different pattern languages:</p>
-<ul>
-<li><p>Support for the <a
+second on adding new or different pattern languages. Support for the <a
 href="https://github.com/amiika/ziffers">Ziffers</a> numerical notation
 created by Miika Alonen, re-implemented in Python, is in progress and
 can already be used thanks to the addition of an <a
@@ -720,36 +733,26 @@ requires new types of <code>Players</code>, relying on Sardine’s
 low-level scheduling mechanisms. Supporting Ziffers is helpful to test
 the ease of integrating new writing and patterning paradigms into
 Sardine, while – in the process – gaining access to new ways to write
-melodic and harmonic patterns.</p></li>
-<li><p>The addition of the <a
+melodic and harmonic patterns. The addition of the <a
 href="https://github.com/sletz/CLCE">CLCE</a> (<em>Common Lisp
 Compositional Environment</em>, 1994) <em>Time Generators</em>, a non
 documented library for algorithmic composition written by Stéphane Letz
 and Yann Orlarey (GRAME CNCM<a href="#fn7" class="footnote-ref"
 id="fnref7" role="doc-noteref"><sup>7</sup></a>, France) is being
-considered as a way to preserve the legacy of this project. This would
-make use of Sardine as a tool for the study of algorithmic composition
-while allowing the exploration of more functional approaches to pattern
-generation.</p></li>
-</ul>
-<p>The basic parser is currently undergoing a minor refactoring, that
-saw the removal of structural commas from the syntax while also making
-function calls closer to their behaviour in LISP-like languages. Adding
-high-order functions and more tooling for functional composition of
-musical patterns will be prioritized in next iterations of that
-component. Support for conditional expressions is also being worked on
-as a way to strenghten pattern level condition-based pattern
-description.</p>
+considered as a way to preserve the legacy and compositional ideas
+explored by this project. This would make use of Sardine as a tool for
+the study of algorithmic composition while allowing the exploration of
+more functional approaches to pattern generation.</p>
 <h1 data-number="4" id="sardine-usage"><span
 class="header-section-number">4</span> Sardine usage</h1>
 <img src="images/sardine_code_paper_fig.png" style="width:100.0%"
 alt="Sardine in use at the Zorba" /><br />
 
 <p>Over its relatively short timespan, from September 2022 to March
-2023, Sardine has already been used multiple times for public and
-private music performances. The thrill and danger arising from using an
-unstable and unpolished software has constituted an obstacle as well as
-an appealing perspective for most users <span class="citation"
+2023, Sardine has already been used multiple times for public music
+performances. The thrill and danger arising from using an unstable and
+unpolished software has constituted an obstacle as well as an appealing
+perspective for most users <span class="citation"
 data-cites="roberts2018">(Roberts and Wakefield 2018)</span>. Jams,
 informal meetings and dialogue with the wider live coding community were
 also of the utmost importance to study the integration of Sardine in
@@ -809,7 +812,7 @@ Taichi numerical simulation library was able to run its animation frame
 loop as a <code>@swim</code> function, with Sardine’s recursion
 occurring fast enough to give 60fps graphics<a href="#fn9"
 class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>
-(see Figure 11). These early examples showed the diversity of approaches
+(see Figure 12). These early examples showed the diversity of approaches
 that are possible in the Python ecosystem, and they also usefully
 highlighted usability pain points and performance bottlenecks with
 Sardine. As a result, substantial rewriting efforts have been taking
@@ -824,18 +827,19 @@ class="header-section-number">5.1</span> Current issues and
 shortcomings</h2>
 <p>Sardine is both a new software/environment and an architecture model
 for a Python based live coding library. Developed only by a small
-dedicated team of developers with few enthusiastic users, some features
-are already hard to keep a track of, for they are not often used. Much
-needed updates are currently delayed to address more urgent concerns.
-Though tests have recently been introduced, only time-critical parts of
-the system are currently extensively covered. The <code>v.0.2.0</code>
-rewrite focused on improvements to the temporal model and component
-handling, and although it’s promising, it remains fragile and requires
-careful, time-consuming testing to identify regressions and new issues
-brought by additions to the model. As such, regular updates are being
-released to increase the robustness and playability of the system. Now
-at version <code>v.0.2.3</code> – at the time of last revision of this
-paper –, Sardine has started to stabilise around its core features.
+dedicated team of developers with a few enthusiastic users, some
+features are already hard to keep a track of, for they are not often
+used. Much needed updates are currently delayed to address more urgent
+concerns. Though tests have recently been introduced, only time-critical
+parts of the system are currently extensively covered. The
+<code>v.0.2.0</code> rewrite focused on improvements to the temporal
+model and component handling, and although it’s promising, it remains
+fragile and requires careful, time-consuming testing to identify
+regressions and new issues brought by additions to the model. As such,
+regular updates are being released to increase the robustness and
+playability of the system.</p>
+<p>Now at version <code>v.0.3.0</code> – at the time of last revision of
+this paper –, Sardine has started to stabilise around its core features.
 Sardine is in need of documentation focused on new and inexperienced
 users. The installation process still requires the installation of a
 Python runtime and some knowledge of handling Python packages, a task
@@ -844,33 +848,36 @@ documentation provides a thorough tour and exploration of the system,
 but lacks friendly videos, tutorials and content that could boost
 Sardine’s adoption curve. As a temporary solution to this, we show code
 used by performers in a special <code>Showcase</code> section of the
-website. The internal editor, already fully functional, is yet to become
-an easy playground for new users.</p>
-<p>The source code is extensively documented for contributors, but
-currently invisible to end-users. Sardine’s modularity can be considered
-as both its major strength and weakness. Initial configuration of
-Sardine can be quite intimidating for newcomers that may not know what
-they wish to accomplish with it, especially regarding external IO (MIDI,
-OSC, SuperDirt, etc.). Most options are disabled by default and must be
-added manually to configure a session. The reliance of loosely coupled
-software components (<em>Web editor</em>, <em>Fishery</em>,
-<em>Sardine</em>, <em>SuperCollider</em>, etc) can prove helpful for
-veteran live coders that are familiar with such architectures but can
-prove confusing for new users.</p>
+website. The internal editor, already fully functional, has yet to
+become a gate of entry as an easy playground for new users. As a result
+of its design and multi-paradigm nature, Sardine is also a system that
+can prove to be hard to learn (and teach) depending on previous user
+experience with live coding interfaces and programming proficiency.</p>
+<p>The source code is extensively documented for contributors but most
+of the internal documentation is currently invisible to end-users.
+Sardine’s modularity can be considered as both its major strength and
+weakness. Initial configuration of Sardine can be quite intimidating for
+newcomers that may not know what they wish to accomplish with it,
+especially regarding external IO (MIDI, OSC, SuperDirt, etc.). Most
+options are disabled by default and must be added manually to configure
+a session. The reliance of loosely coupled software components (<em>Web
+editor</em>, <em>Fishery</em>, <em>Sardine</em>, <em>SuperCollider</em>,
+etc) can prove helpful for veteran live coders that are familiar with
+such architectures but confusing for new users.</p>
 <h2 data-number="5.2" id="learning-contributing-testing"><span
 class="header-section-number">5.2</span> Learning, contributing,
 testing</h2>
 <p>The Sardine project is freely usable and modifiable by its users. It
-is currently hosted on GitHub under the GNU General Public License
-v.3.0. We warmly encourage anyone interested to try this experimental
-system and help report and triage bugs, and collectively build this new
-live coding system. A Discord server and a TOPLAP <code>#sardine</code>
-channel are used for communication around the project. Sardine is
-currently by no means as complete as other existing propositions used by
-the community. We are still in the process of catching up with known
-alternatives, thinking as Sardine as a way to extend or collaborate with
-other musicians and visualists using different live coding
-environments.</p>
+is currently hosted on GitHub under the GNU General Public License v.3.0
+<span class="citation" data-cites="gpl">(<span>“GNU General Public
+License, Version 3”</span> 2007)</span>. We warmly encourage anyone
+interested to try this experimental system and help report and triage
+bugs, and collectively build this new live coding system. Sardine is
+currently by no means as complete or stable as other existing
+propositions used by the community. We are still in the process of
+catching up with the quality and featurefulness of known alternatives,
+thinking as Sardine as a way to extend or collaborate with other
+musicians and visualists using different live coding environments.</p>
 <h1 data-number="6" id="acknowledgments"><span
 class="header-section-number">6</span> Acknowledgments</h1>
 <p>Raphaël Forment: I warmly thank my thesis supervisors Laurent Pottier
@@ -923,6 +930,11 @@ class="uri">https://cookie.paris/all/</a> (Last Accessed: 2022-12-14).
 <div id="ref-fette2011websocket" class="csl-entry" role="listitem">
 Fette, Ian, and Alexey Melnikov. 2011. <span>“The Websocket
 Protocol.”</span>
+</div>
+<div id="ref-gpl" class="csl-entry" role="listitem">
+<span>“GNU General Public License, Version 3.”</span> 2007. <a
+href="http://www.gnu.org/licenses/gpl.html"
+class="uri">http://www.gnu.org/licenses/gpl.html</a>.
 </div>
 <div id="ref-goltz2018ableton" class="csl-entry" role="listitem">
 Goltz, Florian. 2018. <span>“Ableton Link–a Technology to Synchronize

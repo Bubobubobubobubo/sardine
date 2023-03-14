@@ -6,6 +6,7 @@ from ..base import BaseHandler
 from ..utils import maybe_coro
 from ..sequences import euclid
 
+
 __all__ = ("Sender",)
 
 P = ParamSpec("P")
@@ -56,6 +57,7 @@ class Sender(BaseHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._timed_tasks: set[asyncio.Task] = set()
+
 
     def call_timed(
         self,
@@ -322,7 +324,6 @@ class Sender(BaseHandler):
 
         # Chance operation
         if pattern.get("chance", None) is not None:
-            print('reading')
             boolean_masks.append(self.chance_operation(frequency=pattern["chance"]))
 
         # Cleaning up the messy keys

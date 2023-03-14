@@ -4,6 +4,7 @@ from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .sequences import ListParser, ziffers_factory
+from itertools import product
 from functools import wraps
 from .logger import print
 from pathlib import Path
@@ -123,6 +124,7 @@ if config.superdirt_handler:
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
     globals()[player] = p
@@ -345,7 +347,7 @@ def silence(*runners: AsyncRunner) -> None:
 
     for run in runners:
         if isinstance(run, Player):
-            run >> None
+            run.stop()
         else:
             bowl.scheduler.stop_runner(run)
 

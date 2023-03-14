@@ -1,7 +1,7 @@
 import asyncio
 from math import floor
+from random import random
 from typing import Callable, Generator, ParamSpec, TypeVar, Union, Optional
-
 from ..base import BaseHandler
 from ..utils import maybe_coro
 from ..sequences import euclid
@@ -245,6 +245,31 @@ class Sender(BaseHandler):
 
         return self.cycle_loaf(loaf=len_in_bars, on=tuple(to_bars))
 
+    def chance_operation(self, frequency: str):
+        """
+        Port of the TidalCycles sometimes family of functions:
+        - always: 100%
+        - almostAlways: 90%
+        - often: 75%
+        - sometimes: 50%
+        - rarely: 25%
+        - AlmostNever: 10%
+        - never: 0%
+
+        These functions represent a likelihood for an event to be played.
+        """
+        chance = {
+            "always": True,
+            "almostAlways": random() <= 0.90,
+            "often": random() <= 0.75,
+            "sometimes": random() <= 0.5,
+            "rarely": random() <= 0.25,
+            "almostNever": random() <= 0.10,
+            "never": False
+        }
+        return chance.get(frequency, False)
+
+
     def key_deleter(self, dictionary: dict, list_of_keys: list[str]):
         """
         Remove multiple keys from one dictionary in one-go
@@ -295,10 +320,18 @@ class Sender(BaseHandler):
         if pattern.get("binary", None) is not None:
             boolean_masks.append(self.binary_bars(binary_pattern=pattern["binary"]))
 
+        # Chance operation
+        if pattern.get("chance", None) is not None:
+            print('reading')
+            boolean_masks.append(self.chance_operation(frequency=pattern["chance"]))
+
         # Cleaning up the messy keys
         self.key_deleter(
             dictionary=pattern,
-            list_of_keys=["euclid", "neuclid", "on", "loaf", "binary"],
+            list_of_keys=[
+                "euclid", "neuclid", "on", "loaf", "binary"
+                "chance"
+            ]
         )
 
         # Returning if one False in the boolean masks

@@ -2083,6 +2083,23 @@ Pa >> d('voodoo:[1:10]', binary=[1, 0, 0, 1, 1, 0])
 
 This pattern will be played on bars ~1~, ~4~ and ~5~. It will cycle every 6 bars and restart :)
 
+*** Sometimes
+
+This is a port of the [[https://tidalcycles.org][TidalCycles]] ~sometimes~ family of functions:
+- ~"always"~: 100%
+- ~"almostAlways"~: 90%
+- ~"often"~: 75%
+- ~"sometimes"~: 50%
+- ~"rarely"~: 25%
+- ~"AlmostNever"~: 10%
+- ~"never"~: 0%
+
+These functions represent a likelihood for an event to be played. In order to use these functions, please use the ~chance~ keyword in any of your patterns:
+
+#+begin_src python
+Pa >> d('linnhats', p=.25, chance="almostAlways")
+#+end_src
+
 ** Sleeping and oversleeping
 
 *Sardine* has a few tricks up its sleeves. *Swimming functions* can mimick [[https://sonic-pi.net/][Sonic Pi]] ~sleep()~ method because why not! The ~sleep()~ method from *Python* (and from most programming languages) is very imprecise. It doesn't offer any guarantee on the duration of the sleep. Your program will halt and come back after a certain time, but not always when you need it the most. It won't be really helpful to write precise rhythms like we do in music. *Sonic Pi*, long time ago, acknowledged that issue. They did something about it.

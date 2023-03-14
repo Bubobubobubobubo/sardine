@@ -122,6 +122,18 @@ class Player(BaseHandler):
             )
         self.push(pattern)
 
+    def __mul__(self, pattern: Optional[PatternInformation]) -> None:
+        """
+        This method acts as a cosmetic disguise for feeding PatternInformation into a
+        given player. Its syntax is inspired by FoxDot (Ryan Kirkbride), another very
+        popular live coding library.
+        """
+        if pattern is not None and pattern.timespan is not None:
+            pattern.period = self.fit_period_to_timespan(
+                pattern.period, pattern.timespan
+            )
+        self.push(pattern)
+
     def get_new_period(self, pattern: PatternInformation) -> Number:
         """Get period value for the current cycle"""
         for message in pattern.sender.pattern_reduce(

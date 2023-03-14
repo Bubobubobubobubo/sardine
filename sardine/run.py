@@ -124,7 +124,8 @@ if config.superdirt_handler:
 
 # Adding Players
 player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
-player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
+# layer_names += [''.join(tup) for tup in list(
+#     product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
     globals()[player] = p
@@ -360,6 +361,7 @@ def panic(*runners: AsyncRunner) -> None:
     """
     silence(*runners)
     if config.superdirt_handler:
+        D("superpanic")
         D("superpanic")
 
 

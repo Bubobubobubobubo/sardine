@@ -110,8 +110,9 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock):
+    def __init__(self, clock, amphibian):
         self.clock = clock
+        self.amphibian = amphibian
 
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
@@ -236,6 +237,59 @@ class FunctionLibrary:
     def negative_unary_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
         return pattern if condition != [1] else [None]
+
+    def get_amphibian_variable(self, *args, **kwargs):
+        """
+        Return the value of an amphibian variable coming from the Python
+        side. The result can only be an int, a float or a string. The
+        final result is always assumed to be a list.
+        """
+        reset = kwargs.get("reset", 0)
+
+        if reset == 0:
+            self.amphibian.reset(str(str(args[0])))
+            return [getattr(self.amphibian, str(args[0][0]))]
+        else:
+            return [getattr(self.amphibian, str(args[0][0]))]
+
+    def set_amphibian_variable(self, *args):
+        """
+        Set an amphibian variable to a new value. This value can be of any
+        type supported internally by the Sardine pattern language. This
+        function will return the new-set value.
+        """
+        setattr(self.amphibian, str(args[0][0]), args[1])
+        return [getattr(self.amphibian, str(args[1][0]))]
+
+    # These are just not great!
+
+    # def get_amphibian_iterator(self, *args, **kwargs):
+    #     """
+    #     Return the value of an amphibian iterator while also incrementing it
+    #     as the result of accessing it.
+    #     """
+    #     reset = kwargs.get("reset", 0)
+
+    #     if reset == 0:
+    #         letter = str(args[0][0])
+    #         self.amphibian.reset(letter)
+    #         return [getattr(self.amphibian, letter)]
+    #     else:
+    #         letter = str(args[0][0])
+    #         return [getattr(self.amphibian, letter)]
+
+    # def set_amphibian_iterator(self, *args, **kwargs):
+    #     """
+    #     Set an amphibian iterator to a new value.
+    #     """
+    #     step = kwargs.get("step", 0)
+
+    #     letter, number = str(args[0][0]), int(args[1][0])
+    #     if step != 0:
+    #         setattr(self.amphibian, letter, [number, step])
+    #     else:
+    #         setattr(self.amphibian, letter, number)
+    #     return [getattr(self.amphibian, letter)]
 
     def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""

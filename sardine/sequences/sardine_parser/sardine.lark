@@ -36,13 +36,6 @@ pattern: sum sum* -> return_pattern
      | "$" "." "m"                                         -> get_measure
      | "$" "." "p"                                         -> get_phase
      | "rand"                                              -> get_random_number
-     | "I" "." LETTER                                      -> get_iterator
-     | "I" "." LETTER "=" sum                              -> set_iterator
-     | "I" "." LETTER "=" "[" sum "," sum "]"              -> set_iterator_step
-     | "I" "." LETTER "." "reset"                          -> reset_iterator
-     | "V" "." LETTER                                      -> get_variable
-     | "V" "." LETTER "=" sum                              -> set_variable
-     | "V" "." LETTER "." "reset"                          -> reset_variable
      | "T" "." "U"                                         -> get_unix_time
      | "T" "." "Y"                                         -> get_year
      | "T" "." "M"                                         -> get_month

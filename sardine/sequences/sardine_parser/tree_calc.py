@@ -21,7 +21,10 @@ class CalculateTree(Transformer):
         self.iterators = iterators
         self.variables = variables
         self.memory = {}
-        self.library = funclib.FunctionLibrary(clock=self.clock)
+        self.library = funclib.FunctionLibrary(
+            clock=self.clock,
+            amphibian=self.variables
+        )
 
     def number(self, number):
         try:
@@ -42,54 +45,6 @@ class CalculateTree(Transformer):
         a dot or multiple dots for multiple silences.
         """
         return [None] * len(args)
-
-    # ---------------------------------------------------------------------- #
-    # Variables: methods concerning bi-valent variables
-    # ---------------------------------------------------------------------- #
-
-    def get_variable(self, letter):
-        """
-        Grabbing a variable coming from the Python side. It can only be an int, a float
-        or a string. The final result is always a list.
-        """
-        return [getattr(self.variables, str(letter))]
-
-    def reset_variable(self, letter):
-        self.variables.reset(str(letter))
-        return [getattr(self.variables, str(letter))]
-
-    def set_variable(self, letter, number):
-        """
-        Prototype for setting a variable directly from the pattern side.
-        It can be an int, a float, a string or a list. Everything will be
-        accessible from the Python side following the type the value currently
-        has in the pattern.
-        """
-        setattr(self.variables, str(letter), number[0])
-        return [getattr(self.variables, str(letter))]
-
-    # ---------------------------------------------------------------------- #
-    # Iterators: methods concerning iterators
-    # ---------------------------------------------------------------------- #
-
-    def get_iterator(self, letter):
-        letter = str(letter)
-        return [getattr(self.iterators, letter)]
-
-    def reset_iterator(self, letter):
-        letter = str(letter)
-        self.iterators.reset(letter)
-        return [getattr(self.iterators, letter)]
-
-    def set_iterator(self, letter, number):
-        letter, number = str(letter), int(number[0])
-        setattr(self.iterators, letter, number)
-        return [getattr(self.iterators, letter)]
-
-    def set_iterator_step(self, letter, number, step):
-        letter, number, step = str(letter), int(number), int(step)
-        setattr(self.iterators, letter, [number, step])
-        return [getattr(self.iterators, letter)]
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -507,6 +462,9 @@ class CalculateTree(Transformer):
         kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
 
         modifiers_list = {
+            # Amphibian variables
+            "v": self.library.get_amphibian_variable,
+            "sv": self.library.set_amphibian_variable,
             # Pure conditions
             "if": self.library.binary_condition,
             "nif": self.library.negative_binary_condition,

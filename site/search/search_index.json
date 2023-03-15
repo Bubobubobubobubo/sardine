@@ -1,1 +1,0 @@
-{"config":{"indexing":"full","lang":["en"],"min_search_length":3,"prebuild_index":false,"separator":"[\\s\\-]+"},"docs":[{"location":"","text":"Sardine @swim def coucou (): S ( 'bd' ) . out () again ( coucou )","title":"Home"},{"location":"#sardine","text":"@swim def coucou (): S ( 'bd' ) . out () again ( coucou )","title":"Sardine"}]}

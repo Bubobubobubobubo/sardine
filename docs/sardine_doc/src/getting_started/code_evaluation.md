@@ -1,5 +1,7 @@
 # Code evaluation
 
+## Evaluating code
+
 To live code, you always need to have two things :
 
 - a document where you write your code.
@@ -10,7 +12,12 @@ One pattern is the base of everything, **sending new code for evaluation** :
 - Your main document is your playing interface. Write / edit / change code.
 - Send new code whenever you are ready by pressing a key.
 
-On the included web text editor, press **Shift + Enter** or **Ctrl+E** to send code for evaluation. The entire code block will be evaluated! If an error occurs, the application will not stop but will report the error and continue running using an older version of the code. The interpreter will warn you if something goes wrong!
+On the included web text editor, press **Shift + Enter** or **Ctrl+E** to send code for evaluation. 
+You need to select the code you want to send! If an error occurs, the application will not stop but will 
+report the error and continue running using an older version of the code. The interpreter will warn you
+if something goes wrong!
+
+## Evaluating code
 
 Write the following line and evaluate it:
 ```python

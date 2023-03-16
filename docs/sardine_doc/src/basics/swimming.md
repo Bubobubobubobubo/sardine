@@ -1,6 +1,12 @@
 # Swimming functions
 
-**Sardine** very existence is tied to the notion of **swimming functions**. A **swimming function** is a specific type of function that can easily be modified and updated **on the fly**, whenever you want. Strictly speaking, a **swimming function** is a **temporally recursive function**, a construct used by many programming languages in the realm of music and digital art. This way of writing functions is extremely interesting. People have been playing with the concept for more than 30 years now. If you dig deep enough, you will find that the concept of **temporal recursive functions** is at the very base of computer music systems such as **SuperCollider**.
+**Sardine** very existence is tied to the notion of **swimming functions**. 
+A**swimming function** is a specific type of function that can easily be modified and updated **on the fly**,
+whenever you want. Strictly speaking, a **swimming function** is a **temporally recursive function**, 
+a construct used by many programming languages in the realm of music and digital art.
+This way of writing functions is extremely interesting. People have been playing with the concept for more
+than 30 years now. If you dig deep enough, you will find that the concept of **temporal recursive functions**
+is at the very base of computer music systems such as **SuperCollider**.
 
 Here is a basic Python function that you might already be familiar with:
 

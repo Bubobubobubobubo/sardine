@@ -8,6 +8,7 @@ Pa >> d('bd cp', p=0.5)
 - `Pa` is a player - it acts on a pattern.
 - `d()` is a sender and provides the pattern. It takes any number of arguments.
 - `>>` is an operator that assigns the pattern to the player.
+  - You can also use `*` as an assignation symbol.
 - `p=0.5` is an argument where p is shorthand for period.
 
 There are 48 players by default:
@@ -44,11 +45,12 @@ There are two types of arguments you can give to a pattern:
 -   **pattern-relative**: these arguments determine how the pattern unfolds in time. These include: `period`, `divisor`, `rate`).
 -   **instrument-relative:** these arguments control parameters specific to **SuperDirt** / **MIDI** / **OSC**. For the SuperDirt sampler parameters, refer to the **Audio Engine Reference** in the sidebar.
 
-**Numbers vs Strings:** It is important to know how numbers differ from strings. Numbers are just numbers and can be integers or floats (decimals). Strings are interpreted as **patterns** that are evaluated based on the syntax used. They move in time with each step. In the example above the pattern `"0.5!4, 0.25!2"` when interpreted becomes: `[0.5, 0.5, 0.5, 0.5, 0.25, 0.25]`.
+**Numbers vs Strings:** It is important to know how numbers differ from strings. Numbers are just numbers and can be integers or floats (decimals). Strings are interpreted as **patterns** that are evaluated based on the syntax used. They move in time with each step. In the example 
+above the pattern `"0.5!4, 0.25!2"` when interpreted becomes: `[0.5 0.5 0.5 0.5 0.25 0.25]`.
 
 **Summary:**
 
--   Players (Pa) are used together with an operator (>>) and pattern sender.
+-   **Players** (Pa) are used together with an operator (**>>**) and pattern sender.
 -   **Patterns** are a complete description of an algorithmic musical expression: **pitch**, **timbre**, **rhythm**, etc.
 -   **Patterns** are a collection of values or other patterns and can take an indefinite amount of arguments.
 -   **Patterns** use a special syntax as `'strings'`.

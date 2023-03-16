@@ -1,8 +1,8 @@
 # Windows
 
 Installing Sardine on Windows is harder than on other operating systems.
-This is because... Windows is Windows! It doesn't want you to have fun. Don't worry,
-at least two Sardine devs are running Windows just fine :)
+Windows is Windows! It doesn't want you to have fun. 
+Don't worry, at least two Sardine devs are running Windows just fine :)
 
 ### Preparing your environment
 

@@ -1,10 +1,12 @@
 # Addresses
 
+- Addresses are names containing one or multiple  `/` separators just like any OSC address.
+- If using the `send_raw` function in conjunction with OSC, the syntax differs:
+  - prepend your address with an additional `/`.
+
 ```python
 O("an/address another/address", value=1, other_value=2)
 ```
-- Addresses are just like names except that they can contain a \`/\` separator just like any other typical OSC address.
-- They are not really distinct from a name. The difference is only conceptual.
 
-Be careful, some functions might still require you to write addresses using a `/` first. Check twice.
+
 

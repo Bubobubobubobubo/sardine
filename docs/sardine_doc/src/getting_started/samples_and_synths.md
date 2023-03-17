@@ -1,4 +1,4 @@
-# Samples and Synths
+# Synths and samples
 
 The sounds from **Sardine** are generated from the **SuperDirt** audio engine,
 which runs in [SuperColider](https://supercollider.github.io/). **SuperDirt** 

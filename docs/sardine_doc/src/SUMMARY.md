@@ -28,7 +28,7 @@
 - [Getting started](getting_started.md)
     - [Starting Sardine](getting_started/starting.md)
     - [Code evaluation](getting_started/code_evaluation.md)
-    - [Samples and Synths](getting_started/samples_and_synths.md)
+    - [Synths / Samples](getting_started/samples_and_synths.md)
     - [Sound Patterns & Players](getting_started/sound_patterns.md)
     - [Tempo and playback](getting_started/tempo_and_playback.md)
 - [Basics](basics.md)

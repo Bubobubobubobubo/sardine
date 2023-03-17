@@ -1,4 +1,4 @@
-# Post intallation
+# Post installation
 
 You managed to install Sardine. Congratulations.
 

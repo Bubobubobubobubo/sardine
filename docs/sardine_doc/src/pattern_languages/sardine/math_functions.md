@@ -19,7 +19,7 @@ digital calculator or on any interface capable of computation:
  <tbody>
  <tr>
  <td class="org-left">Function name</td>
- <td class="org-left"> Arguments</td>
+ <td class="org-left">Arguments</td>
  <td class="org-left">Description</td>
  <td class="org-left">Return type</td>
  </tr>
@@ -27,7 +27,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">sin</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Sinusoïd function</td>
  <td class="org-left">1 or more Number</td>
  </tr>
@@ -35,7 +35,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">cos</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Cosinus function</td>
  <td class="org-left">1 or more Number</td>
  </tr>
@@ -43,7 +43,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">tan</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Tangent function</td>
  <td class="org-left">1 or more Number</td>
  </tr>
@@ -51,7 +51,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">abs</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Absolute function</td>
  <td class="org-left">1 or more Number</td>
  </tr>
@@ -59,7 +59,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">max</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Maximum function</td>
  <td class="org-left">Number</td>
  </tr>
@@ -67,7 +67,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">min</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Minimal function</td>
  <td class="org-left">Number</td>
  </tr>
@@ -75,7 +75,7 @@ digital calculator or on any interface capable of computation:
  
  <tr>
  <td class="org-left">mean</td>
- <td class="org-left">x, &#x2026;</td>
+ <td class="org-left">...x</td>
  <td class="org-left">Arithmetic mean function</td>
  <td class="org-left">Number</td>
  </tr>

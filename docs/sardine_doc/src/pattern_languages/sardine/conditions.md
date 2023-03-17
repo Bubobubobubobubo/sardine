@@ -51,36 +51,62 @@ Some functions from the library can be used to build more complex conditions in 
 <tr>
 <td class="org-left">Function name</td>
 <td class="org-left">Arguments</td>
+<td class="org-left">Description</td>
 <td class="org-left">Result</td>
 </tr>
 
 
 <tr>
 <td class="org-left">beat</td>
+<td class="org-left">... numbers</td>
 <td class="org-left">1 or more beats numbers to match</td>
-<td class="org-left">True or False</td>
+<td class="org-left">Boolean</td>
 </tr>
-
-
-<tr>
-<td class="org-left">every</td>
-<td class="org-left">1 or more bars to match (modulo)</td>
-<td class="org-left">True or False</td>
-</tr>
-
 
 <tr>
 <td class="org-left">phase</td>
-<td class="org-left">low and high phase value (0.0 &lt; x &lt; 1.0)</td>
-<td class="org-left">True or False</td>
+<td class="org-left">low high </td>
+<td class="org-left">Check if currently in-between range of phase (between 0.0 and 1.0)</td>
+<td class="org-left">Boolean</td>
+</tr>
+
+<tr>
+<td class="org-left">every</td>
+<td class="org-left">... bar_numbers </td>
+<td class="org-left">Similar to TidalCycles every function. Will be true every x bars.</td>
+<td class="org-left">Boolean</td>
+</tr>
+
+<tr>
+<td class="org-left">proba</td>
+<td class="org-left">probability</td>
+<td class="org-left">Simple probability in %</td>
+<td class="org-left">Boolean</td>
 </tr>
 
 
 <tr>
-<td class="org-left">proba</td>
-<td class="org-left">Simple probability in %</td>
-<td class="org-left">True or False</td>
+<td class="org-left">obar</td>
+<td class="org-left">None</td>
+<td class="org-left">Check if the current bar is odd</td>
+<td class="org-left">Boolean</td>
 </tr>
+
+<tr>
+<td class="org-left">ebar</td>
+<td class="org-left">None</td>
+<td class="org-left">Check if the current bar is even</td>
+<td class="org-left">Boolean</td>
+</tr>
+
+
+<tr>
+<td class="org-left">modbar</td>
+<td class="org-left">modulo</td>
+<td class="org-left">Modulo against current bar number</td>
+<td class="org-left">Boolean</td>
+</tr>
+
 </tbody>
 </table>
     

@@ -1,8 +1,15 @@
 # SuperCollider / SuperDirt
 
-The `default_superdirt.scd` is your default **SuperDirt** configuration. **SuperDirt** is the nickname of a very powerful audio engine used by some live coding libraries like **Sardine**. By default, this file will specify **where to look for audio samples** or **how many inputs and outputs** your system must use.
+The `default_superdirt.scd` is your default **SuperDirt** configuration. **SuperDirt** is the nickname of a very powerful audio engine used 
+by some live coding libraries like **TidalCycles** or **Sardine**. By default, this file will specify **where to look for audio samples** 
+or **how many inputs and outputs** your system must use.
 
-You must edit it manually if you are willing to change anything to it. This is outside of the reach of **Sardine** and it is preferable to let the user decide for the most suitable configuration. The [SuperDirt](https://github.com/musikinformatik/SuperDirt) repository is a good place to start, especially the `hacks/` folder. It will teach you how to edit and configure **SuperDirt** to your liking. **SuperDirt** was initially conceived for [TidalCycles](https://tidalcycles.org/). You will find a great amount of customization options on their website too!
+You must edit it manually if you are willing to change anything to it. This is outside of the reach of **Sardine** and it is preferable to let
+the user decide for the most suitable configuration. The [SuperDirt](https://github.com/musikinformatik/SuperDirt) repository is a good place
+to start, especially the `hacks/` folder. It will teach you how to edit and configure **SuperDirt** to your liking. **SuperDirt** was initially
+conceived for [TidalCycles](https://tidalcycles.org/). You will find a great amount of customization options on their website too!
+
+## Loading audio samples
 
 Here is an example showing of how to load more audio samples to play with:
 

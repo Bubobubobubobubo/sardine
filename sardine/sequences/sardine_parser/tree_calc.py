@@ -471,10 +471,13 @@ class CalculateTree(Transformer):
             "while": self.library.unary_condition,
             "nwhile": self.library.negative_unary_condition,
             # Boolean functions
+            "phase": self.library.phase,
             "beat": self.library.beat,
+            "obar": self.library.oddbar,
+            "modbar": self.library.modbar,
+            "ebar": self.library.evenbar,
             "every": self.library.every,
             "maybe": self.library.proba,
-            "phase": self.library.phase,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,

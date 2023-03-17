@@ -192,6 +192,23 @@ class FunctionLibrary:
             else [0]
         )
 
+    def phase(self, x: list, y: list, **kwargs) -> list:
+        """Return True if phase is in between x and y else False"""
+        tolerance = 0.01
+        return [1] if x[0]+tolerance <= self.clock.phase <= y[0]-tolerance else [0]
+
+    def oddbar(self, *args, **kwargs) -> list:
+        """Return True if the current bar is odd, false otherwise"""
+        return [1] if self.clock.bar % 2 != 0 else [0]
+
+    def modbar(self, modulo,  *args, **kwargs) -> list:
+        """Return True if modulo of bar against current bar is true"""
+        return [1] if self.clock.bar % modulo[0] == 0 else [0]
+
+    def evenbar(self, *args, **kwargs) -> list:
+        """Return True if the current bar is even, false otherwise"""
+        return [1] if self.clock.bar % 2 == 0 else [0]
+    
     def every(self, *args, **kwargs):
         """
         Inspired by the 'every' function in TidalCycles. Will return True if the
@@ -300,10 +317,6 @@ class FunctionLibrary:
     def proba(self, x: list, **kwargs) -> list:
         """Probability of returning True or False"""
         return [1] if random.random() * 100 <= x[0] else [0]
-
-    def phase(self, x: list, y: list, **kwargs) -> list:
-        """Return True if phase is in between x and y else False"""
-        return [1] if x[0] < self.clock.phase < y[0] else [0]
 
     def invert(self, x: list, how_many: list = [0], **kwargs) -> list:
         """Chord inversion algorithm"""

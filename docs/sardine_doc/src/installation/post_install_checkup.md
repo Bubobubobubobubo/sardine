@@ -7,8 +7,9 @@ doing so!
 ## Are you running Windows?
 
 - **Windows users:** check if SuperCollider is properly detected.
-  - if not, boot **SuperCollider** and **Sardine** side by side. Check the configuration 
-    section and the troubleshot section to learn more about this process.
+  - if not, boot **SuperCollider** and **Sardine** side by side. Check the 
+    [configuration section](../configuration/configuration_tool.md) and the
+    troubleshot section to learn more about this process.
 
 - **Windows users:** do you want to play virtual MIDI instruments (VSTs, etc)?
   - install a tool to create [virtual midi ports](https://www.tobias-erichsen.de/software/virtualmidi.html). Create at least one virtual port.

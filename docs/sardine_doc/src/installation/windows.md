@@ -4,6 +4,8 @@ Installing Sardine on Windows is harder than on other operating systems.
 Windows is Windows! It doesn't want you to have fun. 
 Don't worry, at least two Sardine devs are running Windows just fine :)
 
+**Read the pre-install page before going further**
+
 ### Preparing your environment
 
 The first step to install **Sardine** is to prepare your system to make some sounds :)

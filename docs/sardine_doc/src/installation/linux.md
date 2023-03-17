@@ -1,5 +1,7 @@
 # Linux
 
+**Read the pre-install page before going further**
+
 ## Preparing your environment
 
 The first step to install **Sardine** is to prepare your system to make some sounds :)

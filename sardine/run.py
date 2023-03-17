@@ -425,7 +425,6 @@ CC = midi.send_control  # For MIDI Control Change messages
 SY = midi.send_sysex  # For MIDI Sysex messages
 _play_factory = Player._play_factory
 
-
 def sy(*args, **kwargs):
     return _play_factory(midi, midi.send_sysex, *args, **kwargs)
 
@@ -460,6 +459,55 @@ if config.superdirt_handler:
 
 if ziffers_imported:
     zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
+
+def MIDIInstrument(
+        midi: MidiHandler, 
+        channel: int, 
+        instrument_map: dict[dict],
+        *args, **kwargs
+) -> tuple:
+    """
+    Make a new MIDIInstrument from the definition of an instrument map:
+    - a device that can play midi notes
+    - a device that can also receive named CC parameters
+
+    Given an instrument map like so:
+
+    hat_drum = {
+       'x': { 'control': 21, 'channel': 0, },
+       'y': { 'control': 22, 'channel': 0, },
+       't': { 'control': 23, 'channel': 0, },
+       'len': { 'control': 24, 'channel': 0, },
+       'quality': { 'control': 25, 'channel': 0, },
+    }
+
+    This function will return a sender capable of playing with a MIDI 
+    instrument that uses these mappings to control synthesis parameters.
+
+    H = MIDIInstrument(midi_port=midi, channel=0, map=hat_drum)
+
+    H('C E G', x='rand*120')
+
+    This function will return a tuple containing a new MIDIInstrument and
+    a new Player based on that MIDIInstrument.
+    ...
+    """
+    def midi_instrument(*args, **kwargs):
+        """Build a new sender like D() out of the midi instrument information"""
+        midi.send_instrument(
+                channel=channel,
+                map=instrument_map,
+                *args,**kwargs
+        )
+
+    def midi_instrument_player(*args, **kwargs):
+        """Build a new palyer like d() out of the midi instrument information"""
+        return _play_factory(midi, midi.send_instrument,
+                             channel=channel, map=instrument_map,
+                             *args, **kwargs)
+
+    return (midi_instrument, midi_instrument_player)
+
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

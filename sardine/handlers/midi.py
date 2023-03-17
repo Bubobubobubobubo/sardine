@@ -413,3 +413,70 @@ class MidiHandler(Sender):
             self.call_timed(deadline, self.send_midi_note, **message)
 
         return ziffer.duration * (self.env.clock.beats_per_bar)
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="duration", alias="dur")
+    @alias_param(name="velocity", alias="vel")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_instrument(
+        self,
+        note: Optional[NumericElement] = 60,
+        velocity: NumericElement = 100,
+        channel: NumericElement = 0,
+        duration: NumericElement = 1,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        map: dict = {},
+        **rest_of_pattern: ParsableElement,
+    ) -> None:
+        """
+        Experimental method combining both send and send_control. This interface should allow
+        playing a complete MIDI instrument using only one pattern!
+        """
+
+        if note is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern):
+            return
+
+        control_messages = []
+
+        for key, value in map.items():
+            if key in rest_of_pattern.keys():
+                control = value
+                control['value'] = rest_of_pattern[key]
+                control_messages.append(control)
+
+        def note_pattern():
+            pattern = {
+                "note": note,
+                "velocity": velocity,
+                "channel": channel,
+                "duration": duration,
+            }
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["note"] is None:
+                    continue
+                for k in ("note", "velocity", "channel"):
+                    message[k] = int(message[k])
+                self.call_timed(deadline, self.send_midi_note, **message)
+
+        def send_controls(pattern: dict) -> None:
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["control"] is None:
+                    continue
+                for k, v in message.items():
+                    message[k] = int(v)
+                self.call_timed(deadline, self._control_change, **message)
+
+        # Sending control messages
+        for control in control_messages:
+            send_controls(pattern=control)
+        note_pattern()

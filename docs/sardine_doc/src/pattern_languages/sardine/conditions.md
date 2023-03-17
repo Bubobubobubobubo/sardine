@@ -84,6 +84,12 @@ Some functions from the library can be used to build more complex conditions in 
 <td class="org-left">Boolean</td>
 </tr>
 
+<tr>
+<td class="org-left">modbar</td>
+<td class="org-left">choice faces</td>
+<td class="org-left">Simulation of a dice with n faces.</td>
+<td class="org-left">Boolean</td>
+</tr>
 
 <tr>
 <td class="org-left">obar</td>

@@ -209,6 +209,10 @@ class FunctionLibrary:
         """Return True if the current bar is even, false otherwise"""
         return [1] if self.clock.bar % 2 == 0 else [0]
     
+    def dice(self, choice: list, faces:list, *args, **kwargs) -> list:
+        """Simulation of a dice"""
+        return random.randint(1, faces[0]) == choice[0]
+
     def every(self, *args, **kwargs):
         """
         Inspired by the 'every' function in TidalCycles. Will return True if the

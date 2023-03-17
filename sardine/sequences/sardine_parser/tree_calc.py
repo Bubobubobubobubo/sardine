@@ -478,6 +478,7 @@ class CalculateTree(Transformer):
             "ebar": self.library.evenbar,
             "every": self.library.every,
             "maybe": self.library.proba,
+            "dice": self.library.dice,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,

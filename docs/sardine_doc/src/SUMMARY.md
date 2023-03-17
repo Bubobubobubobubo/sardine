@@ -16,6 +16,7 @@
     - [Configuration tool](configuration/configuration_tool.md)
     - [Configuration tour](configuration/configuration_tour.md)
     - [MIDI](configuration/midi.md)
+    - [MIDI Instrument](configuration/midi_instrument.md)
     - [OSC](configuration/osc.md)
     - [SuperCollider / SuperDirt](configuration/superdirt.md)
 - [Text Editors](editors.md)

@@ -497,7 +497,7 @@ def MIDIInstrument(
         midi.send_instrument(
                 channel=channel,
                 map=instrument_map,
-                *args,**kwargs
+                *args, **kwargs
         )
 
     def midi_instrument_player(*args, **kwargs):

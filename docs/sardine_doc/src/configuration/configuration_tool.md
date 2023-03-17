@@ -8,7 +8,8 @@ Using it, you can finetune your **Sardine** experience.
 Please note that **Sardine** is writing configuration files to a specific location depending 
 on the OS you are using:
 
--   **Windows:** in the `%APPDATA%` folder.
+-   **Windows:** in the `%APPDATA%/Local/Bubobubobubobubo/Sardine` folder.
+    - to get there: `Win+R` -> type `%appdata%` and press `Enter`
 -   **MacOS:** `~/Library/Application Support/Sardine`
 -   **Linux:** `~/.local/share/Sardine/`
 

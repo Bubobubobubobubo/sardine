@@ -1,6 +1,10 @@
 # Midi Instruments
 
 You can use `MIDIInstrument` to create a new sender that will allow you to send MIDI notes and MIDI control changes at the same time.
+Creating your own MIDI instruments can be advantageous, especially if you are used to playing with external instruments or physical hardware:
+- you can name every control change you are using instead of relying on numbers and variable names.
+- you only have one interface to control both notes and control changes instead of two separate patterns.
+- you can build yourself a library of MIDI instrument so that you don't need to reconfigure your studio everytime.
 
 To create a new `MIDIInstrument`, you will need two things:
 - a mapping describing the MIDI configuration of your instrument.
@@ -40,6 +44,8 @@ panic()
 ```
 
 You can use this system to map your hardware instruments or some software you previously configured for CC.
+The biggest advantage of this method is that it allows you to name all the CC messages you use automatically and to pattern them freely.
+
 See the complete example to get a better understanding of this system.
 
 ## Mapping example: Prok Drums

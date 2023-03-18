@@ -24,7 +24,7 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "debug": False,
         "parser": "sardine",
-        "superdirt_handler": False,
+        "superdirt_handler": True,
         "sardine_boot_file": True,
         "boot_supercollider": False,
         "verbose_superdirt": False,

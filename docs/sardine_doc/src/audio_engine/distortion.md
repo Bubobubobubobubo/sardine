@@ -1,6 +1,8 @@
 # Distortion
 
-Nobody knows why but **SuperDirt** is full of distortion effects. Hope you like it.
+Nobody knows why but **SuperDirt** is full of distortion effects. I suppose that saturation
+and distortion are good effects to apply to audio samples. Don't be afraid and try them all.
+
 
 ### Squiz
 
@@ -123,6 +125,10 @@ def test_fx(p=0.25):
 ```
 
 ### Shaping
+
+One of my favorites. It adds some warness (and loudness) to any sound. It sounds more natural
+than just pushing `gain` or `amp` up. Use it if you want to be loud and gritty, not if you just
+want to play something louder.
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 

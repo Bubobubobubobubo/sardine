@@ -1,4 +1,4 @@
-# Midi Instruments
+# MIDI Instrument
 
 You can use `MIDIInstrument` to create a new sender that will allow you to send MIDI notes and MIDI control changes at the same time.
 Creating your own MIDI instruments can be advantageous, especially if you are used to playing with external instruments or physical hardware:

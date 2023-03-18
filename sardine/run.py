@@ -508,6 +508,54 @@ def MIDIInstrument(
 
     return (midi_instrument, midi_instrument_player)
 
+def MIDIController(
+        midi: MidiHandler, 
+        channel: int, 
+        controller_map: dict[dict],
+        *args, **kwargs
+) -> tuple:
+    """
+    Make a new MIDIController from the definition of a controller map:
+    - a device that can play midi notes
+    - a device that can also receive named CC parameters
+
+    Given a controller map like so:
+
+    hat_drum = {
+       'reverb': { 'control': 21, 'channel': 0, },
+       'delay': { 'control': 22, 'channel': 0, },
+       'chorus': { 'control': 23, 'channel': 0, },
+       'flanger': { 'control': 24, 'channel': 0, },
+       'quality': { 'control': 25, 'channel': 0, },
+    }
+
+    This function will return a sender capable of playing with a MIDI 
+    controller that uses these mappings to control synthesis parameters.
+
+    H, h = MIDIController(midi_port=midi, channel=0, map=hat_drum)
+
+    H('C E G', x='rand*120')
+
+    This function will return a tuple containing a new MIDIController and
+    a new Player based on that MIDIController.
+    ...
+    """
+    def midi_controller(*args, **kwargs):
+        """Build a new sender like D() out of the midi controller information"""
+        midi.send_controller(
+                channel=channel,
+                map=controller_map,
+                *args, **kwargs
+        )
+
+    def midi_controller_player(*args, **kwargs):
+        """Build a new player like d() out of the midi controller information"""
+        return _play_factory(midi, midi.send_controller,
+                             channel=channel, map=controller_map,
+                             *args, **kwargs)
+
+    return (midi_controller, midi_controller_player)
+
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

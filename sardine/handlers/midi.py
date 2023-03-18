@@ -480,3 +480,46 @@ class MidiHandler(Sender):
         for control in control_messages:
             send_controls(pattern=control)
         note_pattern()
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_controller(
+        self,
+        channel: NumericElement = 0,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        map: dict = {},
+        **rest_of_pattern: ParsableElement,
+    ) -> None:
+        """
+        Experimental method used to form a MIDIController sending 
+        multiple CC messages for every use.
+        """
+
+        if self.apply_conditional_mask_to_bars(
+                pattern=rest_of_pattern):
+            return
+
+        control_messages = []
+
+        for key, value in map.items():
+            if key in rest_of_pattern.keys():
+                control = value
+                control['value'] = rest_of_pattern[key]
+                control_messages.append(control)
+
+        def send_controls(pattern: dict) -> None:
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["control"] is None:
+                    continue
+                for k, v in message.items():
+                    message[k] = int(v)
+                self.call_timed(deadline, self._control_change, **message)
+
+        # Sending control messages
+        for control in control_messages:
+            send_controls(pattern=control)

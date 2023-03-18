@@ -263,8 +263,7 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers
         """
-        ramp_from = left[-1]
-        ramp_to = right[0]
+        ramp_from, ramp_to = left[-1], right[0]
         between = range(min(ramp_from, ramp_to) + 1, max(ramp_from, ramp_to))
         between_flipped = between if ramp_from <= ramp_to else reversed(between)
         return left + list(between_flipped) + right

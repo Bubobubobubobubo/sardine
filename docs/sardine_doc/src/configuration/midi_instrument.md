@@ -107,3 +107,50 @@ Pa * kick('(eu 48 7 8)', p=1, t='10', len=1, dur=0.1, x=0, y=0, quality=0)
 
 Pb * hat('(eu 51 5 8)', p=.25, x='rand*120', y=120, quality='0', len='1')
 ```
+
+## Mapping example: Faust Synthesizer
+
+Here is a new example we have been cooking for a workshop. This time, we are going to link a synthesizer developed using
+the Faust programming language to Sardine. It uses a simple substractive architecture and we added a small reverb for 
+demonstration purposes. In the [FaustIDE](https://faustide.grame.fr), run the following lines:
+
+```cpp
+import("stdfaust.lib");
+
+reverb_amount = hslider("reverb_wet",0,0.01,0.9,0.01);
+dry_wet_mono(c, x0,x1) = y0, y1 
+with {
+    y1 = (1-c) * x0;
+    y0 = c * x1;
+};
+
+attack = hslider("attack[midi:ctrl 32]",0.1, 0.01, 2, 0.1):si.smoo;
+release = hslider("release[midi:ctrl 33]",0.1, 0.01, 2, 0.1):si.smoo;
+cutoff = hslider("cutoff[midi:ctrl 34]",2000,200,44100/4.0,0.5):si.smoo;
+resonance = hslider("resonance[midi:ctrl 35]",0.5,0.01,0.9,0.01);
+filter_gain = hslider("filter_gain[midi:ctrl 36]",0.9,0.01,0.9,0.01);
+fx = hslider("fx[midi:ctrl 37]",0.5,0.01,0.9,0.01);
+freq = hslider("freq",200,50,1000,0.01);
+gain = hslider("gain",0.5,0,1,0.01);
+gate = button("gate");
+process = os.sawtooth(freq)*gain*en.ar(attack, release, gate) : fi.resonlp(cutoff, resonance, filter_gain) 
+<: dry_wet_mono(fx, _, _:re.mono_freeverb(0.75, 0.85, 1.0, 8000)):>_<:_,_;
+```
+
+Make sure that you are listening to MIDI inputs coming from the right port and that you have switched on the polyphonic mode.
+By evaluating the following Sardine code, you should be able to start playing with your synth immediately:
+
+```python
+faust_synth = {
+        'attack': {'channel': 0, 'control': 32},
+        'release': {'channel': 0, 'control': 33},
+        'cutoff': {'channel': 0, 'control': 34},
+        'resonance': {'channel': 0, 'control': 35},
+        'filter_gain': {'channel': 0, 'control': 36},
+        'fx': {'channel': 0, 'control': 37},
+}
+Faust, faust = MIDIInstrument(
+        midi, channel=0, 
+        instrument_map=faust_synth
+)
+```

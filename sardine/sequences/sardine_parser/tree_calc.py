@@ -506,7 +506,9 @@ class CalculateTree(Transformer):
             "shuf": self.library.shuffle,
             # Math functions
             "clamp": self.library.clamp,
+            "usin": self.library.unipolar_sinus,
             "sin": self.library.sinus,
+            "ucos": self.library.unipolar_cosinus
             "cos": self.library.cosinus,
             "tan": self.library.tangent,
             "abs": self.library.absolute,

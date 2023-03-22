@@ -709,6 +709,18 @@ class FunctionLibrary:
         x = list(chain(*x))
         return map_unary_function(cos, x)
 
+    def unipolar_cosinus(self, *x) -> list:
+        """Basic unipolar cosinus function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(cos, abs(x))
+
     def sinus(self, *x) -> list:
         """Basic sinus function
 
@@ -720,6 +732,18 @@ class FunctionLibrary:
         """
         x = list(chain(*x))
         return map_unary_function(sin, x)
+
+    def unipolar_sinus(self, *x) -> list:
+        """Basic unipolar sinus function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(sin, abs(x))
 
     def maximum(self, *x) -> list:
         """Maximum operation

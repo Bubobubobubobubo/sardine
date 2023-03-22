@@ -417,6 +417,7 @@ class MidiHandler(Sender):
     @alias_param(name="channel", alias="chan")
     @alias_param(name="duration", alias="dur")
     @alias_param(name="velocity", alias="vel")
+    @alias_param(name="program_change", alias="pgch")
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
@@ -430,6 +431,7 @@ class MidiHandler(Sender):
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
         map: dict = {},
+        program_change: Optional[Number],
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
@@ -458,9 +460,16 @@ class MidiHandler(Sender):
                 "velocity": velocity,
                 "channel": channel,
                 "duration": duration,
+                "program_change": (
+                    program_change if program_change else None),
             }
             deadline = self.env.clock.shifted_time
             for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["program_change"] is not None:
+                    self._send_control(
+                            program=message['program_change'],
+                            channel=message['channel']
+                    )
                 if message["note"] is None:
                     continue
                 for k in ("note", "velocity", "channel"):
@@ -523,3 +532,4 @@ class MidiHandler(Sender):
         # Sending control messages
         for control in control_messages:
             send_controls(pattern=control)
+

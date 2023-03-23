@@ -143,9 +143,6 @@ class ListParser(BaseParser):
         except Exception as e:
             print(f'[red][Pattern Language Error][/red]')
 
-        # except (UnexpectedCharacters, UnexpectedToken) as e:
-        #     raise ShortParserError("Error: The given expression could not be parsed. Please check the input and try again.") from e
-
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
         return self._flatten_result(final_pattern)

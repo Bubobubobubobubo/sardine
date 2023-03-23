@@ -1,5 +1,44 @@
 from fishery.console import ConsoleManager
 import click
+import os
+import psutil
+from typing import Tuple
+
+
+def set_python_process_priority() -> Tuple[int, int, bool]:
+    """
+    Sets the priority of the current Python interpreter process 
+    to the highest possible level on Linux, macOS, and Windows.
+
+    Returns:
+        A tuple containing the original priority, new priority, 
+        and a boolean indicating whether the priority was 
+        successfully set.
+    """
+    pid = os.getpid()
+
+    process = psutil.Process(pid)
+    original_priority = process.nice()
+
+    # Determine the new priority (lower values indicate higher priority)
+    if os.name == 'nt':
+        new_priority = psutil.HIGH_PRIORITY_CLASS
+    else:
+        new_priority = -20
+
+    try:
+        process.nice(new_priority)
+        success = True
+    except (PermissionError, psutil.AccessDenied):
+        success = False
+
+    return original_priority, new_priority, success
+
+_,_, successful_patch = set_python_process_priority()
+if successful_patch:
+    print(f'Patched process', end=' | ')
+else:
+    print("Unpatched process", end=' | ')
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],

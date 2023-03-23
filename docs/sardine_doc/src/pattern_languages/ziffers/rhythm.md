@@ -36,7 +36,7 @@ letters are note lengths!
 Alternatively note lengths can be notated as decimals:
 
 ```python
-"0.25 4 2 4 2 4 5 4 2 3 1 3 1 3 4 3 1 4 2 4 2 4 5 4 2 1.0 4 0.25 4 3 2 1 30.0 0"
+zplay("0.25 4 2 4 2 4 5 4 2 3 1 3 1 3 4 3 1 4 2 4 2 4 5 4 2 1.0 4 0.25 4 3 2 1 30.0 0")
 ```
 
 ## Ties
@@ -45,12 +45,17 @@ Ties can be created using multiple note length characters. Tied note lengths are
 
 ```python
 # q+e=0.375
-"q 0 qe 2 3 4 qe 3 4"
+zplay("q 0 qe 2 3 4 qe 3 4")
 ```
 
 ## Dotted notes
 
 **.** for dotted notes. First dot increases the duration of the basic note by half of its original value. Second dot half of the half, third dot half of the half of the half ... and so on. For example dots added to Whole note "w." will change the duration to 1.5, second dot "w.." to 1.75, third dot to 1.875.
+
+```python
+# Row row row your boat using dotted notes
+zplay("q. 0 0 | q0 e1 q.2 | q2 e1 q2 e3 | h.4 | e 7 7 7 4 4 4 2 2 2 0 0 0 | q4 e3 q2 e1 | h. 0 ")
+```
 
 ## Triplets
 
@@ -58,9 +63,8 @@ Triplets can be defined using note characters or by list notation, for example:
 
 ```python
 # Triplets with note characters
-zplay "q 2 6 a 1 3 2 q 5 1 a 4 3 2"
+zplay("q 2 6 a 1 3 2 q 5 1 a 4 3 2")
 
 # Triplets with list notation
-zplay "q 2 6 h [1 3 2] q 5 1 h [4 3 2]"
+zplay("q 2 6 h [1 3 2] q 5 1 h [4 3 2]")
 ```
-

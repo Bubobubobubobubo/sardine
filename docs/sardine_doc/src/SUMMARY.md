@@ -70,7 +70,6 @@
       - [Pitch](pattern_languages/ziffers/pitch.md)
       - [Rhythm](pattern_languages/ziffers/rhythm.md)
       - [Chords](pattern_languages/ziffers/chords.md)
-      - [Subdivisions](pattern_languages/ziffers/subdivisions.md)
       - [Escaped notation](pattern_languages/ziffers/escaped.md)
       - [Random](pattern_languages/ziffers/random.md)
       - [Products](pattern_languages/ziffers/products.md)

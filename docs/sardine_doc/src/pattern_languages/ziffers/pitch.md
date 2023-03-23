@@ -63,17 +63,17 @@ Pa * d('superpiano', "q 0 1 2 3", scale='rocitronic') Another one
 
 ## Note lengths
 
-Default note length is a whole note **q**, which means **1.0** beats of sleep after the note is played. Note lengths can be changed with characters or with decimal notation.
+Default note length is a whole note `q`, which means **1.0** beats of sleep after the note is played. Note lengths can be changed with characters or with decimal notation.
 
 Most common note length are:
 
-- **w** = Whole (Semibreve) = 1.0 = 4.0 beats
-- **h** = Half (Minim) = 0.5 = 2.0 beats
-- **q** = Quarter (Crotchet) = 0.25 = 1.0 beats
-- **e** = Eight (Quaver) = 0.125 = 0.5 beats
-- **s** = Sixteenth (Semiquaver) = 0.0625 = 0.25 beats
+- `w` = Whole (Semibreve) = 1.0 = 4.0 beats
+- `h` = Half (Minim) = 0.5 = 2.0 beats
+- `q` = Quarter (Crotchet) = 0.25 = 1.0 beats
+- `e` = Eight (Quaver) = 0.125 = 0.5 beats
+- `s` = Sixteenth (Semiquaver) = 0.0625 = 0.25 beats
 
-Note lengths can be defined for all following notes or for single notes by grouping the note length characters. For example note lengths for *Twinkle twinkle little star* could be notated in various ways. Default length is **q** so in this case it is not require to define the length at the start. Note lengths can also be grouped, like **h4**, which means it only affects the given pitch. Alternatively decimals can be used, here in the middle **0.5** is used and then **0.25** is used to change the duration back to quarter note. Alternatively decimal durations can be grouped using **<0.5>1** notation. 
+Note lengths can be defined for all following notes or for single notes by grouping the note length characters. For example note lengths for *Twinkle twinkle little star* could be notated in various ways. Default length is `q` so in this case it is not required to define the length at the start. Note lengths can also be grouped, like `h4`, which means it only affects the given pitch. Alternatively decimals can be used, here in the middle `0.5` is used and then changed back using `0.25` for the next pitch. Alternatively decimal durations can be grouped using `<0.5>1` notation: 
 
 ```python
 # Twinke twinkle little star

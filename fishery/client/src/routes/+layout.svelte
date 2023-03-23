@@ -3,6 +3,7 @@
 	import { tick } from 'svelte';
 	import type { EditorView } from '@codemirror/view';
 	import Editor from '$lib/components/Editor.svelte';
+	import Configuration from '$lib/components/Configuration.svelte';
 	import _reconfigureExtensions from '$lib/components/Editor.svelte';
 	import Header from './Header.svelte';
 	import Console from '$lib/components/Console.svelte';
@@ -228,6 +229,7 @@
 					<Tab>{trimBufferName(name)}</Tab>
 				{/each}
 				<Tab>Docs</Tab>
+				<Tab>Config</Tab>
 			</TabList>
 
 			<Splitpanes
@@ -262,6 +264,9 @@
 							onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';"
 						/></TabPanel
 					>
+					<TabPanel>
+						<Configuration />
+					</TabPanel>
 				</Pane>
 				<Pane minSize={10} maxSize={90} snapSize={10}>
 					<Console {logs} />

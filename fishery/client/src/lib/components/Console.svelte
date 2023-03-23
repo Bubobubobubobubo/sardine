@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { nextTick } from 'svelte';
 
 	export let logs: Array<string> = [];
 	export let autoScroll: boolean = true;

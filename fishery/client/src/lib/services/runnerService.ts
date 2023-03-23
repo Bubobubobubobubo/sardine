@@ -25,7 +25,7 @@ class RunnerService{
 
     watchLogs(onLogs: (data: string) => void): () => void {
         const eventSource = new EventSource(this.host + '/log');
-        const throttledOnLogs = throttle(onLogs, 50);
+        const throttledOnLogs = throttle(onLogs, 50/3);
         const onMessage = (event: MessageEvent) => {
             throttledOnLogs(event.data);
         };

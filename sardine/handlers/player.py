@@ -36,6 +36,7 @@ class PatternInformation:
     kwargs: dict[str, Any]
     period: NumericElement
     iterator: Optional[Number]
+    iteration_span: NumericElement
     divisor: NumericElement
     rate: NumericElement
     snap: Number
@@ -77,7 +78,7 @@ class Player(BaseHandler):
 
     @staticmethod
     @alias_param(name="period", alias="p")
-    @alias_param(name="iterator", alias="i")
+    @alias_param(name="iteration_span", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
     @alias_param(name="timespan", alias="span")
@@ -95,6 +96,7 @@ class Player(BaseHandler):
         **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
+        iteration_span = kwargs.pop("iteration_span", 1)
 
         return PatternInformation(
             sender,
@@ -103,6 +105,7 @@ class Player(BaseHandler):
             kwargs,
             period,
             iterator,
+            iteration_span,
             divisor,
             rate,
             snap,
@@ -152,6 +155,7 @@ class Player(BaseHandler):
         p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
+        self._iteration_span = pattern.iteration_span
         if pattern.iterator is not None:
             self.iterator = pattern.iterator
             pattern.iterator = None

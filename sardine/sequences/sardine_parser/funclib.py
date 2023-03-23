@@ -1,7 +1,7 @@
 import random
 import statistics
 from itertools import chain, cycle, islice
-from math import cos, sin, tan
+from math import cos, sin, tan, asin, pi, atan
 from random import shuffle
 from typing import Optional, Union
 
@@ -732,6 +732,83 @@ class FunctionLibrary:
         """
         x = list(chain(*x))
         return map_unary_function(sin, x)
+
+
+    def square_wave(self, *x, **kwargs) -> list:
+        """Basic pulse-width modulable square wave function
+    
+        Args:
+            pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        pw = kwargs.get("pw", 0.5)
+        x = list(chain(*x))
+        return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else -1, x)
+
+    def unipolar_square_wave(self, *x, **kwargs) -> list:
+        """Basic unipolar pulse-width modulable square wave function
+    
+        Args:
+            pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        pw = kwargs.get("pw", 0.5)
+        x = list(chain(*x))
+        return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else 0, x)
+    
+    def triangular_wave(self, *x) -> list:
+        """Basic triangular wave function
+    
+        Args:
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: (4 / pi) * asin(sin(2 * pi * val)), x)
+
+    def unipolar_triangular_wave(self, *x) -> list:
+        """Basic unipolar triangular wave function
+    
+        Args:
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: abs((4 / pi) * asin(sin(2 * pi * val))), x)
+    
+    def sawtooth_wave(self, *x) -> list:
+        """Basic sawtooth wave function
+    
+        Args:
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: (2 / pi) * atan(tan(pi * val)), x)
+
+    def unipolar_sawtooth_wave(self, *x) -> list:
+        """Basic unipolar sawtooth wave function
+    
+        Args:
+            x (list): pattern
+    
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: abs((2 / pi) * atan(tan(pi * val))), x)
 
     def unipolar_sinus(self, *x) -> list:
         """Basic unipolar sinus function

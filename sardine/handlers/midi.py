@@ -431,7 +431,7 @@ class MidiHandler(Sender):
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
         map: dict = {},
-        program_change: Optional[Number],
+        program_change: Optional[Number] = None,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """

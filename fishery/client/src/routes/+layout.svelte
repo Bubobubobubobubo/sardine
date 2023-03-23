@@ -36,6 +36,7 @@
 	}
 
 	let SARDINE_BUFFERS: Dictionary<string> = {};
+	let headerComponent;
 
 	async function fetchLocalFiles() {
 		let response = await fetch('http://localhost:8000/text_files', {
@@ -122,6 +123,10 @@
 			const code = view.getSelectedLines();
 			runnerService.executeCode(code + '\n');
 			saveBuffers(SARDINE_BUFFERS);
+			headerComponent.toggleSpinLogo();
+			setTimeout(() => {
+				headerComponent.toggleSpinLogo();
+			}, 1000);
 		}
 
 		if (event.key === 'Enter' && event.ctrlKey) {
@@ -129,6 +134,10 @@
 			const code = view.getCodeBlock();
 			runnerService.executeCode(code + '\n');
 			saveBuffers(SARDINE_BUFFERS);
+			headerComponent.toggleSpinLogo();
+			setTimeout(() => {
+				headerComponent.toggleSpinLogo();
+			}, 1000);
 		}
 
 		// Keybinding to switch from Emacs mode to Vim Mode
@@ -204,6 +213,7 @@
 
 <div class="app">
 	<Header
+		bind:this={headerComponent}
 		on:play={handlePlay}
 		on:stop={handleStop}
 		on:save={saveAsTextFile}

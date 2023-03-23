@@ -132,10 +132,12 @@
 
 	export function addVim() {
 		extensions = extensionsWithVim;
+		_reconfigureExtensions();
 	}
 
 	export function removeVim() {
 		extensions = extensionsWithoutVim;
+		_reconfigureExtensions();
 	}
 
 	function _reconfigureExtensions(): void {

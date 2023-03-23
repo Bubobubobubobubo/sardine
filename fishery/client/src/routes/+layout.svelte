@@ -89,12 +89,16 @@
 			if (value == 'vim') {
 				console.log('Switch to VIM Mode.');
 				tick().then(() => {
-					view.addVim();
+					if (view) {
+						view.addVim();
+					}
 				});
 			} else {
 				console.log('Switch to Emacs Mode.');
 				tick().then(() => {
-					view.removeVim();
+					if (view) {
+						view.removeVim();
+					}
 				});
 			}
 		});

@@ -61,6 +61,18 @@ Pa * d('superpiano', "q 0 1 2 3", scale= 'minor') # minor scale
 Pa * d('superpiano', "q 0 1 2 3", scale='rocitronic') Another one
 ```
 
+
+## Sharp and flat
+
+- `b` is flat
+- `\#` is sharp
+
+Use sharps or flats to go off scale. Sharps and flats are not sticky so you have to use it every time before the note number. For example in key of C: \#0 = C#
+
+```
+zplay("0 4 #4 b0 2 #2 ##2 ###2")
+```
+
 ## Note lengths
 
 Default note length is a whole note `q`, which means **1.0** beats of sleep after the note is played. Note lengths can be changed with characters or with decimal notation.
@@ -79,3 +91,5 @@ Note lengths can be defined for all following notes or for single notes by group
 # Twinke twinkle little star
 zplay("0 0 4 4 5 5 h4 3 3 2 2 1 1 h0 4 4 3 3 2 2 0.5 1 0.25 4 4 3 3 2 2 <0.5>1 0 0 4 4 5 5 h4 3 3 2 2 1 1 h0")
 ```
+
+More info about note lengths in Rhythms section.

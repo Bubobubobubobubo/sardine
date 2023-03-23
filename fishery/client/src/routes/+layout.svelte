@@ -222,7 +222,7 @@
 
 			<Splitpanes
 				horizontal="True"
-				style="height: 80vh; background-color: black"
+				style="height: 90vh; background-color: black"
 				pushOtherPanes="False"
 				theme="sardine"
 			>
@@ -262,6 +262,15 @@
 </div>
 
 <style>
+	:global(html),
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+	}
+
 	:global(.splitpanes.sardine .splitpanes__pane) {
 		background-color: #black;
 	}
@@ -351,7 +360,8 @@
 	.app {
 		display: flex;
 		flex-direction: column;
-		min-height: 99vh;
+		height: 100%;
+		width: 100%;
 		color: black;
 		background-color: black;
 	}

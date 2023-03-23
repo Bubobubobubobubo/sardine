@@ -147,6 +147,9 @@ class Sender(BaseHandler):
         def maybe_parse(val: ParsableElement) -> RecursiveElement:
             if isinstance(val, str):
                 return self.env.parser.parse(val)
+            if isinstance(val, list) and all(isinstance(item, str) for item in val):
+                val = ' '.join(val)
+                return self.env.parser.parse(val)
             return val
 
         if any(isinstance(n, (list, str)) for n in (divisor, rate)):

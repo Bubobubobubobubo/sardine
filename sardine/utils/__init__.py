@@ -67,15 +67,15 @@ def plural(n: int, word: str, suffix: str = "s"):
 
 def join(*args):
     """Alternative to the str.join function. Better in live contexts!
-
+    
     Parameters:
     *args (list[string]): a list of strings to join with a whitespace
-
+    
     Returns:
     list[string]: strings joined using ' '.join(args)
-
-   """
-   if all(isinstance(e, str) for e in args):
-       return ' '.join(args)
-   else:
-       return args[0]
+    
+    """
+    if all(isinstance(e, str) for e in args):
+        return ' '.join(args)
+    else:
+        return args[0]

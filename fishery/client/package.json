@@ -40,6 +40,7 @@
 		"codemirror": "^6.0.1",
 		"file-saver": "^2.0.5",
 		"lodash.throttle": "^4.1.1",
+		"svelte-dialog": "^0.2.0",
 		"svelte-fa": "^3.0.3",
 		"svelte-idle": "^2.0.3",
 		"svelte-markdown": "^0.2.3",

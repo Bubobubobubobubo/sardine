@@ -7,6 +7,7 @@ import webbrowser
 from pathlib import Path
 from threading import Thread
 from typing import Optional
+import json
 
 from appdirs import *
 from flask import (
@@ -207,6 +208,29 @@ def server_factory(console):
                 yield "data:" + str(line) + "\n\n"
 
         return Response(generate(), mimetype="text/event-stream")
+
+
+    @app.route('/config')
+    def get_config():
+        try:
+            with open(USER_DIR / "config.json", "r") as f:
+                config_data = json.load(f)['config']
+            response = jsonify(config_data)
+        except Exception as e:
+            print("Error while reading config.json:", e)
+            response = jsonify({"error": "Internal server error"})
+            response.status_code = 500
+        return response
+
+    @app.route("/save_config", methods=["POST"])
+    def save_config():
+        data = request.get_json()
+        wrapped_data = {"config": data}
+
+        with open(USER_DIR / "config.json", "w") as f:
+            json.dump(wrapped_data, f)
+
+        return "OK"
 
     @app.route("/text_files", methods=["GET"])
     def get_text_files():

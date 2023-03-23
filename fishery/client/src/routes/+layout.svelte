@@ -181,10 +181,17 @@
 		SARDINE_BUFFERS['buffer' + (tab - 1) + '.py'] = tr._doc.text.join('\n');
 	}
 
-	function saveAsTextFile() {
-		// Querying the content of the buffer
-		let file = new Blob([tr._doc.text.join('\n')], { type: 'text/plain;charset=utf-8' });
-		FileSaver.saveAs(file, 'sardine.py');
+	function saveAsTextFile(content) {
+		const blob = new Blob([SARDINE_BUFFERS['buffer' + (get(activeTab) - 1) + '.py']], {
+			type: 'text/plain'
+		});
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(blob);
+		a.download = 'sardine';
+		a.style.display = 'none';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
 	}
 
 	function spawnTutorial() {

@@ -1,3 +1,5 @@
+import throttle from 'lodash.throttle';
+
 class RunnerService{
 
     host: string;
@@ -22,13 +24,10 @@ class RunnerService{
     }
 
     watchLogs(onLogs: (data: string) => void): () => void {
-        // Create a new EventSource to receive server
-        // sent events from the server.
         const eventSource = new EventSource(this.host + '/log');
-
-        // The event listener that will be called when a message is received.
+        const throttledOnLogs = throttle(onLogs, 50);
         const onMessage = (event: MessageEvent) => {
-            onLogs(event.data);
+            throttledOnLogs(event.data);
         };
 
         // Register the handler for the message event.

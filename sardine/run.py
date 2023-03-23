@@ -1,5 +1,10 @@
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from .utils import config_line_printer, get_snap_deadline, sardine_intro
+from .utils import (
+        config_line_printer,
+        get_snap_deadline,
+        sardine_intro,
+        join,
+)
 from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess

@@ -6,6 +6,7 @@
 	import Configuration from '$lib/components/Configuration.svelte';
 	import _reconfigureExtensions from '$lib/components/Editor.svelte';
 	import Header from './Header.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
@@ -21,6 +22,23 @@
 
 	let inputted_characters = 0;
 	let editorHeight, editorWidth;
+	let showModal = false;
+
+	let keyInstructions = `
+This is the embedded Sardine Code Editor
+========================================
+Shift + Enter : eval selection
+Ctrl + Enter : eval code block
+Alt + Space : Vim/Emacs  mode
+
+Menu button functions:
+- Play : play
+- Stop : pause / resume
+- Save : save file to disk
+- Group : [TO IMPLEMENT]
+- Help : open this popup
+- Folder : open Sardine Folder
+`;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     Initialise a list of code buffers by fetching them from the server.  We are fetching files
@@ -217,6 +235,10 @@
 	function trimBufferName(name: string) {
 		return '[' + name.replace('.py', '').replace('buffer', '') + ']';
 	}
+
+	function spawnKeysPopup() {
+		showModal = true;
+	}
 </script>
 
 <div class="app">
@@ -226,7 +248,7 @@
 		on:stop={handleStop}
 		on:save={saveAsTextFile}
 		on:users={() => console.log('Users')}
-		on:tutorial={spawnTutorial}
+		on:help={spawnKeysPopup}
 		on:folder={openSardineFolder}
 	/>
 	<main>
@@ -282,6 +304,10 @@
 		</Tabs>
 	</main>
 </div>
+
+<Modal bind:showModal>
+	<pre>{keyInstructions}</pre>
+</Modal>
 
 <style>
 	:global(html),

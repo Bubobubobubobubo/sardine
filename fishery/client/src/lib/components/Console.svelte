@@ -37,30 +37,6 @@
 		color: white;
 	}
 
-	.console-header {
-		display: flex;
-		align-items: center;
-	}
-
-	h3 {
-		font-size: 14px;
-		padding-left: 15px;
-		margin-left: 15px;
-		padding: 4px;
-		cursor: pointer;
-	}
-
-	h3:hover {
-		color: black;
-		background-color: white;
-		transition: all 0.2s ease-in-out;
-	}
-
-	h3.active {
-		color: black;
-		background-color: white;
-	}
-
 	.console-content {
 		font-size: 16px;
 		height: 500px;

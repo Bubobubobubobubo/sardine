@@ -31,12 +31,8 @@
 			<IconBtn icon="stop" on:click={() => dispatch('stop')} />
 			<IconBtn icon="save" on:click={() => dispatch('save')} />
 			<IconBtn icon="users" on:click={() => dispatch('users')} />
-			<IconBtn icon="tutorial" on:click={() => dispatch('tutorial')} />
+			<IconBtn icon="help" on:click={() => dispatch('help')} />
 			<IconBtn icon="folder" on:click={() => dispatch('folder')} />
-
-			<span on:click={changeMode} on:keypress={noop}>
-				<Button text={'Mode [' + $editorMode + ']'} />
-			</span>
 		</div>
 	</nav>
 </header>

@@ -17,7 +17,7 @@
     const icons: Dictionary<IconDefinition> = {
         play: faPlay, stop: faStop,
         save: faFloppyDisk, users: faUserGroup,
-        tutorial: faCircleQuestion, folder: faFolder
+        help: faCircleQuestion, folder: faFolder
     };
 
 </script>

@@ -2,7 +2,7 @@ import uuid
 
 try:
     from ziffers import z
-    from ziffers.classes import Sample
+    from ziffers.classes import Sample, SampleList, Rest
 except ImportError:
     print("Install the ziffers package for using Ziffers patterns")
 
@@ -25,9 +25,12 @@ def _play_ziffers(D, N, sleep, ziffer: str, *args, **kwargs):
     for cur in pat.evaluated_values:
         if isinstance(cur, Sample):
             D(cur.name, *args, **kwargs)
+        elif isinstance(cur, SampleList):
+            joined_samples = f"{{{', '.join([sample.name for sample in cur.values])}}}"
+            D(joined_samples, *args, **kwargs)
         elif "channel" in kwargs:
             N(cur.note, *args, **kwargs)
-        else:
+        elif not isinstance(cur, Rest):
             D(instrument, midinote=cur.note, *args, **kwargs)
         sleep(cur.beat)
 
@@ -35,15 +38,15 @@ def _play_ziffers(D, N, sleep, ziffer: str, *args, **kwargs):
 def create_zplay(D, N, sleep, swim, polyphonic=False):
     """Builder for zplay function"""
 
-    def _zplay(ziffer: str, *args, **kwargs):
+    def _zplay_creator(ziffer: str, *args, **kwargs):
         """Play ziffers in a swim"""
 
-        def dynamic_function():
+        def zplay():
             _play_ziffers(D, N, sleep, ziffer, *args, **kwargs)
 
-        fun = dynamic_function
+        fun = zplay
         if polyphonic:
             fun.__name__ = f"ziffers_{uuid.uuid4().hex}"
         swim(fun)
 
-    return _zplay
+    return _zplay_creator

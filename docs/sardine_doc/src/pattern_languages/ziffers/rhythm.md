@@ -2,7 +2,7 @@
 
 ## Rest or silence
 
-Use **r** to create rhythm with musical rest in the melodies. r can be combined with note length, meaning it will sleep the length of the r, for example:
+Use `r` to create rhythm with musical rest in the melodies. `r` can be combined with note length, meaning it will sleep the length of the r, for example:
 
 ```python
 # Play quarter note 1 (D) and then sleep half note and then play half note 2 (E)
@@ -11,7 +11,7 @@ zplay("q 0 e3 qr e 2 4 r 1")
 
 ## Dotted notes
 
-**.** for dotted notes. First dot increases the duration of the basic note by half of its original value. Second dot half of the half, third dot half of the half of the half ... and so on. For example dots added to Whole note "w." will change the duration to 1.5, second dot "w.." to 1.75, third dot to 1.875.
+`.` for dotted notes. First dot increases the duration of the basic note by half of its original value. Second dot half of the half, third dot half of the half of the half ... and so on. For example dots added to Whole note `w` will change the duration to 1.5, second dot `w..` to 1.75, third dot to 1.875.
 
 ```python
 # Row row row your boat using dotted notes
@@ -78,5 +78,5 @@ zplay("q 0 qe2 3 4 qe 3 q 4")
 |	z	|	0.0	|	No length	|	No length	|	0	|
 
 
-Note that **i**, **v** (chords), **r** (rest) and **b** (flat) are exceptions to a rule that all lower 
+Note that `i`, `v` (chords), `r` (rest) and `b` (flat) are exceptions to a rule that all lower 
 letters are note lengths!

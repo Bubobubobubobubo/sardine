@@ -195,21 +195,21 @@ class FunctionLibrary:
     def phase(self, x: list, y: list, **kwargs) -> list:
         """Return True if phase is in between x and y else False"""
         tolerance = 0.01
-        return [1] if x[0]+tolerance <= self.clock.phase <= y[0]-tolerance else [0]
+        return [1] if x[0] + tolerance <= self.clock.phase <= y[0] - tolerance else [0]
 
     def oddbar(self, *args, **kwargs) -> list:
         """Return True if the current bar is odd, false otherwise"""
         return [1] if self.clock.bar % 2 != 0 else [0]
 
-    def modbar(self, modulo,  *args, **kwargs) -> list:
+    def modbar(self, modulo, *args, **kwargs) -> list:
         """Return True if modulo of bar against current bar is true"""
         return [1] if self.clock.bar % modulo[0] == 0 else [0]
 
     def evenbar(self, *args, **kwargs) -> list:
         """Return True if the current bar is even, false otherwise"""
         return [1] if self.clock.bar % 2 == 0 else [0]
-    
-    def dice(self, choice: list, faces:list, *args, **kwargs) -> list:
+
+    def dice(self, choice: list, faces: list, *args, **kwargs) -> list:
         """Simulation of a dice"""
         return random.randint(1, faces[0]) == choice[0]
 
@@ -733,14 +733,13 @@ class FunctionLibrary:
         x = list(chain(*x))
         return map_unary_function(sin, x)
 
-
     def square_wave(self, *x, **kwargs) -> list:
         """Basic pulse-width modulable square wave function
-    
+
         Args:
             pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """
@@ -750,24 +749,24 @@ class FunctionLibrary:
 
     def unipolar_square_wave(self, *x, **kwargs) -> list:
         """Basic unipolar pulse-width modulable square wave function
-    
+
         Args:
             pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """
         pw = kwargs.get("pw", 0.5)
         x = list(chain(*x))
         return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else 0, x)
-    
+
     def triangular_wave(self, *x) -> list:
         """Basic triangular wave function
-    
+
         Args:
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """
@@ -776,22 +775,24 @@ class FunctionLibrary:
 
     def unipolar_triangular_wave(self, *x) -> list:
         """Basic unipolar triangular wave function
-    
+
         Args:
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """
         x = list(chain(*x))
-        return map_unary_function(lambda val: abs((4 / pi) * asin(sin(2 * pi * val))), x)
-    
+        return map_unary_function(
+            lambda val: abs((4 / pi) * asin(sin(2 * pi * val))), x
+        )
+
     def sawtooth_wave(self, *x) -> list:
         """Basic sawtooth wave function
-    
+
         Args:
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """
@@ -800,10 +801,10 @@ class FunctionLibrary:
 
     def unipolar_sawtooth_wave(self, *x) -> list:
         """Basic unipolar sawtooth wave function
-    
+
         Args:
             x (list): pattern
-    
+
         Returns:
             list: a valid pattern.
         """

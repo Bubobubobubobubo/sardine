@@ -77,7 +77,7 @@ class OSCHandler(Sender):
             return
 
         if self.apply_conditional_mask_to_bars(
-                pattern=pattern,
+            pattern=pattern,
         ):
             return
 

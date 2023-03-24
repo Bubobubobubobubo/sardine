@@ -37,7 +37,7 @@ def _install_uvloop() -> bool:
     try:
         import uvloop
     except ImportError:
-        # Commenting this line: it scares new users!
+        # Commenting this line: it scares new users!
         # rich.print("[green]uvloop[/green] [yellow]is not installed")
         return False
 
@@ -66,8 +66,8 @@ def install_policy():
 
     if not successful:
         rich.print(
-                "[yellow]Warning: No custom event loop applied; rhythm accuracy may be impacted."
-                "[yellow]Windows users, ignore this warning!"
+            "[yellow]Warning: No custom event loop applied; rhythm accuracy may be impacted."
+            "[yellow]Windows users, ignore this warning!"
         )
 
 

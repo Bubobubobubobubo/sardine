@@ -22,8 +22,7 @@ class CalculateTree(Transformer):
         self.variables = variables
         self.memory = {}
         self.library = funclib.FunctionLibrary(
-            clock=self.clock,
-            amphibian=self.variables
+            clock=self.clock, amphibian=self.variables
         )
 
     def number(self, number):

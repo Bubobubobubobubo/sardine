@@ -5,7 +5,6 @@ import traceback
 from collections import deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
-
 from ..logger import print
 
 from ..base import BaseClock

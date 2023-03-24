@@ -227,8 +227,7 @@ class MidiHandler(Sender):
         if note is None:
             return
 
-        if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern):
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
             return
 
         pattern = {
@@ -270,7 +269,7 @@ class MidiHandler(Sender):
             return
 
         if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern,
+            pattern=rest_of_pattern,
         ):
             return
 
@@ -301,7 +300,7 @@ class MidiHandler(Sender):
             return
 
         if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern,
+            pattern=rest_of_pattern,
         ):
             return
 
@@ -332,9 +331,8 @@ class MidiHandler(Sender):
         if data is None:
             return
 
-
         if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern,
+            pattern=rest_of_pattern,
         ):
             return
 
@@ -376,7 +374,7 @@ class MidiHandler(Sender):
         """
 
         if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern,
+            pattern=rest_of_pattern,
         ):
             return
 
@@ -442,8 +440,7 @@ class MidiHandler(Sender):
         if note is None:
             return
 
-        if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern):
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
             return
 
         control_messages = []
@@ -451,7 +448,7 @@ class MidiHandler(Sender):
         for key, value in map.items():
             if key in rest_of_pattern.keys():
                 control = value
-                control['value'] = rest_of_pattern[key]
+                control["value"] = rest_of_pattern[key]
                 control_messages.append(control)
 
         def note_pattern():
@@ -460,15 +457,13 @@ class MidiHandler(Sender):
                 "velocity": velocity,
                 "channel": channel,
                 "duration": duration,
-                "program_change": (
-                    program_change if program_change else None),
+                "program_change": (program_change if program_change else None),
             }
             deadline = self.env.clock.shifted_time
             for message in self.pattern_reduce(pattern, iterator, divisor, rate):
                 if message["program_change"] is not None:
                     self._send_control(
-                            program=message['program_change'],
-                            channel=message['channel']
+                        program=message["program_change"], channel=message["channel"]
                     )
                 if message["note"] is None:
                     continue
@@ -504,12 +499,11 @@ class MidiHandler(Sender):
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
-        Experimental method used to form a MIDIController sending 
+        Experimental method used to form a MIDIController sending
         multiple CC messages for every use.
         """
 
-        if self.apply_conditional_mask_to_bars(
-                pattern=rest_of_pattern):
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
             return
 
         control_messages = []
@@ -517,7 +511,7 @@ class MidiHandler(Sender):
         for key, value in map.items():
             if key in rest_of_pattern.keys():
                 control = value
-                control['value'] = rest_of_pattern[key]
+                control["value"] = rest_of_pattern[key]
                 control_messages.append(control)
 
         def send_controls(pattern: dict) -> None:
@@ -532,4 +526,3 @@ class MidiHandler(Sender):
         # Sending control messages
         for control in control_messages:
             send_controls(pattern=control)
-

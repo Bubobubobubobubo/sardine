@@ -58,7 +58,6 @@ class Sender(BaseHandler):
         super().__init__(*args, **kwargs)
         self._timed_tasks: set[asyncio.Task] = set()
 
-
     def call_timed(
         self,
         deadline: float,
@@ -148,7 +147,7 @@ class Sender(BaseHandler):
             if isinstance(val, str):
                 return self.env.parser.parse(val)
             if isinstance(val, list) and all(isinstance(item, str) for item in val):
-                val = ' '.join(val)
+                val = " ".join(val)
                 return self.env.parser.parse(val)
             return val
 
@@ -270,10 +269,9 @@ class Sender(BaseHandler):
             "sometimes": random() <= 0.5,
             "rarely": random() <= 0.25,
             "almostNever": random() <= 0.10,
-            "never": False
+            "never": False,
         }
         return chance.get(frequency, False)
-
 
     def key_deleter(self, dictionary: dict, list_of_keys: list[str]):
         """
@@ -332,10 +330,7 @@ class Sender(BaseHandler):
         # Cleaning up the messy keys
         self.key_deleter(
             dictionary=pattern,
-            list_of_keys=[
-                "euclid", "neuclid", "on", "loaf", "binary"
-                "chance"
-            ]
+            list_of_keys=["euclid", "neuclid", "on", "loaf", "binary" "chance"],
         )
 
         # Returning if one False in the boolean masks

@@ -9,8 +9,10 @@ import traceback
 
 __all__ = ("ListParser",)
 
+
 class ParserError(Exception):
     pass
+
 
 class ShortParserError(Exception):
     def __init__(self, message):
@@ -22,6 +24,7 @@ class ShortParserError(Exception):
 
 grammar_path = Path(__file__).parent
 grammar = grammar_path / "sardine.lark"
+
 
 class ListParser(BaseParser):
     def __init__(
@@ -141,7 +144,7 @@ class ListParser(BaseParser):
         try:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
-            print(f'[red][Pattern Language Error][/red]')
+            print(f"[red][Pattern Language Error][/red]")
 
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
@@ -159,6 +162,8 @@ class ListParser(BaseParser):
         try:
             self.pretty_print(expression=pattern)
         except Exception as e:
-            tb_str = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
+            tb_str = traceback.format_exception(
+                etype=type(e), value=e, tb=e.__traceback__
+            )
             error_message = "".join(tb_str)
             raise ParserError(f"Error parsing pattern {pattern}: {error_message}")

@@ -29,7 +29,9 @@ def _play_ziffers(D, N, sleep, ziffer: str, *args, **kwargs):
             joined_samples = f"{{{' '.join([sample.name for sample in cur.values])}}}"
             D(joined_samples, *args, **kwargs)
         elif isinstance(cur, Chord):
-            joined_chord = f"{{{' '.join([str(pitch.freq) for pitch in cur.pitch_classes])}}}"
+            joined_chord = (
+                f"{{{' '.join([str(pitch.freq) for pitch in cur.pitch_classes])}}}"
+            )
             print(joined_chord)
             D(instrument, freq=joined_chord, *args, **kwargs)
         elif "channel" in kwargs:

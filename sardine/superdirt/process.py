@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+import sys
 import asyncio
 import platform
 import shutil
@@ -7,10 +9,10 @@ import tempfile
 from os import path, walk
 from pathlib import Path
 from typing import Optional, Union
+from ..logger import print
 
 import psutil
 from appdirs import *
-from ..logger import print
 from rich.console import Console
 
 __all__ = ("SuperDirtProcess",)
@@ -99,7 +101,6 @@ class SuperDirtProcess:
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
-            print("\n")
             print(
                 (
                     f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
@@ -109,7 +110,6 @@ class SuperDirtProcess:
                 )
             )
         if "Mismatched sample rates are not supported" in decoded_line:
-            print("\n")
             print(
                 (
                     f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
@@ -126,23 +126,20 @@ class SuperDirtProcess:
         that runs on a loop and prints to output. Can be quite verbose at
         boot time!
         """
-        import sys
 
         try:
             while self._sclang.poll() is None:
                 where = self.temp_file.tell()
                 lines = self.temp_file.read()
                 if not lines:
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.05)
                     self.temp_file.seek(where)
                 else:
+                    decoded_lines = lines.decode()
                     if self._verbose:
-                        sys.__stdout__.write(lines.decode())
+                        print(decoded_lines.strip())
                     else:
-                        self._analyze_and_warn(lines.decode())
-                    sys.__stdout__.flush()
-            sys.__stdout__.write(self.temp_file.read())
-            sys.__stdout__.flush()
+                        self._analyze_and_warn(decoded_lines)
         except UnboundLocalError:
             raise UnboundLocalError("SCLang is not reachable...")
 

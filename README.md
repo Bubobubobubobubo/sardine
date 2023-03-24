@@ -74,3 +74,30 @@ about music and technology, we welcome your expertise, whether it's code, docume
 
 To collaborate with the Sardine community, connect with us on **Discord**, **Github** or send a private message if you have specific inquiries.
 Together, we can create an even more powerful tool for musical expression and creativity!
+
+## Experimental Bash Script
+
+In the sardine directory, you will find a script called `install_sardine.sh`. This script automates the installation process for you.
+Depending on your platform, follow the instructions below to run the script:
+
+### macOS and Linux
+
+1) Open a terminal and navigate to the `sardine` directory.
+2) Make the script executable by running: `chmod +x install_sardine.sh`
+3) Execute the script: `./install_sardine.sh`
+
+### Windows
+
+The script will taunt you to install most of the dependencies manually. The installation can't really be automated on Windows.
+
+1) Install [Git for Windows](https://git-scm.com/download/win) if you haven't already.
+2) Open Git Bash and navigate to the sardine directory.
+3) Execute the script: `bash install_sardine.sh`
+
+The script will try (**and fail**) to install the required dependencies and set up the environment for you. It will:
+
+- Install [Git](https://git-scm.com/), [NPM](https://www.npmjs.com/), and [Yarn](https://yarnpkg.com/) (if not already installed)
+- Install and configure `pyenv` with Python 3.11 ([PyEnv](https://github.com/pyenv/pyenv))
+- Install the Sardine package
+- Install `SuperCollider` and [SuperDirt](https://github.com/musikinformatik/SuperDirt) Quarks
+- Please be patient, as this process may take some time.

@@ -144,7 +144,9 @@ class Player(BaseHandler):
             self.iterator,
             pattern.divisor,
             pattern.rate,
-            use_divisor_to_skip=False,
+            # use_divisor_to_skip=False,
+            # TODO: why was this untoggled?
+            use_divisor_to_skip=True,
         ):
             return message["period"]
         return 1

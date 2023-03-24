@@ -1,10 +1,10 @@
 # Senders
 
-Senders are required building blocks in every way of making sound with Sardine. 
+Senders are required building blocks used in all ways of making sound with Sardine. 
 
 `d(bd)` is a **Sender**. It is a special function that sends messages to musical applications and audio tools. It also provides an interface to the pattern languages (Sardine, Ziffers). Basically, **senders provide a gate to the outside world**.
 
-**Default Senders** 
+## Default Senders
 
 The *Case* signifies whether the sender is used in a Player (lower), or @swim function (UPPER). Using the Ziffers pattern language requires different senders. 
 
@@ -14,10 +14,11 @@ The *Case* signifies whether the sender is used in a Player (lower), or @swim fu
 | n('')   | N('')  | **MIDI** notes |
 | cc('')  | CC('') | **MIDI** control messages |
 | pc('')  | PC('') | **MIDI** program changes |
+| Ziffers |        | senders used with Ziffers patterns  |
 | zd('')  | ZD('')  | **Ziffers SuperDirt** - samples /synths with Ziffers patterns|
 | zn('')  | ZN('')  | **Ziffers MIDI** notes with Ziffers patterns |
 
-**Arguments and syntax**
+## Arguments and syntax
 
 Senders require arguments. These provide the values that represent notes, samples, patterns, parameters, etc. Syntax rules:
 - patterns in single quotes 
@@ -25,15 +26,22 @@ Senders require arguments. These provide the values that represent notes, sample
 - parameter=value
 - arguments separated by comma
 
+Sender with arguments:
 ```python
-Pa >> d('bd cp', speed='1 2', shape=0.5, p='0.5!4 0.25!2') # player with SuperDirt sender
+## Sender syntax: This statement evaluates but will not produce any sound.
+d('bd cp', speed='1 2', shape=0.5, p='0.5!4 0.25!2') # sender syntax
+
+## It needs to be called from a Player:
+Pa >> d('bd cp', speed='1 2', shape=0.5, p='0.5!4 0.25!2') 
 ```
+
 - `'bd cp'`: initial argument to SuperDirt. Specifies the pattern or sequence of samples and synthesizers.
 - `speed='1 2'`: speed is a SuperDirt sampling parameter, set here with a pattern
 - `shape=0.5`: shape is an effects parameter from SuperDirt, single value. 
 - `p='0.5!4 0.25!2'`: the letter p is shorthand for "period". It is set to a more complex pattern. 
 
-**More examples**
+## More sender examples
+TBD: add ziffers example
 
 ```python
 Pa >> n('C5 E5 G5', p=0.25) # playing a chord, one note every 1/4 of a beat.

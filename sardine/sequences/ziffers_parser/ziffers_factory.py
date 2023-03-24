@@ -2,7 +2,7 @@ import uuid
 
 try:
     from ziffers import z
-    from ziffers.classes import Sample, SampleList, Rest
+    from ziffers.classes import Sample, SampleList, Rest, Chord
 except ImportError:
     print("Install the ziffers package for using Ziffers patterns")
 
@@ -26,8 +26,12 @@ def _play_ziffers(D, N, sleep, ziffer: str, *args, **kwargs):
         if isinstance(cur, Sample):
             D(cur.name, *args, **kwargs)
         elif isinstance(cur, SampleList):
-            joined_samples = f"{{{', '.join([sample.name for sample in cur.values])}}}"
+            joined_samples = f"{{{' '.join([sample.name for sample in cur.values])}}}"
             D(joined_samples, *args, **kwargs)
+        elif isinstance(cur, Chord):
+            joined_chord = f"{{{' '.join([str(pitch.freq) for pitch in cur.pitch_classes])}}}"
+            print(joined_chord)
+            D(instrument, freq=joined_chord, *args, **kwargs)
         elif "channel" in kwargs:
             N(cur.note, *args, **kwargs)
         elif not isinstance(cur, Rest):

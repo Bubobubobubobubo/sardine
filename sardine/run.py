@@ -128,9 +128,9 @@ if config.superdirt_handler:
         dirt._ziffers_parser = z
 
 # Adding Players
-player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
-# layer_names += [''.join(tup) for tup in list(
-#     product(ascii_lowercase, repeat=3))]
+# player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+player_names = [''.join(tup) for tup in list(product(ascii_lowercase+ascii_uppercase, repeat=2))]
+# player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
     globals()[player] = p

@@ -65,11 +65,11 @@ Pa * d('superpiano', "q 0 1 2 3", scale='rocitronic') Another one
 ## Sharp and flat
 
 - `b` is flat
-- `\#` is sharp
+- `#` is sharp
 
 Use sharps or flats to go off scale. Sharps and flats are not sticky so you have to use it every time before the note number. For example in key of C: \#0 = C#
 
-```
+```python
 zplay("0 4 #4 b0 2 #2 ##2 ###2")
 ```
 

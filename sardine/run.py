@@ -1,21 +1,17 @@
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from .utils import (
-        config_line_printer,
-        get_snap_deadline,
-        sardine_intro,
-        join,
-)
-from string import ascii_lowercase, ascii_uppercase
-from .io.UserConfig import read_user_configuration
-from .superdirt import SuperDirtProcess
-from .sequences import ListParser, ziffers_factory
-from itertools import product
-from functools import wraps
-from .logger import print
-from pathlib import Path
 import importlib
-from . import *
 import sys
+from functools import wraps
+from itertools import product
+from pathlib import Path
+from string import ascii_lowercase, ascii_uppercase
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
+
+from . import *
+from .io.UserConfig import read_user_configuration
+from .logger import print
+from .sequences import ListParser, ziffers_factory
+from .superdirt import SuperDirtProcess
+from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
 try:
     from ziffers import z
@@ -128,9 +124,11 @@ if config.superdirt_handler:
         dirt._ziffers_parser = z
 
 # Adding Players
-# player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
-player_names = [''.join(tup) for tup in list(product(ascii_lowercase+ascii_uppercase, repeat=2))]
-# player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
+# player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+player_names = [
+    "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
+]
+# player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
     globals()[player] = p
@@ -430,6 +428,7 @@ CC = midi.send_control  # For MIDI Control Change messages
 SY = midi.send_sysex  # For MIDI Sysex messages
 _play_factory = Player._play_factory
 
+
 def sy(*args, **kwargs):
     return _play_factory(midi, midi.send_sysex, *args, **kwargs)
 
@@ -465,11 +464,13 @@ if config.superdirt_handler:
 if ziffers_imported:
     zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
 
+
 def MIDIInstrument(
-        midi: MidiHandler, 
-        channel: int, 
-        instrument_map: dict[dict],
-        *args, **kwargs
+    midi: MidiHandler,
+    channel: int,
+    instrument_map: dict[dict],
+    *args,
+    **kwargs,
 ) -> tuple:
     """
     Make a new MIDIInstrument from the definition of an instrument map:
@@ -486,7 +487,7 @@ def MIDIInstrument(
        'quality': { 'control': 25, 'channel': 0, },
     }
 
-    This function will return a sender capable of playing with a MIDI 
+    This function will return a sender capable of playing with a MIDI
     instrument that uses these mappings to control synthesis parameters.
 
     H = MIDIInstrument(midi_port=midi, channel=0, map=hat_drum)
@@ -497,27 +498,31 @@ def MIDIInstrument(
     a new Player based on that MIDIInstrument.
     ...
     """
+
     def midi_instrument(*args, **kwargs):
         """Build a new sender like D() out of the midi instrument information"""
-        midi.send_instrument(
-                channel=channel,
-                map=instrument_map,
-                *args, **kwargs
-        )
+        midi.send_instrument(channel=channel, map=instrument_map, *args, **kwargs)
 
     def midi_instrument_player(*args, **kwargs):
         """Build a new palyer like d() out of the midi instrument information"""
-        return _play_factory(midi, midi.send_instrument,
-                             channel=channel, map=instrument_map,
-                             *args, **kwargs)
+        return _play_factory(
+            midi,
+            midi.send_instrument,
+            channel=channel,
+            map=instrument_map,
+            *args,
+            **kwargs,
+        )
 
     return (midi_instrument, midi_instrument_player)
 
+
 def MIDIController(
-        midi: MidiHandler, 
-        channel: int, 
-        controller_map: dict[dict],
-        *args, **kwargs
+    midi: MidiHandler,
+    channel: int,
+    controller_map: dict[dict],
+    *args,
+    **kwargs,
 ) -> tuple:
     """
     Make a new MIDIController from the definition of a controller map:
@@ -534,7 +539,7 @@ def MIDIController(
        'quality': { 'control': 25, 'channel': 0, },
     }
 
-    This function will return a sender capable of playing with a MIDI 
+    This function will return a sender capable of playing with a MIDI
     controller that uses these mappings to control synthesis parameters.
 
     H, h = MIDIController(midi_port=midi, channel=0, map=hat_drum)
@@ -545,19 +550,21 @@ def MIDIController(
     a new Player based on that MIDIController.
     ...
     """
+
     def midi_controller(*args, **kwargs):
         """Build a new sender like D() out of the midi controller information"""
-        midi.send_controller(
-                channel=channel,
-                map=controller_map,
-                *args, **kwargs
-        )
+        midi.send_controller(channel=channel, map=controller_map, *args, **kwargs)
 
     def midi_controller_player(*args, **kwargs):
         """Build a new player like d() out of the midi controller information"""
-        return _play_factory(midi, midi.send_controller,
-                             channel=channel, map=controller_map,
-                             *args, **kwargs)
+        return _play_factory(
+            midi,
+            midi.send_controller,
+            channel=channel,
+            map=controller_map,
+            *args,
+            **kwargs,
+        )
 
     return (midi_controller, midi_controller_player)
 

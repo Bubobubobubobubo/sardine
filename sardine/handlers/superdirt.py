@@ -136,7 +136,6 @@ class SuperDirtHandler(Sender):
         rate: NumericElement = 1,
         **pattern: ParsableElement,
     ):
-
         if sound is None:
             return
 

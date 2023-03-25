@@ -176,7 +176,6 @@ class Sender(BaseHandler):
             yield from self.pattern_reduce(sub_pattern, iterator, divisor, rate)
 
     def cycle_loaf(self, loaf: Optional[int], on: Optional[tuple | int]) -> bool:
-
         """
         Will slice time in group of bars of size "loaf". Will
         check if the current bar matches with one of the selected
@@ -185,7 +184,6 @@ class Sender(BaseHandler):
         """
 
         def mod_cycles(on: int | tuple) -> bool:
-
             """
             Modulo operator working on bar numbers. This function will
             be used with the "on" operator if no "loaf" argument is used
@@ -285,7 +283,6 @@ class Sender(BaseHandler):
                 pass
 
     def apply_conditional_mask_to_bars(self, pattern: ParsableElement) -> bool:
-
         boolean_masks = []
 
         # Cycle loaf

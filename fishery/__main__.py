@@ -7,12 +7,12 @@ from typing import Tuple
 
 def set_python_process_priority() -> Tuple[int, int, bool]:
     """
-    Sets the priority of the current Python interpreter process 
+    Sets the priority of the current Python interpreter process
     to the highest possible level on Linux, macOS, and Windows.
 
     Returns:
-        A tuple containing the original priority, new priority, 
-        and a boolean indicating whether the priority was 
+        A tuple containing the original priority, new priority,
+        and a boolean indicating whether the priority was
         successfully set.
     """
     pid = os.getpid()
@@ -21,7 +21,7 @@ def set_python_process_priority() -> Tuple[int, int, bool]:
     original_priority = process.nice()
 
     # Determine the new priority (lower values indicate higher priority)
-    if os.name == 'nt':
+    if os.name == "nt":
         new_priority = psutil.HIGH_PRIORITY_CLASS
     else:
         new_priority = -20
@@ -34,11 +34,12 @@ def set_python_process_priority() -> Tuple[int, int, bool]:
 
     return original_priority, new_priority, success
 
-_,_, successful_patch = set_python_process_priority()
+
+_, _, successful_patch = set_python_process_priority()
 if successful_patch:
-    print(f'Patched process', end=' | ')
+    print(f"Patched process", end=" | ")
 else:
-    print("Unpatched process", end=' | ')
+    print("Unpatched process", end=" | ")
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],

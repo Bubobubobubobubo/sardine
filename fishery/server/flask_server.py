@@ -68,7 +68,7 @@ class WebServer:
     def reset_log_file(self):
         """Reset the log file on application start. Writing to the file
         and immediately closing is effectively erasing the content."""
-        open(LOG_FILE, 'w', encoding='utf-8').close()
+        open(LOG_FILE, "w", encoding="utf-8").close()
 
     def check_buffer_files(self) -> None:
         """This function will check the integrity of the buffer folder."""
@@ -199,22 +199,22 @@ def server_factory(console):
     @app.route("/log")
     def progress_log():
         def generate():
-            for line in Pygtail(
-                    str(LOG_FILE),
-                    every_n=1,
-                    full_lines=False,
-                    encoding='utf-8'
-            ):
+            unread_lines = Pygtail(
+                str(LOG_FILE),
+                every_n=1,
+                full_lines=False,
+                encoding="utf-8",
+            )
+            for line in unread_lines:
                 yield "data:" + str(line) + "\n\n"
 
         return Response(generate(), mimetype="text/event-stream")
 
-
-    @app.route('/config')
+    @app.route("/config")
     def get_config():
         try:
             with open(USER_DIR / "config.json", "r") as f:
-                config_data = json.load(f)['config']
+                config_data = json.load(f)["config"]
             response = jsonify(config_data)
         except Exception as e:
             print("Error while reading config.json:", e)

@@ -64,7 +64,10 @@ Menu button functions:
 			.then((response) => response.json())
 			.then((data: object) => {
 				for (let [key, value] of Object.entries(data)) {
-					SARDINE_BUFFERS[key] = value.toString();
+					// Check if the key already exists in SARDINE_BUFFERS
+					if (!SARDINE_BUFFERS.hasOwnProperty(key)) {
+						SARDINE_BUFFERS[key] = value.toString();
+					}
 				}
 			});
 	}

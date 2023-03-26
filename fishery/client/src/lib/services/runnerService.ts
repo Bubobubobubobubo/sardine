@@ -1,4 +1,4 @@
-import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
 
 class RunnerService{
 
@@ -23,26 +23,29 @@ class RunnerService{
         return result;
     }
 
-    watchLogs(onLogs: (data: string) => void): () => void {
-        const eventSource = new EventSource(this.host + '/log');
-        const throttledOnLogs = throttle(onLogs, 50/3);
-        const onMessage = (event: MessageEvent) => {
-            throttledOnLogs(event.data);
-        };
 
-        // Register the handler for the message event.
-        eventSource.onmessage = onMessage;
+    watchLogs(onLogs: (data: string[]) => void): () => void {
+      const eventSource = new EventSource(this.host + "/log");
+      const debounceDelay = 100;
+      let logBuffer: string[] = [];
 
-        // Return a function that will be called when
-        // the client no longer wants to receive events.
-        return () => {
-            // Close the connection.
-            eventSource.close();
-            // Remove the event listener.
-            eventSource.onmessage = null;
-        };
+      const debouncedOnLogs = debounce(() => {
+          onLogs(logBuffer.join('\n'));
+          logBuffer = [];
+      }, debounceDelay);
+
+      const onMessage = (event: MessageEvent) => {
+        logBuffer.push(event.data);
+        debouncedOnLogs();
+      };
+
+      eventSource.onmessage = onMessage;
+
+      return () => {
+        eventSource.close();
+        eventSource.onmessage = null;
+      };
     }
-
 }
 
 const runnerService = new RunnerService();

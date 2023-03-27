@@ -20,7 +20,7 @@ def inFive(p=0.5, i=0):
     again(inFive, p=0.5, i=i+1)
 ```
 
-The **Player** version has a more compact syntax, referred to as *shorthand*. Both have Senders with *most* of the same parameters and patterns as arguments. The `@swim` function is essentially a Python function, invoked with the `@swim` decorator. It can contain multiple Senders, like playing multiple instruments or tracks together. `@swim` functions are unique with the iterator value **i** and have the **period** and **iterator** initiallized first in the function arguments.
+The **Player** version has a more compact syntax, referred to as *shorthand*. Both have Senders with most of the same parameters and patterns as arguments. The `@swim` function is essentially a Python function, invoked with the `@swim` decorator. It can contain multiple Senders, like playing multiple instruments or tracks together. `@swim` functions are unique with the iterator value **i** and have the **period** and **iterator** initiallized in the function arguments.
 
 ### Feature / Syntax comparison
 
@@ -54,13 +54,14 @@ Each technique has some benefits and some downsides.
 - Manual control over looping through iteration.
   - With different values or iterating methods, more creative patterns can be found.
 - One `@swim` function can control a complete session. 
+- More suited for adding custom python code. 
 
 
 ## Demo
 
 ### Complex swimming function
 
-Here is a complex `@swim` function. Notice how it spans over multiple lines and contains a large group of independent senders. This function is playing many synths at the same time and also controls drumming!
+Here is a more advanced `@swim` function. Notice how it spans over multiple lines and contains a large group of independent senders. This function is playing many synths at the same time and also controls drumming!
 
 ```python
 @swim

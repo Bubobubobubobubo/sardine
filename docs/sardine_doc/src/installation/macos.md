@@ -24,6 +24,8 @@ to install some tools that will allow you to compile the application.
     ```Quarks.install("SuperDirt")```
     - Press **Shift + Enter** and wait for the installation to be done! Close **SuperCollider** when done.
     - **Optional:** You can also install [sc3plugins](https://github.com/supercollider/sc3-plugins) to get more audio effects and synthesizers!
+    - You might have to add `sclang` to your path. To do so, copy `alias sclang="/Applications/SuperCollider.app/Contents/MacOS/sclang"`
+      into your `.bashrc` or `.zshrc` in the `$HOME` directory.
 
 3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to be able to build the website.
     - NodeJS is a package manager for JavaScript. Yarn is also... a package manager for JavaScript.

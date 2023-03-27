@@ -3,11 +3,11 @@
 The Player is the most basic way to create patterns - it uses a shorthand syntax, and uses patterns and arguments to make musical output.
 
 ```python
-Pa >> d('bd cp', p=0.5)
+Pa * d('bd cp', p=0.5)
 ```
 - `Pa` is a **player** - it acts on a pattern.
 - `d()` is the **sender** and provides the pattern. It takes any number of arguments.
-- `>>` is the **operator** that assigns the pattern to the player.
+- `*` is the **operator** that assigns the pattern to the player.
   - `*` is equivalent to `>>`.
 - `p=0.5` is an argument where p is shorthand for period.
 
@@ -21,10 +21,10 @@ all_players = [Pa, Pb, Pc ...Pz, PA, PB, PC, ... PZ]
 Pattern arguments control the rhythm, pitch and timbre of the pattern. A **Sardine** pattern is **a sandwich of values**. Here is a player with a more detailed pattern:
 
 ```python
-Pa >> d('bd cp', speed='1 2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4  0.25!2')
+Pa * d('bd cp', speed='1 2', shape=0.5, room=0.5, dry=0.25, size=0.1, p='0.5!4  0.25!2')
     
 # This is easier to read
-Pa >> d('bd cp',
+Pa * d('bd cp',
         speed='1 2',
         shape=0.5,
         room=0.5,

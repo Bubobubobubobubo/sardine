@@ -222,12 +222,6 @@
 		width: 50%;
 	}
 
-	code input[type='text'],
-	input[type='number'],
-	textarea {
-		text-align: center;
-	}
-
 	label {
 		padding-top: 10px;
 		padding-bottom: 10px;

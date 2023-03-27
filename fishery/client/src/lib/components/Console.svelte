@@ -61,14 +61,4 @@
 		font-size: 14px;
 		padding: 0px 5px;
 	}
-
-	.splitpanes.default-theme .splitpanes__pane {
-		background-color: black;
-	}
-
-	/*
-    .console-content li:nth-child(odd){
-        background-color: #777777;
-    }
-    */
 </style>

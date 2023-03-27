@@ -1,6 +1,7 @@
 <script lang="ts">
 	import FileSaver from 'file-saver';
 	import { tick } from 'svelte';
+	import { derived } from 'svelte/store';
 	import type { EditorView } from '@codemirror/view';
 	import Editor from '$lib/components/Editor.svelte';
 	import Configuration from '$lib/components/Configuration.svelte';
@@ -23,6 +24,7 @@
 	let inputted_characters = 0;
 	let editorHeight, editorWidth;
 	let showModal = false;
+	let showLogs = true;
 
 	let keyInstructions = `
 This is the embedded Sardine Code Editor
@@ -55,6 +57,9 @@ Menu button functions:
 	}
 
 	let SARDINE_BUFFERS: Dictionary<string> = {};
+	let showLogsStore = derived(activeTab, ($activeTab) => {
+		Number($activeTab) > 2;
+	});
 	let headerComponent;
 
 	async function fetchLocalFiles() {
@@ -271,10 +276,10 @@ Menu button functions:
 				theme="sardine"
 			>
 				<Pane maxSize={90} minSize={10} snapSize={10}>
-					{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
+					{#each Object.entries(SARDINE_BUFFERS) as [_, buffer]}
 						<TabPanel>
 							<Editor
-								extensions="{extensions};"
+								{extensions}
 								bind:this={view}
 								doc={buffer}
 								bind:docStore={store}
@@ -292,7 +297,7 @@ Menu button functions:
 							width="100%"
 							height="100vh"
 							frameborder="0"
-							sandbox="allow-same-origin"
+							sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
 							onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';"
 						/></TabPanel
 					>
@@ -300,9 +305,11 @@ Menu button functions:
 						<Configuration />
 					</TabPanel>
 				</Pane>
-				<Pane minSize={10} maxSize={90} snapSize={10}>
-					<Console {logs} />
-				</Pane>
+				{#if !$showLogsStore}
+					<Pane minSize={5} maxSize={50} snapSize={20}>
+						<Console {logs} />
+					</Pane>
+				{/if}
 			</Splitpanes>
 		</Tabs>
 	</main>
@@ -324,13 +331,6 @@ Menu button functions:
 
 	:global(.splitpanes.sardine .splitpanes__pane) {
 		background-color: #black;
-	}
-
-	.splitpanes.sardine .splitpanes__splitter {
-		background-color: #fff;
-		box-sizing: border-box;
-		position: relative;
-		flex-shrink: 0;
 	}
 
 	:global(.splitpanes.sardine .splitpanes__splitter:before),

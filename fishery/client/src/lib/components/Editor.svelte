@@ -1,5 +1,5 @@
 <script context="module">
-	import { EditorView, minimalSetup, basicSetup } from 'codemirror';
+	import { EditorView } from 'codemirror';
 	import { ViewPlugin } from '@codemirror/view';
 	import { StateEffect } from '@codemirror/state';
 </script>

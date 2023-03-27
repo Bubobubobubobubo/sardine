@@ -4,7 +4,7 @@ The are two ways to generate patterns with Sardine:
 1) `@swim` functions: the fundamental mechanism.
 1) `Player`: a shorthand syntax to use it.
 
-They share common features, leverage the same pattern languages, but have a few key differences. It is important to understand both, as well as when and how to use each. Both are used for examples. You will find that using one syntax or the other is more appropriate depending on the context. 
+They share common features, leverage the same pattern languages, but have a few key differences. It is important to understand both, as well as when and how to use each. You will find that using one syntax or the other is more appropriate depending on the what you are trying to do. 
 
 This example will produce the same musical output with Player and @swim:
 ```python
@@ -45,14 +45,15 @@ Each technique has some benefits and some downsides.
 - Simplified friendly syntax: often one line statements.
 - Good for quick development, experimentation, learning.
 - Multiple players can be used simultaneously.
-- Each one can start and stop independantly.
+- Each player can start and stop independantly.
 - Similar to the well-known syntax of [FoxDot](https://github.com/Qirky/FoxDot).
+- Complex patterns can be harder to understand on a single line. 
 
 **@swim functions:**
 - Containers for more complex constructions. 
 - One `@swim` function can have multiple senders, Python statements, etc...
 - Manual control over looping through iteration.
-  - With different values or iterating methods, more creative patterns can be found.
+  - With different values or iteration methods, more creative patterns can be found.
 - One `@swim` function can control a complete session. 
 - More suited for adding custom python code. 
 

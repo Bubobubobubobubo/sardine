@@ -1,6 +1,6 @@
 # @swim function
 
-The @swim function is the fundamental mechanism for managing output and changing values and parameters dynamically. Strictly speaking, a @swim function is an example of a "temporal recursion function." This is a programming construct that supports repetition in time with dynamic parameter values. Temporal recursion is common in livecoding languages. In Sardine, the @swim function has unique ways and syntax to manage repeats. The Sardine scheduling engine will manage repeats as well as parameter and pattern value changes strictly following the tempo and beat patterns we tell Sardine to use. 
+The `@swim` function is the fundamental mechanism for managing output and changing values and parameters dynamically. Strictly speaking, a `@swim` function is an example of a *temporally recursive function*. This is a programming construct that supports repetition in time with dynamic parameter values. Temporal recursion is common in livecoding languages as it is a very fundamental way to think about time in the context of the execution of a program. In Sardine, the `@swim` function has unique ways and syntax to manage repeats. The Sardine scheduling engine will manage repeats as well as parameter and pattern value changes strictly following the tempo and beat patterns we tell Sardine to use. 
 
 To illustrate, let's start with a basic Python function:
 
@@ -8,11 +8,11 @@ To illustrate, let's start with a basic Python function:
 def hello_world():
     print('Hello, World!')
 
-## Call this function with this command.
+# Call this function with this command.
 hello_world()
 ```
 
-Now let's convert this into a @swim function which adds temporal recursion with looping at the beat. Eexecute the code below, then make changes to the tempo value. Watch how the output of the python `print` statement comes in the exact tempo you specify. The `again()` statement is what provides the temporal recursion (looping in tempo). You could also just say that `again()` tells the @swim function to repeat! 
+Now let's convert this into a `@swim` function which adds temporal recursion with looping at the beat. Execute the code below, then make changes to the tempo value. Watch how the output of the python `print` statement comes in the exact tempo you specify. The `again()` statement is what provides the temporal recursion (looping in tempo). You could also just say that `again()` tells the `@swim` function to repeat! 
 
 ```python
 clock.tempo=60 
@@ -21,21 +21,21 @@ def hello_world():
     print('Hello, World!')
     again(hello_world)
 ```
-You can stop a @swim function by changing the Python "decorator" from `@swim` to `@die`.
+You can stop a swimming function by changing the Python "decorator" from `@swim` to `@die`.
 ```python
 @die
 def hello_world():
     print('Hello, World!')
     again(hello_world)
 
-## You can also stop a @swim function using these commands: 
+# You can also stop a @swim function using these commands: 
 silence(hello_world)
 hello_world.stop()
 silence() # stops everything
 ```
 
 ### Iterator: "i" is the essential driver 
-Let's translate this into musical output. The @swim function below uses a SuperDirt Sender **D()** with a sample pattern. Importantly, we now have an iterator - which by Sardine convention uses the character **i**. It appears in the function arguments, in the recursion `again()`, and in the Sender. 
+Let's translate this into musical output. The swimming function below uses a SuperDirt Sender **D()** with a sample pattern. Importantly, we now have an iterator - which by Sardine convention uses the character **i**. It appears in the function arguments, in the recursion `again()`, and in the Sender. 
 - function definition: `inFive(p=1, i=0)` the period (p) and iterator (i) are initialized.
 - sender argument: `i=i` is added. This tells Sardine to iterate over the sample and speed patterns on every recursion (repeat). 
 - again argument: `i=i+1` This expression increments the iterator. We will see later how this expression can be changed to create interesting musical results. 

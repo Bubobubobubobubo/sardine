@@ -38,6 +38,7 @@
     - [Player vs @Swim](basics/player-vs-swimfunction.md)  
     - [Players](basics/players.md)
     - [@swim function](basics/swimfunction.md)
+    - [Period-division-rate](basics/period-division-rate.md)
     - [Player arguments](basics/player_arguments.md)
     - [Tempo and playback](basics/tempo_and_playback.md)
 - [Pattern Languages](pattern_languages.md)

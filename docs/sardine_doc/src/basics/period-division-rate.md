@@ -1,9 +1,0 @@
-## Period
-
-
-
-## Division
-
-
-## Rate
-

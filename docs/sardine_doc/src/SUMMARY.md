@@ -83,6 +83,7 @@
     - [Sleeping and oversleeping](diving_deeper/sleeping.md)
     - [External Clock](diving_deeper/external_clock.md)
     - [Patterning everything](diving_deeper/patterning_everything.md)
+    - [Using python](diving_deeper/python.md)
     - [SuperCollider interaction](diving_deeper/supercollider.md)
     - [Writing presets](diving_deeper/presets.md)
 - [Audio Engine Reference](audio_engine.md)

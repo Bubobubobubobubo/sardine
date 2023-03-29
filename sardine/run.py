@@ -4,7 +4,7 @@ from string import ascii_lowercase, ascii_uppercase
 from .io.UserConfig import read_user_configuration
 from .superdirt import SuperDirtProcess
 from .sequences import ListParser
-from .logger import print
+from .logger import print, logging
 from pathlib import Path
 import importlib
 from . import *
@@ -43,7 +43,7 @@ if Path(f"{config.user_config_path}").is_file():
     spec.loader.exec_module(module)
     from user_configuration import *
 else:
-    print(f"[red]No user provided configuration file found...")
+    logging.info(f"[red]No user provided configuration file found...")
 
 # Initialisation of the FishBowl (the environment holding everything together)
 

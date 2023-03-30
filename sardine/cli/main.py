@@ -4,7 +4,7 @@ from InquirerPy.base.control import Choice
 from InquirerPy import inquirer
 from rich.panel import Panel
 from pathlib import Path
-from ..logger import print
+from ..logger import print, logging
 from appdirs import *  # Wildcard used in docs
 import click
 import json
@@ -79,6 +79,7 @@ def _select_midi_output(config_file: dict) -> dict:
 
     choices = ["Automatic", "Manual", "Custom (advanced)"]
     midi_ports = mido.get_output_names()
+    logging.debug(f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]")
     print(
         Panel.fit(
             f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
@@ -106,10 +107,10 @@ def _select_midi_output(config_file: dict) -> dict:
             multicolumn_complete=True,
         ).execute()
     config_file["midi"] = midi_port_selection
+    message = f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
+    logging.debug(message)
     print(
-        Panel.fit(
-            f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
-        )
+        Panel.fit(message)
     )
     return config_file
 
@@ -118,14 +119,14 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
     """
     Selection of BPM and various Timing related information
     """
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
                 + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
                 + f"[red]Link: [green]{config_file['link_clock']}[/green][/red]"
-            )
-        )
+    )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     link_clock = inquirer.select(
         message="Should Sardine default to the LinkClock?",
@@ -150,29 +151,29 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
         max_allowed=999,
     ).execute()
     config_file["beats"] = int(beats)
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]Tempo: [green]{config_file['bpm']}[/green][/red] | "
                 + f"[red]Beats: [green]{config_file['beats']}[/green][/red] | "
                 + f"[red]Link: [green]{config_file['link_clock']}[/green][/red]"
             )
-        )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     return config_file
 
 
 def _select_supercollider_settings(config_file: dict) -> dict:
     """Configuration for the SuperCollider subprocess"""
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
                 + f"[red]Boot SuperCollider: [green]{config_file['boot_supercollider']}[/red][/green] | "
                 + f"[red]Sardine boot file: [green]{config_file['sardine_boot_file']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
-        )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     boot = inquirer.select(
         message="Add SuperDirt handler to Sardine?",
@@ -220,15 +221,15 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     ).execute()
     if boot_path != "":
         config_file["superdirt_config_path"] = boot_path
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]SuperDirt Handler: [green]{config_file['superdirt_handler']}[/red][/green] | "
                 + f"[red]Boot SuperCollider: [green]{config_file['boot_supercollider']}[/red][/green] | "
                 + f"[red]Sardine boot file: [green]{config_file['sardine_boot_file']}[/red][/green] | "
                 + f"[red]SuperCollider boot Path: [green]{config_file['superdirt_config_path']}[/red][/green]"
             )
-        )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     return config_file
 
@@ -262,13 +263,13 @@ def _select_editor(config_file: dict) -> dict:
 
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]Debug mode: [green]{config_file['debug']}[/green][/red] | "
                 + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
             )
-        )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     debug = inquirer.select(
         message="Turn on parser debug mode?",
@@ -285,13 +286,13 @@ def _select_additional_options(config_file: dict) -> dict:
     ).execute()
     if user_config_path != "":
         config_file["user_config_path"] = user_config_path
-    print(
-        Panel.fit(
-            (
+    message = (
                 f"[red]Debug mode: [green]{config_file['debug']}[/green][/red] | "
                 + f"[red]User config path: [green]{config_file['user_config_path']}[/green][/red]"
-            )
-        )
+    )
+    logging.debug(message)
+    print(
+        Panel.fit(message)
     )
     return config_file
 
@@ -320,7 +321,7 @@ def main():
     try:
         USER_CONFIG = read_json_file()["config"]
     except FileNotFoundError as e:
-        print(
+        logging.warning(
             "[bold red]No Sardine Configuration found. Please boot Sardine first![/bold red]"
         )
         exit()

@@ -14,7 +14,7 @@ try:
     from ziffers import z
     ziffers_imported: bool = True
 except ImportError:
-    print("Install the ziffers package for using Ziffers patterns")
+    logging.warning("Install the ziffers package for using Ziffers patterns")
     ziffers_imported: bool = False
 
 
@@ -28,7 +28,9 @@ config = read_user_configuration()
 
 # Printing banner and some infos about setup/config
 print(sardine_intro)
-print(config_line_printer(config))
+message = config_line_printer(config)
+logging.debug(message)
+print(message)
 
 
 #######################################################################################
@@ -67,7 +69,7 @@ if config.boot_supercollider:
             verbose=config.verbose_superdirt,
         )
     except OSError as Error:
-        print(f"[red]SuperCollider could not be found: {Error}![/red]")
+        logging.error(f"[red]SuperCollider could not be found: {Error}![/red]")
 
 #######################################################################################
 # HANDLERS INITIALIZATION. YOU CAN ADD YOUR MODULAR COMPONENTS HERE.

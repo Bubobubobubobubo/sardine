@@ -10,6 +10,7 @@ from typing import Optional
 from flask_cors import CORS
 from pathlib import Path
 from rich import print
+from sardine.logger import logging
 from appdirs import *
 import logging
 import os
@@ -56,10 +57,10 @@ class WebServer():
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
-                print(f'Creating file {str(filename)}!')
+                logging.debug(f'Creating file {str(filename)}!')
                 Path(check_file).touch()
             else:
-                print(f'Loading file {str(filename)}')
+                logging.debug(f'Loading file {str(filename)}')
 
 
     def load_buffer_files(self) -> Optional[dict]:
@@ -75,12 +76,12 @@ class WebServer():
             try:
                 (USER_DIR / "buffers").mkdir()
                 for filename in FILENAMES:
-                    print(f"Creating file {filename}.py.")
+                    logging.debug(f"Creating file {filename}.py.")
                     Path(USER_DIR / "buffers" / filename).touch()
                     buffer_files[filename] = ""
                     return buffer_files
             except FileExistsError or OSError:
-                print("[red]Fishery was not able to create web editor files![/red]")
+                logging.error("[red]Fishery was not able to create web editor files![/red]")
                 exit()
         # If it already exists, read files from the folder
         else:
@@ -109,7 +110,9 @@ class WebServer():
 
     def open_in_browser(self):
         import webbrowser
-        print("[red]Opening embedded editor at: [yellow]http://127.0.0.1:5000[/yellow][/red]")
+        message = "[red]Opening embedded editor at: [yellow]http://127.0.0.1:5000[/yellow][/red]"
+        logging.debug(message)
+        print(message)
         webbrowser.open(f"http://{self.host}:{self.port}")
 
 
@@ -172,7 +175,7 @@ def server_factory(console):
                 with open((buffer_directory / file_name).as_posix(), 'r') as f:
                     files[file_name] = f.read()
         files = jsonify(files)
-        print(files)
+        logging.debug(files)
         files.headers.add('Access-Control-Allow-Origin', '*')
         return files
 

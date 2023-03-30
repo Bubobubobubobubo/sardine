@@ -5,6 +5,7 @@ from typing import Union
 
 from appdirs import *
 from rich import print
+from sardine.logger import logging
 
 __all__ = (
     "Config",
@@ -136,6 +137,7 @@ def read_configuration_file(file_path: Path) -> Config:
 def pretty_print_configuration_file() -> None:
     file_path = USER_DIR / "config.json"
     file_string = read_configuration_file(file_path)
+    logging.debug(file_string)
     print(file_string)
 
 

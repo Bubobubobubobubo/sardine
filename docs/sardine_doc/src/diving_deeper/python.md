@@ -40,20 +40,20 @@ Amphibian variables can have their values set outside of @swim with a python ass
 TBD
 ```
 
- ### Advanced example - Sample Segment
-Below is an example with extended sections of python code, with custom functions, presets, import statements, and initializing values and lists. Sample Segment uses nested lists to contain sample names and durations from 3 SuperDirt sample banks. Custom functions randomize the selection of which sample to use and then randomize start and end points in the sample file. Using the start and end values, the length of the sample is determined. These then are assigned to Amphibian values for `sampleName:index`, `begin`, `end`, `period`. Amphibian variables are referenced in the @swim function. There is a simple command to "reset" the amphibian variables, based on which sampleList you choose. During a running @swim, reseting will change the sample slice and period, which because of the randomizing factor, can dramatically alter the resulting sound. 
-
-See the Instructions section below to play with Sample Segment. 
+ ### Advanced example - Sample Slicer
+Below is an example with more extended python code using custom functions, presets, and initializing values and lists. Sample Slicer uses nested lists to contain sample names and durations from 3 SuperDirt sample banks. Custom functions randomize the selection of which sample file to use and then randomize start and end points in the sample file (sample slice). Using the start and end values, the length of the sample is determined. Output of the functions is assigned to Amphibian values for `sampleName:index`, `begin`, `end`, `period`. Amphibian variables are then referenced in the @swim function. There is a simple command to "reset" the amphibian variables, based on which sampleList you choose. During a running @swim, reseting will change the sample slice and period which can dramatically alter the resulting sound. 
 
  ```python
-###### Sample Segment - illustrates custom python functions that generate Sardine amphibian variable values. 
-### Instructions   #########################
-# 1. load Presets, Initialize, and Functions
-# 2. set the amphibian variables once before starting @swim. You will see the values print out. 
-# 3. start the @swim function
-# 4. reset amph variables and change @swim parameters at will
-# 5. Try adding your own sampleList -> have fun! 
+""" 
+Sample Slicer: llustrates the use of custom python functions that generate Sardine amphibian variable values. 
 
+Instructions
+1. Load Presets, Initialize, and Functions.
+2. Set the amphibian variables once before starting @swim. You will see the values print out. 
+3. Start the @swim function.
+4. Reset amph variables and change @swim parameters at will.
+5. Try adding your own sampleList -> have fun! 
+"""
 ########## PRESETS #########################
 rev0 = {'room':1.5, 'size':0.8, 'dry':0.8}
 verb0 = {'verbwet':0.8, 'verbtime':0.7, 'verbgain':0.8}
@@ -64,26 +64,24 @@ from random import *
 clock.tempo=60 # assumed for period calculations
 
 # Sample lists - fm:3 is the ~dirt.samples format. Floats values are the sample length in secs.
+# Any list of samples loaded in SuperDirt will work.
 sampleListFm = [["fm:3", 4.197], ["fm:4", 1.92], ["fm:7", 1.97], ["fm:9", 4.42], ["fm:14", 1.73] ]
 sampleListBirds = [["birds:0", 2.0], ["birds:1", 2.0], ["birds:2", 3.0], ["birds:3", 2.5], ["birds:4", 4.0], ["birds:5", 1.0], ["birds:8", 1.75], ["birds:9", 1.75] ]
 sampleListDiphone = [["diphone:0", 0.9], ["diphone:1", 0.9], ["diphone:2", 0.9], ["diphone:3", 0.9], ["diphone:4", 0.9], ["diphone:5", 0.9], ["diphone:8", 0.9], ["diphone:9", 0.9], ["diphone:10", 0.9], ["diphone:11", 0.9] ]
 
 ########## FUNCTIONS #############################
 def setSampleVals(sampleDurIn, directionIn):
-# generates random start and end points and calculates the period duration (secs)
-    minPeriod = 0.04 # period must be > 0
+# generates random start and end points and calculates the period duration
     endRand = random()
     beginRand = random() * endRand
     periodDur = (endRand - beginRand) * sampleDurIn # sets period length
-    # if extend is longer than periodDur, set to minPeriod value, else add extend 
-    if (periodDur <= 0): periodDur = minPeriod
     if (directionIn == -1):
         return(endRand, beginRand, periodDur) # switch end and begin for reverse play
     else:
         return(beginRand, endRand, periodDur)
 
-def genSampSeg(sampListIn, directionIn):
-# random selects the sample from the sample list, gets values and returns sample Name, begin,end,period duration 
+def genSampSlice(sampListIn, directionIn):
+# random selects the sample from the sample list
     sampListIndex = randint(0, len(sampListIn)-1) # rand pick a sample from list
     sampName = sampListIn[sampListIndex][0]
     beginN, endN, periodDurT = setSampleVals(sampListIn[sampListIndex][1], directionIn)
@@ -91,24 +89,24 @@ def genSampSeg(sampListIn, directionIn):
     return(sampName, beginN, endN, periodDurT)
 
 ######### LIVE CODING Section  #############################
-### set / reset Amphibian Variables - execute one of the Amph Variables lines
-# V.s = sampleName:index V.b = begin V.e = end V.p = period
+### set / reset Amphibian Variables - execute one of the Amph Variables assignment statements
+# Amph Variables: V.s = sampleName:index, V.b = begin, V.e = end, V.p = period
 # execute one line to initialize all amphibian variables before starting the @swim 
 # execute one line while @swim is playing to reset the amph vars - this will change the sound and rhythm, often radically
 # change the direction argument: 1=forward, -1=reverse
 
-# sets / resets Amphibian variables. Execute any one of these lines before and then when @swim is playing.
-V.s, V.b, V.e, V.p = genSampSeg(sampleListFm, 1) # drum beats
-V.s, V.b, V.e, V.p = genSampSeg(sampleListDiphone, 1) # speech 
-V.s, V.b, V.e, V.p = genSampSeg(sampleListBirds, 1) # 
+# Execute any one of these statements before and then when @swim is playing.
+V.s, V.b, V.e, V.p = genSampSlice(sampleListFm, 1) # drum beats
+V.s, V.b, V.e, V.p = genSampSlice(sampleListDiphone, 1) # speech 
+V.s, V.b, V.e, V.p = genSampSlice(sampleListBirds, 1) # birds
 
 V.s, V.b, V.e, V.p = ['diphone:4', 0.662, 0.902, 0.21] # hard code the amph vars
 
 # @swim function: start play, then execute one of the lines above to change parameters.
-# Be prepared for wierd things to come out! 
-# Uncomment / comment lines to change parameter values.
+# Uncomment / comment lines to change parameter values. Adjust clock.tempo.
+
 @swim
-def sampleSegment(p=1, i=0):
+def sampleSlicer(p=1, i=0):
     D('(v s)', 
     begin='(v b)', end='(v e)', **rev0, 
     #**del0, # delay preset
@@ -116,8 +114,8 @@ def sampleSegment(p=1, i=0):
     #freq=randint(150,400), 
     #freq='[150:270,10] [270:240,4] [240:270,4] [272:150,15]',
     pan='0 1', amp=0.9, d=1, rate=1, i=i)
-    again(sampleSegment, p=P('(v p)'), i=i+1)
+    again(sampleSlicer, p=P('(v p)'), i=i+1)
 
 clock.tempo=60
-silence(sampleSegment)
+silence(sampleSlicer)
  ```

@@ -86,7 +86,7 @@ try:
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
+    logging.error(f"{e}: [red]Invalid MIDI port![/red]")
 
 try:
     # MIDIIn Handler
@@ -97,7 +97,7 @@ try:
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
+    logging.error(f"{e}: [red]Invalid MIDI port![/red]")
 
 
 # OSC Loop: handles processing OSC messages

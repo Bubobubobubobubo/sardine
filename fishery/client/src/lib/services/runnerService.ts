@@ -1,3 +1,5 @@
+import debounce from 'lodash.debounce';
+
 class RunnerService{
 
     host: string;
@@ -21,29 +23,29 @@ class RunnerService{
         return result;
     }
 
-    watchLogs(onLogs: (data: string) => void): () => void {
-        // Create a new EventSource to receive server
-        // sent events from the server.
-        const eventSource = new EventSource(this.host + '/log');
 
-        // The event listener that will be called when a message is received.
-        const onMessage = (event: MessageEvent) => {
-            onLogs(event.data);
-        };
+    watchLogs(onLogs: (data: string[]) => void): () => void {
+      const eventSource = new EventSource(this.host + "/log");
+      const debounceDelay = 100;
+      let logBuffer: string[] = [];
 
-        // Register the handler for the message event.
-        eventSource.onmessage = onMessage;
+      const debouncedOnLogs = debounce(() => {
+          onLogs(logBuffer.join('\n'));
+          logBuffer = [];
+      }, debounceDelay);
 
-        // Return a function that will be called when
-        // the client no longer wants to receive events.
-        return () => {
-            // Close the connection.
-            eventSource.close();
-            // Remove the event listener.
-            eventSource.onmessage = null;
-        };
+      const onMessage = (event: MessageEvent) => {
+        logBuffer.push(event.data);
+        debouncedOnLogs();
+      };
+
+      eventSource.onmessage = onMessage;
+
+      return () => {
+        eventSource.close();
+        eventSource.onmessage = null;
+      };
     }
-
 }
 
 const runnerService = new RunnerService();

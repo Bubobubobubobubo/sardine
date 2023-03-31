@@ -818,6 +818,13 @@ eslint@^8.28.0:
     strip-json-comments "^3.1.0"
     text-table "^0.2.0"
 
+esm-env-robust@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/esm-env-robust/-/esm-env-robust-0.0.3.tgz#ef95644dde2f2bd750dec4366a43950b3dc3ed50"
+  integrity sha512-90Gnuw2DALOqlL1581VxP3GHPUNHX9U+fQ+8FNcTTFClhY5gEggAAnJ3q1b2Oq23knRsjv8YpNeMRPaMLUymOA==
+  dependencies:
+    esm-env "^1.0.0"
+
 esm-env@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/esm-env/-/esm-env-1.0.0.tgz#b124b40b180711690a4cb9b00d16573391950413"
@@ -933,6 +940,13 @@ flatted@^3.1.0:
   version "3.2.7"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.2.7.tgz#609f39207cb614b89d0765b477cb2d437fbf9787"
   integrity sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==
+
+focus-trap@^2.3.0:
+  version "2.4.6"
+  resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-2.4.6.tgz#332b475b317cec6a4a129f5307ce7ebc0da90b40"
+  integrity sha512-vWZTPtBU6pBoyWZDRZJHkXsyP2ZCZBHE3DRVXnSVdQKH/mcDtu9S5Kz8CUDyIqpfZfLEyI9rjKJLnc4Y40BRBg==
+  dependencies:
+    tabbable "^1.0.3"
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -1145,10 +1159,20 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
+
+lodash.throttle@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
+  integrity sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==
 
 lru-cache@^6.0.0:
   version "6.0.0"
@@ -1539,6 +1563,18 @@ svelte-check@^3.0.1:
     svelte-preprocess "^5.0.0"
     typescript "^4.9.4"
 
+svelte-dialog@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/svelte-dialog/-/svelte-dialog-0.2.0.tgz#d2aa3e889b05677ca228c59acd1873955224d085"
+  integrity sha512-vtsDzDxdJTM5zxOm9tSJmkbdZfNa/UY+xK1a1lKmuny+enXX+Vc3QB9Wc9cRrktUom+4OG8ooyU+nTJOnFAV6Q==
+  dependencies:
+    svelte-modal "^0.3.0"
+
+svelte-extras@^1.5.2:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/svelte-extras/-/svelte-extras-1.6.0.tgz#ea0ce388d575e8cac97530779fec517a01ad83ef"
+  integrity sha512-0yzXHJdnaX3+KiLrDu9Hl6V7+idfKrUkYqhpbdnxCEJos2FSxtpos6cjAt+A2vVrdcNjFqtXYs6xS+rFWeg1yA==
+
 svelte-fa@^3.0.3:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/svelte-fa/-/svelte-fa-3.0.3.tgz#49aa8627725b2533fb4d109b39cd8e64f7e54b7c"
@@ -1562,6 +1598,15 @@ svelte-markdown@^0.2.3:
     "@types/marked" "^4.0.1"
     marked "^4.0.10"
 
+svelte-modal@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/svelte-modal/-/svelte-modal-0.3.0.tgz#1018e07effadb3d5158e61396e6d02fc904fe06e"
+  integrity sha512-sLURbAZwC/WxmmQe88BXM0MgMpAagZUFiAYok+YbHG3G1M0TvzrROnKn4HNVY4tpMpC4G9FVhX8hLF7GhPPH2Q==
+  dependencies:
+    focus-trap "^2.3.0"
+    svelte-extras "^1.5.2"
+    svelte-scrim "^0.1.0"
+
 svelte-preprocess@^5.0.0:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-5.0.1.tgz#3dd21a17eb508347d4b26a0d98059d23e2d1b9a0"
@@ -1574,10 +1619,32 @@ svelte-preprocess@^5.0.0:
     sorcery "^0.11.0"
     strip-indent "^3.0.0"
 
+svelte-scrim@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/svelte-scrim/-/svelte-scrim-0.1.0.tgz#861b318cdd11cdb9e7380e8453140f6bb3839c32"
+  integrity sha512-n5Z7Dr0zfU4VR1tA0/mmRXa6kykvTAt78Q+qCHRH/1x/HVvkSUl9crB2szBuORSyt0xYfXmlZinbpsPOQUbJzg==
+
+svelte-split-pane@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/svelte-split-pane/-/svelte-split-pane-0.1.2.tgz#aae94c583fdcf80e3ceaefc31755f3c49886e6a8"
+  integrity sha512-JluEydC9v2DetyhlwCF3CdqAkET8XPHP7WeWbl4lVLOg55avDOhoS5U6BRhvWd104HOqhUcCSz+7Nveyjmzjeg==
+
+svelte-splitpanes@^0.7.13:
+  version "0.7.13"
+  resolved "https://registry.yarnpkg.com/svelte-splitpanes/-/svelte-splitpanes-0.7.13.tgz#e8514aeb31e291d9dee382557a41b945c22b8b53"
+  integrity sha512-LiAf4OEZqRJanoax9mextXtQ0JzrdCqX2tOgVO+yJu2XNyGz5j5fGbw8+5AXgOasPi/m1nv8n2Lt+XYFRfvIGg==
+  dependencies:
+    esm-env-robust "^0.0.3"
+
 svelte@^3.54.0:
   version "3.55.1"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.55.1.tgz#6f93b153e5248039906ce5fe196efdb9e05dfce8"
   integrity sha512-S+87/P0Ve67HxKkEV23iCdAh/SX1xiSfjF1HOglno/YTbSTW7RniICMCofWGdJJbdjw3S+0PfFb1JtGfTXE0oQ==
+
+tabbable@^1.0.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-1.1.3.tgz#0e4ee376f3631e42d7977a074dbd2b3827843081"
+  integrity sha512-nOWwx35/JuDI4ONuF0ZTo6lYvI0fY0tZCH1ErzY2EXfu4az50ZyiUX8X073FLiZtmWUVlkRnuXsehjJgCw9tYg==
 
 text-table@^0.2.0:
   version "0.2.0"

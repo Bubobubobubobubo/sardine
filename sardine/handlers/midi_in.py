@@ -31,7 +31,7 @@ class MidiInHandler(BaseHandler):
     def __init__(
         self,
         target: Union[ControlTarget, NoteTarget, None] = None,
-        port: Optional[str] = None,
+        port_name: Optional[str] = None,
     ):
         super().__init__()
         self.target = target
@@ -39,19 +39,20 @@ class MidiInHandler(BaseHandler):
         self._last_item: Optional[Message] = None
         self._last_value = 0
 
-        if port:
+        if port_name:
             try:
-                self._input = open_input(port)
+                self._input = open_input(port_name)
                 self._input.callback = self._callback
             except Exception:
-                raise OSError(f"Couldn't listen on port {port}")
+                error_message = f"Couldn't listen on port {port_name}"
+                raise OSError(error_message)
         else:
             try:
                 self._input = open_input()
                 self._input.callback = self._callback
                 listened_port = mido.get_input_names()[0]
             except Exception:
-                raise OSError(f"Couldn't listen on port {port}")
+                raise OSError(f"Couldn't listen on port {port_name}")
 
     def __str__(self):
         """String representation of the MIDI Listener"""

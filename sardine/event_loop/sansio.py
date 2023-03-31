@@ -6,7 +6,6 @@ __all__ = ("SansIOEventLoop", "SansSelector")
 
 
 class SansSelector:
-
     _event_list = []
 
     def __init__(self, wake_cond: threading.Condition):

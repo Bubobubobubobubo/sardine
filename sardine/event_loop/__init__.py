@@ -37,7 +37,8 @@ def _install_uvloop() -> bool:
     try:
         import uvloop
     except ImportError:
-        rich.print("[green]uvloop[/green] [yellow]is not installed")
+        # Commenting this line: it scares new users!
+        # rich.print("[green]uvloop[/green] [yellow]is not installed")
         return False
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
@@ -65,7 +66,8 @@ def install_policy():
 
     if not successful:
         rich.print(
-            "[yellow]No custom event loop applied; rhythm accuracy may be impacted"
+            "[yellow]Warning: No custom event loop applied; rhythm accuracy may be impacted."
+            "[yellow]Windows users, ignore this warning!"
         )
 
 

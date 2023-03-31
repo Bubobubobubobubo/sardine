@@ -24,7 +24,7 @@ TEMPLATE_CONFIGURATION = {
         "beats": 4,
         "debug": False,
         "parser": "sardine",
-        "superdirt_handler": False,
+        "superdirt_handler": True,
         "sardine_boot_file": True,
         "boot_supercollider": False,
         "verbose_superdirt": False,
@@ -155,12 +155,12 @@ def read_user_configuration() -> Config:
         USER_DIR.mkdir(parents=True)
         config = create_template_configuration_file(config_file)
 
-        # Creating console file for the web editor
+        # Creating console file for the web editor
         Path(USER_DIR / "console.log").touch(exist_ok=True)
 
-        # Create the buffers for the web editor
+        # Create the buffers for the web editor
         Path(USER_DIR / "buffers").mkdir(parents=True)
-        for number in list(range(0,10)):
+        for number in list(range(0, 10)):
             Path(USER_DIR / "buffers" / f"{number}.py").touch(exist_ok=True)
 
     return config

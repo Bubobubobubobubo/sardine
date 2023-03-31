@@ -1,7 +1,5 @@
-// A pattern is a succession of things ////////////////////////////////////////
-
 ?start: pattern
-pattern: sum ("," sum?)* -> return_pattern
+pattern: sum sum* -> return_pattern
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,7 +15,7 @@ pattern: sum ("," sum?)* -> return_pattern
      | product "==" atom               -> is_equal
      | product ">" atom                -> is_greater
      | product ">=" atom               -> is_greater_or_equal
-     | product "<" atom                -> is_smaller 
+     | product "<" atom                -> is_smaller
      | product "<=" atom               -> is_smaller_or_equal
      | product "*" atom                -> multiplication
      | product "/" atom                -> division
@@ -38,13 +36,6 @@ pattern: sum ("," sum?)* -> return_pattern
      | "$" "." "m"                                         -> get_measure
      | "$" "." "p"                                         -> get_phase
      | "rand"                                              -> get_random_number
-     | "I" "." LETTER                                      -> get_iterator
-     | "I" "." LETTER "=" sum                              -> set_iterator
-     | "I" "." LETTER "=" "[" sum "," sum "]"              -> set_iterator_step
-     | "I" "." LETTER "." "reset"                          -> reset_iterator
-     | "V" "." LETTER                                      -> get_variable
-     | "V" "." LETTER "=" sum                              -> set_variable
-     | "V" "." LETTER "." "reset"                          -> reset_variable
      | "T" "." "U"                                         -> get_unix_time
      | "T" "." "Y"                                         -> get_year
      | "T" "." "M"                                         -> get_month
@@ -56,9 +47,9 @@ pattern: sum ("," sum?)* -> return_pattern
      | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
      | "[" sum ":" sum "]"                                 -> generate_ramp
      | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
-     | "[" sum ("," sum)* ","? "]"                         -> make_list
-     | "[:" sum ("," sum)* ","? ":]"                       -> make_list_repeat
-     | "{" sum ("," sum)* ","? "}"                         -> make_chord
+     | "[" sum sum* "]"                   -> make_list
+     | "[:" sum sum* ":]"                 -> make_list_repeat
+     | "{" sum sum* "}"                   -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
 
@@ -67,7 +58,8 @@ pattern: sum ("," sum?)* -> return_pattern
 
 // Rules functions ////////////////////////////////////////////////////////////
 
-?function: NAME "(" sum* ("," sum)* ("," NAME "=" sum)* ")"         -> function_call
+?function: "(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
+
 
 // Rules concerning names /////////////////////////////////////////////////////
 
@@ -84,7 +76,7 @@ pattern: sum ("," sum?)* -> return_pattern
 
 ?name_atom: NAME                                          -> name
     | "(" name_sum ")"
-    | "[" name_sum ("," name_sum)* ","? "]"               -> make_list
+    | "[" name_sum name_sum* "]"           -> make_list
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -128,10 +120,11 @@ NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."
 
+SPACE: /[\s\t\f\r\n]/
+%ignore SPACE
+
 %import common.LCASE_LETTER
 %import common.UCASE_LETTER
 %import common.LETTER -> LETTER
 %import common.DIGIT  -> DIGIT
 %import common.NUMBER
-%import common.WS_INLINE
-%ignore WS_INLINE

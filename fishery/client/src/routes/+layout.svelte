@@ -1,75 +1,101 @@
-<script lang='ts'>
-  import FileSaver from 'file-saver';
-  import { tick } from 'svelte';
+<script lang="ts">
+	import FileSaver from 'file-saver';
+	import { tick } from 'svelte';
+	import { derived } from 'svelte/store';
 	import type { EditorView } from '@codemirror/view';
-  import Editor from '$lib/components/Editor.svelte';
+	import Editor from '$lib/components/Editor.svelte';
+	import Configuration from '$lib/components/Configuration.svelte';
 	import _reconfigureExtensions from '$lib/components/Editor.svelte';
 	import Header from './Header.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
-	import { vim } from "@replit/codemirror-vim";
+	import { vim } from '@replit/codemirror-vim';
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-  import { SardineBasicSetup } from '$lib/SardineSetup';
+	import { SardineBasicSetup } from '$lib/SardineSetup';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
-	import { keymap } from "@codemirror/view";
-	import { listen, onIdle } from 'svelte-idle';
-	import { default_buffer } from '$lib/text/DummyText';
-    import { tutorialText } from '$lib/text/TutorialText';
+	import { keymap } from '@codemirror/view';
+	import { tutorialText } from '$lib/text/TutorialText';
+	import { Pane, Splitpanes } from 'svelte-splitpanes';
 
 	let inputted_characters = 0;
+	let editorHeight, editorWidth;
+	let showModal = false;
+	let showLogs = true;
+
+	let keyInstructions = `
+This is the embedded Sardine Code Editor
+========================================
+Shift + Enter : eval selection
+Ctrl + Enter : eval code block
+Alt + Space : Vim/Emacs  mode
+
+Menu button functions:
+- Play : play
+- Stop : pause / resume
+- Save : save file to disk
+- Group : [TO IMPLEMENT]
+- Help : open this popup
+- Folder : open Sardine Folder
+`;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	Initialise a list of code buffers by fetching them from the server.  We are fetching files 
-	from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
-	up with our own TS-defined local text buffers before populating the tabs. The same mecha-
-	nism in reverse is used for saving.
-	=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-	*/
+    Initialise a list of code buffers by fetching them from the server.  We are fetching files
+    from the APPDIRS/buffers directory and populating a TS dictionary.  We will then mix them
+    up with our own TS-defined local text buffers before populating the tabs. The same mecha-
+    nism in reverse is used for saving.
+    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  */
 
 	// This is the data structure we use for storing text throughout the editor. It is basically
 	// a dictionary mapping of the APPDIRS/buffers directory structure.
-  interface Dictionary<T> { [Key: string]: T; }
+	interface Dictionary<T> {
+		[Key: string]: T;
+	}
+
 	let SARDINE_BUFFERS: Dictionary<string> = {};
+	let showLogsStore = derived(activeTab, ($activeTab) => {
+		Number($activeTab) > 2;
+	});
+	let headerComponent;
 
-  async function fetchLocalFiles() {
-    let response = await fetch('http://localhost:8000/text_files', {
-		  method: 'GET',
-	  })
-      .then(response => response.json())
-      .then((data: object) => {
-        for (let [key, value] of Object.entries(data)) {
-          SARDINE_BUFFERS["["+key[0]+"]"] = value.toString();
-        };
-      });
-  }
+	async function fetchLocalFiles() {
+		let response = await fetch('http://localhost:8000/text_files', {
+			method: 'GET'
+		})
+			.then((response) => response.json())
+			.then((data: object) => {
+				for (let [key, value] of Object.entries(data)) {
+					// Check if the key already exists in SARDINE_BUFFERS
+					if (!SARDINE_BUFFERS.hasOwnProperty(key)) {
+						SARDINE_BUFFERS[key] = value.toString();
+					}
+				}
+			});
+	}
 
- fetchLocalFiles()
-	
+	fetchLocalFiles();
+
 	// Fetching from the local server to grab the content of the files.
 
 	/*
 	 * This function will be called periodically to send the current state
 	 * of all the text buffers to the Flask server. They will be parsed to
-	 * text files and saved in the APPDIRS/buffers folder for later usage.
-	 */ 
+	 * text files and saved in the APPDIRS/buffers folder for later usage.///
+	 */
 	function saveBuffers(buffers: object) {
-		fetch("http://localhost:8000/save", {
-				method: "POST", 
-				body: JSON.stringify(buffers),
-				headers: {
-					"Content-type": "application/json; charset=UTF-8"}
-				}
-		)
-		.then(response => response);
-        // There is nothing I can do with the response... 
-	};
-
-	/* This is the scratch buffer. This specific buffer will never be saved, whatever happens. */
-	/* We are populating it with some dummy information gathered from DummyText.ts  */ 
-	SARDINE_BUFFERS["[*]"] = default_buffer;
+		fetch('http://localhost:8000/save', {
+			method: 'POST',
+			body: JSON.stringify(buffers),
+			headers: {
+				'Content-type': 'application/json; charset=UTF-8'
+			}
+		}).then((response) => response);
+		// There is nothing I can do with the response...
+	}
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 	// Initialise state of the code editor: we don't know anything about the state of anything.
@@ -86,179 +112,308 @@
 	onMount((): void => {
 		runnerService.watchLogs((log) => {
 			logs = [...logs, log];
-		})
-        editorMode.subscribe(value => {
-            if (value == 'vim') {
-                console.log('Switch to VIM Mode.')
-                tick().then(() => {
-                    view.addVim();
-                });
-            } else {
-                console.log('Switch to Emacs Mode.')
-                tick().then(() => {
-                    view.removeVim();
-                });
-            }
-        });
-    });
+		});
+		editorMode.subscribe((value) => {
+			if (value == 'vim') {
+				console.log('Switch to VIM Mode.');
+				tick().then(() => {
+					if (view) {
+						view.addVim();
+					}
+				});
+			} else {
+				console.log('Switch to Emacs Mode.');
+				tick().then(() => {
+					if (view) {
+						view.removeVim();
+					}
+				});
+			}
+		});
+	});
 
- /**
-  * Intercepting keypresses and triggering action. The current events are covered:
-  * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
-  * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
-  * @param event Keypress or combination of multiple keys
-  */
-  function keyDownHandler(event: KeyboardEvent): void {
+	/**
+	 * Intercepting keypresses and triggering action. The current events are covered:
+	 * - Editing Mode Change : pressing Ctrl + Space will switch between Vim and Emacs.
+	 * - Submitting code : pressing Shift + Enter or Ctrl + E will trigger code eval.
+	 * @param event Keypress or combination of multiple keys
+	 */
+	function keyDownHandler(event: KeyboardEvent): void {
+		// Cancel 'tab' from being used as a navigation key
+		if (event.key === 'Tab') {
+			event.preventDefault();
+		}
 
-      // Cancel 'tab' from being used as a navigation key
-      if (event.key === "Tab") {
-          event.preventDefault();
-      }
+		// Shift + Enter or Ctrl + E (Rémi Georges mode)
+		if ((event.key === 'Enter' && event.shiftKey) || (event.key === 'e' && event.ctrlKey)) {
+			event.preventDefault(); // Prevents the addition of a new line
+			const code = view.getSelectedLines();
+			runnerService.executeCode(code + '\n');
+			saveBuffers(SARDINE_BUFFERS);
+			headerComponent.toggleSpinLogo();
+			setTimeout(() => {
+				headerComponent.toggleSpinLogo();
+			}, 1000);
+		}
 
-      // Shift + Enter or Ctrl + E (Rémi Georges mode)
-      if(event.key === 'Enter' && event.shiftKey || event.key === 'e' && event.ctrlKey) {
-          event.preventDefault(); // Prevents the addition of a new line
-          const code = view.getSelectedLines();
-          runnerService.executeCode(code + "\n\n");
-      }
+		if (event.key === 'Enter' && event.ctrlKey) {
+			event.preventDefault(); // Prevents the addition of a new line
+			const code = view.getCodeBlock();
+			runnerService.executeCode(code + '\n');
+			saveBuffers(SARDINE_BUFFERS);
+			headerComponent.toggleSpinLogo();
+			setTimeout(() => {
+				headerComponent.toggleSpinLogo();
+			}, 1000);
+		}
 
-      // Keybinding to switch from Emacs mode to Vim Mode
-      if(event.key === ' ' && event.ctrlKey) {
-          event.preventDefault(); // Prevents the addition of a newline.
-              editorMode.update(n => n === 'emacs' ? 'vim' : 'emacs');
-      }
-  }
+		// Keybinding to switch from Emacs mode to Vim Mode
+		if (event.key === ' ' && event.ctrlKey) {
+			event.preventDefault(); // Prevents the addition of a newline.
+			editorMode.update((n) => (n === 'emacs' ? 'vim' : 'emacs'));
+		}
+	}
 
-  /*
-  * Some events are hard to catch on key up but can be prevented by chasing
-  * key up events!
-  */
+	/*
+	 * Some events are hard to catch on key up but can be prevented by chasing
+	 * key up events!
+	 */
 
-  function keyUpHandler(event: KeyboardEvent): void {
-      // Prevent 'Esc' from defocusing the page (hard to catch)
-      if (event.key === "Escape" || event.keyCode === 27) {
-          event.preventDefault();
-      }
-  };
+	function keyUpHandler(event: KeyboardEvent): void {
+		// Prevent 'Esc' from defocusing the page (hard to catch)
+		if (event.key === 'Escape' || event.keyCode === 27) {
+			event.preventDefault();
+		}
+	}
 
-  /**
-  * Reacting to the play button by resuming the FishBowl.
-  */
-  function handlePlay() {
-      runnerService.executeCode("bowl.dispatch('resume')")
-  }
+	/**
+	 * Reacting to the play button by resuming the FishBowl.
+	 */
+	function handlePlay() {
+		runnerService.executeCode("bowl.dispatch('resume')");
+	}
 
-  /**
-   * Reacting to the pause button by 'pausing' the FishBowl.
-   */
+	/**
+	 * Reacting to the pause button by 'pausing' the FishBowl.
+	 */
 
-  function handleStop() {
-      runnerService.executeCode("bowl.dispatch('pause')")
-  }
+	function handleStop() {
+		runnerService.executeCode("bowl.dispatch('pause')");
+	}
 
-  function handleBufferChange({ detail: {tr} }) {
-    // Getting the currently active tab through introspection
-    let tab = get(activeTab);
+	function handleBufferChange({ detail: { tr } }) {
+		// Getting the currently active tab through introspection
+		let tab = get(activeTab);
+		SARDINE_BUFFERS['buffer' + (tab - 1) + '.py'] = tr._doc.text.join('\n');
+	}
 
-    // We ignore the scratch buffer!
-    if (tab !== 0 && tr._doc.text) {
-      // Writing the content of the buffer to the internal dict.
-        SARDINE_BUFFERS["["+(tab-1)+"]"] = tr._doc.text.join('\n');
-    }
+	function saveAsTextFile(content) {
+		const blob = new Blob([SARDINE_BUFFERS['buffer' + (get(activeTab) - 1) + '.py']], {
+			type: 'text/plain'
+		});
+		const a = document.createElement('a');
+		a.href = URL.createObjectURL(blob);
+		a.download = 'sardine';
+		a.style.display = 'none';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	}
 
-    // Everytime the user enters more than 50 characters, save the files to the disk!
-    inputted_characters += 1;
-    if (inputted_characters % 50 == 0) {
-      saveBuffers(SARDINE_BUFFERS);
-    }
-  }
+	function spawnTutorial() {
+		console.log('Spawning the basic tutorial');
+		const tab = get(activeTab);
+		// We change the buffer but we need to trigger a redraw as well
+		SARDINE_BUFFERS[`buffer${tab}.py`] = tutorialText;
+		view._setText(tutorialText);
+	}
 
-  function saveAsTextFile() {
-      // Querying the content of the buffer
-      let file = new Blob(
-          [tr._doc.text.join('\n')],
-          { type: "text/plain;charset=utf-8" },
-      );
-      FileSaver.saveAs(file, "sardine.py");
-  }
+	function openSardineFolder() {
+		// Will ask Flask to open the Sardine default folder
+		console.log('Opening Sardine Folder');
+		const response = fetch('http://localhost:8000/open_folder', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: {}
+		});
+	}
 
-  function spawnTutorial() {
-    console.log('Spawning the basic tutorial');
-    let tab = get(activeTab);
-    // We change the buffer but we need to trigger a redraw as well
-    SARDINE_BUFFERS["["+(tab-1)+"]"] = tutorialText;
-    view._setText(tutorialText);
-  }
+	function trimBufferName(name: string) {
+		return '[' + name.replace('.py', '').replace('buffer', '') + ']';
+	}
 
- function openSardineFolder() {
-      // Will ask Flask to open the Sardine default folder
-      console.log("Opening Sardine Folder");
-      const response = fetch('http://localhost:8000/open_folder', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: {}
-      });
-  }
-
-  // This will trigger a save rather frequently. This value needs some finetuning
-  // to be less aggressive! I wonder what effect it can have on performances.
-  listen({
-      timer: 10,
-      cycle: 500
-  });
-  onIdle(() => {
-      saveBuffers(SARDINE_BUFFERS);
-  });
-
-
+	function spawnKeysPopup() {
+		showModal = true;
+	}
 </script>
 
 <div class="app">
-	<Header 
+	<Header
+		bind:this={headerComponent}
 		on:play={handlePlay}
 		on:stop={handleStop}
 		on:save={saveAsTextFile}
-		on:users={() => console.log("Users")}
-        on:tutorial={spawnTutorial}
-        on:folder={openSardineFolder}
+		on:users={() => console.log('Users')}
+		on:help={spawnKeysPopup}
+		on:folder={openSardineFolder}
 	/>
-
-	<main> 
+	<main>
 		<Tabs>
 			<TabList>
 				{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-					<Tab>{name}</Tab>
+					<Tab>{trimBufferName(name)}</Tab>
 				{/each}
+				<Tab>Docs</Tab>
+				<Tab>Config</Tab>
 			</TabList>
 
-		{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
-			<TabPanel>
-				<Editor 
-                extensions={extensions};
-			  	bind:this={view}
-					doc={buffer}
-					bind:docStore={store}
-					bind:effects={codeMirrorState}
-					on:keydown={keyDownHandler}
-					on:keyup={keyUpHandler}
-					on:change={handleBufferChange}
-				/>
-			</TabPanel>
-		{/each}
+			<Splitpanes
+				horizontal="True"
+				style="height: 90vh; background-color: black"
+				pushOtherPanes="False"
+				theme="sardine"
+			>
+				<Pane maxSize={90} minSize={10} snapSize={10}>
+					{#each Object.entries(SARDINE_BUFFERS) as [_, buffer]}
+						<TabPanel>
+							<Editor
+								{extensions}
+								bind:this={view}
+								doc={buffer}
+								bind:docStore={store}
+								bind:effects={codeMirrorState}
+								on:keydown={keyDownHandler}
+								on:keyup={keyUpHandler}
+								on:change={handleBufferChange}
+							/>
+						</TabPanel>
+					{/each}
+					<TabPanel>
+						<iframe
+							src="https://sardine.raphaelforment.fr"
+							title="Sardine website"
+							width="100%"
+							height="100vh"
+							frameborder="0"
+							sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+							onload="this.style.height=(this.contentWindow.document.body.scrollHeight+20)+'px';"
+						/></TabPanel
+					>
+					<TabPanel>
+						<Configuration />
+					</TabPanel>
+				</Pane>
+				{#if !$showLogsStore}
+					<Pane minSize={5} maxSize={50} snapSize={20}>
+						<Console {logs} />
+					</Pane>
+				{/if}
+			</Splitpanes>
 		</Tabs>
-		<Console {logs}/>
 	</main>
 </div>
 
+<Modal bind:showModal>
+	<pre>{keyInstructions}</pre>
+</Modal>
+
 <style>
+	:global(html),
+	:global(body) {
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+	}
+
+	:global(.splitpanes.sardine .splitpanes__pane) {
+		background-color: #black;
+	}
+
+	:global(.splitpanes.sardine .splitpanes__splitter:before),
+	:global(.splitpanes.sardine .splitpanes__splitter:after) {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		background-color: rgba(0, 0, 0, 0.15);
+		transition: background-color 0.3s;
+	}
+
+	:global(.splitpanes.sardine .splitpanes__splitter:hover:before),
+	:global(.splitpanes.sardine .splitpanes__splitter:hover:after) {
+		background-color: rgba(0, 0, 0, 0.25);
+	}
+
+	:global(.splitpanes.sardine .splitpanes__splitter:first-child) {
+		cursor: auto;
+	}
+
+	:global(.sardine.splitpanes .splitpanes .splitpanes__splitter) {
+		z-index: 1;
+	}
+
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter) {
+		width: 7px;
+		border-left: 1px solid #eee;
+		cursor: col-resize;
+	}
+
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:after),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:after) {
+		transform: translateY(-50%);
+		width: 1px;
+		height: 30px;
+	}
+
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:before) {
+		margin-left: -2px;
+	}
+
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:after),
+	:global(.sardine.splitpanes--vertical > .splitpanes__splitter:after) {
+		margin-left: 1px;
+	}
+
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter) {
+		height: 7px;
+		border-top: 1px solid #eee;
+		cursor: row-resize;
+	}
+
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after) {
+		transform: translateX(-50%);
+		width: 30px;
+		height: 1px;
+	}
+
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:before) {
+		margin-top: -2px;
+	}
+
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after),
+	:global(.sardine.splitpanes--horizontal > .splitpanes__splitter:after) {
+		margin-top: 1px;
+	}
 
 	.app {
 		display: flex;
 		flex-direction: column;
-		min-height: 100vh;
-		color: white;
+		height: 100%;
+		width: 100%;
+		color: black;
 		background-color: black;
 	}
 
@@ -270,4 +425,13 @@
 		box-sizing: border-box;
 	}
 
+	iframe {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		margin: 0 auto;
+		box-sizing: border-box;
+		height: 99vh;
+		width: 99vw;
+	}
 </style>

@@ -1,13 +1,13 @@
 <script>
-    import SvelteMarkdown from 'svelte-markdown'
-
-    // read doc from lib/text/Docs.md and pass it to SvelteMarkdown
-    //
-    import Docs from '$lib/text/doc.md?raw'
-
-    export let source = Docs
-
+ let htmlContent = ''
+ // This is only temporary!
+ fetch('https://raw.githubusercontent.com/Bubobubobubobubo/sardine/main/docs/index.html').then(response => {
+	 console.dir(response)
+	 return response.text();
+ }).then(html => {
+	 htmlContent = html
+ })
 </script>
 <section>
-    <SvelteMarkdown {source} />
+    {@html htmlContent}
 </section>

@@ -1,25 +1,30 @@
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
-from .utils import config_line_printer, get_snap_deadline, sardine_intro
-from string import ascii_lowercase, ascii_uppercase
-from .io.UserConfig import read_user_configuration
-from .superdirt import SuperDirtProcess
-from .sequences import ListParser
-from .logger import print, logging
-from pathlib import Path
 import importlib
-from . import *
 import sys
+from functools import wraps
+from itertools import product
+from pathlib import Path
+from string import ascii_lowercase, ascii_uppercase
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
+
+from . import *
+from .io.UserConfig import read_user_configuration
+from .logger import print, logging
+from .sequences import ListParser, ziffers_factory
+from .superdirt import SuperDirtProcess
+from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
 try:
     from ziffers import z
+
     ziffers_imported: bool = True
 except ImportError:
     logging.warning("Install the ziffers package for using Ziffers patterns")
     ziffers_imported: bool = False
 
 
-P = ParamSpec("P")  # NOTE: name is similar to surfboards
+ParamSpec = ParamSpec("PS")
 T = TypeVar("T")
+
 
 #######################################################################################
 # READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
@@ -74,11 +79,25 @@ if config.boot_supercollider:
 #######################################################################################
 # HANDLERS INITIALIZATION. YOU CAN ADD YOUR MODULAR COMPONENTS HERE.
 
-# MIDI Handler: matching with the MIDI port defined in the configuration file
-midi = MidiHandler(port_name=str(config.midi))
-bowl.add_handler(midi)
-if ziffers_imported:
-    midi._ziffers_parser = z
+try:
+    # MIDI Handler: matching with the MIDI port defined in the configuration file
+    midi = MidiHandler(port_name=str(config.midi))
+    bowl.add_handler(midi)
+    if ziffers_imported:
+        midi._ziffers_parser = z
+except OSError as e:
+    print(f"{e}: [red]Invalid MIDI port![/red]")
+
+try:
+    # MIDIIn Handler
+    midi_in = MidiInHandler(
+        target=ControlTarget(channel=0, control=20), port_name=config.midi
+    )
+    bowl.add_handler(midi)
+    if ziffers_imported:
+        midi._ziffers_parser = z
+except OSError as e:
+    print(f"{e}: [red]Invalid MIDI port![/red]")
 
 
 # OSC Loop: handles processing OSC messages
@@ -107,7 +126,11 @@ if config.superdirt_handler:
         dirt._ziffers_parser = z
 
 # Adding Players
-player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+# player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
+player_names = [
+    "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
+]
+# player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
     globals()[player] = p
@@ -117,31 +140,54 @@ for player in player_names:
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS
 
 
+def for_(n: int) -> Callable[[Callable[ParamSpec, T]], Callable[ParamSpec, T]]:
+    """Allows to play a swimming function x times. It swims for_ n iterations."""
+
+    def decorator(func: Callable[ParamSpec, T]) -> Callable[ParamSpec, T]:
+        @wraps(func)
+        def wrapper(*args: ParamSpec.args, **kwargs: ParamSpec.kwargs) -> T:
+            nonlocal n
+            n -= 1
+            if n >= 0:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 @overload
 def swim(
-    func: Union[Callable[P, T], AsyncRunner],
+    func: Union[Callable[ParamSpec, Any], AsyncRunner],
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
-    *args: P.args,
+    *args: ParamSpec.args,
     snap: Optional[Union[float, int]] = 0,
-    **kwargs: P.kwargs,
+    until: Optional[int] = None,
+    **kwargs: ParamSpec.kwargs,
 ) -> AsyncRunner:
     ...
 
 
 @overload
 def swim(
-    func: None,
-    /,
-    *args: P.args,
+    *args,
     snap: Optional[Union[float, int]] = 0,
-    **kwargs: P.kwargs,
-) -> Callable[[Callable[P, T]], AsyncRunner]:
+    until: Optional[int] = None,
+    **kwargs,
+) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]:
     ...
 
 
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
-def swim(func=None, /, *args, snap=0, **kwargs):
+def swim(
+    func: Optional[Union[Callable, AsyncRunner]] = None,
+    /,
+    *args,
+    snap: Optional[Union[float, int]] = 0,
+    until: Optional[int] = None,
+    **kwargs,
+):
     """
     Swimming decorator: push a function to the scheduler. The function will be
     declared and followed by the scheduler system to recurse in time if needed.
@@ -157,18 +203,29 @@ def swim(func=None, /, *args, snap=0, **kwargs):
             If None, the function is immediately pushed and will
             run on its next interval.
             If `func` is an AsyncRunner, this parameter has no effect.
+        until (Optional[int]):
+            Specifies the number of iterations this function should run for.
+            This is a shorthand for using the `@for_()` decorator.
         **kwargs: Keyword arguments to be passed to `func.`
     """
 
-    def decorator(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
+    def decorator(func: Union[Callable, AsyncRunner], /) -> AsyncRunner:
         if isinstance(func, AsyncRunner):
             func.update_state(*args, **kwargs)
             bowl.scheduler.start_runner(func)
             return func
 
+        if until is not None:
+            func = for_(until)(func)
+
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
             runner = AsyncRunner(func.__name__)
+        elif not runner.is_running():
+            # Runner has likely stopped swimming, in which case
+            # we should make sure the old state doesn't pollute
+            # the new function when it's pushed
+            runner.reset_states()
 
         # Runners normally allow the same functions to appear in the stack,
         # but we will treat repeat functions as just reloading the runner
@@ -296,7 +353,7 @@ def silence(*runners: AsyncRunner) -> None:
 
     for run in runners:
         if isinstance(run, Player):
-            run >> None
+            run.stop()
         else:
             bowl.scheduler.stop_runner(run)
 
@@ -309,6 +366,7 @@ def panic(*runners: AsyncRunner) -> None:
     """
     silence(*runners)
     if config.superdirt_handler:
+        D("superpanic")
         D("superpanic")
 
 
@@ -369,30 +427,148 @@ if ziffers_imported:
     ZN = midi.send_ziffers
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
-play = Player.play
+SY = midi.send_sysex  # For MIDI Sysex messages
+_play_factory = Player._play_factory
+
+
+def sy(*args, **kwargs):
+    return _play_factory(midi, midi.send_sysex, *args, **kwargs)
+
 
 def n(*args, **kwargs):
-    return play(midi, midi.send, *args, **kwargs)
+    return _play_factory(midi, midi.send, *args, **kwargs)
+
 
 def zn(*args, **kwargs):
-    return play(midi, midi.send_ziffers, *args, **kwargs)
+    return _play_factory(midi, midi.send_ziffers, *args, **kwargs)
 
 
 def cc(*args, **kwargs):
-    return play(midi, midi.send_control, *args, **kwargs)
+    return _play_factory(midi, midi.send_control, *args, **kwargs)
+
 
 def pc(*args, **kwargs):
-    return play(midi, midi.send_program, *args, **kwargs)
+    return _play_factory(midi, midi.send_program, *args, **kwargs)
+
 
 if config.superdirt_handler:
     D = dirt.send
     if ziffers_imported:
         ZD = dirt.send_ziffers
-    def d(*args, **kwargs):
-        return play(dirt, dirt.send, *args, **kwargs)
-    def zd(*args, **kwargs):
-        return play(dirt, dirt.send_ziffers, *args, **kwargs)
 
+    def d(*args, **kwargs):
+        return _play_factory(dirt, dirt.send, *args, **kwargs)
+
+    def zd(*args, **kwargs):
+        return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
+
+
+if ziffers_imported:
+    zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
+
+
+def MIDIInstrument(
+    midi: MidiHandler,
+    channel: int,
+    instrument_map: dict[dict],
+    *args,
+    **kwargs,
+) -> tuple:
+    """
+    Make a new MIDIInstrument from the definition of an instrument map:
+    - a device that can play midi notes
+    - a device that can also receive named CC parameters
+
+    Given an instrument map like so:
+
+    hat_drum = {
+       'x': { 'control': 21, 'channel': 0, },
+       'y': { 'control': 22, 'channel': 0, },
+       't': { 'control': 23, 'channel': 0, },
+       'len': { 'control': 24, 'channel': 0, },
+       'quality': { 'control': 25, 'channel': 0, },
+    }
+
+    This function will return a sender capable of playing with a MIDI
+    instrument that uses these mappings to control synthesis parameters.
+
+    H = MIDIInstrument(midi_port=midi, channel=0, map=hat_drum)
+
+    H('C E G', x='rand*120')
+
+    This function will return a tuple containing a new MIDIInstrument and
+    a new Player based on that MIDIInstrument.
+    ...
+    """
+
+    def midi_instrument(*args, **kwargs):
+        """Build a new sender like D() out of the midi instrument information"""
+        midi.send_instrument(channel=channel, map=instrument_map, *args, **kwargs)
+
+    def midi_instrument_player(*args, **kwargs):
+        """Build a new palyer like d() out of the midi instrument information"""
+        return _play_factory(
+            midi,
+            midi.send_instrument,
+            channel=channel,
+            map=instrument_map,
+            *args,
+            **kwargs,
+        )
+
+    return (midi_instrument, midi_instrument_player)
+
+
+def MIDIController(
+    midi: MidiHandler,
+    channel: int,
+    controller_map: dict[dict],
+    *args,
+    **kwargs,
+) -> tuple:
+    """
+    Make a new MIDIController from the definition of a controller map:
+    - a device that can play midi notes
+    - a device that can also receive named CC parameters
+
+    Given a controller map like so:
+
+    hat_drum = {
+       'reverb': { 'control': 21, 'channel': 0, },
+       'delay': { 'control': 22, 'channel': 0, },
+       'chorus': { 'control': 23, 'channel': 0, },
+       'flanger': { 'control': 24, 'channel': 0, },
+       'quality': { 'control': 25, 'channel': 0, },
+    }
+
+    This function will return a sender capable of playing with a MIDI
+    controller that uses these mappings to control synthesis parameters.
+
+    H, h = MIDIController(midi_port=midi, channel=0, map=hat_drum)
+
+    H('C E G', x='rand*120')
+
+    This function will return a tuple containing a new MIDIController and
+    a new Player based on that MIDIController.
+    ...
+    """
+
+    def midi_controller(*args, **kwargs):
+        """Build a new sender like D() out of the midi controller information"""
+        midi.send_controller(channel=channel, map=controller_map, *args, **kwargs)
+
+    def midi_controller_player(*args, **kwargs):
+        """Build a new player like d() out of the midi controller information"""
+        return _play_factory(
+            midi,
+            midi.send_controller,
+            channel=channel,
+            map=controller_map,
+            *args,
+            **kwargs,
+        )
+
+    return (midi_controller, midi_controller_player)
 
 
 #######################################################################################

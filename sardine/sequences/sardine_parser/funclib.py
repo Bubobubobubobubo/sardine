@@ -1,7 +1,7 @@
 import random
 import statistics
 from itertools import chain, cycle, islice
-from math import cos, sin, tan
+from math import cos, sin, tan, asin, pi, atan
 from random import shuffle
 from typing import Optional, Union
 
@@ -9,10 +9,10 @@ from ..sequence import euclid
 from .chord import Chord
 from .utils import map_binary_function, map_unary_function
 
-# Type declarations
+# Type declarations
+
 
 class FunctionLibrary:
-
     qualifiers = {
         "dim": [0, 3, 6, 12],
         "dim9": [0, 3, 6, 9, 14],
@@ -110,8 +110,9 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock):
+    def __init__(self, clock, amphibian):
         self.clock = clock
+        self.amphibian = amphibian
 
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
@@ -191,11 +192,32 @@ class FunctionLibrary:
             else [0]
         )
 
+    def phase(self, x: list, y: list, **kwargs) -> list:
+        """Return True if phase is in between x and y else False"""
+        tolerance = 0.01
+        return [1] if x[0] + tolerance <= self.clock.phase <= y[0] - tolerance else [0]
+
+    def oddbar(self, *args, **kwargs) -> list:
+        """Return True if the current bar is odd, false otherwise"""
+        return [1] if self.clock.bar % 2 != 0 else [0]
+
+    def modbar(self, modulo, *args, **kwargs) -> list:
+        """Return True if modulo of bar against current bar is true"""
+        return [1] if self.clock.bar % modulo[0] == 0 else [0]
+
+    def evenbar(self, *args, **kwargs) -> list:
+        """Return True if the current bar is even, false otherwise"""
+        return [1] if self.clock.bar % 2 == 0 else [0]
+
+    def dice(self, choice: list, faces: list, *args, **kwargs) -> list:
+        """Simulation of a dice"""
+        return random.randint(1, faces[0]) == choice[0]
+
     def every(self, *args, **kwargs):
         """
-        Inspired by the 'every' function in TidalCycles. Will return True if we are on
-        one of the targetted bar numbers. The upper limit for the modulo is determined
-        by the bar number we wish for itself.
+        Inspired by the 'every' function in TidalCycles. Will return True if the
+        current bar is the modulo of the targetted bar, false otherwise. Multiple
+        arguments are allowed (is it even useful?)
         """
 
         def inner_function(x) -> list:
@@ -212,22 +234,83 @@ class FunctionLibrary:
 
         return [1] if True in results else [0]
 
-    def simple_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
+    def binary_condition(self, condition, pattern_a=[None], pattern_b=[None], **kwargs):
         """If the condition is True, play pattern A, else play pattern B"""
         return pattern_a if condition[0] >= 1 else pattern_b
 
-    def while_condition(self, condition, pattern=[None], **kwargs):
+    def negative_binary_condition(
+        self, condition, pattern_a=[None], pattern_b=[None], **kwargs
+    ):
+        """If the condition is True, play pattern A, else play pattern B"""
+        return pattern_b if condition[0] >= 1 else pattern_a
+
+    def unary_condition(self, condition, pattern=[None], **kwargs):
         """While loop that returns nothing is the condition is not met"""
         return pattern if condition[0] >= 1 else [None]
 
     def in_condition(self, test_value, condition, **kwargs):
         """Return something from the pattern if the condition is met"""
-        print(f"Testing if {int(test_value[0])} in {list(map(lambda x: int(x), condition))}")
-        return [1] if int(test_value[0]) in list(map(lambda x: int(x), condition)) else [0]
+        value = int(test_value[0])
+        condition_list = list(map(lambda x: int(x), condition))
+        print(f"Testing if {value} in {condition_list}")
+        return [1] if value in condition_list else [0]
 
-    def not_condition(self, condition, pattern=[None], **kwargs):
+    def negative_unary_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
         return pattern if condition != [1] else [None]
+
+    def get_amphibian_variable(self, *args, **kwargs):
+        """
+        Return the value of an amphibian variable coming from the Python
+        side. The result can only be an int, a float or a string. The
+        final result is always assumed to be a list.
+        """
+        reset = kwargs.get("reset", 0)
+
+        if reset == 0:
+            self.amphibian.reset(str(str(args[0])))
+            return [getattr(self.amphibian, str(args[0][0]))]
+        else:
+            return [getattr(self.amphibian, str(args[0][0]))]
+
+    def set_amphibian_variable(self, *args):
+        """
+        Set an amphibian variable to a new value. This value can be of any
+        type supported internally by the Sardine pattern language. This
+        function will return the new-set value.
+        """
+        setattr(self.amphibian, str(args[0][0]), args[1])
+        return [getattr(self.amphibian, str(args[1][0]))]
+
+    # These are just not great!
+
+    # def get_amphibian_iterator(self, *args, **kwargs):
+    #     """
+    #     Return the value of an amphibian iterator while also incrementing it
+    #     as the result of accessing it.
+    #     """
+    #     reset = kwargs.get("reset", 0)
+
+    #     if reset == 0:
+    #         letter = str(args[0][0])
+    #         self.amphibian.reset(letter)
+    #         return [getattr(self.amphibian, letter)]
+    #     else:
+    #         letter = str(args[0][0])
+    #         return [getattr(self.amphibian, letter)]
+
+    # def set_amphibian_iterator(self, *args, **kwargs):
+    #     """
+    #     Set an amphibian iterator to a new value.
+    #     """
+    #     step = kwargs.get("step", 0)
+
+    #     letter, number = str(args[0][0]), int(args[1][0])
+    #     if step != 0:
+    #         setattr(self.amphibian, letter, [number, step])
+    #     else:
+    #         setattr(self.amphibian, letter, number)
+    #     return [getattr(self.amphibian, letter)]
 
     def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""
@@ -239,10 +322,6 @@ class FunctionLibrary:
         """Probability of returning True or False"""
         return [1] if random.random() * 100 <= x[0] else [0]
 
-    def phase(self, x: list, y: list, **kwargs) -> list:
-        """Return True if phase is in between x and y else False"""
-        return [1] if x[0] < self.clock.phase < y[0] else [0]
-
     def invert(self, x: list, how_many: list = [0], **kwargs) -> list:
         """Chord inversion algorithm"""
         x = list(reversed(x)) if how_many[0] < 0 else x
@@ -250,11 +329,9 @@ class FunctionLibrary:
             x[_ % len(x)] += -12 if how_many[0] <= 0 else 12
         return x
 
-
     def _remap(self, x, in_min, in_max, out_min, out_max):
         """Remapping a value from a [x, y] range to a [x', y'] range"""
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
 
     def scale(
         self,
@@ -295,6 +372,45 @@ class FunctionLibrary:
                 len(collection) if len(collection) >= steps[0] else steps[0],
             )
         )
+        new_collection = []
+
+        # Masking values
+        collection = list(islice(cycle(collection), steps[0]))
+        for item, mask in zip(collection, boolean_mask):
+            if mask == 1:
+                new_collection.append(item)
+            else:
+                new_collection.append(None)
+
+        return new_collection
+
+    def negative_euclidian_rhythm(
+        self,
+        collection: list,
+        pulses: list,
+        steps: list,
+        rotation: Optional[list] = None,
+        **kwargs,
+    ) -> list:
+        """
+        Apply an euclidian rhythm as a boolean mask on values from the collection.
+        True values will return the value itself, others will return a silence.
+        """
+        # This one-liner is creating a collection-length euclidian rhythm (repeating the rhythm)
+        boolean_mask = list(
+            islice(
+                cycle(
+                    euclid(
+                        pulses[0], steps[0], rotation[0] if rotation is not None else 0
+                    )
+                ),
+                len(collection) if len(collection) >= steps[0] else steps[0],
+            )
+        )
+
+        # reversing the euclidian pattern!
+        boolean_mask = list(map(lambda x: x ^ 1, boolean_mask))
+
         new_collection = []
 
         # Masking values
@@ -474,7 +590,7 @@ class FunctionLibrary:
         """
         factor = factor[0]
 
-        def expand_number(number: Union[int, float]) -> int|float:
+        def expand_number(number: Union[int, float]) -> int | float:
             expansions = [0, -12, 12]
             return [number + (random.choice(expansions) * factor)]
 
@@ -593,6 +709,18 @@ class FunctionLibrary:
         x = list(chain(*x))
         return map_unary_function(cos, x)
 
+    def unipolar_cosinus(self, *x) -> list:
+        """Basic unipolar cosinus function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(cos, abs(x))
+
     def sinus(self, *x) -> list:
         """Basic sinus function
 
@@ -604,6 +732,96 @@ class FunctionLibrary:
         """
         x = list(chain(*x))
         return map_unary_function(sin, x)
+
+    def square_wave(self, *x, **kwargs) -> list:
+        """Basic pulse-width modulable square wave function
+
+        Args:
+            pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        pw = kwargs.get("pw", 0.5)
+        x = list(chain(*x))
+        return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else -1, x)
+
+    def unipolar_square_wave(self, *x, **kwargs) -> list:
+        """Basic unipolar pulse-width modulable square wave function
+
+        Args:
+            pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        pw = kwargs.get("pw", 0.5)
+        x = list(chain(*x))
+        return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else 0, x)
+
+    def triangular_wave(self, *x) -> list:
+        """Basic triangular wave function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: (4 / pi) * asin(sin(2 * pi * val)), x)
+
+    def unipolar_triangular_wave(self, *x) -> list:
+        """Basic unipolar triangular wave function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(
+            lambda val: abs((4 / pi) * asin(sin(2 * pi * val))), x
+        )
+
+    def sawtooth_wave(self, *x) -> list:
+        """Basic sawtooth wave function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: (2 / pi) * atan(tan(pi * val)), x)
+
+    def unipolar_sawtooth_wave(self, *x) -> list:
+        """Basic unipolar sawtooth wave function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(lambda val: abs((2 / pi) * atan(tan(pi * val))), x)
+
+    def unipolar_sinus(self, *x) -> list:
+        """Basic unipolar sinus function
+
+        Args:
+            x (list): pattern
+
+        Returns:
+            list: a valid pattern.
+        """
+        x = list(chain(*x))
+        return map_unary_function(sin, abs(x))
 
     def maximum(self, *x) -> list:
         """Maximum operation

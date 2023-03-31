@@ -1,4 +1,4 @@
-from .sender import Number, NumericElement, Sender
+from .sender import Number, NumericElement, Sender, ParsableElement
 from typing import Optional, Union
 from ..utils import alias_param
 from ..logger import print
@@ -23,7 +23,7 @@ class MidiHandler(Sender):
         self._available_ports = mido.get_output_names()
         self._port_name = port_name
 
-        # Getting a default MIDI port name
+        # Getting a default MIDI port name
         if port_name in self._available_ports:
             pass
         else:
@@ -72,10 +72,10 @@ class MidiHandler(Sender):
             "pitchwheel": self._pitch_wheel,
         }
 
-        # Reference to the ziffers parser if needed!
+        # Reference to the ziffers parser if needed!
         self._ziffers_parser = None
 
-    # Ziffers implementation 
+    # Ziffers implementation
     @property
     def ziffers_parser(self):
         return self._ziffers_parser
@@ -214,6 +214,7 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         """
         This method is responsible for preparing the pattern message before sending it
@@ -224,6 +225,9 @@ class MidiHandler(Sender):
         """
 
         if note is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
             return
 
         pattern = {
@@ -254,6 +258,7 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         """
         Variant of the 'send' function specialized in sending control changes. See the
@@ -261,6 +266,11 @@ class MidiHandler(Sender):
         """
 
         if control is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(
+            pattern=rest_of_pattern,
+        ):
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
@@ -284,8 +294,14 @@ class MidiHandler(Sender):
         iterator: Number = 0,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
     ) -> None:
         if channel is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(
+            pattern=rest_of_pattern,
+        ):
             return
 
         pattern = {"channel": channel, "program": program}
@@ -296,6 +312,42 @@ class MidiHandler(Sender):
             for k, v in message.items():
                 message[k] = int(v)
             self.call_timed(deadline, self._program_change, **message)
+
+    @alias_param(name="data", alias="d")
+    @alias_param(name="value", alias="v")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_sysex(
+        self,
+        data: list[int],
+        value: NumericElement = 60,
+        optional_modulo: NumericElement = 127,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        **rest_of_pattern: ParsableElement,
+    ) -> None:
+        if data is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(
+            pattern=rest_of_pattern,
+        ):
+            return
+
+        pattern = {"value": value}
+        deadline = self.env.clock.shifted_time
+        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            if message["value"] is None:
+                continue
+            for k, v in message.items():
+                message[k] = int(v)
+            self.call_timed(
+                deadline,
+                self._sysex,
+                **{"data": [*data, *[int(message["value"]) % optional_modulo]]},
+            )
 
     @alias_param(name="channel", alias="chan")
     @alias_param(name="duration", alias="dur")
@@ -314,28 +366,33 @@ class MidiHandler(Sender):
         rate: NumericElement = 1,
         scale: str = "IONIAN",
         key: str = "C4",
+        **rest_of_pattern: ParsableElement,
     ) -> int | float:
         """
         Alternative to the send method for the ziffers sender. The message will be pre-
         pared and mixed with the result of a ziffers message!
         """
+
+        if self.apply_conditional_mask_to_bars(
+            pattern=rest_of_pattern,
+        ):
+            return
+
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
-            # Getting the ziffer pattern
+            # Getting the ziffer pattern
             ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
             try:
                 note = ziffer.note
-            except AttributeError: # if there is no note, it must be a silence
+            except AttributeError:  # if there is no note, it must be a silence
                 try:
                     note = ziffer.notes
                 except AttributeError:
                     note = "."
 
             if isinstance(note, list):
-                note = f"{{{', '.join([str(x) for x in note])}}}"
-                print(note)
-
+                note = f"{{{' '.join([str(x) for x in note])}}}"
 
         pattern = {
             "note": note,
@@ -343,7 +400,9 @@ class MidiHandler(Sender):
             "channel": channel,
             "duration": duration,
         }
+
         deadline = self.env.clock.shifted_time
+
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["note"] is None:
                 continue
@@ -351,4 +410,119 @@ class MidiHandler(Sender):
                 message[k] = int(message[k])
             self.call_timed(deadline, self.send_midi_note, **message)
 
-        return ziffer.duration
+        return ziffer.duration * (self.env.clock.beats_per_bar)
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="duration", alias="dur")
+    @alias_param(name="velocity", alias="vel")
+    @alias_param(name="program_change", alias="pgch")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_instrument(
+        self,
+        note: Optional[NumericElement] = 60,
+        velocity: NumericElement = 100,
+        channel: NumericElement = 0,
+        duration: NumericElement = 1,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        map: dict = {},
+        program_change: Optional[Number] = None,
+        **rest_of_pattern: ParsableElement,
+    ) -> None:
+        """
+        Experimental method combining both send and send_control. This interface should allow
+        playing a complete MIDI instrument using only one pattern!
+        """
+
+        if note is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
+            return
+
+        control_messages = []
+
+        for key, value in map.items():
+            if key in rest_of_pattern.keys():
+                control = value
+                control["value"] = rest_of_pattern[key]
+                control_messages.append(control)
+
+        def note_pattern():
+            pattern = {
+                "note": note,
+                "velocity": velocity,
+                "channel": channel,
+                "duration": duration,
+                "program_change": (program_change if program_change else None),
+            }
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["program_change"] is not None:
+                    self._send_control(
+                        program=message["program_change"], channel=message["channel"]
+                    )
+                if message["note"] is None:
+                    continue
+                for k in ("note", "velocity", "channel"):
+                    message[k] = int(message[k])
+                self.call_timed(deadline, self.send_midi_note, **message)
+
+        def send_controls(pattern: dict) -> None:
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["control"] is None:
+                    continue
+                for k, v in message.items():
+                    message[k] = int(v)
+                self.call_timed(deadline, self._control_change, **message)
+
+        # Sending control messages
+        for control in control_messages:
+            send_controls(pattern=control)
+        note_pattern()
+
+    @alias_param(name="channel", alias="chan")
+    @alias_param(name="iterator", alias="i")
+    @alias_param(name="divisor", alias="d")
+    @alias_param(name="rate", alias="r")
+    def send_controller(
+        self,
+        channel: NumericElement = 0,
+        iterator: Number = 0,
+        divisor: NumericElement = 1,
+        rate: NumericElement = 1,
+        map: dict = {},
+        **rest_of_pattern: ParsableElement,
+    ) -> None:
+        """
+        Experimental method used to form a MIDIController sending
+        multiple CC messages for every use.
+        """
+
+        if self.apply_conditional_mask_to_bars(pattern=rest_of_pattern):
+            return
+
+        control_messages = []
+
+        for key, value in map.items():
+            if key in rest_of_pattern.keys():
+                control = value
+                control["value"] = rest_of_pattern[key]
+                control_messages.append(control)
+
+        def send_controls(pattern: dict) -> None:
+            deadline = self.env.clock.shifted_time
+            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+                if message["control"] is None:
+                    continue
+                for k, v in message.items():
+                    message[k] = int(v)
+                self.call_timed(deadline, self._control_change, **message)
+
+        # Sending control messages
+        for control in control_messages:
+            send_controls(pattern=control)

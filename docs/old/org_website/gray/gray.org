@@ -1,0 +1,132 @@
+#+SETUPFILE: ~/.emacs.d/org-styles/html/gray.theme
+#+TITLE: Gray Theme
+#+AUTHOR: Lee Hinman
+#+EMAIL: lee@writequit.org
+#+OPTIONS: ^:nil <:t
+
+* Plain Org
+Includes:
+- [X] CSS
+- [ ] JAVASCRIPT
+
+Available as:
+- [X] CSS FILE
+- [ ] JS FILE
+- [X] SETUPFILE
+
+* Lists
+** Todo List
+*** TODO First todo
+*** DONE First Done with Date
+CLOSED: [2021-02-18 Thu 10:12]
+*** TODO Scheduled
+SCHEDULED: <2021-02-18 Thu>
+*** TODO Deadline
+DEADLINE: <2021-02-18 Thu>
+*** TODO Date
+<2021-02-18 Thu>
+
+** Simple list
+- List item
+- List item
+- List item
+- List item
+
+** Sorted List
+1. List item
+2. List item
+3. List item
+4. List item
+
+** Checkbox
+- [ ] List item
+- [X] List item
+- [ ] List item
+- [X] List item
+
+
+* H1
+H1 Text
+** H2
+H2 Text
+*** H3
+H3 Text
+**** H4
+H4 Text
+***** H5
+H5 Text
+****** H6
+H6 Text
+******* H7
+H7 Text
+
+
+
+* Table
+
+|  a |  b |  c |  d |  e |  f |
+|----+----+----+----+----+----|
+|  0 |  1 |  2 |  3 |  4 |  5 |
+|  6 |  7 |  8 |  9 | 10 | 11 |
+| 12 | 13 | 14 | 15 | 16 | 17 |
+| 18 | 19 | 20 | 21 | 22 | 23 |
+| 24 | 25 | 26 | 27 | 28 | 29 |
+
+
+* Blocks
+** Center
+#+begin_center
+This is a center block
+#+end_center
+
+** Comment
+#+begin_comment
+This is a comment block
+#+end_comment
+
+** Example
+#+begin_example
+This is an example block
+#+end_example
+
+** Quote
+#+begin_quote
+This is a quote block
+#+end_quote
+
+** Verse
+#+begin_verse
+This is a verse block
+#+end_verse
+
+
+** Source Blocks
+*** Python
+#+begin_src python :results output :exports both
+for i in range(10):
+    print(i)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+#+end_example
+
+*** Elisp
+#+begin_src emacs-lisp :exports both
+(car '(a b c d))
+#+end_src
+
+#+RESULTS:
+: a
+
+

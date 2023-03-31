@@ -9,7 +9,7 @@ const config = {
 	lang: 'ts',
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
 	}
 };
 

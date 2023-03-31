@@ -54,12 +54,11 @@ class OSCHandler(Sender):
 
     def send_raw(self, address: str, message: list) -> None:
         """
-        Public alias for the _send function. It can sometimes be useful to have it 
-        when we do want to write some raw OSC message without formatting it in the 
+        Public alias for the _send function. It can sometimes be useful to have it
+        when we do want to write some raw OSC message without formatting it in the
         expected SuperDirt format.
         """
         self._send(address, message)
-
 
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
@@ -74,8 +73,12 @@ class OSCHandler(Sender):
         sort: bool = True,
         **pattern: NumericElement,
     ) -> None:
-
         if address is None:
+            return
+
+        if self.apply_conditional_mask_to_bars(
+            pattern=pattern,
+        ):
             return
 
         pattern["address"] = address

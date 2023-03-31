@@ -52,7 +52,7 @@ export const sardineColorScheme = EditorView.theme({
     },
 
     '.cm-gutters': {
-      borderRight: `1px solid #ffffff10`,
+      borderRight: `0px solid #ffffff10`,
       color: base06,
       backgroundColor: darkBackground
     },

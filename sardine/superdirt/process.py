@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+import sys
 import asyncio
 import platform
 import shutil
@@ -7,12 +9,11 @@ import tempfile
 from os import path, walk
 from pathlib import Path
 from typing import Optional, Union
+from ..logger import print
 
 import psutil
 from appdirs import *
-from ..logger import print
 from rich.console import Console
-from rich.panel import Panel
 
 __all__ = ("SuperDirtProcess",)
 
@@ -21,7 +22,6 @@ class SuperDirtProcess:
     def __init__(
         self, startup_file: Optional[str] = None, preemptive=True, verbose=False
     ):
-
         appname, appauthor = "Sardine", "Bubobubobubo"
         self._user_dir = Path(user_data_dir(appname, appauthor))
         self._sclang_path = self.find_sclang_path()
@@ -77,6 +77,10 @@ class SuperDirtProcess:
             path.mkdir(parents=True)
             return path
 
+    def __call__(self, code: str) -> None:
+        """Send code to the SuperCollider sub-process"""
+        self._write_stdin(code)
+
     def terminate(self) -> None:
         """Terminate the SCLang process"""
         self._write_stdin("Server.killAll; 0.exit;")
@@ -89,37 +93,30 @@ class SuperDirtProcess:
         """
         if "no synth or sample" in decoded_line:
             sample_name = decoded_line.split("'")
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Sample {sample_name[1]} not found."))
+            print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[red]/!\\\\[/red] - Late messages. Increase SC latency."))
+            print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
         if "listening to Tidal on port 57120" in decoded_line:
-            print("\n")
-            print(Panel.fit(f"[green]/!\\\\[/green] - Audio server ready!"))
+            print(f"[[green]/!\\\\[/green] - Audio server ready!]")
+            if self._synth_directory is not None:
+                self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
-            print("\n")
             print(
-                Panel.fit(
-                    (
-                        f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
-                        + "\nrunning somewhere. It might be a mistake or a"
-                        + "\nzombie process. Run `Server.killAll` in an SC"
-                        + "\nwindow (can be the IDE of `sclang` in term..)"
-                    )
+                (
+                    f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
+                    + "\nrunning somewhere. It might be a mistake or a"
+                    + "\nzombie process. Run `Server.killAll` in an SC"
+                    + "\nwindow (can be the IDE of `sclang` in term..)"
                 )
             )
         if "Mismatched sample rates are not supported" in decoded_line:
-            print("\n")
             print(
-                Panel.fit(
-                    (
-                        f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
-                        + "\nsure that your audio input sample rate and"
-                        + "\nyour audio output sample rate are the same."
-                        + "\nThis is usually modified in your OS audio"
-                        + "\nconfiguration menus. Reboot Sardine!"
-                    )
+                (
+                    f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
+                    + "\nsure that your audio input sample rate and"
+                    + "\nyour audio output sample rate are the same."
+                    + "\nThis is usually modified in your OS audio"
+                    + "\nconfiguration menus. Reboot Sardine!"
                 )
             )
 
@@ -129,23 +126,20 @@ class SuperDirtProcess:
         that runs on a loop and prints to output. Can be quite verbose at
         boot time!
         """
-        import sys
 
         try:
             while self._sclang.poll() is None:
                 where = self.temp_file.tell()
                 lines = self.temp_file.read()
                 if not lines:
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.05)
                     self.temp_file.seek(where)
                 else:
+                    decoded_lines = lines.decode()
                     if self._verbose:
-                        sys.__stdout__.write(lines.decode())
+                        print(decoded_lines.strip())
                     else:
-                        self._analyze_and_warn(lines.decode())
-                    sys.__stdout__.flush()
-            sys.__stdout__.write(self.temp_file.read())
-            sys.__stdout__.flush()
+                        self._analyze_and_warn(decoded_lines)
         except UnboundLocalError:
             raise UnboundLocalError("SCLang is not reachable...")
 
@@ -198,6 +192,10 @@ class SuperDirtProcess:
         """Open SuperCollider frequency scope + VUmeter"""
         self._write_stdin("s.scope(); s.meter()")
 
+    def info(self) -> None:
+        """Open makeWindow window"""
+        self._write_stdin("s.makeWindow")
+
     def _check_synth_file_extension(self, string: str) -> bool:
         return string.endswith(".scd") or string.endswith(".sc")
 
@@ -224,7 +222,7 @@ class SuperDirtProcess:
         if len(loaded_synthdefs_message) == 1:
             return
         else:
-            print(Panel.fit("\n".join(loaded_synthdefs_message)))
+            print("\n".join(loaded_synthdefs_message))
 
     def find_sclang_path(self) -> str:
         """Find path to sclang binary, cross-platform"""
@@ -273,8 +271,6 @@ SCLang && SuperDirt...[/yellow]"
                     else self._startup_file
                 )
                 self._write_stdin(message="""load("{}")""".format(startup_file_path))
-            if self._synth_directory is not None:
-                self.load_custom_synthdefs()
 
     def kill(self) -> None:
         """Kill the connexion with the SC Interpreter"""

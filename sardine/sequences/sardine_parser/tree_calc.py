@@ -21,7 +21,9 @@ class CalculateTree(Transformer):
         self.iterators = iterators
         self.variables = variables
         self.memory = {}
-        self.library = funclib.FunctionLibrary(clock=self.clock)
+        self.library = funclib.FunctionLibrary(
+            clock=self.clock, amphibian=self.variables
+        )
 
     def number(self, number):
         try:
@@ -42,54 +44,6 @@ class CalculateTree(Transformer):
         a dot or multiple dots for multiple silences.
         """
         return [None] * len(args)
-
-    # ---------------------------------------------------------------------- #
-    # Variables: methods concerning bi-valent variables
-    # ---------------------------------------------------------------------- #
-
-    def get_variable(self, letter):
-        """
-        Grabbing a variable coming from the Python side. It can only be an int, a float
-        or a string. The final result is always a list.
-        """
-        return [getattr(self.variables, str(letter))]
-
-    def reset_variable(self, letter):
-        self.variables.reset(str(letter))
-        return [getattr(self.variables, str(letter))]
-
-    def set_variable(self, letter, number):
-        """
-        Prototype for setting a variable directly from the pattern side.
-        It can be an int, a float, a string or a list. Everything will be
-        accessible from the Python side following the type the value currently
-        has in the pattern.
-        """
-        setattr(self.variables, str(letter), number[0])
-        return [getattr(self.variables, str(letter))]
-
-    # ---------------------------------------------------------------------- #
-    # Iterators: methods concerning iterators
-    # ---------------------------------------------------------------------- #
-
-    def get_iterator(self, letter):
-        letter = str(letter)
-        return [getattr(self.iterators, letter)]
-
-    def reset_iterator(self, letter):
-        letter = str(letter)
-        self.iterators.reset(letter)
-        return [getattr(self.iterators, letter)]
-
-    def set_iterator(self, letter, number):
-        letter, number = str(letter), int(number[0])
-        setattr(self.iterators, letter, number)
-        return [getattr(self.iterators, letter)]
-
-    def set_iterator_step(self, letter, number, step):
-        letter, number, step = str(letter), int(number), int(step)
-        setattr(self.iterators, letter, [number, step])
-        return [getattr(self.iterators, letter)]
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -241,8 +195,7 @@ class CalculateTree(Transformer):
         Returns:
             list: Gathered arguments in a list
         """
-        return sum(args, start=[])*2
-
+        return sum(args, start=[]) * 2
 
     def get_time(self):
         """Return current clock time (tick) as integer"""
@@ -309,8 +262,7 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers
         """
-        ramp_from = left[-1]
-        ramp_to = right[0]
+        ramp_from, ramp_to = left[-1], right[0]
         between = range(min(ramp_from, ramp_to) + 1, max(ramp_from, ramp_to))
         between_flipped = between if ramp_from <= ramp_to else reversed(between)
         return left + list(between_flipped) + right
@@ -445,16 +397,28 @@ class CalculateTree(Transformer):
         return [1] if left[0] == right[0] else [0]
 
     def is_greater(self, left, right):
-        return [1] if left[0] > right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] > right[0] else [0]
 
     def is_greater_or_equal(self, left, right):
-        return [1] if left[0] >= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] >= right[0] else [0]
 
     def is_smaller(self, left, right):
-        return [1] if left[0] < right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] < right[0] else [0]
 
     def is_smaller_or_equal(self, left, right):
-        return [1] if left[0] <= right[0] else [0]
+        if None or [None] in [left, right]:
+            return [0]
+        else:
+            return [1] if left[0] <= right[0] else [0]
 
     def function_call(self, func_name, *args):
         """
@@ -462,7 +426,7 @@ class CalculateTree(Transformer):
         basic Python syntax. There are a few special keys you can use for conditional
         application of the function:
 
-        - do: apply the function only if boolean (represented by 1/0) is True. Condi-
+        - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
           tions can be chained as well for weirder chance / probability based operations
 
         """
@@ -474,8 +438,8 @@ class CalculateTree(Transformer):
         for _ in args:
             # print(f'Token: {_} (type: {type(_)})')
             # We need to determine if we are currently looking at a keyword and its
-            # value. If we have a repeating keyword, we will do our best to completely
-            # ignore it.
+            # value. If we have a repeating keyword, we will do our best to
+            # completely ignore it.
             if isinstance(_, Token):
                 if not _ in past_keywords:
                     current_keyname = str(_)
@@ -496,16 +460,23 @@ class CalculateTree(Transformer):
         kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
 
         modifiers_list = {
+            # Amphibian variables
+            "v": self.library.get_amphibian_variable,
+            "sv": self.library.set_amphibian_variable,
             # Pure conditions
-            "not": self.library.not_condition,
-            "if": self.library.simple_condition,
-            "while": self.library.while_condition,
-            "in": self.library.in_condition,
+            "if": self.library.binary_condition,
+            "nif": self.library.negative_binary_condition,
+            "while": self.library.unary_condition,
+            "nwhile": self.library.negative_unary_condition,
             # Boolean functions
-            "beat": self.library.beat,
-            "every": self.library.every,
-            "proba": self.library.proba,
             "phase": self.library.phase,
+            "beat": self.library.beat,
+            "obar": self.library.oddbar,
+            "modbar": self.library.modbar,
+            "ebar": self.library.evenbar,
+            "every": self.library.every,
+            "maybe": self.library.proba,
+            "dice": self.library.dice,
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,
@@ -519,6 +490,8 @@ class CalculateTree(Transformer):
             # Boolean mask operations
             "euclid": self.library.euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,
+            "negative_euclid": self.library.negative_euclidian_rhythm,
+            "neu": self.library.negative_euclidian_rhythm,
             "mask": self.library.mask,
             "vanish": self.library.remove_x,
             "expand": self.library.expand,
@@ -531,9 +504,17 @@ class CalculateTree(Transformer):
             "insertrot": self.library.insert_rotate,
             "shuf": self.library.shuffle,
             # Math functions
-            "clamp": self.library.clamp,
             "sin": self.library.sinus,
+            "usin": self.library.unipolar_sinus,
             "cos": self.library.cosinus,
+            "ucos": self.library.unipolar_cosinus,
+            "tri": self.library.triangular_wave,
+            "utri": self.library.unipolar_triangular_wave,
+            "saw": self.library.sawtooth_wave,
+            "usaw": self.library.unipolar_sawtooth_wave,
+            "rect": self.library.square_wave,
+            "urect": self.library.unipolar_square_wave,
+            "clamp": self.library.clamp,
             "tan": self.library.tangent,
             "abs": self.library.absolute,
             "max": self.library.maximum,
@@ -545,7 +526,7 @@ class CalculateTree(Transformer):
         }
 
         try:
-            if kwarguments.get("do", [1]) >= [1] or not "do" in kwarguments.keys():
+            if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():
                 return modifiers_list[func_name](
                     *list(chain(arguments)), **(kwarguments)
                 )

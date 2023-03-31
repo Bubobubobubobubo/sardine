@@ -1,15 +1,31 @@
-from dataclasses import dataclass
 from typing import Any, Callable, Optional, ParamSpec, TypeVar
-
-from ..base import BaseHandler
 from ..handlers.sender import Number, NumericElement, Sender
-from ..scheduler import AsyncRunner
 from ..utils import alias_param, get_snap_deadline, lerp
+from ..scheduler import AsyncRunner
+from dataclasses import dataclass
+from ..base import BaseHandler
+from functools import wraps
 
 __all__ = ("Player",)
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
+    """Allows to play a swimming function x times. It swims for_ n iterations."""
+
+    def decorator(func: Callable[P, T]) -> Callable[P, T]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+            nonlocal n
+            n -= 1
+            if n >= 0:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
 
 
 @dataclass
@@ -20,10 +36,12 @@ class PatternInformation:
     kwargs: dict[str, Any]
     period: NumericElement
     iterator: Optional[Number]
+    iteration_span: NumericElement
     divisor: NumericElement
     rate: NumericElement
     snap: Number
     timespan: Optional[float]
+    until: Optional[int]
 
 
 class Player(BaseHandler):
@@ -60,15 +78,16 @@ class Player(BaseHandler):
 
     @staticmethod
     @alias_param(name="period", alias="p")
-    @alias_param(name="iterator", alias="i")
+    @alias_param(name="iteration_span", alias="i")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
     @alias_param(name="timespan", alias="span")
-    def play(
+    def _play_factory(
         sender: Sender,
         send_method: Callable[P, T],
         *args: P.args,
         timespan: Optional[float] = None,
+        until: Optional[int] = None,
         period: NumericElement = 1,
         iterator: Optional[Number] = None,
         divisor: NumericElement = 1,
@@ -77,6 +96,7 @@ class Player(BaseHandler):
         **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
+        iteration_span = kwargs.pop("iteration_span", 1)
 
         return PatternInformation(
             sender,
@@ -85,13 +105,27 @@ class Player(BaseHandler):
             kwargs,
             period,
             iterator,
+            iteration_span,
             divisor,
             rate,
             snap,
             timespan,
+            until,
         )
 
     def __rshift__(self, pattern: Optional[PatternInformation]) -> None:
+        """
+        This method acts as a cosmetic disguise for feeding PatternInformation into a
+        given player. Its syntax is inspired by FoxDot (Ryan Kirkbride), another very
+        popular live coding library.
+        """
+        if pattern is not None and pattern.timespan is not None:
+            pattern.period = self.fit_period_to_timespan(
+                pattern.period, pattern.timespan
+            )
+        self.push(pattern)
+
+    def __mul__(self, pattern: Optional[PatternInformation]) -> None:
         """
         This method acts as a cosmetic disguise for feeding PatternInformation into a
         given player. Its syntax is inspired by FoxDot (Ryan Kirkbride), another very
@@ -110,7 +144,9 @@ class Player(BaseHandler):
             self.iterator,
             pattern.divisor,
             pattern.rate,
-            use_divisor_to_skip=False,
+            # use_divisor_to_skip=False,
+            # TODO: why was this untoggled?
+            use_divisor_to_skip=True,
         ):
             return message["period"]
         return 1
@@ -121,6 +157,7 @@ class Player(BaseHandler):
         p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
+        self._iteration_span = pattern.iteration_span
         if pattern.iterator is not None:
             self.iterator = pattern.iterator
             pattern.iterator = None
@@ -140,6 +177,10 @@ class Player(BaseHandler):
         else:
             self.again(pattern=pattern, p=dur)
 
+    def stop(self):
+        """Stop the player by removing the Player"""
+        self.env.scheduler.stop_runner(self.runner)
+
     def push(self, pattern: Optional[PatternInformation]):
         """
         Managing lifetime of the pattern, similar to managing a swimming function
@@ -152,6 +193,7 @@ class Player(BaseHandler):
         elif not self.runner.is_running():
             # Assume we are queuing the first state
             self.iterator = 0
+            self.runner.reset_states()
 
         # Forcibly reset the interval shift back to 0 to make sure
         # the new pattern can be synchronized
@@ -160,7 +202,12 @@ class Player(BaseHandler):
         period = self.get_new_period(pattern)
 
         deadline = get_snap_deadline(self.env.clock, pattern.snap)
-        self.runner.push_deferred(deadline, self.func, pattern=pattern, p=period)
+        self.runner.push_deferred(
+            deadline,
+            for_(pattern.until)(self.func) if pattern.until else self.func,
+            pattern=pattern,
+            p=period,
+        )
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

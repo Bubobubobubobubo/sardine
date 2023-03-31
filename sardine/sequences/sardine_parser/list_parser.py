@@ -1,15 +1,25 @@
 from .tree_calc import CalculateTree
 from ...base import BaseParser
 from lark import Lark, Tree
+from lark.exceptions import LarkError, UnexpectedCharacters, UnexpectedToken
 from pathlib import Path
 from .chord import Chord
 from ...logger import print
+import traceback
 
-__all__ = ("ListParser", "Pat")
+__all__ = ("ListParser",)
 
 
 class ParserError(Exception):
     pass
+
+
+class ShortParserError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
 
 
 grammar_path = Path(__file__).parent
@@ -22,7 +32,6 @@ class ListParser(BaseParser):
         parser_type: str = "sardine",
         debug: bool = False,
     ):
-
         """
         ListParser is the main interface to the basic patterning langauge used in a very
         basic Sardine setup. ListParser is a programming language capable of handling
@@ -131,10 +140,11 @@ class ListParser(BaseParser):
         """
         pattern = args[0]
         final_pattern = []
+
         try:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
-            raise ParserError(f"Non valid token: {pattern}: {e}")
+            print(f"[red][Pattern Language Error][/red]")
 
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")
@@ -152,21 +162,8 @@ class ListParser(BaseParser):
         try:
             self.pretty_print(expression=pattern)
         except Exception as e:
-            import traceback
-
-            print(f"Error: {e}: {traceback.format_exc()}")
-
-
-def Pat(pattern: str, i: int = 0):
-    """Generates a pattern
-
-    Args:
-        pattern (str): A pattern to be parsed
-        i (int, optional): Index for iterators. Defaults to 0.
-
-    Returns:
-        int: The ith element from the resulting pattern
-    """
-    parser = ListParser(clock=c, parser_type="sardine")
-    result = parser.parse(pattern)
-    return result[i % len(result)]
+            tb_str = traceback.format_exception(
+                etype=type(e), value=e, tb=e.__traceback__
+            )
+            error_message = "".join(tb_str)
+            raise ParserError(f"Error parsing pattern {pattern}: {error_message}")

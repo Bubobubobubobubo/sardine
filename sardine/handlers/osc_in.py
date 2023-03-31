@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional, Union
 from osc4py3.as_eventloop import *
 from osc4py3.oscchannel import TransportChannel, get_channel
 from osc4py3.oscmethod import *
-from ..logger import print
+from ..logger import print, logging
 
 from ..base.handler import BaseHandler
 from .osc_loop import OSCLoop
@@ -68,7 +68,7 @@ class OSCInHandler(BaseHandler):
         in the self._watched_values dictionary accessible through the get()
         method
         """
-        print(f"[yellow]Watching address [red]{address}[/red].[/yellow]")
+        logging.debug(f"[yellow]Watching address [red]{address}[/red].[/yellow]")
         self._generic_store(address)
 
     def attach(self, address: str, function: Callable, watch: bool = False):
@@ -97,7 +97,7 @@ class OSCInHandler(BaseHandler):
         print("Attaching address to matching incoming message")
 
         def event_dispatcher(address, *args) -> None:
-            print(f"Event Name: {address}")
+            logging.debug(f"Event Name: {address}")
             self.env.dispatch(address, *args)
 
         osc_method(address, event_dispatcher, argscheme=OSCARG_DATA)

@@ -34,6 +34,7 @@ CONFIG = '''
    "handlers":{
       "rich_handler":{
          "class":"rich.logging.RichHandler",
+         "level":"WARNING",
          "formatter":"rich_format",
          "show_time": false,
          "show_path": false,
@@ -41,7 +42,7 @@ CONFIG = '''
       },
       "file_handler":{
          "class":"logging.handlers.RotatingFileHandler",
-         "level":"DEBUG",
+         "level":"NOTSET",
          "formatter":"file_format",
          "filename":"test_file",
          "maxBytes":50000,

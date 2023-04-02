@@ -18,7 +18,7 @@ try:
 
     ziffers_imported: bool = True
 except ImportError:
-    logging.warning("Install the ziffers package for using Ziffers patterns")
+    logging.error("Install the ziffers package for using Ziffers patterns")
     ziffers_imported: bool = False
 
 

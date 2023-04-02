@@ -9,7 +9,7 @@ import tempfile
 from os import path, walk
 from pathlib import Path
 from typing import Optional, Union
-from ..logger import print
+from ..logger import print, logging
 
 import psutil
 from appdirs import *
@@ -93,15 +93,16 @@ class SuperDirtProcess:
         """
         if "no synth or sample" in decoded_line:
             sample_name = decoded_line.split("'")
-            print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
+            logging.warning(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
-            print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
+            logging.error(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
         if "listening to Tidal on port 57120" in decoded_line:
+            logging.debug(f"[[green]/!\\\\[/green] - Audio server ready!]")
             print(f"[[green]/!\\\\[/green] - Audio server ready!]")
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:
-            print(
+            logging.critical(
                 (
                     f"[red]/!\\\\[/red] - Socket in use! SuperCollider is already"
                     + "\nrunning somewhere. It might be a mistake or a"
@@ -110,7 +111,7 @@ class SuperDirtProcess:
                 )
             )
         if "Mismatched sample rates are not supported" in decoded_line:
-            print(
+            logging.critical(
                 (
                     f"[red]/!\\\\[/red] - Mismatched sample rates. Please make"
                     + "\nsure that your audio input sample rate and"
@@ -137,6 +138,7 @@ class SuperDirtProcess:
                 else:
                     decoded_lines = lines.decode()
                     if self._verbose:
+                        logging.debug(decoded_lines.strip())
                         print(decoded_lines.strip())
                     else:
                         self._analyze_and_warn(decoded_lines)
@@ -222,6 +224,7 @@ class SuperDirtProcess:
         if len(loaded_synthdefs_message) == 1:
             return
         else:
+            logging.debug("\n".join(loaded_synthdefs_message))
             print("\n".join(loaded_synthdefs_message))
 
     def find_sclang_path(self) -> str:

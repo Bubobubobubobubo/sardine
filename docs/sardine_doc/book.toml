@@ -20,7 +20,7 @@ level = 0     # the depth to start folding
 
 [output.html.search]
 enable = true            # enables the search feature
-limit-results = 10       # maximum number of search results
+limit-results = 15       # maximum number of search results
 teaser-word-count = 30   # number of words used for a search result teaser
 use-boolean-and = true   # multiple search terms must all match
 boost-title = 2          # ranking boost factor for matches in headers

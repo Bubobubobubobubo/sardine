@@ -29,4 +29,15 @@ def fun(p=0.25):
     again(fun, p=0.25)
 ```
 
-You can use them to leverage Python or the pattern syntax for what they do best: patterning or dealing with complex algorithmic transformations. Having them both available makes the pattern syntax even more expressive.
+Amphibian Variables also work in Players:
+```python
+
+V.n = [52, randint(40, 60), 72, 35]
+Pa * d('supersaw', n='(v n)', p=0.75 )
+```
+
+You can use Amphibian Variables to leverage Python or the pattern syntax for what they do best: patterning or dealing with complex algorithmic transformations. Having them both available makes the pattern syntax even more expressive.
+
+For more exploration of Amphibian Variables, see:
+- [Using Python](./python.md)
+- [Advanced Python: Sample Slicer](./python-sampleslicer.md)

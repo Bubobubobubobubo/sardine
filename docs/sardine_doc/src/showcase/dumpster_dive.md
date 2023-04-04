@@ -1,14 +1,15 @@
 # Dumpster Dive (Sardine Alpha)
 <iframe width="700" height="500" src="https://www.youtube.com/embed/ZcdXgeqJI2E" title="dumpsterDive" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-**dumpsterDive** (**HighHarmonics**) is a short piece that can be performed with quasi live-coding practices. It uses a set of percussive field recordings made with a hard marimba mallet on various parts of a public metal dumpster. One sound was made with a plastic scraper. They are particularly resonant sounds that work well together. The **Sardine** function uses the stacked samples model, where each sample line can be played alone or together with others. [Performance Video](https://www.youtube.com/embed/ZcdXgeqJI2E).
-- **Audio equipment:** Tascam DR-100, Rode shotgun mic: NTG4.
+**dumpsterDive** (**HighHarmonics**) is a short piece using composed live-coding practices. With the samples and code below, it can be performed using [Sardine v0.1.0 - Alpha](https://github.com/Bubobubobubobubo/sardine/releases/tag/v0.1.0). It is intended to be freely shared, much like a musical score or sheet music can be used by anyone to perform and interpret. The **Sardine** @swim function uses the stacked samples model, organized into sections which function like different instruments. One sender in each section should be played alone or together with senders in others sections. [Performance Video](https://www.youtube.com/embed/ZcdXgeqJI2E). 
+- Custom samples: field recordings of a metal dumpster
 - Dumpster samples are available via the [sardine-sounds](https://github.com/Bubobubobubobubo/sardine-sounds) repository.
+- A conversion / updated version to a current Sardine release is underway. 
 
 
 ```python
 # Load audio effect and preset dictionaries first.
-# Play one or both lines from each section (basic, reverse rhythms, melodic patterns, bass, scrape). Explore combinations.
+# Livecoding: Play one or both lines from each section (basic, reverse rhythms, melodic patterns, bass, scrape). Explore combinations.
 c.bpm=60
 
 @swim
@@ -54,7 +55,7 @@ del0 = {'delay':0.5, 'delaytime':0.3, 'delayfeedback':0.5, 'triode':0}
 del1 = {'delay':0.5, 'delaytime':0.4, 'delayfeedback':0.6}
 del2 = {'delay':0.5, 'delaytime':0.25, 'delayfeedback':0.8}
 
-#Presets
+#Preset dictionaries
 returnGroove = {'bass1':  S('dumpster:[2,1,0,.,4,1]', octave=4, amp=.5, **rev1, orbit=7),
     'melody2': S('dumpster:[0,1,0,3,4,]', begin='0', end='.2',speed='1', amp=.4, pan=.3, **rev1, orbit=5) }
 closing = {'basic2': S('dumpster:[12,0,1,4,3,5]', speed='2', pan=.7, amp=.5, **del1, **rev1, orbit=1),

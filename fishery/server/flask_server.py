@@ -76,11 +76,11 @@ class WebServer:
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
-                print(f"Creating file {str(filename)} as utf-8!")
+                logging.debug(f"Creating file {str(filename)} as utf-8!")
                 with open(check_file, "w", encoding="utf-8") as f:
                     f.write("")
             else:
-                print(f"Loading file {str(filename)}")
+                logging.debug(f"Loading file {str(filename)}")
 
     def load_buffer_files(self) -> Optional[dict]:
         """
@@ -95,13 +95,13 @@ class WebServer:
             try:
                 (USER_DIR / "buffers").mkdir()
                 for filename in FILENAMES:
-                    print(f"Creating file {filename}.py.")
+                    logging.debug(f"Creating file {filename}.py.")
                     with open(filename, "w", encoding="utf-8") as f:
                         f.write("")
                     buffer_files[filename] = f"{filename}"
                     return buffer_files
             except FileExistsError or OSError:
-                print("[red]Fishery was not able to create web editor files![/red]")
+                logging.error("[red]Fishery was not able to create web editor files![/red]")
                 exit()
         # If it already exists, read files from the folder
         else:
@@ -111,7 +111,7 @@ class WebServer:
                 # .DS_Store files on MacOS killing the mood
                 if str(file).startswith("."):
                     continue
-                print(f"Nom du fichier: {file}")
+                logging.debug(f"Nom du fichier: {file}")
                 path = (buffer_folder / file).as_posix()
                 with open(path, "r", encoding="utf-8") as buffer:
                     buffer_files[file] = buffer.read()
@@ -133,8 +133,9 @@ class WebServer:
 
     def open_in_browser(self):
         address = f"http://{self.host}:{self.port}"
-        print(f"[red]Opening embedded editor at: [yellow]{address}[/yellow][/red]")
-        webbrowser.open(address)
+        message = f"[red]Opening embedded editor at: [yellow]{address}[/yellow][/red]"
+        logging.debug(message)
+        print(message)
 
 
 def server_factory(console):
@@ -217,7 +218,7 @@ def server_factory(console):
                 config_data = json.load(f)["config"]
             response = jsonify(config_data)
         except Exception as e:
-            print("Error while reading config.json:", e)
+            logging.error("Error while reading config.json:", e)
             response = jsonify({"error": "Internal server error"})
             response.status_code = 500
         return response

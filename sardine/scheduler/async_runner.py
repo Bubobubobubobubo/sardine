@@ -5,7 +5,7 @@ import traceback
 from collections import deque
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
-from ..logger import print
+from ..logger import print, logging
 
 from ..base import BaseClock
 from ..clock import Time
@@ -479,20 +479,24 @@ class AsyncRunner:
             self._revert_state()
             raise exc
 
-        print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+        message = f"[yellow][[red]{self.name}[/red] is swimming][/yellow]"
+        print(message)
+        logging.debug(message)
 
         try:
             while self._is_ready_for_iteration():
                 try:
                     await self._run_once()
                 except Exception as exc:
-                    print(f"[red][Function exception | ({self.name})]")
+                    logging.error(f"[red][Function exception | ({self.name})]")
                     traceback.print_exception(type(exc), exc, exc.__traceback__)
 
                     self._revert_state()
                     self.swim()
         finally:
-            print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
+            message = f"[yellow][Stopped [red]{self.name}[/red]][/yellow]"
+            print(message)
+            logging.debug(message)
 
     def _prepare(self):
         self._last_iteration_called = False
@@ -604,9 +608,13 @@ class AsyncRunner:
     def _maybe_print_new_state(self, state: FunctionState):
         if self._last_state is not None and state is not self._last_state:
             if not self._has_reverted:
-                print(f"[yellow][Updating [red]{self.name}[/red]]")
+                message = f"[yellow][Updating [red]{self.name}[/red]]"
+                print(message)
+                logging.debug(message)
             else:
-                print(f"[yellow][Saving [red]{self.name}[/red] from crash]")
+                message = f"[yellow][Saving [red]{self.name}[/red] from crash]"
+                print(message)
+                logging.debug(message)
                 self._has_reverted = False
 
     async def _sleep_until(self, deadline: Union[float, int]) -> bool:

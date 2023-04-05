@@ -8,7 +8,7 @@ from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
 from . import *
 from .io.UserConfig import read_user_configuration
-from .logger import print
+from .logger import print, logging
 from .sequences import ListParser, ziffers_factory
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
@@ -18,7 +18,7 @@ try:
 
     ziffers_imported: bool = True
 except ImportError:
-    print("Install the ziffers package for using Ziffers patterns")
+    logging.error("Install the ziffers package for using Ziffers patterns")
     ziffers_imported: bool = False
 
 
@@ -33,7 +33,9 @@ config = read_user_configuration()
 
 # Printing banner and some infos about setup/config
 print(sardine_intro)
-print(config_line_printer(config))
+message = config_line_printer(config)
+logging.debug(message)
+print(message)
 
 
 #######################################################################################
@@ -48,7 +50,7 @@ if Path(f"{config.user_config_path}").is_file():
     spec.loader.exec_module(module)
     from user_configuration import *
 else:
-    print(f"[red]No user provided configuration file found...")
+    logging.info(f"[red]No user provided configuration file found...")
 
 # Initialisation of the FishBowl (the environment holding everything together)
 
@@ -72,7 +74,7 @@ if config.boot_supercollider:
             verbose=config.verbose_superdirt,
         )
     except OSError as Error:
-        print(f"[red]SuperCollider could not be found: {Error}![/red]")
+        logging.error(f"[red]SuperCollider could not be found: {Error}![/red]")
 
 #######################################################################################
 # HANDLERS INITIALIZATION. YOU CAN ADD YOUR MODULAR COMPONENTS HERE.
@@ -84,7 +86,7 @@ try:
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
+    logging.error(f"{e}: [red]Invalid MIDI port![/red]")
 
 try:
     # MIDIIn Handler
@@ -95,7 +97,7 @@ try:
     if ziffers_imported:
         midi._ziffers_parser = z
 except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
+    logging.error(f"{e}: [red]Invalid MIDI port![/red]")
 
 
 # OSC Loop: handles processing OSC messages

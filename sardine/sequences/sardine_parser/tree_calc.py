@@ -5,7 +5,7 @@ from time import time
 
 from lark import Transformer, v_args
 from lark.lexer import Token
-from ...logger import print
+from ...logger import print, logging
 from rich.panel import Panel
 
 from . import funclib
@@ -534,10 +534,8 @@ class CalculateTree(Transformer):
                 return list(arguments)
         except Exception as e:
             # Fail safe
-            print(
-                Panel.fit(
-                    f"[red]/!\\\\[/red] [bold]Unknown or malformed function [/bold][bold yellow]{func_name}[/bold yellow] [red]/!\\\\[/red]\n\n[reverse gold1]{e}\n[/reverse gold1]\n[bold]Possible functions are:[/bold] \n\n"
-                    + "".join(f"{name} " for name in modifiers_list.keys())
-                )
+            logging.warning(
+                f"[red]/!\\\\[/red] [bold]Unknown or malformed function [/bold][bold yellow]{func_name}[/bold yellow] [red]/!\\\\[/red]\n\n[reverse gold1]{e}\n[/reverse gold1]\n[bold]Possible functions are:[/bold] \n\n"
+                + "".join(f"{name} " for name in modifiers_list.keys())
             )
             return args[0]

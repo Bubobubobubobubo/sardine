@@ -4,7 +4,7 @@ from lark import Lark, Tree
 from lark.exceptions import LarkError, UnexpectedCharacters, UnexpectedToken
 from pathlib import Path
 from .chord import Chord
-from ...logger import print
+from ...logger import print, logging
 import traceback
 
 __all__ = ("ListParser",)
@@ -144,10 +144,10 @@ class ListParser(BaseParser):
         try:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
-            print(f"[red][Pattern Language Error][/red]")
+            logging.error(f"[red][Pattern Language Error][/red]")
 
         if self.debug:
-            print(f"Pat: {self._flatten_result(final_pattern)}")
+            logging.debug(f"Pat: {self._flatten_result(final_pattern)}")
         return self._flatten_result(final_pattern)
 
     def _parse_debug(self, pattern: str):

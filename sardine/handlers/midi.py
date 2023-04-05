@@ -1,7 +1,7 @@
 from .sender import Number, NumericElement, Sender, ParsableElement
 from typing import Optional, Union
 from ..utils import alias_param
-from ..logger import print
+from ..logger import print, logging
 import asyncio
 import mido
 import sys
@@ -52,7 +52,7 @@ class MidiHandler(Sender):
             try:
                 self._midi = mido.open_output(self._port_name)
             except Exception as err:
-                print(f"[red]Failed to open a MIDI Connexion: {err}")
+                logging.error(f"[red]Failed to open a MIDI Connexion: {err}")
 
         # Setting up the handler
         self._nudge = nudge

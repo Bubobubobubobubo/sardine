@@ -1,10 +1,11 @@
 import uuid
+from sardine.logger import logging, print
 
 try:
     from ziffers import z
     from ziffers.classes import Sample, SampleList, Rest, Chord
 except ImportError:
-    print("Install the ziffers package for using Ziffers patterns")
+    logging.error("Install the ziffers package for using Ziffers patterns")
 
 
 def get_ziffers_params(orig: dict) -> dict:

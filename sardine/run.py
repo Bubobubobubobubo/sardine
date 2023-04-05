@@ -128,6 +128,7 @@ if config.superdirt_handler:
 player_names = [
     "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
 ]
+player_names.remove("SC")
 # player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)

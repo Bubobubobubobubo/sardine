@@ -1,19 +1,22 @@
+import asyncio
+
 from osc4py3.as_eventloop import osc_process, osc_startup, osc_terminate
 
-from ..base import BaseRunnerHandler, BaseThreadedLoopMixin
+from ..base import BaseRunnerHandler
 
 __all__ = ("OSCLoop",)
 
 
-class OSCLoop(BaseThreadedLoopMixin, BaseRunnerHandler):
-    def __init__(self, *, loop_interval: float = 0.001):
-        super().__init__(loop_interval=loop_interval)
+class OSCLoop(BaseRunnerHandler):
+    def __init__(self, *args, loop_interval: float = 0.001, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.loop_interval = loop_interval
 
-    def before_loop(self):
+    async def run(self):
         osc_startup()
-
-    def loop(self):
-        osc_process()
-
-    def after_loop(self):
-        osc_terminate()
+        try:
+            while True:
+                osc_process()
+                await asyncio.sleep(self.loop_interval)
+        finally:
+            osc_terminate()

@@ -129,6 +129,7 @@ player_names = [
     "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
 ]
 player_names.remove("SC")
+player_names.remove("PC")
 # player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)
@@ -573,3 +574,14 @@ def MIDIController(
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
+
+try:
+    # MIDI Handler: matching with the MIDI port defined in the configuration file
+    bitwig = MidiHandler(port_name="MIDI Bus 1")
+    bowl.add_handler(bitwig)
+    if ziffers_imported:
+        bitwig._ziffers_parser = bz
+except OSError as e:
+    print(f"{e}: [red]Invalid MIDI port![/red]")
+def drum(*args, **kwargs):
+    return _play_factory(bitwig, bitwig.send, *args, **kwargs)

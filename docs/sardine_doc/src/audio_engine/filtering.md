@@ -22,7 +22,7 @@
 <td class="org-left">cutoff</td>
 <td class="org-left">lpf</td>
 <td class="org-left">Low-pass filter: cutoff freq (hertz)</td>
-<td class="org-left">0-&gt;x us. &gt;2Khz</td>
+<td class="org-left">0 - &gt; x</td>
 </tr>
 
 <tr>
@@ -36,7 +36,7 @@
 <td class="org-left">hcutoff</td>
 <td class="org-left">hpf</td>
 <td class="org-left">High-pass filter: cutoff freq (hertz)</td>
-<td class="org-left">0-&gt;x us. &lt;1Khz</td>
+<td class="org-left">0 -&gt; x </td>
 </tr>
 
 <tr>
@@ -50,14 +50,14 @@
 <td class="org-left">bandf</td>
 <td class="org-left">bpf</td>
 <td class="org-left">Bandpass filter - cutoff freq (hertz)</td>
-<td class="org-left">0-&gt;x</td>
+<td class="org-left">0 -&gt; x</td>
 </tr>
 
 <tr>
 <td class="org-left">bandq</td>
 <td class="org-left">bpq</td>
 <td class="org-left">Bandpass resonance Q</td>
-<td class="org-left">0.0 - 1.0 </td>
+<td class="org-left">1 - 100+</td>
 </tr>
 
 <tr>
@@ -85,8 +85,19 @@
 </tbody>
 </table>
 
-**Note:** Take caution with filter resonance. Values > 0.5 can be harsh!
 
+### Filter resonance
+- Take caution with filter resonance for `lpf` and `hpf`. Values > 0.5 can be harsh!
+- Resonance for bandpass filter `bandq` is different and often needs higher values (over 10) to be perceived.
+
+This example shows a band pass filter cycling through the harmonic series. Notice the high resonance setting. With `bandq=1` the filtering effect is too small to be heard.
+
+```python
+# fire is a SuperDirt sample with a spectrum like colored noise
+Pa * d('fire', legato=1.5, bandf='100 200 400 600 700 800 900', bandq='100')
+```
+
+Other filter examples:
 ```python
 # low pass randomized
 @swim

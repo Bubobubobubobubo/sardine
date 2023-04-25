@@ -20,24 +20,25 @@ There are a few special operators that are only available when you deal with lis
 
 ```python
 @swim
-def test_slice(p=0.5, i=0):
-    D('pluck:19',
-      legato=0.2,
-      midinote='([60 63 67 69 71]&[i.i i.i + 8])^(1~8)', i=i)
-    again(test_slice, p=0.125, i=i+1)
+def test_slicing(p=0.5, i=0):
+    pattern = P('[1 2 3]&[1]') # change me
+    print(pattern)
+    again(test_slicing, p=0.125, i=i+1)
 ```
     
--   You can get a slice or just one value from a list by using the special `&` operator.
--   It will work with any list on the right side of the operator but it will only take the first and second value of it no matter what to compose a slice.
--   The index value can be infinite because the index is looping on the list. You can feed a random number generator and get something out.
+- You can get a slice or just one value from a list by using the special `&` operator.
+- It will work with any list on the right side of the operator but it will 
+  only take the first and second value of it no matter what to compose a slice.
+- The index value can be infinite because the index is looping on the list. You can feed
+  a random number generator and get something out.
     
-On the down side, it can become quite complex to write very fast, so be careful with it:
+On the down side, slicing can become quite complex to write, so be careful with it:
     
 ```python
 @swim
 def test_slice(p=0.5, i=0):
     D('pluck:19', legato=0.2,
-      n='[60 62 63 67 69 71]^(1~5)&[r rand*4]', i=i)
+      n='[60 62 63 67 69 71]^(1~5)&[1~4]', i=i)
     again(test_slice, p=0.125, i=i+1)
 ```
 

@@ -48,6 +48,12 @@ cd sardine && python -m pip install --find-links https://thegamecracks.github.io
 
 **Note**: the `--editable` flag is optional. You can remove it if you are not planning to modify **Sardine**!
 
+- If you get an error when trying to install `python-rtmidi` because of `#include "longintrepr.h"`, you can try one of the following install commands:
+  - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git@eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba#egg=python-rtmidi`
+  - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git#eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba`
+
+**Note**: the `python-rtmidi` project is now undergoing a maintainer transition. The situation should resolve quite soon! :)
+
 ## Installing Ziffers
 
 **Sardine** is great but **Ziffers** is great as well. The two together form the perfect live coding duo. 

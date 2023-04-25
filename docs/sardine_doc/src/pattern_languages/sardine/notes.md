@@ -228,9 +228,9 @@ Everything can become polyphonic. Just wrap anything between `{` and `}` and you
 ```python
 @swim
 def poly(p=0.5, i=0):
-    D('drum:[1 6]', speed='{[1 rand]}  {[2 1.9]}', i=i, d=3)
-    D('drum:2', cutoff='{[500:2000 500]*(sin $%rand*80/40)*10}', i=i, d=2)
-    D('bd', shape=0.5).out(i, 4)
+    D('drum:[1 6]', speed='{[1 rand]} {[2 1.9]}', i=i, d=3)
+    D('drum:2', cutoff='{[[500:2000,100] 500]}', i=i, d=2)
+    D('bd', shape=0.5, i=i, d=4)
     again(poly, p=0.5/2, i=i+1)
 ```   
 

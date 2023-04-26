@@ -6,7 +6,7 @@ from itertools import accumulate
 from pprint import pformat
 from typing import Iterable, Optional
 
-from .euclid import bjorklund
+from .tidal_euclid import bjorklund
 from .utils import *
 
 """Returns the start of the cycle."""

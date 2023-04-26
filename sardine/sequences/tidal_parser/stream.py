@@ -1,9 +1,7 @@
-import math
-import time
+from osc4py3 import oscbuildparse
+from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
-from fractions import Fraction
-from typing import Any, Dict
-from ..sequences.tidal_parser import *
+from typing import Dict, Any
 
 class BaseStream(ABC):
     """
@@ -69,4 +67,60 @@ class BaseStream(ABC):
         pattern_repr = " \n" + repr(self.pattern) if self.pattern else ""
         return f"<{self.__class__.__name__} {repr(self.name)}{pattern_repr}>"
 
+
+class SuperDirtStream(BaseStream):
+    """
+    This Stream class sends control pattern messages to SuperDirt via OSC
+
+    Parameters
+    ----------
+    port: int
+        The port where SuperDirt is listening
+    latency: float
+        SuperDirt latency
+
+    """
+
+    def __init__(self, port=57120, latency=0.2, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.latency = latency
+        self.name = "vortex"
+
+        self._port = port
+        self._address = "127.0.0.1"
+
+        self.osc_client = osc_udp_client(
+                address="127.0.0.1", 
+                port=57120,
+                name=self.name
+        )
+
+
+    @property
+    def port(self):
+        """SuperDirt listening port"""
+        return self._port
+
+    def notify_event(
+        self,
+        event: Dict[str, Any],
+        timestamp: float,
+        cps: float,
+        cycle: float,
+        delta: float,
+    ):
+        msg = []
+        for key, val in event.items():
+            if isinstance(val, Fraction):
+                val = float(val)
+            msg.append(key)
+            msg.append(val)
+        msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
+        _logger.info("%s", msg)
+
+        # TODO: make a bundle using osc4py3
+        # liblo.send(superdirt, "/dirt/play", *msg)
+        # bundle = liblo.Bundle(timestamp, liblo.Message("/dirt/play", *msg))
+        # liblo.send(self._address, bundle)
 

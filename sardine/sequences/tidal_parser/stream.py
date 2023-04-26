@@ -3,6 +3,7 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
 from typing import Dict, Any
 
+
 class BaseStream(ABC):
     """
     A class for playing control pattern events
@@ -39,10 +40,10 @@ class BaseStream(ABC):
             delta_secs = (link_off - link_on) / mill
 
             # TODO: fix for osc4py3
-            # link_secs = now / mill
-            # liblo_diff = liblo.time() - link_secs
-            # nudge = e.value.get("nudge", 0)
-            # ts = (link_on / mill) + liblo_diff + self.latency + nudge
+            # link_secs = now / mill
+            # liblo_diff = liblo.time() - link_secs
+            # nudge = e.value.get("nudge", 0)
+            # ts = (link_on / mill) + liblo_diff + self.latency + nudge
 
             self.notify_event(
                 e.value,
@@ -81,21 +82,12 @@ class SuperDirtStream(BaseStream):
 
     """
 
-    def __init__(self, port=57120, latency=0.2, *args, **kwargs):
+    def __init__(self, osc_client, port=57120, latency=0.2, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.latency = latency
         self.name = "vortex"
-
-        self._port = port
-        self._address = "127.0.0.1"
-
-        self.osc_client = osc_udp_client(
-                address="127.0.0.1", 
-                port=57120,
-                name=self.name
-        )
-
+        self._osc_client = osc_client
 
     @property
     def port(self):
@@ -120,7 +112,4 @@ class SuperDirtStream(BaseStream):
         _logger.info("%s", msg)
 
         # TODO: make a bundle using osc4py3
-        # liblo.send(superdirt, "/dirt/play", *msg)
-        # bundle = liblo.Bundle(timestamp, liblo.Message("/dirt/play", *msg))
-        # liblo.send(self._address, bundle)
-
+        self._osc_client._dirt_play(msg)

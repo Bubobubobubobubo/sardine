@@ -10,7 +10,7 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
-from .sequences.tidal_parser import SuperDirtStream
+from .sequences.tidal_parser import SuperDirtStream, s
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -571,18 +571,13 @@ def MIDIController(
 
     return (midi_controller, midi_controller_player)
 
+#######################################################################################
+# VORTEX
+
+if config.superdirt_handler:
+    stream = SuperDirtStream(osc_client=dirt)
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
 
-try:
-    # MIDI Handler: matching with the MIDI port defined in the configuration file
-    bitwig = MidiHandler(port_name="MIDI Bus 1")
-    bowl.add_handler(bitwig)
-    if ziffers_imported:
-        bitwig._ziffers_parser = bz
-except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
-def drum(*args, **kwargs):
-    return _play_factory(bitwig, bitwig.send, *args, **kwargs)

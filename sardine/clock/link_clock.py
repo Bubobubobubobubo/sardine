@@ -40,7 +40,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         """Unsubscribe from tick notifications"""
         self._subscribers.remove(subscriber)
 
-
     def _notify_tidal_streams(self):
         """
         Notify Tidal Streams of the current passage of time.
@@ -65,7 +64,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
             # wait until start of next frame
             wait = (logical_now - now) / mill
-            # TODO: replace me by something better
+            # TODO: replace me by something better
             # if wait > 0:
             #     time.sleep(wait)
 

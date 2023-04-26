@@ -7,6 +7,7 @@ from .stream import SuperDirtStream
 
 __streams = {}
 
+
 def p(key, pattern=None):
     if key not in __streams:
         __streams[key] = SuperDirtStream(name=key)

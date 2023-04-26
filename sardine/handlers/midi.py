@@ -211,8 +211,6 @@ class MidiHandler(Sender):
             )
         )
 
-
-
     @alias_param(name="value", alias="val")
     @alias_param(name="control", alias="ctrl")
     @alias_param(name="channel", alias="chan")
@@ -540,10 +538,12 @@ class MidiHandler(Sender):
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["program_change"] is not None:
-                self.send_program(program=message["program_change"], channel=message["channel"])
+                self.send_program(
+                    program=message["program_change"], channel=message["channel"]
+                )
             if message["note"] is None:
                 continue
             for k in ("note", "velocity", "channel"):
                 message[k] = int(message[k])
-            message.pop('program_change')
+            message.pop("program_change")
             self.call_timed_with_nudge(deadline, self.send_midi_note, **message)

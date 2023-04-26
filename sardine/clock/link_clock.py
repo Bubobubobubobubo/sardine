@@ -25,11 +25,15 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._beats_per_bar: int = bpb
         self._internal_origin: float = 0.0
         self._internal_time: float = 0.0
+        self._last_capture: Optional[link.SessionState] = None
         self._start: float = 0.0
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
         self._subscribers = []
+        self._ticks: int = 0
+        self._frame_rate = 1000000 * 1/20
+        self._beats_per_cycle: int = 4
 
     ## VORTEX   ################################################
 
@@ -46,42 +50,29 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         Notify Tidal Streams of the current passage of time.
         """
 
-        mill = 1000000
         start_beat = self._link.captureSessionState().beatAtTime(self._start, 4)
-        ticks = 0
 
         # FIXME rate, bpc and latency should be constructor parameters
-        rate = 1 / 20
-        frame = rate * mill
-        bpc = 4
+        self._ticks += 1
 
-        while self._playing:
-            ticks = ticks + 1
+        logical_now = math.floor(self._start + (self._ticks * self._frame_rate))
+        logical_next = math.floor(self._start + ((self._ticks + 1) * self._frame_rate))
 
-            logical_now = math.floor(start + (ticks * frame))
-            logical_next = math.floor(start + ((ticks + 1) * frame))
+        now = self._link.clock().micros()
 
-            now = self._link.clock().micros()
+        wait = (logical_now - now) / mill
 
-            # wait until start of next frame
-            wait = (logical_now - now) / mill
-            # TODO: replace me by something better
-            # if wait > 0:
-            #     time.sleep(wait)
 
-            if not self._playing:
-                break
+        s = self._last_capture
+        cps = (s.tempo() / self._beats_per_cycle) / 60
+        cycle_from = s.beatAtTime(logical_now, 0) / self._beats_per_cycle
+        cycle_to = s.beatAtTime(logical_next, 0) / self._beats_per_cycle
 
-            s = self._link.captureSessionState()
-            cps = (s.tempo() / bpc) / 60
-            cycle_from = s.beatAtTime(logical_now, 0) / bpc
-            cycle_to = s.beatAtTime(logical_next, 0) / bpc
-
-            try:
-                for sub in self._subscribers:
-                    sub.notify_tick((cycle_from, cycle_to), s, cps, bpc, mill, now)
-            except:
-                pass
+        try:
+            for sub in self._subscribers:
+                sub.notify_tick((cycle_from, cycle_to), s, cps, bpc, mill, now)
+        except:
+            pass
 
     ## GETTERS  ################################################
 
@@ -143,6 +134,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def _capture_link_info(self):
         s: link.SessionState = self._link.captureSessionState()
+        self._last_capture = s
         link_time: int = self._link.clock().micros()
         beat: float = s.beatAtTime(link_time, self.beats_per_bar)
         phase: float = s.phaseAtTime(link_time, self.beats_per_bar)

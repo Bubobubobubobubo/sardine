@@ -7,14 +7,19 @@ from .stream import SuperDirtStream
 
 __streams = {}
 
+def tidal_factory(env, osc_client):
+    """Returns a tidal function to play Tidal patterns on a given OSC client"""
+    env = env
 
-def p(key, pattern=None):
-    if key not in __streams:
-        __streams[key] = SuperDirtStream(name=key)
-        _default_clock.subscribe(__streams[key])
-    if pattern:
-        __streams[key].pattern = pattern
-    return __streams[key]
+    def tidal(key, pattern=None):
+        if key not in __streams:
+            __streams[key] = SuperDirtStream(name=key, osc_client=osc_client)
+            env.clock.subscribe(__streams[key])
+        if pattern:
+            __streams[key].pattern = pattern
+        return __streams[key]
+
+    return tidal
 
 
 def hush():

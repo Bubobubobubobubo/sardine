@@ -579,7 +579,7 @@ if config.superdirt_handler:
     tidal_loop = TidalLoop()
     bowl.add_handler(tidal_loop) 
     stream = SuperDirtStream(osc_client=dirt)
-    tidal = tidal_factory(osc_client=dirt, env=bowl)
+    tidal = tidal_factory(osc_client=dirt)
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

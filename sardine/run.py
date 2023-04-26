@@ -575,6 +575,9 @@ def MIDIController(
 # VORTEX
 
 if config.superdirt_handler:
+    # Adding a runner that will notify Tidal patterns
+    tidal_loop = TidalLoop()
+    bowl.add_handler(tidal_loop) 
     stream = SuperDirtStream(osc_client=dirt)
 
 #######################################################################################

@@ -25,6 +25,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._beats_per_bar: int = bpb
         self._internal_origin: float = 0.0
         self._internal_time: float = 0.0
+        self._start: float = 0.0
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
@@ -44,9 +45,9 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         """
         Notify Tidal Streams of the current passage of time.
         """
-        start = self._link.clock().micros()
+
         mill = 1000000
-        start_beat = self._link.captureSessionState().beatAtTime(start, 4)
+        start_beat = self._link.captureSessionState().beatAtTime(self._start, 4)
         ticks = 0
 
         # FIXME rate, bpc and latency should be constructor parameters
@@ -161,6 +162,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._link = link.Link(self._tempo)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
+        self._start = self._link.clock().micros()
 
         # Set the origin at the start
         self._capture_link_info()

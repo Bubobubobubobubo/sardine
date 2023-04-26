@@ -20,6 +20,17 @@ class InternalClock(BaseClock):
         self.tempo = tempo
         self.beats_per_bar = bpb
         self._internal_origin = 0.0
+        self._subscribers = []
+
+    #### VORTEX  #############################################################
+
+    def subscribe(self, subscriber):
+        """Subscribe an object to tick notifications"""
+        self._subscribers.append(subscriber)
+
+    def unsubscribe(self, subscriber):
+        """Unsubscribe from tick notifications"""
+        self._subscribers.remove(subscriber)
 
     #### GETTERS  ############################################################
 

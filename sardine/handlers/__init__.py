@@ -4,6 +4,7 @@ from .missile import *
 from .osc import *
 from .osc_in import *
 from .osc_loop import *
+from .tidal_loop import *
 from .player import *
 from .sender import *
 from .sleep_handler import *

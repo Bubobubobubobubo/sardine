@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 import link
+import math
 
 from ..base import BaseClock, BaseThreadedLoopMixin
 
@@ -27,6 +28,60 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
+        self._subscribers = []
+
+    ## VORTEX   ################################################
+
+    def subscribe(self, subscriber):
+        """Subscribe an object to tick notifications"""
+        self._subscribers.append(subscriber)
+
+    def unsubscribe(self, subscriber):
+        """Unsubscribe from tick notifications"""
+        self._subscribers.remove(subscriber)
+
+
+    def _notify_tidal_streams(self):
+        """
+        Notify Tidal Streams of the current passage of time.
+        """
+        start = self._link.clock().micros()
+        mill = 1000000
+        start_beat = self._link.captureSessionState().beatAtTime(start, 4)
+        ticks = 0
+
+        # FIXME rate, bpc and latency should be constructor parameters
+        rate = 1 / 20
+        frame = rate * mill
+        bpc = 4
+
+        while self._playing:
+            ticks = ticks + 1
+
+            logical_now = math.floor(start + (ticks * frame))
+            logical_next = math.floor(start + ((ticks + 1) * frame))
+
+            now = self._link.clock().micros()
+
+            # wait until start of next frame
+            wait = (logical_now - now) / mill
+            # TODO: replace me by something better
+            # if wait > 0:
+            #     time.sleep(wait)
+
+            if not self._playing:
+                break
+
+            s = self._link.captureSessionState()
+            cps = (s.tempo() / bpc) / 60
+            cycle_from = s.beatAtTime(logical_now, 0) / bpc
+            cycle_to = s.beatAtTime(logical_next, 0) / bpc
+
+            try:
+                for sub in self._subscribers:
+                    sub.notify_tick((cycle_from, cycle_to), s, cps, bpc, mill, now)
+            except:
+                pass
 
     ## GETTERS  ################################################
 

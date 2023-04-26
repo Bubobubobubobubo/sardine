@@ -60,8 +60,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         now = self._link.clock().micros()
 
-        wait = (logical_now - now) / mill
-
+        wait = (logical_now - now) / 1000000
 
         s = self._last_capture
         cps = (s.tempo() / self._beats_per_cycle) / 60
@@ -70,9 +69,11 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         try:
             for sub in self._subscribers:
-                sub.notify_tick((cycle_from, cycle_to), s, cps, bpc, mill, now)
-        except:
-            pass
+                sub.notify_tick((cycle_from, cycle_to), s, cps, self._beats_per_cycle, 1000000, now)
+            return ((cycle_from, cycle_to), s, cps, self._beats_per_cycle, 1000000, now)
+        except Exception as e:
+            print(e)
+            return None
 
     ## GETTERS  ################################################
 

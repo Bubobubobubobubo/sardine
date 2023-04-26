@@ -11,6 +11,7 @@ from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import SuperDirtStream, s, tidal_factory
+from .sequences.tidal_parser import d as wtf
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -578,7 +579,6 @@ if config.superdirt_handler:
     # Adding a runner that will notify Tidal patterns
     tidal_loop = TidalLoop()
     bowl.add_handler(tidal_loop) 
-    stream = SuperDirtStream(osc_client=dirt)
     tidal = tidal_factory(osc_client=dirt, env=bowl)
 
 #######################################################################################

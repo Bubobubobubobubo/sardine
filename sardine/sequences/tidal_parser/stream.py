@@ -2,6 +2,7 @@ from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
 from typing import Dict, Any
+from .pattern import *
 
 
 class BaseStream(ABC):
@@ -28,8 +29,6 @@ class BaseStream(ABC):
 
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
-        if len(es):
-            _logger.debug("%s", [e.value for e in es])
 
         for e in es:
             cycle_on = e.whole.begin
@@ -40,10 +39,9 @@ class BaseStream(ABC):
             delta_secs = (link_off - link_on) / mill
 
             # TODO: fix for osc4py3
-            # link_secs = now / mill
-            # liblo_diff = liblo.time() - link_secs
-            # nudge = e.value.get("nudge", 0)
-            # ts = (link_on / mill) + liblo_diff + self.latency + nudge
+            link_secs = now / mill
+            nudge = e.value.get("nudge", 0)
+            ts = (link_on / mill) + self.latency + nudge
 
             self.notify_event(
                 e.value,
@@ -109,7 +107,6 @@ class SuperDirtStream(BaseStream):
             msg.append(key)
             msg.append(val)
         msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
-        _logger.info("%s", msg)
 
         # TODO: make a bundle using osc4py3
         self._osc_client._dirt_play(msg)

@@ -1,7 +1,7 @@
 import pprint
 
-from vortex.mini.grammar import grammar
-from vortex.mini.interpreter import MiniInterpreter, MiniVisitor
+from .grammar import grammar
+from .interpreter import MiniInterpreter, MiniVisitor
 
 visitor = MiniVisitor()
 interpreter = MiniInterpreter()

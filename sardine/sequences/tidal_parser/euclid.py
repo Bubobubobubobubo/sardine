@@ -1,6 +1,6 @@
 from typing import List
 
-from utils import flatten
+from .utils import flatten
 
 
 def bjorklund(k: int, n: int, safe=True) -> List[int]:

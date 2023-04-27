@@ -3,6 +3,7 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
 from typing import Dict, Any
 from .pattern import *
+import datetime
 
 
 class BaseStream(ABC):
@@ -40,7 +41,8 @@ class BaseStream(ABC):
 
             # TODO: fix for osc4py3 (drifting occuring here)
             link_secs = now / mill
-            osc_diff = 0
+            diff = datetime.datetime.utcnow().timestamp() / mill
+            osc_diff = link_secs - diff
             nudge = e.value.get("nudge", 0)
             ts = (link_on / mill) + osc_diff + self.latency + nudge
 
@@ -81,7 +83,7 @@ class SuperDirtStream(BaseStream):
 
     """
 
-    def __init__(self, osc_client, port=57120, latency=0.2, *args, **kwargs):
+    def __init__(self, osc_client, port=57120, latency=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.latency = latency

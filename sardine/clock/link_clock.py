@@ -32,8 +32,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._tempo: float = float(tempo)
         self._subscribers = []
         self._ticks: int = 0
-        # What should I do about this?
-        # self._frame_rate = 1000000 * 1/20
+        self._link_time: int = 0
         self._mill = 1000000
         self._frame_rate = self._mill * 1/20
         self._beats_per_cycle: int = 4
@@ -57,19 +56,20 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         logical_now = math.floor(self._start + (self._ticks * self._frame_rate))
         logical_next = math.floor(self._start + ((self._ticks + 1) * self._frame_rate))
 
-        now = self._link.clock().micros()
         s = self._last_capture
-        cps = ((s.tempo() / self._beats_per_cycle) / 60)
+        cps = float(((s.tempo() / self._beats_per_cycle) / 60.0))
         cycle_from = s.beatAtTime(logical_now, 0) / self._beats_per_cycle
         cycle_to = s.beatAtTime(logical_next, 0) / self._beats_per_cycle
 
         try:
             for sub in self._subscribers:
-                sub.notify_tick((cycle_from, cycle_to), s, cps, self._beats_per_cycle, self._mill, now)
-            return ((cycle_from, cycle_to), s, cps, self._beats_per_cycle, self._mill, now)
+                sub.notify_tick(
+                        (cycle_from, cycle_to),
+                        s, cps, self._beats_per_cycle,
+                        self._mill, self._link_time
+                )
         except Exception as e:
             print(e)
-            return None
 
     ## GETTERS  ################################################
 
@@ -132,13 +132,13 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
     def _capture_link_info(self):
         s: link.SessionState = self._link.captureSessionState()
         self._last_capture = s
-        link_time: int = self._link.clock().micros()
-        beat: float = s.beatAtTime(link_time, self.beats_per_bar)
-        phase: float = s.phaseAtTime(link_time, self.beats_per_bar)
+        self._link_time: int = self._link.clock().micros()
+        beat: float = s.beatAtTime(self._link_time, self.beats_per_bar)
+        phase: float = s.phaseAtTime(self._link_time, self.beats_per_bar)
         playing: bool = s.isPlaying()
         tempo: float = s.tempo()
 
-        self._internal_time = link_time / 1_000_000
+        self._internal_time = self._link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
         # Sardine phase is typically defined from 0.0 to the beat duration.

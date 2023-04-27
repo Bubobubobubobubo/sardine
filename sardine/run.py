@@ -357,6 +357,10 @@ def silence(*runners: AsyncRunner) -> None:
         else:
             bowl.scheduler.stop_runner(run)
 
+def solo(pattern):
+    """Soloing a single player out of all running players"""
+    [silence(pat) for pat in bowl.scheduler.runners if pat.name != (
+        pattern.name or pattern.name)]
 
 def panic(*runners: AsyncRunner) -> None:
     """

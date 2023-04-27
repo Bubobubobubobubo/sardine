@@ -20,7 +20,7 @@ Let me explain what I just wrote:
 - we use a central `sleep(1)` statement to make a pause in our pattern.
 - we do the recursion after a period of `two beats`.
 
-There is something a bit un-intuitive about this. Strictly speaking, **the sleep method is not halting anything, it just report the events coming after it to some point in the future**. Read this twice!
+There is something a bit un-intuitive about this. Strictly speaking, **the sleep method is not halting anything, it just shifts the events coming after it to some point in the future**. Read this twice!
 
 It means that you can `sleep()` for some time but the function will not end if the recursion is coming much later. If will just defer the execution of what comes after the sleep and wait until the function is done looping:
 
@@ -38,7 +38,7 @@ def super_sleeping(p=2, i=0):
     again(super_sleeping, p=2, i=i+1)
 ```
 
-There is a last thing to know about **sleeping**. You can **oversleep** the duration of you function. You can defer an event so hard that it will be deferred after the end of your **swimming function**:
+You can also **oversleep** the duration of you function. You can defer an event so hard that it will occur after the end of your **swimming function**:
 
 ```python
 clock.tempo = 100
@@ -51,3 +51,15 @@ def super_sleeping(p=2, i=0):
 ```
 
 In the example above, the `linnhats` sound is deferred to later, and later means on the **next loop** of our **swimming function**. Rhythms piling up on top of rhythms!
+
+### Patterning sleep()
+This example shows how to add patterning to `sleep()`. Musically this can be used to vary the rhythm.  Notice that this requires use of the [Pattern Object](./pattern_object.md). Don't forget to include the iterator (i)!
+
+```python
+@swim
+def super_sleeping(p=2, i=0):
+    D('cp', speed='[1:5,0.25]', i=i)
+    sleep( P('.85 1.25!3', i) ) # Pattern Object with iterator
+    D('linnhats', speed='[1:5,0.25]', i=i)
+    again(super_sleeping, p=0.5, i=i+1)
+```

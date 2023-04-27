@@ -38,7 +38,7 @@ def super_sleeping(p=2, i=0):
     again(super_sleeping, p=2, i=i+1)
 ```
 
-You can also **oversleep** the duration of you function. You can defer an event so hard that it will occur after the end of your **swimming function**:
+You can also **oversleep** the duration of your function. You defer an event enough so that it occurs after **swimming function** loops:
 
 ```python
 clock.tempo = 100

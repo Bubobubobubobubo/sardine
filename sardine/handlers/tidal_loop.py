@@ -8,7 +8,7 @@ __all__ = ("TidalLoop",)
 
 
 class TidalLoop(BaseRunnerHandler):
-    def __init__(self, *args, loop_interval: float = 0.001, **kwargs):
+    def __init__(self, *args, loop_interval: float = 0.05, **kwargs):
         super().__init__(*args, **kwargs)
         self.loop_interval = loop_interval
 

@@ -32,7 +32,10 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._tempo: float = float(tempo)
         self._subscribers = []
         self._ticks: int = 0
-        self._frame_rate = 1000000 * 1/20
+        # What should I do about this?
+        # self._frame_rate = 1000000 * 1/20
+        self._mill = 1000000
+        self._frame_rate = self._mill * 1/20
         self._beats_per_cycle: int = 4
 
     ## VORTEX   ################################################
@@ -49,28 +52,21 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         """
         Notify Tidal Streams of the current passage of time.
         """
-
-        start_beat = self._link.captureSessionState().beatAtTime(self._start, 4)
-
-        # FIXME rate, bpc and latency should be constructor parameters
         self._ticks += 1
 
         logical_now = math.floor(self._start + (self._ticks * self._frame_rate))
         logical_next = math.floor(self._start + ((self._ticks + 1) * self._frame_rate))
 
         now = self._link.clock().micros()
-
-        wait = (logical_now - now) / 1000000
-
         s = self._last_capture
-        cps = (s.tempo() / self._beats_per_cycle) / 60
+        cps = ((s.tempo() / self._beats_per_cycle) / 60)
         cycle_from = s.beatAtTime(logical_now, 0) / self._beats_per_cycle
         cycle_to = s.beatAtTime(logical_next, 0) / self._beats_per_cycle
 
         try:
             for sub in self._subscribers:
-                sub.notify_tick((cycle_from, cycle_to), s, cps, self._beats_per_cycle, 1000000, now)
-            return ((cycle_from, cycle_to), s, cps, self._beats_per_cycle, 1000000, now)
+                sub.notify_tick((cycle_from, cycle_to), s, cps, self._beats_per_cycle, self._mill, now)
+            return ((cycle_from, cycle_to), s, cps, self._beats_per_cycle, self._mill, now)
         except Exception as e:
             print(e)
             return None

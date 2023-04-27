@@ -38,10 +38,11 @@ class BaseStream(ABC):
             link_off = s.timeAtBeat(cycle_off * bpc, 0)
             delta_secs = (link_off - link_on) / mill
 
-            # TODO: fix for osc4py3
+            # TODO: fix for osc4py3 (drifting occuring here)
             link_secs = now / mill
+            osc_diff = 0
             nudge = e.value.get("nudge", 0)
-            ts = (link_on / mill) + self.latency + nudge
+            ts = (link_on / mill) + osc_diff + self.latency + nudge
 
             self.notify_event(
                 e.value,
@@ -109,4 +110,8 @@ class SuperDirtStream(BaseStream):
         msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
 
         # TODO: make a bundle using osc4py3
-        self._osc_client._dirt_play(msg)
+        self._osc_client._send_timed_message(
+                address="/dirt/play",
+                timestamp=timestamp,
+                message=msg
+        )

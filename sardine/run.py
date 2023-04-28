@@ -11,7 +11,7 @@ from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import SuperDirtStream, s, tidal_factory
-from .sequences.tidal_parser import d as wtf
+from .sequences.tidal_parser import hush as tidal_hush 
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -580,6 +580,11 @@ if config.superdirt_handler:
     tidal_loop = TidalLoop()
     bowl.add_handler(tidal_loop) 
     tidal = tidal_factory(osc_client=dirt, env=bowl)
+    
+    def hush():
+        """Silence function for Tidal Patterns"""
+        tidal_hush()
+        silence()
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

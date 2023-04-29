@@ -174,6 +174,7 @@ class SuperDirtHandler(Sender):
         rate: NumericElement = 1,
         key: str = "C4",
         scale: str = "IONIAN",
+        degrees: bool = False,
         **pattern: ParsableElement,
     ) -> int | float:
         # Replace some shortcut parameters by their real name
@@ -187,7 +188,7 @@ class SuperDirtHandler(Sender):
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
-            ziffer = self._ziffers_parser(ziff, scale=scale, key=key)[iterator]
+            ziffer = self._ziffers_parser(ziff, scale=scale, key=key, degrees=degrees)[iterator]
             try:
                 freq = ziffer.freq
             except AttributeError:  # if there is no note, it must be a silence

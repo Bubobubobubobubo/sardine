@@ -3,7 +3,7 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
 from typing import Dict, Any
 from .pattern import *
-import datetime
+from time import time
 
 
 class BaseStream(ABC):
@@ -112,6 +112,5 @@ class SuperDirtStream(BaseStream):
         # TODO: make a bundle using osc4py3
         self._osc_client._send_timed_message(
                 address="/dirt/play",
-                timestamp=timestamp,
                 message=msg
         )

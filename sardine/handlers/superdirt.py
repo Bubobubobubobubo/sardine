@@ -156,7 +156,7 @@ class SuperDirtHandler(Sender):
 
         pattern["sound"] = sound
         pattern["orbit"] = orbit
-        pattern["cps"] = round(self.env.clock.phase, 4)
+        pattern["cps"] = round(self.env.clock.phase, 1)
         pattern["cycle"] = (
             self.env.clock.bar * self.env.clock.beats_per_bar
         ) + self.env.clock.beat

@@ -15,7 +15,8 @@ class TidalLoop(BaseRunnerHandler):
     async def run(self):
         try:
             while True:
-                target_time = self.loop_interval + (self.env.clock._link.clock().micros() / 1e+6)
+                target_time = self.loop_interval + (
+                        self.env.clock._link.clock().micros() / 1e+6)
                 self.env.clock._notify_tidal_streams()
                 await asyncio.sleep(target_time - self.env.clock._link.clock().micros() / 1e+6)
         finally:

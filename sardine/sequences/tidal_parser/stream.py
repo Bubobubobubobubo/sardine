@@ -41,10 +41,8 @@ class BaseStream(ABC):
 
             # TODO: fix for osc4py3 (drifting occuring here)
             link_secs = now / mill
-            diff = datetime.datetime.utcnow().timestamp() / mill
-            osc_diff = link_secs - diff
             nudge = e.value.get("nudge", 0)
-            ts = (link_on / mill) + osc_diff + self.latency + nudge
+            ts = (link_on / mill) + self.latency + nudge
 
             self.notify_event(
                 e.value,

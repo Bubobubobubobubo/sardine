@@ -30,6 +30,7 @@ class OSCHandler(Sender):
         self._ahead_amount = ahead_amount
         self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
         self._events = {"send": self._send}
+        self._defaults: dict = {}
 
         loop.add_child(self, setup=True)
 
@@ -43,6 +44,11 @@ class OSCHandler(Sender):
     def hook(self, event: str, *args):
         func = self._events[event]
         func(*args)
+
+    # Global parameters
+    @property
+    def defaults(self):
+        return self._defaults
 
     def _send(self, address: str, message: list) -> None:
         msg = oscbuildparse.OSCMessage(address, None, message)
@@ -73,6 +79,7 @@ class OSCHandler(Sender):
         sort: bool = True,
         **pattern: NumericElement,
     ) -> None:
+
         if address is None:
             return
 

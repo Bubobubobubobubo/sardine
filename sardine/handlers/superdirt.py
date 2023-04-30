@@ -38,7 +38,14 @@ class SuperDirtHandler(Sender):
 
         self._ziffers_parser = None
 
+        self._defaults: dict = {}
+
         loop.add_child(self, setup=True)
+
+    # Global parameters
+    @property
+    def defaults(self):
+        return self._defaults
 
     # Ziffers implementation
     @property
@@ -146,6 +153,7 @@ class SuperDirtHandler(Sender):
 
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
+        pattern = {**self._defaults, **pattern}
 
         pattern["sound"] = sound
         pattern["orbit"] = orbit
@@ -179,6 +187,7 @@ class SuperDirtHandler(Sender):
     ) -> int | float:
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
+        pattern = {**self._defaults, **pattern}
 
         if self.apply_conditional_mask_to_bars(
             pattern=pattern,

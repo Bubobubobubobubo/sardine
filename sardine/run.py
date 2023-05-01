@@ -623,6 +623,3 @@ if config.superdirt_handler:
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
-
-pa * d('bd sn')
-tidal('ba', s('bd sn'))

@@ -23,23 +23,27 @@ class BaseStream(ABC):
         self.name = name
         self.pattern = None
 
-    def notify_tick(self, cycle, s, cps, bpc, mill, now):
+    def notify_tick(self, 
+                    cycle: tuple, 
+                    info: tuple,
+                    cycles_per_second: float,
+                    beats_per_cycle: int,
+                    now: int|float
+    ):
         """Called by a Clock every time it ticks, when subscribed to it"""
         if not self.pattern:
             return
 
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
+        mill = 1000000
 
         for e in es:
             cycle_on = e.whole.begin
             cycle_off = e.whole.end
-
-            link_on = s.timeAtBeat(cycle_on * bpc, 0)
-            link_off = s.timeAtBeat(cycle_off * bpc, 0)
+            link_on, link_off = info
             delta_secs = (link_off - link_on) / mill
 
-            # TODO: fix for osc4py3 (drifting occuring here)
             link_secs = now / mill
             nudge = e.value.get("nudge", 0)
             ts = (link_on / mill) + self.latency + nudge
@@ -47,7 +51,7 @@ class BaseStream(ABC):
             self.notify_event(
                 e.value,
                 timestamp=ts,
-                cps=float(cps),
+                cps=float(cycles_per_second),
                 cycle=float(cycle_on),
                 delta=float(delta_secs),
             )

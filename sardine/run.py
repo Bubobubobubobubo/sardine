@@ -10,7 +10,14 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
-from .sequences.tidal_parser import SuperDirtStream, s, tidal_factory, hush_factory
+from .sequences.tidal_parser import (
+        SuperDirtStream, 
+        s, 
+        tidal_factory,
+        hush_factory, 
+        rev, fast, slow, early,
+        late, jux, union, degrade,
+        run, scan, timecat, choose)
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -583,16 +590,39 @@ def MIDIController(
 # VORTEX
 
 if config.superdirt_handler:
-    tidal = tidal_factory(osc_client=dirt, env=bowl)
-    hush  = hush_factory(osc_client=dirt, env=bowl)
+    tidal = tidal_factory(
+            osc_client=dirt,
+            env=bowl,
+            tidal_players=bowl._vortex_subscribers
+    )
+    hush  = hush_factory(
+            osc_client=dirt,
+            env=bowl,
+            tidal_players=bowl._vortex_subscribers
+    )
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=1/20):
+    def tidal_loop(p=1/10):
+        """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        again(tidal_loop, p=1/20)
+        again(tidal_loop, p=1/10)
+
+    def tidal_snap(amount: int|float = 0.0) -> None:
+        global tidal_loop
+        @swim(snap=amount, background_job=True)
+        def tidal_loop(p=1/20):
+            """Background Tidal/Vortex AsyncRunner"""
+            clock._notify_tidal_streams()
+            again(tidal_loop, p=1/20)
+        tidal_loop._skip_iteration()
+        tidal_loop.reload()
+
+
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
 
+pa * d('bd sn')
+tidal('ba', s('bd sn'))

@@ -26,47 +26,56 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._internal_origin: float = 0.0
         self._internal_time: float = 0.0
         self._last_capture: Optional[link.SessionState] = None
-        self._start: float = 0.0
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
-        self._subscribers = []
-        self._ticks: int = 0
+        self._tidal_nudge: int = 0
         self._link_time: int = 0
-        self._mill = 1000000
-        self._frame_rate = self._mill * 1/20
         self._beats_per_cycle: int = 4
+        self._framerate: float = 1/20
 
     ## VORTEX   ################################################
 
-    def subscribe(self, subscriber):
-        """Subscribe an object to tick notifications"""
-        self._subscribers.append(subscriber)
+    def get_cps(self) -> int|float:
+        """Get the BPM in cycles per second (Tidal approach to time)"""
+        return self.tempo / self._beats_per_bar / 60.0
 
-    def unsubscribe(self, subscriber):
-        """Unsubscribe from tick notifications"""
-        self._subscribers.remove(subscriber)
+    @property
+    def cps(self) -> int|float:
+        """Return the current cps"""
+        return self.get_cps()
+
+    @cps.setter
+    def cps(self, value: int|float) -> None:
+        self.tempo = value * self._beats_per_bar * 60.0
+
 
     def _notify_tidal_streams(self):
         """
         Notify Tidal Streams of the current passage of time.
         """
-        self._ticks += 1
 
-        logical_now = math.floor(self._start + (self._ticks * self._frame_rate))
-        logical_next = math.floor(self._start + ((self._ticks + 1) * self._frame_rate))
+        cycle_factor = self.beat_duration / self.beats_per_bar
+        time = self.shifted_time + self._tidal_nudge
 
-        s = self._last_capture
-        cps = float(((s.tempo() / self._beats_per_cycle) / 60.0))
-        cycle_from = s.beatAtTime(logical_now, 0) / self._beats_per_cycle
-        cycle_to = s.beatAtTime(logical_next, 0) / self._beats_per_cycle
+        cycle_from, cycle_to = (
+                time / cycle_factor,
+                (time / cycle_factor) + self._framerate
+        )
+
+        time_on, time_off = (
+                cycle_from * cycle_factor,
+                cycle_to * cycle_factor
+        )
 
         try:
-            for sub in self._subscribers:
+            for sub in self.env._vortex_subscribers:
                 sub.notify_tick(
-                        (cycle_from, cycle_to),
-                        s, cps, self._beats_per_cycle,
-                        self._mill, self._link_time
+                        cycle=(cycle_from, cycle_to),
+                        info=(time_on, time_off),
+                        cycles_per_second=self.cps,
+                        beats_per_cycle=self._beats_per_cycle,
+                        now=time
                 )
         except Exception as e:
             print(e)
@@ -151,7 +160,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._link = link.Link(self._tempo)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
-        self._start = self._link.clock().micros()
 
         # Set the origin at the start
         self._capture_link_info()

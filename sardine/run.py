@@ -605,7 +605,7 @@ if config.superdirt_handler:
             self.name = name
             self.orbit_number = orbit_number
         def __mul__(self, pattern):
-            tidal(self.name, pattern.orbit(self.orbit_number))
+            tidal(self.name, pattern.orbit(self.orbit_number).slow(4))
     d1 = TidalD(name="d1", orbit_number=0)
     d2 = TidalD(name="d2", orbit_number=1)
     d3 = TidalD(name="d3", orbit_number=2)
@@ -618,25 +618,15 @@ if config.superdirt_handler:
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=1/20):
+    def tidal_loop(p=1):
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        again(tidal_loop, p=1/20)
-
-    def tidal_snap(amount: int|float = 0.0) -> None:
-        global tidal_loop
-        @swim(snap=amount, background_job=True)
-        def tidal_loop(p=clock.beat_duration/20):
-            """Background Tidal/Vortex AsyncRunner"""
-            clock._notify_tidal_streams()
-            again(tidal_loop, p=clock.beat_duration/20)
-        tidal_loop._skip_iteration()
-        tidal_loop.reload()
-
+        tidal_loop_speed = clock.beat_duration / 16
+        again(tidal_loop, p=tidal_loop_speed)
 
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
 
-d1 * s('bd hh sn hh')
+d1 * s('<~ bd drum> <hh sn>')

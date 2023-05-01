@@ -55,18 +55,18 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         Notify Tidal Streams of the current passage of time.
         """
 
-        # cycle_factor = self.beat_duration / self.beats_per_bar
-        cycle_factor = self.beat_duration
-        time = self.shifted_time + self._tidal_nudge
+        cycle_factor = self.beat_duration / self.beats_per_bar
+        # cycle_factor = self.beat_duration
+        time = (self.shifted_time + self._tidal_nudge)
 
         cycle_from, cycle_to = (
-                time / cycle_factor,
-                (time / cycle_factor) + self._framerate
+                (time / cycle_factor),
+                ((time / cycle_factor) + self._framerate),
         )
 
         time_on, time_off = (
-                cycle_from * cycle_factor,
-                cycle_to * cycle_factor
+                (cycle_from * cycle_factor),
+                (cycle_to * cycle_factor)
         )
 
         try:

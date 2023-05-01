@@ -600,21 +600,36 @@ if config.superdirt_handler:
             env=bowl,
             tidal_players=bowl._vortex_subscribers
     )
+    class TidalD():
+        def __init__(self, name: str, orbit_number: int):
+            self.name = name
+            self.orbit_number = orbit_number
+        def __mul__(self, pattern):
+            tidal(self.name, pattern.orbit(self.orbit_number))
+    d1 = TidalD(name="d1", orbit_number=0)
+    d2 = TidalD(name="d2", orbit_number=1)
+    d3 = TidalD(name="d3", orbit_number=2)
+    d4 = TidalD(name="d4", orbit_number=3)
+    d5 = TidalD(name="d5", orbit_number=4)
+    d6 = TidalD(name="d6", orbit_number=5)
+    d7 = TidalD(name="d7", orbit_number=6)
+    d8 = TidalD(name="d8", orbit_number=7)
+    d9 = TidalD(name="d9", orbit_number=8)
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=1/10):
+    def tidal_loop(p=1/20):
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        again(tidal_loop, p=1/10)
+        again(tidal_loop, p=1/20)
 
     def tidal_snap(amount: int|float = 0.0) -> None:
         global tidal_loop
         @swim(snap=amount, background_job=True)
-        def tidal_loop(p=1/20):
+        def tidal_loop(p=clock.beat_duration/20):
             """Background Tidal/Vortex AsyncRunner"""
             clock._notify_tidal_streams()
-            again(tidal_loop, p=1/20)
+            again(tidal_loop, p=clock.beat_duration/20)
         tidal_loop._skip_iteration()
         tidal_loop.reload()
 
@@ -623,3 +638,5 @@ if config.superdirt_handler:
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
+
+d1 * s('bd hh sn hh')

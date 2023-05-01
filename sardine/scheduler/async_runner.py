@@ -118,6 +118,12 @@ class AsyncRunner:
     name: str
     """Uniquely identifies a runner when it is added to a scheduler."""
 
+    background_job: bool
+    """Determines if the asyncrunner should be running the background
+    and never be interrupted by silence(), panic() or any manual stop
+    function.
+    """
+
     scheduler: "Optional[Scheduler]"
     """The scheduler this runner was added to."""
     states: MutableSequence[FunctionState]
@@ -194,6 +200,7 @@ class AsyncRunner:
         self.deferred_states = []
         self.interval_shift = 0.0
         self.snap = None
+        self.background_job = False
 
         self._swimming = False
         self._stop = False
@@ -479,7 +486,8 @@ class AsyncRunner:
             self._revert_state()
             raise exc
 
-        print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+        if not self.background_job:
+            print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self._is_ready_for_iteration():

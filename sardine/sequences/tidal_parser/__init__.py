@@ -21,12 +21,15 @@ def tidal_factory(env, osc_client):
 
     return tidal
 
+def hush_factory(env, osc_client):
 
-def hush():
-    for stream in __streams.values():
-        stream.pattern = silence
-        _default_clock.unsubscribe(stream)
-    __streams.clear()
+    def hush():
+        for stream in __streams.values():
+            stream.pattern = silence
+            env.clock.unsubscribe(stream)
+        __streams.clear()
+
+    return hush
 
 
 class __Streams:

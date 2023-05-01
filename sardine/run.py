@@ -10,8 +10,7 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
-from .sequences.tidal_parser import SuperDirtStream, s, tidal_factory
-from .sequences.tidal_parser import hush as tidal_hush 
+from .sequences.tidal_parser import SuperDirtStream, s, tidal_factory, hush_factory
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -188,6 +187,7 @@ def swim(
     *args,
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
+    background_job: bool = False,
     **kwargs,
 ):
     """
@@ -208,6 +208,10 @@ def swim(
         until (Optional[int]):
             Specifies the number of iterations this function should run for.
             This is a shorthand for using the `@for_()` decorator.
+        background_job (bool):
+            Determines if the asyncrunner is a background job or not. Being a
+            background job isolates the asyncrunner from any interruption by
+            the user (silence() or panic()).
         **kwargs: Keyword arguments to be passed to `func.`
     """
 
@@ -223,6 +227,8 @@ def swim(
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
             runner = AsyncRunner(func.__name__)
+            if background_job:
+                runner.background_job = True
         elif not runner.is_running():
             # Runner has likely stopped swimming, in which case
             # we should make sure the old state doesn't pollute
@@ -357,7 +363,8 @@ def silence(*runners: AsyncRunner) -> None:
         if isinstance(run, Player):
             run.stop()
         else:
-            bowl.scheduler.stop_runner(run)
+            if not run.background_job:
+                bowl.scheduler.stop_runner(run)
 
 
 def panic(*runners: AsyncRunner) -> None:
@@ -576,15 +583,14 @@ def MIDIController(
 # VORTEX
 
 if config.superdirt_handler:
-    # Adding a runner that will notify Tidal patterns
-    tidal_loop = TidalLoop()
-    bowl.add_handler(tidal_loop) 
     tidal = tidal_factory(osc_client=dirt, env=bowl)
-    
-    def hush():
-        """Silence function for Tidal Patterns"""
-        tidal_hush()
-        silence()
+    hush  = hush_factory(osc_client=dirt, env=bowl)
+
+    # Background asyncrunner for running tidal patterns
+    @swim(background_job=True)
+    def tidal_loop(p=1/20):
+        clock._notify_tidal_streams()
+        again(tidal_loop, p=1/20)
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

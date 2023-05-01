@@ -56,6 +56,7 @@ class InternalClock(BaseClock):
                 time / cycle_factor,
                 (time / cycle_factor) + self._framerate
         )
+
         time_on, time_off = (
                 cycle_from * cycle_factor,
                 cycle_to * cycle_factor
@@ -68,7 +69,8 @@ class InternalClock(BaseClock):
                         info=(time_on, time_off),
                         cycles_per_second=self.cps,
                         beats_per_cycle=self.beats_per_cycle,
-                        now=time)
+                        now=time
+                )
         except Exception as e:
             print(e)
 

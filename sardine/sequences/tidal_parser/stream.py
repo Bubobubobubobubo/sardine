@@ -35,6 +35,8 @@ class BaseStream(ABC):
             return
 
         cycle_from, cycle_to = cycle
+        cycle_from = round(cycle_from, 2)
+        cycle_to = round(cycle_to, 2)
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
         mill = 1000000
 

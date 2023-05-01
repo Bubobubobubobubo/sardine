@@ -628,5 +628,3 @@ if config.superdirt_handler:
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
-
-d1 * s('<~ bd drum> <hh sn>')

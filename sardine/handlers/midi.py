@@ -75,6 +75,14 @@ class MidiHandler(Sender):
         # Reference to the ziffers parser if needed!
         self._ziffers_parser = None
 
+        # For global parameters
+        self._defaults: dict = {}
+
+    # Global parameters
+    @property
+    def defaults(self):
+        return self._defaults
+
     # Ziffers implementation
     @property
     def ziffers_parser(self):
@@ -187,27 +195,41 @@ class MidiHandler(Sender):
         - retriggering: turning a note off and on again if the note is repeated before
           the end of its previously defined duration.
         """
+        pattern = {
+                'note': note,
+                'channel': channel,
+                'velocity': velocity,
+                'duration': duration
+        }
+        pattern = {**self._defaults, **pattern}
 
-        key = (note, channel)
+        key = (pattern['note'], pattern['channel'])
         note_task = self.active_notes.get(key)
 
         if note_task is not None and not note_task.done():
             # Brute force solution (temporary fix)
-            self._note_off(channel=channel, note=note, velocity=0)
+            self._note_off(
+                    channel=pattern['channel'],
+                    note=pattern['note'],
+                    velocity=0
+            )
             note_task.cancel()
             self.active_notes.pop(key, None)
 
         self._midi.send(
             mido.Message(
                 "note_on",
-                note=int(note),
-                channel=int(channel),
-                velocity=int(velocity),
+                note=int(pattern['note']),
+                channel=int(pattern['channel']),
+                velocity=int(pattern['velocity']),
             )
         )
         self.active_notes[key] = asyncio.create_task(
             self.send_off(
-                note=note, delay=duration - 0.02, velocity=velocity, channel=channel
+                note=pattern['note'],
+                delay=pattern['duration'] - 0.02,
+                velocity=pattern['velocity'],
+                channel=pattern['channel']
             )
         )
 
@@ -241,6 +263,7 @@ class MidiHandler(Sender):
             return
 
         pattern = {"control": control, "channel": channel, "value": value}
+        pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["control"] is None:
@@ -272,6 +295,7 @@ class MidiHandler(Sender):
             return
 
         pattern = {"channel": channel, "program": program}
+        pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["channel"] is None:
@@ -367,7 +391,7 @@ class MidiHandler(Sender):
             "channel": channel,
             "duration": duration,
         }
-
+        pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
 
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
@@ -426,6 +450,7 @@ class MidiHandler(Sender):
                 "duration": duration,
                 "program_change": (program_change if program_change else None),
             }
+            pattern = {**self._defaults, **pattern}
             deadline = self.env.clock.shifted_time
             for message in self.pattern_reduce(pattern, iterator, divisor, rate):
                 if message["program_change"] is not None:
@@ -535,6 +560,7 @@ class MidiHandler(Sender):
             "duration": duration,
             "program_change": program_change,
         }
+        pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(pattern, iterator, divisor, rate):
             if message["program_change"] is not None:

@@ -62,6 +62,10 @@ class Player(BaseHandler):
         self._iteration_span: Number = 1
         self._period: int | float = 1.0
 
+    @property
+    def name(self) -> str:
+        return self._name
+
     def fit_period_to_timespan(self, period: NumericElement, timespan: float):
         """
         Fit a given period to a certain timestamp (forcing a pattern to have a fixed

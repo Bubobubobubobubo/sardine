@@ -386,6 +386,10 @@ def silence(*runners: AsyncRunner) -> None:
         if config.superdirt_handler:
             hush()
 
+def solo(pattern):
+    """Soloing a single player out of all running players"""
+    [silence(pat) for pat in bowl.scheduler.runners if pat.name != pattern.name]
+
 def panic(*runners: AsyncRunner) -> None:
     """
     If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to

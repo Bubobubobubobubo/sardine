@@ -623,6 +623,11 @@ if config.superdirt_handler:
         clock._notify_tidal_streams()
         again(tidal_loop, p=0.05/4)
 
+    def silence(*runners: AsyncRunner):
+        """Overloaded silence function with hush() (Vortex) capabilities"""
+        silence(runners)
+        hush()
+
 
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE

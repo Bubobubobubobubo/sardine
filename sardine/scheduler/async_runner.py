@@ -118,6 +118,12 @@ class AsyncRunner:
     name: str
     """Uniquely identifies a runner when it is added to a scheduler."""
 
+    background_job: bool
+    """Determines if the asyncrunner should be running the background
+    and never be interrupted by silence(), panic() or any manual stop
+    function.
+    """
+
     scheduler: "Optional[Scheduler]"
     """The scheduler this runner was added to."""
     states: MutableSequence[FunctionState]
@@ -194,6 +200,7 @@ class AsyncRunner:
         self.deferred_states = []
         self.interval_shift = 0.0
         self.snap = None
+        self.background_job = False
 
         self._swimming = False
         self._stop = False
@@ -433,6 +440,16 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
+    def _correct_interval_background_job(self, period: Union[float, int]):
+        """Alternative version for fixed-rate background jobs"""
+        interval = period
+        if self._can_correct_interval and interval != self._last_interval:
+            time = self._expected_time
+            self.interval_shift = self.clock.get_beat_time(period, time=time)
+
+        self._last_interval = interval
+        self._can_correct_interval = False
+
     def _get_corrected_interval(self, period: Union[float, int]) -> float:
         """Returns the amount of time until the next interval.
 
@@ -479,7 +496,8 @@ class AsyncRunner:
             self._revert_state()
             raise exc
 
-        print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+        if not self.background_job:
+            print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self._is_ready_for_iteration():
@@ -520,7 +538,10 @@ class AsyncRunner:
             kwargs = _discard_kwargs(signature, state.kwargs)
             period = _extract_new_period(signature, state.kwargs)
 
-            self._correct_interval(period)
+            if not self.background_job:
+                self._correct_interval(period)
+            else:
+                self._correct_interval_background_job(period)
             deadline = self._get_corrected_interval(period)
 
         # Push any deferred states that have or will arrive onto the stack

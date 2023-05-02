@@ -43,6 +43,7 @@ class FishBowl:
         self._handlers: dict[BaseHandler, None] = {}
         self._alive = asyncio.Event()
         self._resumed = asyncio.Event()
+        self._vortex_subscribers: list = []
 
         self._event_hooks: dict[
             Optional[str], dict[HookProtocol, None]

@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 import link
+import math
 
 from ..base import BaseClock, BaseThreadedLoopMixin
 
@@ -24,9 +25,57 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._beats_per_bar: int = bpb
         self._internal_origin: float = 0.0
         self._internal_time: float = 0.0
+        self._last_capture: Optional[link.SessionState] = None
         self._phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
+        self._tidal_nudge: int = 0
+        self._link_time: int = 0
+        self._beats_per_cycle: int = 4
+        self._framerate: float = 1 / 20
+
+    ## VORTEX   ################################################
+
+    def get_cps(self) -> int | float:
+        """Get the BPM in cycles per second (Tidal approach to time)"""
+        return self.tempo / self._beats_per_bar / 60.0
+
+    @property
+    def cps(self) -> int | float:
+        """Return the current cps"""
+        return self.get_cps()
+
+    @cps.setter
+    def cps(self, value: int | float) -> None:
+        self.tempo = value * self._beats_per_bar * 60.0
+
+    def _notify_tidal_streams(self):
+        """
+        Notify Tidal Streams of the current passage of time.
+        """
+
+        cycle_factor = self.beat_duration / self.beats_per_bar
+        # cycle_factor = self.beat_duration
+        time = self.shifted_time + self._tidal_nudge
+
+        cycle_from, cycle_to = (
+            (time / cycle_factor),
+            ((time / cycle_factor) + self._framerate),
+        )
+
+        time_on, time_off = ((cycle_from * cycle_factor), (cycle_to * cycle_factor))
+
+        try:
+            for sub in self.env._vortex_subscribers:
+                sub.notify_tick(
+                    cycle=(cycle_from, cycle_to),
+                    info=(time_on, time_off),
+                    cycles_per_second=self.cps,
+                    beats_per_cycle=self._beats_per_cycle,
+                    now=time,
+                )
+        except Exception as e:
+            print(e)
 
     ## GETTERS  ################################################
 
@@ -88,13 +137,14 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def _capture_link_info(self):
         s: link.SessionState = self._link.captureSessionState()
-        link_time: int = self._link.clock().micros()
-        beat: float = s.beatAtTime(link_time, self.beats_per_bar)
-        phase: float = s.phaseAtTime(link_time, self.beats_per_bar)
+        self._last_capture = s
+        self._link_time: int = self._link.clock().micros()
+        beat: float = s.beatAtTime(self._link_time, self.beats_per_bar)
+        phase: float = s.phaseAtTime(self._link_time, self.beats_per_bar)
         playing: bool = s.isPlaying()
         tempo: float = s.tempo()
 
-        self._internal_time = link_time / 1_000_000
+        self._internal_time = self._link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
         # Sardine phase is typically defined from 0.0 to the beat duration.

@@ -20,6 +20,55 @@ class InternalClock(BaseClock):
         self.tempo = tempo
         self.beats_per_bar = bpb
         self._internal_origin = 0.0
+        self._tidal_nudge: float = 0.0
+        self._framerate = 1 / 20
+        self._start: float = time.time()
+
+    #### VORTEX  #############################################################
+
+    def get_cps(self) -> int | float:
+        """Get the BPM in cycles per second (Tidal approach to time)"""
+        return self.tempo / self._beats_per_bar / 60.0
+
+    @property
+    def beats_per_cycle(self) -> int | float:
+        return self.beats_per_bar
+
+    @property
+    def cps(self) -> int | float:
+        """Return the current cps"""
+        return self.get_cps()
+
+    @cps.setter
+    def cps(self, value: int | float) -> None:
+        self.tempo = value * self._beats_per_bar * 60.0
+
+    def _notify_tidal_streams(self):
+        """
+        Notify Tidal Streams of the current passage of time.
+        """
+
+        cycle_factor = self.beat_duration / self.beats_per_bar
+        time = self.shifted_time + self._tidal_nudge
+
+        cycle_from, cycle_to = (
+            time / cycle_factor,
+            (time / cycle_factor) + self._framerate,
+        )
+
+        time_on, time_off = (cycle_from * cycle_factor, cycle_to * cycle_factor)
+
+        try:
+            for sub in self.env._vortex_subscribers:
+                sub.notify_tick(
+                    cycle=(cycle_from, cycle_to),
+                    info=(time_on, time_off),
+                    cycles_per_second=self.cps,
+                    beats_per_cycle=self.beats_per_cycle,
+                    now=time,
+                )
+        except Exception as e:
+            print(e)
 
     #### GETTERS  ############################################################
 

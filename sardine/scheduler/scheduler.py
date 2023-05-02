@@ -104,7 +104,8 @@ class Scheduler(BaseHandler):
             **kwargs: Keyword arguments to be passed to `stop_runner()`.
         """
         for runner in self.runners:
-            self.stop_runner(runner, *args, **kwargs)
+            if not runner.background_job:
+                self.stop_runner(runner, *args, **kwargs)
 
     # Internal methods
 

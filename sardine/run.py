@@ -10,6 +10,24 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
+from .sequences.tidal_parser import (
+    SuperDirtStream,
+    s,
+    tidal_factory,
+    hush_factory,
+    rev,
+    fast,
+    slow,
+    early,
+    late,
+    jux,
+    union,
+    degrade,
+    run,
+    scan,
+    timecat,
+    choose,
+)
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -186,6 +204,7 @@ def swim(
     *args,
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
+    background_job: bool = False,
     **kwargs,
 ):
     """
@@ -206,6 +225,10 @@ def swim(
         until (Optional[int]):
             Specifies the number of iterations this function should run for.
             This is a shorthand for using the `@for_()` decorator.
+        background_job (bool):
+            Determines if the asyncrunner is a background job or not. Being a
+            background job isolates the asyncrunner from any interruption by
+            the user (silence() or panic()).
         **kwargs: Keyword arguments to be passed to `func.`
     """
 
@@ -221,6 +244,8 @@ def swim(
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
             runner = AsyncRunner(func.__name__)
+            if background_job:
+                runner.background_job = True
         elif not runner.is_running():
             # Runner has likely stopped swimming, in which case
             # we should make sure the old state doesn't pollute
@@ -349,13 +374,17 @@ def silence(*runners: AsyncRunner) -> None:
     if len(runners) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
+        hush()
         return
 
     for run in runners:
         if isinstance(run, Player):
             run.stop()
         else:
-            bowl.scheduler.stop_runner(run)
+            if not run.background_job:
+                bowl.scheduler.stop_runner(run)
+        if config.superdirt_handler:
+            hush()
 
 def solo(pattern):
     """Soloing a single player out of all running players"""
@@ -575,16 +604,42 @@ def MIDIController(
 
 
 #######################################################################################
+# VORTEX
+
+if config.superdirt_handler:
+    tidal = tidal_factory(
+        osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
+    )
+    hush = hush_factory(
+        osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
+    )
+
+    class TidalD:
+        def __init__(self, name: str, orbit_number: int):
+            self.name = name
+            self.orbit_number = orbit_number
+
+        def __mul__(self, pattern):
+            tidal(self.name, pattern.orbit(self.orbit_number).slow(4))
+
+    d1 = TidalD(name="d1", orbit_number=0)
+    d2 = TidalD(name="d2", orbit_number=1)
+    d3 = TidalD(name="d3", orbit_number=2)
+    d4 = TidalD(name="d4", orbit_number=3)
+    d5 = TidalD(name="d5", orbit_number=4)
+    d6 = TidalD(name="d6", orbit_number=5)
+    d7 = TidalD(name="d7", orbit_number=6)
+    d8 = TidalD(name="d8", orbit_number=7)
+    d9 = TidalD(name="d9", orbit_number=8)
+
+    # Background asyncrunner for running tidal patterns
+    @swim(background_job=True)
+    def tidal_loop(p=0.05 / 4):
+        """Background Tidal/Vortex AsyncRunner"""
+        clock._notify_tidal_streams()
+        again(tidal_loop, p=0.05 / 4)
+
+
+#######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
-
-try:
-    # MIDI Handler: matching with the MIDI port defined in the configuration file
-    bitwig = MidiHandler(port_name="MIDI Bus 1")
-    bowl.add_handler(bitwig)
-    if ziffers_imported:
-        bitwig._ziffers_parser = bz
-except OSError as e:
-    print(f"{e}: [red]Invalid MIDI port![/red]")
-def drum(*args, **kwargs):
-    return _play_factory(bitwig, bitwig.send, *args, **kwargs)

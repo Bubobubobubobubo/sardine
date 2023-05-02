@@ -23,12 +23,13 @@ class BaseStream(ABC):
         self.name = name
         self.pattern = None
 
-    def notify_tick(self, 
-                    cycle: tuple, 
-                    info: tuple,
-                    cycles_per_second: float,
-                    beats_per_cycle: int,
-                    now: int|float
+    def notify_tick(
+        self,
+        cycle: tuple,
+        info: tuple,
+        cycles_per_second: float,
+        beats_per_cycle: int,
+        now: int | float,
     ):
         """Called by a Clock every time it ticks, when subscribed to it"""
         if not self.pattern:
@@ -115,7 +116,4 @@ class SuperDirtStream(BaseStream):
         msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
 
         # TODO: make a bundle using osc4py3
-        self._osc_client._send_timed_message(
-                address="/dirt/play",
-                message=msg
-        )
+        self._osc_client._send_timed_message(address="/dirt/play", message=msg)

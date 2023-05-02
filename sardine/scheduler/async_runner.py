@@ -440,7 +440,7 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
-    def _correct_interval_background_job(self, period: Union[float, int]): 
+    def _correct_interval_background_job(self, period: Union[float, int]):
         """Alternative version for fixed-rate background jobs"""
         interval = period
         if self._can_correct_interval and interval != self._last_interval:
@@ -449,7 +449,6 @@ class AsyncRunner:
 
         self._last_interval = interval
         self._can_correct_interval = False
-
 
     def _get_corrected_interval(self, period: Union[float, int]) -> float:
         """Returns the amount of time until the next interval.

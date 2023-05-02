@@ -32,23 +32,22 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._tidal_nudge: int = 0
         self._link_time: int = 0
         self._beats_per_cycle: int = 4
-        self._framerate: float = 1/20
+        self._framerate: float = 1 / 20
 
     ## VORTEX   ################################################
 
-    def get_cps(self) -> int|float:
+    def get_cps(self) -> int | float:
         """Get the BPM in cycles per second (Tidal approach to time)"""
         return self.tempo / self._beats_per_bar / 60.0
 
     @property
-    def cps(self) -> int|float:
+    def cps(self) -> int | float:
         """Return the current cps"""
         return self.get_cps()
 
     @cps.setter
-    def cps(self, value: int|float) -> None:
+    def cps(self, value: int | float) -> None:
         self.tempo = value * self._beats_per_bar * 60.0
-
 
     def _notify_tidal_streams(self):
         """
@@ -56,27 +55,24 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         """
 
         cycle_factor = self.beat_duration / self.beats_per_bar
-        # cycle_factor = self.beat_duration
-        time = (self.shifted_time + self._tidal_nudge)
+        # cycle_factor = self.beat_duration
+        time = self.shifted_time + self._tidal_nudge
 
         cycle_from, cycle_to = (
-                (time / cycle_factor),
-                ((time / cycle_factor) + self._framerate),
+            (time / cycle_factor),
+            ((time / cycle_factor) + self._framerate),
         )
 
-        time_on, time_off = (
-                (cycle_from * cycle_factor),
-                (cycle_to * cycle_factor)
-        )
+        time_on, time_off = ((cycle_from * cycle_factor), (cycle_to * cycle_factor))
 
         try:
             for sub in self.env._vortex_subscribers:
                 sub.notify_tick(
-                        cycle=(cycle_from, cycle_to),
-                        info=(time_on, time_off),
-                        cycles_per_second=self.cps,
-                        beats_per_cycle=self._beats_per_cycle,
-                        now=time
+                    cycle=(cycle_from, cycle_to),
+                    info=(time_on, time_off),
+                    cycles_per_second=self.cps,
+                    beats_per_cycle=self._beats_per_cycle,
+                    now=time,
                 )
         except Exception as e:
             print(e)

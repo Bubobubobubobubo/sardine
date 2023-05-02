@@ -11,13 +11,23 @@ from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import (
-        SuperDirtStream, 
-        s, 
-        tidal_factory,
-        hush_factory, 
-        rev, fast, slow, early,
-        late, jux, union, degrade,
-        run, scan, timecat, choose)
+    SuperDirtStream,
+    s,
+    tidal_factory,
+    hush_factory,
+    rev,
+    fast,
+    slow,
+    early,
+    late,
+    jux,
+    union,
+    degrade,
+    run,
+    scan,
+    timecat,
+    choose,
+)
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 
@@ -586,26 +596,26 @@ def MIDIController(
 
     return (midi_controller, midi_controller_player)
 
+
 #######################################################################################
 # VORTEX
 
 if config.superdirt_handler:
     tidal = tidal_factory(
-            osc_client=dirt,
-            env=bowl,
-            tidal_players=bowl._vortex_subscribers
+        osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
     )
-    hush  = hush_factory(
-            osc_client=dirt,
-            env=bowl,
-            tidal_players=bowl._vortex_subscribers
+    hush = hush_factory(
+        osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
     )
-    class TidalD():
+
+    class TidalD:
         def __init__(self, name: str, orbit_number: int):
             self.name = name
             self.orbit_number = orbit_number
+
         def __mul__(self, pattern):
             tidal(self.name, pattern.orbit(self.orbit_number).slow(4))
+
     d1 = TidalD(name="d1", orbit_number=0)
     d2 = TidalD(name="d2", orbit_number=1)
     d3 = TidalD(name="d3", orbit_number=2)
@@ -616,12 +626,12 @@ if config.superdirt_handler:
     d8 = TidalD(name="d8", orbit_number=7)
     d9 = TidalD(name="d9", orbit_number=8)
 
-    # Background asyncrunner for running tidal patterns
+    # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=0.05/4):
+    def tidal_loop(p=0.05 / 4):
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        again(tidal_loop, p=0.05/4)
+        again(tidal_loop, p=0.05 / 4)
 
     def silence(*runners: AsyncRunner):
         """Overloaded silence function with hush() (Vortex) capabilities"""

@@ -7,6 +7,7 @@ from .stream import SuperDirtStream
 
 __streams = {}
 
+
 def tidal_factory(env, osc_client, tidal_players):
     """Returns a tidal function to play Tidal patterns on a given OSC client"""
     env = env
@@ -21,8 +22,8 @@ def tidal_factory(env, osc_client, tidal_players):
 
     return tidal
 
-def hush_factory(env, osc_client, tidal_players):
 
+def hush_factory(env, osc_client, tidal_players):
     def hush():
         for stream in __streams.values():
             stream.pattern = silence

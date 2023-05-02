@@ -77,14 +77,10 @@ class SuperDirtHandler(Sender):
         osc_send(bun, self._name)
 
     def _send_timed_message(
-            self, 
-            address: str,
-            message: list,
-            timestamp: Optional[int | float] = None
+        self, address: str, message: list, timestamp: Optional[int | float] = None
     ) -> None:
         """Build and send OSC bundles"""
-        timestamp = (time.time() + self._ahead_amount if timestamp
-                     is None else timestamp)
+        timestamp = time.time() + self._ahead_amount if timestamp is None else timestamp
         msg = oscbuildparse.OSCMessage(address, None, message)
         bun = oscbuildparse.OSCBundle(
             oscbuildparse.unixtime2timetag(timestamp),

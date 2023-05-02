@@ -440,6 +440,17 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
+    def _correct_interval_background_job(self, period: Union[float, int]): 
+        """Alternative version for fixed-rate background jobs"""
+        interval = period
+        if self._can_correct_interval and interval != self._last_interval:
+            time = self._expected_time
+            self.interval_shift = self.clock.get_beat_time(period, time=time)
+
+        self._last_interval = interval
+        self._can_correct_interval = False
+
+
     def _get_corrected_interval(self, period: Union[float, int]) -> float:
         """Returns the amount of time until the next interval.
 
@@ -528,7 +539,10 @@ class AsyncRunner:
             kwargs = _discard_kwargs(signature, state.kwargs)
             period = _extract_new_period(signature, state.kwargs)
 
-            self._correct_interval(period)
+            if not self.background_job:
+                self._correct_interval(period)
+            else:
+                self._correct_interval_background_job(period)
             deadline = self._get_corrected_interval(period)
 
         # Push any deferred states that have or will arrive onto the stack

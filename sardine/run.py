@@ -618,11 +618,10 @@ if config.superdirt_handler:
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=1):
+    def tidal_loop(p=0.05):
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        tidal_loop_speed = clock.beat_duration / 16
-        again(tidal_loop, p=tidal_loop_speed)
+        again(tidal_loop, p=0.05)
 
 
 #######################################################################################

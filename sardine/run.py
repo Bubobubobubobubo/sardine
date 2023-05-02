@@ -374,6 +374,7 @@ def silence(*runners: AsyncRunner) -> None:
     if len(runners) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
+        hush()
         return
 
     for run in runners:
@@ -382,7 +383,8 @@ def silence(*runners: AsyncRunner) -> None:
         else:
             if not run.background_job:
                 bowl.scheduler.stop_runner(run)
-
+        if config.superdirt_handler:
+            hush()
 
 def panic(*runners: AsyncRunner) -> None:
     """
@@ -632,11 +634,6 @@ if config.superdirt_handler:
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
         again(tidal_loop, p=0.05 / 4)
-
-    def silence(*runners: AsyncRunner):
-        """Overloaded silence function with hush() (Vortex) capabilities"""
-        silence(runners)
-        hush()
 
 
 #######################################################################################

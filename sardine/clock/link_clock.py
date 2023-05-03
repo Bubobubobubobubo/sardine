@@ -60,7 +60,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         cycle_from, cycle_to = (
             (time / cycle_factor),
-            ((time / cycle_factor) + self._framerate),
+            ((time / cycle_factor) + (self._framerate / 8)),
         )
 
         time_on, time_off = ((cycle_from * cycle_factor), (cycle_to * cycle_factor))

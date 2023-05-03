@@ -25,8 +25,8 @@ class BaseStream(ABC):
 
     def notify_tick(
         self,
+        clock,
         cycle: tuple,
-        info: tuple,
         cycles_per_second: float,
         beats_per_cycle: int,
         now: int | float,
@@ -36,19 +36,21 @@ class BaseStream(ABC):
             return
 
         cycle_from, cycle_to = cycle
-        cycle_from, cycle_to = round(cycle_from, 2), round(cycle_to, 2)
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
-        mill = 1000000
+        print(cycle_from, cycle_to, es)
 
         for e in es:
             cycle_on = e.whole.begin
             cycle_off = e.whole.end
-            link_on, link_off = info
-            delta_secs = (link_off - link_on) / mill
 
-            link_secs = now / mill
+            # Rewrite with the timeAtBeat method
+            link_on = clock.timeAtBeat(cycle_on * beats_per_cycle, 0)
+            link_off = clock.timeAtBeat(cycle_off * beats_per_cycle, 0)
+            delta_secs = (link_off - link_on)
+
+            link_secs = clock.shifted_time + clock._tidal_nudge
             nudge = e.value.get("nudge", 0)
-            ts = (link_on / mill) + self.latency + nudge
+            ts = (link_on) + self.latency + nudge
 
             self.notify_event(
                 e.value,

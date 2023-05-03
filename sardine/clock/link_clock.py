@@ -20,6 +20,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         super().__init__(loop_interval=loop_interval)
 
         self._link: Optional[link.Link] = None
+        self._tick: int = 0
         self._beat: int = 0
         self._beat_duration: float = 0.0
         self._beats_per_bar: int = bpb
@@ -45,34 +46,59 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         """Return the current cps"""
         return self.get_cps()
 
+    @property
+    def tick(self) -> int | float:
+        """Return the current clock tick"""
+        return self._tick
+
+    @tick.setter
+    def tick(self, value: int) -> None:
+        """Set the current clock tick"""
+        self._tick = value
+
     @cps.setter
     def cps(self, value: int | float) -> None:
         self.tempo = value * self._beats_per_bar * 60.0
+
+    def beatAtTime(self, time: int|float) -> float:
+        """Equivalent to Ableton Link beatAtTime method"""
+        return (self.internal_origin - time) / self.beat_duration
+
+    def timeAtBeat(self, beat: float) -> float:
+        """Equivalent to Ableton Link timeAtBeat method"""
+        return self.internal_origin - (beat * self.beat_duration)
+
 
     def _notify_tidal_streams(self):
         """
         Notify Tidal Streams of the current passage of time.
         """
+        self.tick += 1
 
-        cycle_factor = self.beat_duration / self.beats_per_bar
-        # cycle_factor = self.beat_duration
-        time = self.shifted_time + self._tidal_nudge
-
-        cycle_from, cycle_to = (
-            (time / cycle_factor),
-            ((time / cycle_factor) + (self._framerate / 8)),
+        # Logical time since the clock started ticking: sum of frames
+        logical_now, logical_next = (
+            math.floor(self.internal_origin + (self.tick * self._framerate)),
+            math.floor(self.internal_origin + ((self.tick + 1) * self._framerate)),
         )
 
-        time_on, time_off = ((cycle_from * cycle_factor), (cycle_to * cycle_factor))
+        # Current time (needed for knowing wall clock time)
+        now = self.shifted_time + self._tidal_nudge
 
+        # Wall clock time for the "ideal" logical time 
+        cycle_from, cycle_to = (
+                self.beatAtTime(logical_now) / self.beats_per_bar,
+                self.beatAtTime(logical_next) / self.beats_per_bar
+        )
+
+        # Sending to each individual subscriber for scheduling using timestamps
         try:
             for sub in self.env._vortex_subscribers:
                 sub.notify_tick(
+                    clock=self,
                     cycle=(cycle_from, cycle_to),
-                    info=(time_on, time_off),
                     cycles_per_second=self.cps,
                     beats_per_cycle=self._beats_per_cycle,
-                    now=time,
+                    now=now,
                 )
         except Exception as e:
             print(e)

@@ -18,6 +18,7 @@ class InternalClock(BaseClock):
     ):
         super().__init__()
         self.tempo = tempo
+        self._tick: int = 0
         self.beats_per_bar = bpb
         self._internal_origin = 0.0
         self._tidal_nudge: float = 0.0
@@ -29,6 +30,16 @@ class InternalClock(BaseClock):
     def get_cps(self) -> int | float:
         """Get the BPM in cycles per second (Tidal approach to time)"""
         return self.tempo / self._beats_per_bar / 60.0
+
+    @property
+    def tick(self) -> int | float:
+        """Return the current clock tick"""
+        return self._tick()
+
+    @tick.setter
+    def tick(self, value: int) -> None:
+        """Set the current clock tick"""
+        self._tick = value
 
     @property
     def beats_per_cycle(self) -> int | float:

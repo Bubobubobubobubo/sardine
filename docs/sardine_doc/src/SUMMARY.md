@@ -79,6 +79,7 @@
     - [Vortex](pattern_languages/vortex.md)
       - [Players](pattern_languages/vortex/players.md)
       - [Clock](pattern_languages/vortex/clock.md)
+      - [Mini-notation](pattern_languages/vortex/mininotation.md)
 - [Diving Deeper](diving_deeper.md)
     - [FishBowl](diving_deeper/fishbowl.md)
     - [Time-alignment](diving_deeper/nudging.md)

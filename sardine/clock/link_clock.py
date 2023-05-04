@@ -62,11 +62,11 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def beatAtTime(self, time: int|float) -> float:
         """Equivalent to Ableton Link beatAtTime method"""
-        return (self.internal_origin - time) / self.beat_duration
+        return time / self.beat_duration
 
     def timeAtBeat(self, beat: float) -> float:
         """Equivalent to Ableton Link timeAtBeat method"""
-        return self.internal_origin - (beat * self.beat_duration)
+        return self.beat_duration * beat
 
 
     def _notify_tidal_streams(self):

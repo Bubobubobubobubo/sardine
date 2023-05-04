@@ -37,15 +37,15 @@ class BaseStream(ABC):
 
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
-        print(cycle_from, cycle_to, es)
+        # print(cycle_from, cycle_to, es)
 
         for e in es:
             cycle_on = e.whole.begin
             cycle_off = e.whole.end
 
             # Rewrite with the timeAtBeat method
-            link_on = clock.timeAtBeat(cycle_on * beats_per_cycle, 0)
-            link_off = clock.timeAtBeat(cycle_off * beats_per_cycle, 0)
+            link_on = clock.timeAtBeat(cycle_on * beats_per_cycle)
+            link_off = clock.timeAtBeat(cycle_off * beats_per_cycle)
             delta_secs = (link_off - link_on)
 
             link_secs = clock.shifted_time + clock._tidal_nudge

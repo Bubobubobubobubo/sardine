@@ -37,26 +37,22 @@ class BaseStream(ABC):
 
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
-        # print(cycle_from, cycle_to, es)
 
         for e in es:
-            cycle_on = e.whole.begin
-            cycle_off = e.whole.end
-
-            # Rewrite with the timeAtBeat method
-            link_on = clock.timeAtBeat(cycle_on * beats_per_cycle)
-            link_off = clock.timeAtBeat(cycle_off * beats_per_cycle)
-            delta_secs = (link_off - link_on)
+            cycle_on, cycle_off = e.whole.begin, e.whole.end
+            on = clock.timeAtBeat(cycle_on * beats_per_cycle)
+            off = clock.timeAtBeat(cycle_off * beats_per_cycle)
+            delta_secs = (off - on)
 
             link_secs = clock.shifted_time + clock._tidal_nudge
             nudge = e.value.get("nudge", 0)
-            ts = (link_on) + self.latency + nudge
+            ts = (on) + self.latency + nudge
 
             self.notify_event(
                 e.value,
                 timestamp=ts,
                 cps=float(cycles_per_second),
-                cycle=float(cycle_on),
+                cycle=float(on),
                 delta=float(delta_secs),
             )
 

@@ -2,6 +2,7 @@ from typing import Optional, Union
 
 import link
 import math
+from time import time
 
 from ..base import BaseClock, BaseThreadedLoopMixin
 
@@ -34,6 +35,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._link_time: int = 0
         self._beats_per_cycle: int = 4
         self._framerate: float = 1 / 20
+        self._wall_clock_origin = time()
 
     ## VORTEX   ################################################
 
@@ -60,14 +62,19 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
     def cps(self, value: int | float) -> None:
         self.tempo = value * self._beats_per_bar * 60.0
 
+    @property
+    def bps(self) -> int|float:
+        """Return the number of beats that can fit into a second"""
+        return 1.0 / self.beat_duration
+
     def beatAtTime(self, time: int|float) -> float:
         """Equivalent to Ableton Link beatAtTime method"""
-        return time / self.beat_duration
+        # print((time - self.internal_origin) * self.bps)
+        return (time - self.internal_origin) * self.bps
 
     def timeAtBeat(self, beat: float) -> float:
         """Equivalent to Ableton Link timeAtBeat method"""
-        return self.beat_duration * beat
-
+        return self.internal_origin + (self.beat / self.bps)
 
     def _notify_tidal_streams(self):
         """
@@ -77,8 +84,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         # Logical time since the clock started ticking: sum of frames
         logical_now, logical_next = (
-            math.floor(self.internal_origin + (self.tick * self._framerate)),
-            math.floor(self.internal_origin + ((self.tick + 1) * self._framerate)),
+            self.internal_origin + (self.tick * self._framerate),
+            self.internal_origin + ((self.tick + 1) * self._framerate),
         )
 
         # Current time (needed for knowing wall clock time)
@@ -86,8 +93,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         # Wall clock time for the "ideal" logical time 
         cycle_from, cycle_to = (
-                self.beatAtTime(logical_now) / self.beats_per_bar,
-                self.beatAtTime(logical_next) / self.beats_per_bar
+                self.beatAtTime(logical_now) / self._beats_per_cycle,
+                self.beatAtTime(logical_next) / self._beats_per_cycle,
         )
 
         # Sending to each individual subscriber for scheduling using timestamps

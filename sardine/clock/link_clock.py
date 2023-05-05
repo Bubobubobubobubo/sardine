@@ -35,7 +35,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._link_time: int = 0
         self._beats_per_cycle: int = 4
         self._framerate: float = 1 / 20
-        self._wall_clock_origin = time()
 
     ## VORTEX   ################################################
 
@@ -93,8 +92,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         # Wall clock time for the "ideal" logical time 
         cycle_from, cycle_to = (
-                self.beatAtTime(logical_now) / self._beats_per_cycle,
-                self.beatAtTime(logical_next) / self._beats_per_cycle,
+                self.beatAtTime(logical_now) / (self._beats_per_cycle * 2),
+                self.beatAtTime(logical_next) / (self._beats_per_cycle * 2),
         )
 
         # Sending to each individual subscriber for scheduling using timestamps

@@ -35,9 +35,11 @@ class BaseStream(ABC):
         if not self.pattern:
             return
 
+        # Querying the pattern using time information
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
 
+        # Processing individual events
         for e in es:
             cycle_on, cycle_off = e.whole.begin, e.whole.end
             on = clock.timeAtBeat(cycle_on * beats_per_cycle)

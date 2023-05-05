@@ -68,7 +68,6 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def beatAtTime(self, time: int|float) -> float:
         """Equivalent to Ableton Link beatAtTime method"""
-        # print((time - self.internal_origin) * self.bps)
         return (time - self.internal_origin) * self.bps
 
     def timeAtBeat(self, beat: float) -> float:

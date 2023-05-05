@@ -92,8 +92,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         # Wall clock time for the "ideal" logical time 
         cycle_from, cycle_to = (
-                self.beatAtTime(logical_now) / (self._beats_per_cycle * 2),
-                self.beatAtTime(logical_next) / (self._beats_per_cycle * 2),
+                self.beatAtTime(logical_now) / (self.beats_per_bar * 2),
+                self.beatAtTime(logical_next) / (self.beats_per_bar * 2),
         )
 
         # Sending to each individual subscriber for scheduling using timestamps
@@ -103,7 +103,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
                     clock=self,
                     cycle=(cycle_from, cycle_to),
                     cycles_per_second=self.cps,
-                    beats_per_cycle=self._beats_per_cycle,
+                    beats_per_cycle=(self.beats_per_bar * 2),
                     now=now,
                 )
         except Exception as e:

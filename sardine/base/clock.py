@@ -63,6 +63,15 @@ class BaseClock(BaseRunnerHandler, ABC):
 
     @property
     @abstractmethod
+    def tick(self) -> int:
+        """The tick of the clock's.
+
+        This property is used by the Tidal Scheduler in the lookahead
+        mechanism that queries and schedules patterns in advance.
+        """
+
+    @property
+    @abstractmethod
     def bar(self) -> int:
         """The bar of the clock's current time.
 

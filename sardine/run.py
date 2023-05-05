@@ -620,7 +620,7 @@ if config.superdirt_handler:
             self.orbit_number = orbit_number
 
         def __mul__(self, pattern):
-            tidal(self.name, pattern.orbit(self.orbit_number).slow(4))
+            tidal(self.name, pattern.orbit(self.orbit_number))
 
     d1 = TidalD(name="d1", orbit_number=0)
     d2 = TidalD(name="d2", orbit_number=1)
@@ -634,10 +634,10 @@ if config.superdirt_handler:
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)
-    def tidal_loop(p=0.05 / 8):
+    def tidal_loop(p=0.05):
         """Background Tidal/Vortex AsyncRunner"""
         clock._notify_tidal_streams()
-        again(tidal_loop, p=0.05 / 8)
+        again(tidal_loop, p=0.05)
 
 
 #######################################################################################

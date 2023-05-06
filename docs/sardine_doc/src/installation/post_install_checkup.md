@@ -4,6 +4,15 @@ You just installed **Sardine**. Congratulations. Now let's check if everything i
 Read and answer each and every of these questions. You will get familiar with the system
 doing so!
 
+## Do you see an error involving Alsa and MIDI?
+
+Two months ago, an error started to appear for Linux users: `rtmidi._rtmidi.SystemError: MidiInAlsa::initialize: error creating ALSA sequencer client object.`.
+To fix this error, you will have to manually copy some files to a different location:
+- copy the `/usr/lib/alsa-lib/` into `usr/lib/x86_64-linux-gnu/alsa-lib` and/or `usr/lib64/alsa-lib`.
+- if this path does not exist, try searching into `usr/lib/x86` or similar.
+
+The source of this error is currently unknown and is not Sardine related. Hopefully, it will resolve automatically with future updates of the packages Sardine uses.
+
 ## Are you running Windows?
 
 - **Windows users:** check if SuperCollider is properly detected.

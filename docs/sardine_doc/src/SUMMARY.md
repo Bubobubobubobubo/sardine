@@ -69,7 +69,6 @@
       - [Conditions](pattern_languages/sardine/conditions.md)
     - [Ziffers](pattern_languages/ziffers.md)
       - [Presentation](pattern_languages/ziffers/what_is_ziffers.md)
-      - [Installation](pattern_languages/ziffers/installation.md)
       - [Pitch](pattern_languages/ziffers/pitch.md)
       - [Rhythm](pattern_languages/ziffers/rhythm.md)
       - [Chords](pattern_languages/ziffers/chords.md)

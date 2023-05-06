@@ -30,15 +30,7 @@ from .sequences.tidal_parser import (
 )
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
-
-try:
-    from ziffers import z
-
-    ziffers_imported: bool = True
-except ImportError:
-    print("Install the ziffers package for using Ziffers patterns")
-    ziffers_imported: bool = False
-
+from ziffers import z
 
 ParamSpec = ParamSpec("PS")
 T = TypeVar("T")
@@ -99,8 +91,7 @@ try:
     # MIDI Handler: matching with the MIDI port defined in the configuration file
     midi = MidiHandler(port_name=str(config.midi))
     bowl.add_handler(midi)
-    if ziffers_imported:
-        midi._ziffers_parser = z
+    midi._ziffers_parser = z
 except OSError as e:
     print(f"{e}: [red]Invalid MIDI port![/red]")
 
@@ -110,8 +101,7 @@ try:
         target=ControlTarget(channel=0, control=20), port_name=config.midi
     )
     bowl.add_handler(midi)
-    if ziffers_imported:
-        midi._ziffers_parser = z
+    midi._ziffers_parser = z
 except OSError as e:
     print(f"{e}: [red]Invalid MIDI port![/red]")
 
@@ -138,8 +128,7 @@ O = dummy_osc.send
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
     dirt = SuperDirtHandler(loop=osc_loop)
-    if ziffers_imported:
-        dirt._ziffers_parser = z
+    dirt._ziffers_parser = z
 
 # Adding Players
 # player_names = ["P" + l for l in ascii_lowercase + ascii_uppercase]
@@ -455,8 +444,7 @@ I, V = bowl.iterators, bowl.variables  # Iterators and Variables from env
 P = Pat  # Generic pattern interface
 
 N = midi.send  # For sending MIDI Notes
-if ziffers_imported:
-    ZN = midi.send_ziffers
+ZN = midi.send_ziffers
 PC = midi.send_program  # For MIDI Program changes
 CC = midi.send_control  # For MIDI Control Change messages
 SY = midi.send_sysex  # For MIDI Sysex messages
@@ -485,8 +473,7 @@ def pc(*args, **kwargs):
 
 if config.superdirt_handler:
     D = dirt.send
-    if ziffers_imported:
-        ZD = dirt.send_ziffers
+    ZD = dirt.send_ziffers
 
     def d(*args, **kwargs):
         return _play_factory(dirt, dirt.send, *args, **kwargs)
@@ -495,8 +482,7 @@ if config.superdirt_handler:
         return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
 
 
-if ziffers_imported:
-    zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
+zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
 
 
 def MIDIInstrument(

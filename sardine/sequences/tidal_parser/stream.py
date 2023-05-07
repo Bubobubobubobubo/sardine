@@ -74,7 +74,7 @@ class BaseStream(ABC):
         return f"<{self.__class__.__name__} {repr(self.name)}{pattern_repr}>"
 
 
-class SuperDirtStream(BaseStream):
+class TidalStream(BaseStream):
     """
     This Stream class sends control pattern messages to SuperDirt via OSC
 

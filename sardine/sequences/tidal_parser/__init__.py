@@ -3,7 +3,7 @@ from .tidal_euclid import *
 from .pattern import *
 from .utils import *
 from .mini import *
-from .stream import SuperDirtStream
+from .stream import TidalStream
 
 __streams = {}
 
@@ -14,7 +14,7 @@ def tidal_factory(env, osc_client, tidal_players):
 
     def tidal(key, pattern=None):
         if key not in __streams:
-            __streams[key] = SuperDirtStream(name=key, osc_client=osc_client)
+            __streams[key] = TidalStream(name=key, osc_client=osc_client)
             tidal_players.append(__streams[key])
         if pattern:
             __streams[key].pattern = pattern

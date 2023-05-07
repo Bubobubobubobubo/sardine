@@ -10,24 +10,7 @@ from . import *
 from .io.UserConfig import read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
-from .sequences.tidal_parser import (
-    SuperDirtStream,
-    s,
-    tidal_factory,
-    hush_factory,
-    rev,
-    fast,
-    slow,
-    early,
-    late,
-    jux,
-    union,
-    degrade,
-    run,
-    scan,
-    timecat,
-    choose,
-)
+from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
 from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
 from ziffers import z

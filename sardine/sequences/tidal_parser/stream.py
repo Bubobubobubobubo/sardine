@@ -1,7 +1,7 @@
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 from abc import ABC
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from .pattern import *
 from time import time
 
@@ -75,29 +75,13 @@ class BaseStream(ABC):
 
 
 class TidalStream(BaseStream):
-    """
-    This Stream class sends control pattern messages to SuperDirt via OSC
 
-    Parameters
-    ----------
-    port: int
-        The port where SuperDirt is listening
-    latency: float
-        SuperDirt latency
-
-    """
-
-    def __init__(self, osc_client, port=57120, latency=0.0, *args, **kwargs):
+    def __init__(self, osc_client, latency=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.latency = latency
         self.name = "vortex"
         self._osc_client = osc_client
-
-    @property
-    def port(self):
-        """SuperDirt listening port"""
-        return self._port
 
     def notify_event(
         self,
@@ -117,3 +101,35 @@ class TidalStream(BaseStream):
 
         # TODO: make a bundle using osc4py3
         self._osc_client._send_timed_message(address="/dirt/play", message=msg)
+
+
+class TidalListenStream(BaseStream):
+
+    def __init__(self, osc_client, latency=0.0, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.latency = latency
+        self.name = "vortex"
+        self._osc_client = osc_client
+        self._last_value: Optional[Any] = None
+
+    def get(self) -> Any:
+        return self._last_value
+
+    def notify_event(
+        self,
+        event: Dict[str, Any],
+        timestamp: float,
+        cps: float,
+        cycle: float,
+        delta: float,
+    ):
+        msg = []
+        for key, val in event.items():
+            if isinstance(val, Fraction):
+                val = float(val)
+            msg.append(key)
+            msg.append(val)
+        msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
+
+        self._last_value = msg

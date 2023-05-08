@@ -464,8 +464,7 @@ if config.superdirt_handler:
     def zd(*args, **kwargs):
         return _play_factory(dirt, dirt.send_ziffers, *args, **kwargs)
 
-
-zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
+    zplay = ziffers_factory.create_zplay(D, N, sleep, swim)
 
 
 def MIDIInstrument(

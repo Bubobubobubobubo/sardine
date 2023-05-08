@@ -578,9 +578,6 @@ if config.superdirt_handler:
     tidal = tidal_factory(
         osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
     )
-    tidal_listen = tidal_listen_factory(
-        osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
-    )
     hush = hush_factory(
         osc_client=dirt, env=bowl, tidal_players=bowl._vortex_subscribers
     )
@@ -589,40 +586,33 @@ if config.superdirt_handler:
         def __init__(self, name: str, orbit_number: int):
             self.name = name
             self.orbit_number = orbit_number
+            self.player: Optional[tidal] = None
 
         def __mul__(self, pattern):
-            tidal(self.name, pattern.orbit(self.orbit_number))
-
-    class TidalDL:
-        def __init__(self, name: str, orbit_number: int):
-            self.name = name
-            self.orbit_number = orbit_number
-            self.player: Optional[tidal_listen] =  None
-
-        def __mul__(self, pattern):
-            self.player = tidal_listen(self.name, pattern.orbit(self.orbit_number))
+            self.player = tidal(self.name, pattern.orbit(self.orbit_number))
             return self.player
-            
 
+        def _stream(self):
+            """Return the last message played by this stream/player"""
+            return self.player.get()
 
-    d1 = TidalD(name="d1", orbit_number=0)
-    d2 = TidalD(name="d2", orbit_number=1)
-    d3 = TidalD(name="d3", orbit_number=2)
-    d4 = TidalD(name="d4", orbit_number=3)
-    d5 = TidalD(name="d5", orbit_number=4)
-    d6 = TidalD(name="d6", orbit_number=5)
-    d7 = TidalD(name="d7", orbit_number=6)
-    d8 = TidalD(name="d8", orbit_number=7)
-    d9 = TidalD(name="d9", orbit_number=8)
-    dl1 = TidalDL(name="dl1", orbit_number=0)
-    dl2 = TidalDL(name="dl2", orbit_number=1)
-    dl3 = TidalDL(name="dl3", orbit_number=2)
-    dl4 = TidalDL(name="dl4", orbit_number=3)
-    dl5 = TidalDL(name="dl5", orbit_number=4)
-    dl6 = TidalDL(name="dl6", orbit_number=5)
-    dl7 = TidalDL(name="dl7", orbit_number=6)
-    dl8 = TidalDL(name="dl8", orbit_number=7)
-    dl9 = TidalDL(name="dl9", orbit_number=8)
+        @property
+        def stream(self):
+            """Getter for the stream"""
+            data = self._stream()
+            return {} if data is None else data
+
+    d1, d2, d3, d4, d5, d6, d7, d8, d9 = (
+            TidalD(name="d1", orbit_number=0),
+            TidalD(name="d2", orbit_number=1),
+            TidalD(name="d3", orbit_number=2),
+            TidalD(name="d4", orbit_number=3),
+            TidalD(name="d5", orbit_number=4),
+            TidalD(name="d6", orbit_number=5),
+            TidalD(name="d7", orbit_number=6),
+            TidalD(name="d8", orbit_number=7),
+            TidalD(name="d9", orbit_number=8),
+    )
 
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True)

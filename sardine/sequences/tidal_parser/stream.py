@@ -82,38 +82,10 @@ class TidalStream(BaseStream):
         self.latency = latency
         self.name = "vortex"
         self._osc_client = osc_client
-
-    def notify_event(
-        self,
-        event: Dict[str, Any],
-        timestamp: float,
-        cps: float,
-        cycle: float,
-        delta: float,
-    ):
-        msg = []
-        for key, val in event.items():
-            if isinstance(val, Fraction):
-                val = float(val)
-            msg.append(key)
-            msg.append(val)
-        msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
-
-        # TODO: make a bundle using osc4py3
-        self._osc_client._send_timed_message(address="/dirt/play", message=msg)
-
-
-class TidalListenStream(BaseStream):
-
-    def __init__(self, osc_client, latency=0.0, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.latency = latency
-        self.name = "vortex"
-        self._osc_client = osc_client
-        self._last_value: Optional[Any] = None
+        self._last_value: Optional[dict] = None
 
     def get(self) -> Any:
+        """Return a dictionary of the last message played by the stream"""
         return self._last_value
 
     def notify_event(
@@ -132,4 +104,5 @@ class TidalListenStream(BaseStream):
             msg.append(val)
         msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
 
-        self._last_value = msg
+        self._last_value = dict(zip(msg[::2], msg[1::2]))
+        self._osc_client._send_timed_message(address="/dirt/play", message=msg)

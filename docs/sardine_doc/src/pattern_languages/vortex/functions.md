@@ -145,11 +145,16 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
     d1 * s('drum(5,8)').n('1 2 3 4').never(fast(2))
 ```
 
-## The every family and friends
+## The every family and friends
 
-- `every`
-- `somecycles`
-- `somecycles_by`
+- `every`: allows you to apply a function based on a condition. You need a function to determine when the function should be applied (*e.g.* a number **n** to apply the function every **n** cycles). You also need a transformation such as `rev` (reverse a pattern) or `fast` (make a pattern faster).
+
+```python
+    d1 * s('[bd(5,8), jvbass(3,8)]').every(3, lambda p: p.superimpose(fast 2))
+```
+
+- `somecycles`: ???
+- `somecycles_by`: ???
 
 ## Operators
 
@@ -196,21 +201,40 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
 
 ## Signals and Generators
 
-- `sine2`
-- `sine`
-- `cosine2`
-- `cosine`
-- `saw2`
-- `saw`
-- `isaw2`
-- `isaw`
-- `tri2`
-- `tri`
-- `square2`
-- `square`
-- `rand`
-- `irand`
-- `perlin`
+Signal functions are functions generating streams of values to apply to a pattern. They are very useful to create low-frequency oscillators or continuously evolving stream of values.
+
+- `sine2`: Sinusoïdal oscillator. Takes a `t` parameter for scaling.
+
+- `sine`: sinusoïdal oscillator
+- `cosine2`: similar to `sine2` but the phase is shifted (*e.g.* cosinus function).
+- `cosine`: similar to `sine` but the phase is shifted (*e.g.* cosinus function).
+- `saw2`: sawtooth-like function
+- `saw`: sawtooth-like
+- `isaw2`: inverted sawtooth-like function
+- `isaw`: inverted sawtooth-like function
+- `tri2`: triangular oscillator
+- `tri`: triangular oscillator
+- `square2`: square wave oscillator
+- `square`: square wave oscillator
+- `rand`: Generate a continuous pattern of pseudo-random numbers between `0` and `1`. 
+
+```python
+    rand().segment(4)
+```
+
+- `irand`: Generate a pattern of pseudo-random whole numbers between `0` to `n-1` inclusive.
+
+```python
+    # generates a pattern of 8 events per cycle
+    # with values ranging from 0 to 15 inclusive.
+    irand(16).segment(8)
+```
+
+- `perlin`: 1D Perlin (smooth) noise, works like `rand` but smoothly moves between random values each cycle.
+
+```python
+    perlin().segment(8)
+```
 
 ## Combinators
 

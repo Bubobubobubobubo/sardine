@@ -809,6 +809,27 @@ class Pattern:
         """
         return self.sometimes_by(0.5, func)
 
+    def always(self, func):
+        return self.sometimes_by(1.0, func)
+
+    def always(self, func):
+        return self.sometimes_by(1.0, func)
+
+    def almost_always(self, func):
+        return self.sometimes_by(0.9, func)
+
+    def often(self, func):
+        return self.sometimes_by(0.75, func)
+
+    def rarely(self, func):
+        return self.sometimes_by(0.25, func)
+
+    def almostNever(self, func):
+        return self.sometimes_by(0.10, func)
+
+    def never(self, func):
+        return self.sometimes_by(0.0, func)
+
     def sometimes_by(self, by_pat, func):
         """
         Applies a function to pattern sometimes based on specified `by`
@@ -936,8 +957,8 @@ def steady(value):
 def slowcat(*pats):
     """
     Concatenation: combines a list of patterns, switching between them
-    successively, one per cycle.
-    (currently behaves slightly differently from Tidal)
+    successively, one per cycle. (currently behaves slightly differently
+    from Tidal)
     """
     pats = [reify(pat) for pat in pats]
 

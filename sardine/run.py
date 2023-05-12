@@ -358,9 +358,11 @@ def silence(*runners: AsyncRunner) -> None:
         if config.superdirt_handler:
             hush()
 
+
 def solo(pattern):
     """Soloing a single player out of all running players"""
     [silence(pat) for pat in bowl.scheduler.runners if pat.name != pattern.name]
+
 
 def panic(*runners: AsyncRunner) -> None:
     """
@@ -603,15 +605,15 @@ if config.superdirt_handler:
             return {} if data is None else data
 
     d1, d2, d3, d4, d5, d6, d7, d8, d9 = (
-            TidalD(name="d1", orbit_number=0),
-            TidalD(name="d2", orbit_number=1),
-            TidalD(name="d3", orbit_number=2),
-            TidalD(name="d4", orbit_number=3),
-            TidalD(name="d5", orbit_number=4),
-            TidalD(name="d6", orbit_number=5),
-            TidalD(name="d7", orbit_number=6),
-            TidalD(name="d8", orbit_number=7),
-            TidalD(name="d9", orbit_number=8),
+        TidalD(name="d1", orbit_number=0),
+        TidalD(name="d2", orbit_number=1),
+        TidalD(name="d3", orbit_number=2),
+        TidalD(name="d4", orbit_number=3),
+        TidalD(name="d5", orbit_number=4),
+        TidalD(name="d6", orbit_number=5),
+        TidalD(name="d7", orbit_number=6),
+        TidalD(name="d8", orbit_number=7),
+        TidalD(name="d9", orbit_number=8),
     )
 
     # Background asyncrunner for running tidal patterns

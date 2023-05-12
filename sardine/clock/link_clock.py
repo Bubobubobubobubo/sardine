@@ -62,11 +62,11 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self.tempo = value * self._beats_per_bar * 60.0
 
     @property
-    def bps(self) -> int|float:
+    def bps(self) -> int | float:
         """Return the number of beats that can fit into a second"""
         return 1.0 / self.beat_duration
 
-    def beatAtTime(self, time: int|float) -> float:
+    def beatAtTime(self, time: int | float) -> float:
         """Equivalent to Ableton Link beatAtTime method"""
         return (time - self.internal_origin) * self.bps
 
@@ -89,10 +89,10 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         # Current time (needed for knowing wall clock time)
         now = self.shifted_time + self._tidal_nudge
 
-        # Wall clock time for the "ideal" logical time 
+        # Wall clock time for the "ideal" logical time
         cycle_from, cycle_to = (
-                self.beatAtTime(logical_now) / (self.beats_per_bar * 2),
-                self.beatAtTime(logical_next) / (self.beats_per_bar * 2),
+            self.beatAtTime(logical_now) / (self.beats_per_bar * 2),
+            self.beatAtTime(logical_next) / (self.beats_per_bar * 2),
         )
 
         # Sending to each individual subscriber for scheduling using timestamps

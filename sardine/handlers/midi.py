@@ -196,40 +196,36 @@ class MidiHandler(Sender):
           the end of its previously defined duration.
         """
         pattern = {
-                'note': note,
-                'channel': channel,
-                'velocity': velocity,
-                'duration': duration
+            "note": note,
+            "channel": channel,
+            "velocity": velocity,
+            "duration": duration,
         }
         pattern = {**self._defaults, **pattern}
 
-        key = (pattern['note'], pattern['channel'])
+        key = (pattern["note"], pattern["channel"])
         note_task = self.active_notes.get(key)
 
         if note_task is not None and not note_task.done():
             # Brute force solution (temporary fix)
-            self._note_off(
-                    channel=pattern['channel'],
-                    note=pattern['note'],
-                    velocity=0
-            )
+            self._note_off(channel=pattern["channel"], note=pattern["note"], velocity=0)
             note_task.cancel()
             self.active_notes.pop(key, None)
 
         self._midi.send(
             mido.Message(
                 "note_on",
-                note=int(pattern['note']),
-                channel=int(pattern['channel']),
-                velocity=int(pattern['velocity']),
+                note=int(pattern["note"]),
+                channel=int(pattern["channel"]),
+                velocity=int(pattern["velocity"]),
             )
         )
         self.active_notes[key] = asyncio.create_task(
             self.send_off(
-                note=pattern['note'],
-                delay=pattern['duration'] - 0.02,
-                velocity=pattern['velocity'],
-                channel=pattern['channel']
+                note=pattern["note"],
+                delay=pattern["duration"] - 0.02,
+                velocity=pattern["velocity"],
+                channel=pattern["channel"],
             )
         )
 

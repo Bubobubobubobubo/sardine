@@ -35,16 +35,16 @@ class BaseStream(ABC):
         if not self.pattern:
             return
 
-        # Querying the pattern using time information
+        # Querying the pattern using time information
         cycle_from, cycle_to = cycle
         es = self.pattern.onsets_only().query(TimeSpan(cycle_from, cycle_to))
 
-        # Processing individual events
+        # Processing individual events
         for e in es:
             cycle_on, cycle_off = e.whole.begin, e.whole.end
             on = clock.timeAtBeat(cycle_on * beats_per_cycle)
             off = clock.timeAtBeat(cycle_off * beats_per_cycle)
-            delta_secs = (off - on)
+            delta_secs = off - on
 
             link_secs = clock.shifted_time + clock._tidal_nudge
             nudge = e.value.get("nudge", 0)
@@ -75,18 +75,21 @@ class BaseStream(ABC):
 
 
 class TidalStream(BaseStream):
-
     def __init__(self, osc_client, latency=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.latency = latency
         self.name = "vortex"
         self._osc_client = osc_client
-        self._last_value: Optional[dict] = None
+        self._last_value: Optional[list] = None
 
-    def get(self) -> Any:
+    def get(self) -> Optional[dict]:
         """Return a dictionary of the last message played by the stream"""
-        return self._last_value
+        try:
+            format_to_dict = dict(zip(msg[::2], msg[1::2]))
+            return self._last_value
+        except Exception:
+            return None
 
     def notify_event(
         self,
@@ -104,5 +107,5 @@ class TidalStream(BaseStream):
             msg.append(val)
         msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
 
-        self._last_value = dict(zip(msg[::2], msg[1::2]))
+        self._last_value = msg
         self._osc_client._send_timed_message(address="/dirt/play", message=msg)

@@ -617,7 +617,6 @@ if config.superdirt_handler:
     )
 
     # Background asyncrunner for running tidal patterns
-    # TODO: fix this shit
     @swim(background_job=True, snap=dirt.nudge)
     def tidal_loop(p=0.05):
         """Background Tidal/Vortex AsyncRunner"""

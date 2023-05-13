@@ -170,7 +170,7 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
 # Pattern speed and timing
 
 
-- `fast`
+- `fast`:
 - `slow`
 - `early`
 - `late`
@@ -201,27 +201,32 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
 
 ## Signals and Generators
 
-Signal functions are functions generating streams of values to apply to a pattern. They are very useful to create low-frequency oscillators or continuously evolving stream of values.
+Signal functions are functions generating streams of values to apply to a pattern. They are very useful to create low-frequency oscillators or continuously evolving stream of values. These functions should be manipulated to your liking using `segment` and `range`: scaling the stream of generated values, getting the desired granularity/precision of the stream).
 
-- `sine2`: Sinusoïdal oscillator. Takes a `t` parameter for scaling.
+### Signal manipulation functions
 
-- `sine`: sinusoïdal oscillator
-- `cosine2`: similar to `sine2` but the phase is shifted (*e.g.* cosinus function).
-- `cosine`: similar to `sine` but the phase is shifted (*e.g.* cosinus function).
-- `saw2`: sawtooth-like function
-- `saw`: sawtooth-like
-- `isaw2`: inverted sawtooth-like function
-- `isaw`: inverted sawtooth-like function
-- `tri2`: triangular oscillator
-- `tri`: triangular oscillator
-- `square2`: square wave oscillator
-- `square`: square wave oscillator
-- `rand`: Generate a continuous pattern of pseudo-random numbers between `0` and `1`. 
+- `range`: Rescales values to the range `[min, max]`. Assumes pattern is numerical, containing unipolar values in the range `[0, 1]`.
+- `segment`: Samples the pattern at a rate of `n` events per cycle. Useful for turning a continuous pattern into a discrete one.
 
 ```python
-    rand().segment(4)
+    sine().segment(8).range(4, 8)
 ```
 
+### Generators
+
+- `sine2`: Bipolar sinusoïdal oscillator: negative and positive values.
+- `sine`: Unipolar sinusoïdal oscillator. 
+- `cosine2`: Similar to `sine2` but the phase is shifted (*e.g.* cosinus function).
+- `cosine`: Similar to `sine` but the phase is shifted (*e.g.* cosinus function).
+- `saw2`: Bipolar sawtooth-like oscillator: negative and positive values. 
+- `saw`: Unipolar sawtooth-like oscillator.
+- `isaw2`: Inverted Bipolar sawtooth-like function.
+- `isaw`: Inverted unipolar sawtooth-like function.
+- `tri2`: Bipolar triangular oscillator: negative and positive values.
+- `tri`: Unipolar triangular oscillator.
+- `square2`: Bipolar square wave oscillator: negative and positive values.
+- `square`: Unipolar square wave oscillator.
+- `rand`: Generate a continuous pattern of pseudo-random numbers between `0` and `1`. 
 - `irand`: Generate a pattern of pseudo-random whole numbers between `0` to `n-1` inclusive.
 
 ```python

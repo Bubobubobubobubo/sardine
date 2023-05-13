@@ -170,19 +170,55 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
 # Pattern speed and timing
 
 
-- `fast`:
-- `slow`
-- `early`
-- `late`
+- `fast`: `fast` is a function used to speed up a pattern. `fast(2)` will play the pattern twice as fast. `fast(0.5)` will play the pattern twice as slow. You can pattern the value as well.
 
+```python
+    d1 * s('bd hh sn hh').fast(2)
+```
 
-- `when`
-- `when_cycle`
-- `off`
+- `slow`: `slow` is a function used to slow down a pattern. It is a mirror of `fast`. `slow(2)` will play the pattern twice as slow, `slow(0.5)` will play a pattern twice as fast.
 
-- `append`
-- `rev`
+```python
+    d1 * s('bd hh sn hh').slow(2)
+```
 
+- `early`: Equivalent of **Tidal**'s `<~` operator. This function can shift an event *earlier* in time, nudging it a little bit before the moment where it was initially supposed to play.
+
+```python
+    d1 * s('[tabla drum] cp').early('0.2 0.1')
+```
+
+- `late`: Equivalent of **Tidal**'s `~>` operator. This function can shift an event *later* in time, nudging it a little bit after the moment where it was initially supposed to play.
+
+```python
+    d1 * s('[tabla drum] bd cp').late('0.2 0.1')
+```
+
+- `when`: Applies function `func` on each event of pattern if `boolean_pat` is true. You will have to feed a pattern of boolean values (`1` or `0`) using another function.
+
+```python
+    # add an example
+```
+
+- `when_cycle`: Applies function `func` to pattern only if `test_func` returns `True` on each cycle. Similar to `when`, but instead of working with a boolean pattern, this evaluates a boolean function with the cycle number and applies (or not) transformation on each cycle.
+
+```python
+    # add an example
+```
+
+- `off`: Combination of the `stack` function with `early`. Will play the same pattern twice, one version of it will be played slightly earlier.
+
+- `append`:
+
+- `rev`: The `rev` function is reversing patterns! Very useful!
+
+```python
+    # Normal
+    d1 * s('bd hh sn hh')
+
+    # Reversed
+    d1 * s('bd hh sn hh').rev()
+```
 
 - `iter`
 - `reviter`

@@ -883,7 +883,6 @@ class Pattern:
         """
         Restructure the pattern according to a binary pattern (false values are
         dropped).
-
         """
         return (
             sequence(binary_pats)

@@ -25,6 +25,8 @@ These functions typically take up to **n** patterns to form a single pattern tha
     )
 ```
 
+- `append`: synonym of `fastcat`.
+
 - `timecat`: Like `fastcat` except that you provide proportionate sizes of the patterns to each other for when they're concatenated into one cycle. The larger the value in the list, the larger relative size the pattern takes in the final loop. If all values are equal then this is equivalent to `fastcat`.
 
 ```python
@@ -40,6 +42,17 @@ These functions typically take up to **n** patterns to form a single pattern tha
     )
 ```
 
+- `struct`: Restructure the pattern according to a binary pattern (false values are dropped).
+
+```python
+    # add an example
+```
+
+- `stack`: Pile up patterns or `stack` patterns. Useful to group some patterns together.
+
+```python
+    # add an example
+```
 
 ## Superposition and layering
 
@@ -167,8 +180,17 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
 - `>>`
 - `<<`
 
-# Pattern speed and timing
+# Time manipulation
 
+- `rev`: This function can be used to reverse a pattern. Very useful!
+
+```python
+    # Normal
+    d1 * s('bd hh sn hh')
+
+    # Reversed
+    d1 * s('bd hh sn hh').rev()
+```
 
 - `fast`: `fast` is a function used to speed up a pattern. `fast(2)` will play the pattern twice as fast. `fast(0.5)` will play the pattern twice as slow. You can pattern the value as well.
 
@@ -194,6 +216,22 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
     d1 * s('[tabla drum] bd cp').late('0.2 0.1')
 ```
 
+- `off`: Combination of the `stack` function with `early`. Will play the same pattern twice, one version of it will be played slightly earlier.
+
+- `compress`: Squeeze pattern within the specified time span.
+
+```python
+    # add an example
+```
+
+- `fastgap`: Similar to `fast` but maintains its cyclic alignment. For example, `p.fastgap(2)` would squash the events in pattern `p` into the first half of each cycle (and the second halves would be empty). The factor should be at least 1.
+
+```python
+    # add an example
+```
+
+## Conditional application
+
 - `when`: Applies function `func` on each event of pattern if `boolean_pat` is true. You will have to feed a pattern of boolean values (`1` or `0`) using another function.
 
 ```python
@@ -206,34 +244,27 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
     # add an example
 ```
 
-- `off`: Combination of the `stack` function with `early`. Will play the same pattern twice, one version of it will be played slightly earlier.
+## Iteration over patterns
 
-- `append`:
-
-- `rev`: The `rev` function is reversing patterns! Very useful!
+- `iter`: Divides a pattern into a given number of subdivisions, plays the subdivisions in order, but increments the starting subdivision each cycle. The pattern wraps to the first subdivision after the last subdivision is played.
 
 ```python
-    # Normal
-    d1 * s('bd hh sn hh')
-
-    # Reversed
-    d1 * s('bd hh sn hh').rev()
+    d1 * s("bd hh sn cp").iter(4)
 ```
 
-- `iter`
-- `reviter`
-- `compress`
-- `fastgap`
-- `striate`
-- `segment`
-- `range`
-- `rangex`
+- `reviter`: Same as `iter` but in the other direction.
 
-- `struct`
+```python
+    d1 * s("bd hh sn cp").reviter(4)
+```
+
+
+
+- `striate`
+
+
 - `mask`
 - `euclid`
-
-- `stack`
 
 ## Signals and Generators
 
@@ -242,6 +273,7 @@ Signal functions are functions generating streams of values to apply to a patter
 ### Signal manipulation functions
 
 - `range`: Rescales values to the range `[min, max]`. Assumes pattern is numerical, containing unipolar values in the range `[0, 1]`.
+- `rangex`: Rescales values to the range [min, max] following an exponential curve. Assumes pattern is numerical, containing unipolar values in the range `[0, 1]`.
 - `segment`: Samples the pattern at a rate of `n` events per cycle. Useful for turning a continuous pattern into a discrete one.
 
 ```python

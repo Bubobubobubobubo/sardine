@@ -619,8 +619,39 @@ if config.superdirt_handler:
     # Background asyncrunner for running tidal patterns
     @swim(background_job=True, snap=dirt.nudge)
     def tidal_loop(p=0.05):
-        """Background Tidal/Vortex AsyncRunner"""
-        clock._notify_tidal_streams()
+        """Background Tidal/Vortex AsyncRunner:
+        Notify Tidal Streams of the current passage of time.
+        """
+        clock.tick += 1
+
+        # Logical time since the clock started ticking: sum of frames
+        logical_now, logical_next = (
+            clock.internal_origin + (clock.tick * clock._framerate),
+            clock.internal_origin + ((clock.tick + 1) * clock._framerate),
+        )
+
+        # Current time (needed for knowing wall clock time)
+        now = clock.shifted_time + clock._tidal_nudge
+
+        # Wall clock time for the "ideal" logical time
+        cycle_from, cycle_to = (
+            clock.beatAtTime(logical_now) / (clock.beats_per_bar * 2),
+            clock.beatAtTime(logical_next) / (clock.beats_per_bar * 2),
+        )
+
+        # Sending to each individual subscriber for scheduling using timestamps
+        try:
+            for sub in bowl._vortex_subscribers:
+                sub.notify_tick(
+                    clock=clock,
+                    cycle=(cycle_from, cycle_to),
+                    cycles_per_second=clock.cps,
+                    beats_per_cycle=(clock.beats_per_bar * 2),
+                    now=now,
+                )
+        except Exception as e:
+            print(e)
+        # clock._notify_tidal_streams()
         again(tidal_loop, p=0.05)
 
 

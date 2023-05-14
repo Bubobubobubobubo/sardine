@@ -166,10 +166,21 @@ The `sometimes` family of function can sometimes apply a function to a pattern..
     d1 * s('[bd(5,8), jvbass(3,8)]').every(3, lambda p: p.superimpose(fast 2))
 ```
 
-- `somecycles`: ???
-- `somecycles_by`: ???
+- `somecycles`: Apply a function on certain cycles (*e.g* on cycle `3`) ???
+
+```python
+    # add an example
+```
+
+- `somecycles_by`: Apply a function on certain cycles with a change factor ???
+
+```python
+    # add an example
+```
 
 ## Operators
+
+The Haskell version of **TidalCycles** uses a lot of overloaded operators. Python is not really flexible in that regard. You can't really define new operators such as `$` or `|+` but most of the base operators have been overloaded to denote a particular pattern transformation. They are used to denote a particular application of a pattern over another pattern.
 
 - `+` 
 - `-`

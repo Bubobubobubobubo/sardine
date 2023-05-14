@@ -924,6 +924,9 @@ class Pattern:
         return self.struct(_tparams(_euclid, k, n, rot).inner_join())
 
     def __repr__(self):
+        return ""
+
+    def to_string(self):
         events = [str(e) for e in self.first_cycle()]
         events_str = ",\n ".join(events).replace("\n", "\n ")
         return f"~[{events_str}] ...~"

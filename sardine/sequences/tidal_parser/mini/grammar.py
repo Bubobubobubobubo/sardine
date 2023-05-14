@@ -85,8 +85,8 @@ grammar = Grammar(
     ##
     # Terms
     #
-    term = number / word_with_index / rest
-    word_with_index = word index?
+    term = number / word_with_index / word / rest
+    word_with_index = word index+
     index = ':' number
 
     ##

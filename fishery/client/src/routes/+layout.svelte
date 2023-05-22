@@ -204,7 +204,8 @@ Menu button functions:
 	function handleBufferChange({ detail: { tr } }) {
 		// Getting the currently active tab through introspection
 		let tab = get(activeTab);
-		SARDINE_BUFFERS['buffer' + (tab - 1) + '.py'] = tr._doc.text.join('\n');
+		// Why is this magic number needed here? This is not good at all...
+		SARDINE_BUFFERS['buffer' + (tab - 2) + '.py'] = tr._doc.text.join('\n');
 	}
 
 	function saveAsTextFile(content) {

@@ -17,41 +17,43 @@ The `bd hh sn hh` part is using Tidal mini-notation, a custom patterning DSL (*d
 | Name | Symbol | Example | 
 |:-:|:------:|:-------:|
 | **Rest** | `~` | `d1 * s("~ hh")` |   
-| **Group** | `[ ]`| `d1 * s("[bd sd] hh")` |
+| **Group** | `[ ]` | `d1 * s("[bd sd] hh")` |
 | **Group** | `.` | `d1 * s("bd sd . hh hh hh")`|
 | **Superpose** | `,` |  `d1 * s("[bd sd, hh hh hh])"` |
-| **Multiply** | `*`  | `d1 $ s("bd*2 sd")` |
+| **Multiply** | `*` | `d1 $ s("bd*2 sd")` |
 | **Slow** | `/`  | `d1 * s("bd/2")` |
-| **Choice** | &#124;  | d1 * s("[bd &#124; cp &#124; hh]") |
-| **Alternation** | `< >`  | `d1 * s("bd <sd hh cp>")` |
-| **Replicate** | `!`  | `d1 * s("bd!3 sd")` |
-| **Elongate** | `_`  | `d1 * s("bd _ _ ~ sd _")`	 |
-| **Elongate** | `@`  | `d1 * s("superpiano@3 superpiano")`	 |
-| **Random** | `?`  | `d1 * s("bd? sd")`	 |
-| **Select** | `:`  | `d1 * s("bd:3")`	 |
-| **Euclid** | `()`  | `d1 * s("bd(3,8)"`	 |
-| **Polymetric** | `{}`  | `d1 $ s("{bd bd bd bd, cp cp hh}")`	 |
-| **Polymetric subdivision** | `{}%`  | `d1 * s("{bd cp hh}%8")`	 |
+| **Choice** | &#124; | `d1 * s("[bd &#124; cp &#124; hh]")` |
+| **Alternate** | `< >` | `d1 * s("bd <sd hh cp>")` |
+| **Replicate** | `!` | `d1 * s("bd!3 sd")` |
+| **Elongate** | `_` | `d1 * s("bd _ _ ~ sd _")`	 |
+| **Elongate** | `@` | `d1 * s("superpiano@3 superpiano")`	 |
+| **Random** | `?` | `d1 * s("bd? sd")`	 |
+| **Select** | `:` | `d1 * s("bd:3")`	 |
+| **Euclid** | `()` | `d1 * s("bd(3,8)")`	 |
+| **Polymetric** | `{}` | `d1 * s("{bd bd bd bd, cp cp hh}")`	 |
+| **Polymetric subdivision** | `{}%` | `d1 * s("{bd cp hh}%8")`	 |
 
 Here is a short description of each operation:
 
-| Name | Description |
-|:----:|:-----------:|
-| **Rest** | Rest / silence: no event |
-| **Group** | Grouping multiple values on the same step |
-| **Group** | Grouping multiple values on the same step |
-| **Superpose** | Superpose multiple values on same step |
-| **Multiply** | Multiply the number of values on that step |
-| **Slow** | The event will only play every /n cycles |
-| **Choice** | Choose between one or many elements |
-| **Alternation** | Alternate between each of the values each cycle |
-| **Replicate** | Replicate the event (but not on the same step) |
-| **Elongate** | Elongate the duration of that event (multiple steps) |
-| **Elongate** | Elongate the duration of that event (multiple steps) |
-| **Random** | 50/50 chance of returning the value (or rest) |
-| **Select** | Pick a sample in the SuperDirt folder (sound library) |
-| **Euclid** | Euclidian pattern (e.g. `bd(5,8)`)|
-| **Polymetric** | Polymetry using the grouping |
-| **Polymetric subdivision** | Variant of the preceding operation |
+| Name | Symbol | Description | 
+|:----:|:---:|:-----------:|
+| **Rest** | `~` | Rest / silence: no event |
+| **Group** | `[ ]` | Grouping multiple values on the same step |
+| **Group** | `.` | Grouping multiple values on the same step |
+| **Superpose** | `,` | Superpose multiple values on same step |
+| **Multiply** | `*` | Multiply the number of values on that step (subdivide)|
+| **Slow** | `/` | The event will only play every /n cycles |
+| **Choice** | &#124;| Choose between one or more elements |
+| **Alternate** | `< >` | Alternate between each of the values each cycle |
+| **Replicate** | `!` | Replicate the event (but not on the same step) |
+| **Elongate** | `_`  | Elongate the duration of that event (multiple steps) |
+| **Elongate** | `@` | Elongate the duration of that event (multiple steps) |
+| **Random** | `?` | 50/50 chance of returning the value (or rest) |
+| **Select** | `:` | Specify sample in the SuperDirt folder (sound library) |
+| **Euclid** | `()` | Euclidian pattern (e.g. `bd(5,8)`)|
+| **Polymetric** | `{}` | Polymetry using the grouping |
+| **Polymetric subdivision** | `{}%` | Subdivides pattern to the measure |
 
 The mini-notation is only the start of learning Tidal/Vortex. Once you are comfortable using it, you can start to go further by chaining functions together and by diving into *function composition*.
+
+For reference, see the [Tidal Mini Notation](https://tidalcycles.org/docs/reference/mini_notation) documentation.

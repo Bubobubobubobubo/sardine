@@ -357,7 +357,7 @@ class MiniInterpreter:
             elif arg["op"] == "value":
                 return lambda w_p: [(w_p[0], w_p[1], arg["value"])]
         elif node["op"] == "repeat":
-            return lambda w_p: [w_p] * (node["count"] + 1)
+            return lambda w_p: [w_p] * (node["count"])
         elif node["op"] == "fast":
             param = self._eval_sequence_elements([node["value"]])
             return lambda w_p: [(w_p[0], w_p[1].fast(param), w_p[2])]

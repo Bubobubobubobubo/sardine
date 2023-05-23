@@ -38,13 +38,13 @@
 	}
 
 	.console-content {
-		font-size: 16px;
-		height: 500px;
+		font-size: 1vh;
+		height: 2000px;
 		overflow-y: scroll;
 	}
 
 	.console-content ul {
-		font-size: 16px;
+		font-size: 1vh;
 		list-style: none;
 		padding: 0;
 		margin: 0;
@@ -58,7 +58,7 @@
 	}
 
 	.console-content li {
-		font-size: 14px;
+		font-size: 0.9vh;
 		padding: 0px 5px;
 	}
 </style>

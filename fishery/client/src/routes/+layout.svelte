@@ -307,7 +307,7 @@ Menu button functions:
 					</TabPanel>
 				</Pane>
 				{#if !$showLogsStore}
-					<Pane minSize={5} maxSize={50} snapSize={20}>
+					<Pane minSize={2} maxSize={90} snapSize={1}>
 						<Console {logs} />
 					</Pane>
 				{/if}

@@ -30,7 +30,7 @@
 
 <section>
 	<button on:click>
-		<Fa class="fa-solid fa-coffee fa-xs" icon={icons[icon]} size="sm" />
+		<Fa class="" icon={icons[icon]} size="xs" />
 	</button>
 </section>
 

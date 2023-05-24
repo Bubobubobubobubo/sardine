@@ -64,4 +64,4 @@ poetry.lock
 .idea
 
 # Svelte
-!fishery/client/src/lib
+!sardine/client/src/lib

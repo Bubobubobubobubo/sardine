@@ -6,7 +6,10 @@ Use `r` to create rhythm with musical rest in the melodies. `r` can be combined 
 
 ```python
 # Play quarter note 1 (D) and then sleep half note and then play half note 2 (E)
-zplay("q 0 e3 qr e 2 4 r 1")
+@swim
+def z(p=1, i=0):
+    dur = ZD("superpiano","q 0 e3 qr e 2 4 r 1", i = i) # Returns length of the pattern in beats
+    again(z, p=dur, i=i+1)
 ```
 
 ## Dotted notes
@@ -15,7 +18,10 @@ zplay("q 0 e3 qr e 2 4 r 1")
 
 ```python
 # Row row row your boat using dotted notes
-zplay("q. 0 0 | q0 e1 q.2 | q2 e1 q2 e3 | h.4 | e 7 7 7 4 4 4 2 2 2 0 0 0 | q4 e3 q2 e1 | h. 0 ")
+@swim
+def z(p=1, i=0):
+    dur = ZD("superpiano","q. 0 0 | q0 e1 q.2 | q2 e1 q2 e3 | h.4 | e 7 7 7 4 4 4 2 2 2 0 0 0 | q4 e3 q2 e1 | h. 0 ", i = i) # Returns length of the pattern in beats
+    again(z, p=dur, i=i+1)
 ```
 
 ## Subdivision
@@ -24,9 +30,9 @@ Subdivision notation divides the previous note length to equal proportions and c
 
 ```python
 # Subdivided from 0.25 by default
-zplay("[4 2 4 2] [4 5 4 2] [3 1 3 1] [3 4 3 1] [4 2 4 2] [4 5 4 2] 4 [4 3 2 1] 0")
+Pa * zd('superpiano', '[4 2 4 2] [4 5 4 2] [3 1 3 1] [3 4 3 1] [4 2 4 2] [4 5 4 2] 4 [4 3 2 1] 0')
 # Note length for the next subdivision can be defined using characters or decimals
-zplay("w [1 2 3 4] 0.5 [1 2 3 4] q [1 2 3 4] w [1 2[3 4]] h [ 1 [ 2 [ 3 [ 4 ]]]]")
+Pa * zd('superpiano', 'w [1 2 3 4] 0.5 [1 2 3 4] q [1 2 3 4] w [1 2[3 4]] h [ 1 [ 2 [ 3 [ 4 ]]]]')
 ```
 
 ## Triplets
@@ -35,10 +41,10 @@ Triplets can be defined using note characters or by list notation, for example:
 
 ```python
 # Triplets with note characters
-zplay("q 2 6 a 1 3 2 q 5 1 a 4 3 2")
+Pa * zd('superpiano', 'q 2 6 a 1 3 2 q 5 1 a 4 3 2')
 
 # Triplets with list notation
-zplay("q 2 6 h [1 3 2] q 5 1 h [4 3 2]")
+Pa * zd('superpiano', 'q 2 6 h [1 3 2] q 5 1 h [4 3 2]')
 ```
 
 ## Ties
@@ -47,7 +53,7 @@ Ties can be created using multiple note length characters. Tied note lengths are
 
 ```python
 # q+e=0.375
-zplay("q 0 qe2 3 4 qe 3 q 4")
+Pa * zd('superpiano', 'q 0 qe2 3 4 qe 3 q 4')
 ```
 
 ## List of all note length characters

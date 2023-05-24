@@ -44,14 +44,20 @@
 		align-items: center;
 	}
 
+	nav {
+		height: 4vh;
+	}
+
 	nav .logo {
 		width: auto;
-		height: 5vw;
+		height: 5vh;
+		padding-top: 1vh;
 	}
 
 	.container {
 		display: flex;
 		align-items: center;
+		height: 4vh;
 	}
 
 	a {
@@ -63,8 +69,10 @@
 	}
 
 	h1 {
-		margin-left: 10px;
-		font-size: 1.3rem;
+		margin-left: 1vw;
+		font-size: 3.5vh;
+		color: white;
+		padding-top: 1vh;
 	}
 
 	@keyframes spin {

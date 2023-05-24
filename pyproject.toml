@@ -62,10 +62,10 @@ dependencies = [
 include-package-data = false
 
 [tool.setuptools.dynamic]
-version = { attr = "sardine.__version__" }
+version = { attr = "sardine_core.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["fishery**", "sardine**"]
+include = ["sardine_core**", "sardine**"]
 namespaces = false
 
 [tool.setuptools.package-data]
@@ -94,10 +94,7 @@ Documentation = "https://sardine.raphaelforment.fr"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]
-fishery = 'fishery.__main__:main'
-sardine-config-python = 'sardine.cli.main:edit_python_configuration'
-sardine-config-superdirt = 'sardine.cli.main:edit_superdirt_configuration'
-sardine-config = 'sardine.cli:main'
+sardine = 'sardine.__main__:main'
 
 [tool.black]
 target_version = ['py311']

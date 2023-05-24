@@ -22,7 +22,7 @@
     - [OSC](configuration/osc.md)
     - [SuperCollider / SuperDirt](configuration/superdirt.md)
 - [Text Editors](editors.md)
-    - [Fishery Web](editors/fishery.md)
+    - [Sardine Web](editors/fishery.md)
     - [Flok](editors/flok.md)
     - [VSCode](editors/vscode.md)
     - [Vim / Neovim](editors/vim.md)

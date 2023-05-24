@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 import pytest
 
-from sardine import BaseHandler, FishBowl
+from sardine_core import BaseHandler, FishBowl
 
 from . import fish_bowl
 

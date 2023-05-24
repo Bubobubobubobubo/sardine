@@ -17,7 +17,7 @@ from asyncio import futures
 from .runners import Runner
 from pathlib import Path
 
-import sardine
+import sardine_core
 
 # Appdirs boilerplate
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
@@ -91,7 +91,7 @@ class REPLThread(threading.Thread):
             banner = ()
             self.console.push("""import os""")
             self.console.push("""os.environ['SARDINE_INIT_SESSION'] = 'YES'""")
-            self.console.push("""from sardine.run import *""")
+            self.console.push("""from sardine_core.run import *""")
             self.console.interact(banner=banner, exitmsg="exiting asyncio REPL...")
         finally:
             warnings.filterwarnings(
@@ -108,7 +108,7 @@ async def run_forever():
 
 class ConsoleManager:
     def __init__(self):
-        self.loop = sardine.event_loop.new_event_loop()
+        self.loop = sardine_core.event_loop.new_event_loop()
 
         repl_locals = {"asyncio": asyncio}
         for key in (

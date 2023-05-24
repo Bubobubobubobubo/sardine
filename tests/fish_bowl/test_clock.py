@@ -6,7 +6,7 @@ import pytest
 import rich
 from rich.table import Table
 
-from sardine import BaseClock, FishBowl, InternalClock, LinkClock
+from sardine_core import BaseClock, FishBowl, InternalClock, LinkClock
 
 from . import EventLogHandler, Pauser, fish_bowl
 

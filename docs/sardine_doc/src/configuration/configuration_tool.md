@@ -2,9 +2,7 @@
 
 ![img](sardine_config.png)
 
-**Sardine** is shipping its own configuration tool, named **sardine-config**. 
-Typing **sardine-config** in your terminal will open a configuration helper tool :) 
-Using it, you can finetune your **Sardine** experience. 
+**Sardine** is shipping its own configuration tool, named **sardine config**. Typing **sardine config** in your terminal will open a configuration helper tool :) Using it, you can finetune your **Sardine** experience. 
 Please note that **Sardine** is writing configuration files to a specific location depending 
 on the OS you are using:
 

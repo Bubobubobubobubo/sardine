@@ -1,6 +1,6 @@
 # Sardine Strategies
 
-The **Oblique Strategies** are a set of cards once written by Brian Eno and Peter Schmidt. These are cards that you should take a look at when you are feeling down when working in the studio. They are pretty famous and were used by many musicians worldwide. To my knowledge, nobody ever tried to write a <span class="underline">live coding flavour</span> of these cards&#x2026; until now. Here they are, have fun:
+The **Oblique Strategies** are a set of cards once written by Brian Eno and Peter Schmidt. These are cards that you should take a look at when you are feeling down when working in the studio. They are pretty famous and were used by many musicians worldwide. To my knowledge, nobody ever tried to write a <span class="underline">live coding flavour</span> of these cards until now. Here they are, have fun:
 
     1) Computers are good at maths.
     2) Do what musicians can't do. Elaborate.

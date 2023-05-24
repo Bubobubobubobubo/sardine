@@ -30,7 +30,7 @@ class build_npm(Command, SubCommand):
         Most of the time, each option/attribute/cache should only be set if it does not
         have any value yet (e.g. ``if self.attr is None: self.attr = val``).
         """
-        self.yarn_projects = ["fishery/client"]
+        self.yarn_projects = ["sardine/client"]
 
     def run(self) -> None:
         """
@@ -64,10 +64,9 @@ class build_npm(Command, SubCommand):
 
     def get_source_files(self) -> list[str]:
         """
-        Return a list of all files that are used by the command to create the expected
-        outputs.
-        For example, if your build command transpiles Java files into Python, you should
-        list here all the Java files.
+        Return a list of all files that are used by the command to create 
+        the expected outputs. For example, if your build command transpiles
+        Java files into Python, you should list here all the Java files.
         The primary purpose of this function is to help populating the ``sdist``
         with all the files necessary to build the distribution.
         All files should be strings relative to the project root directory.

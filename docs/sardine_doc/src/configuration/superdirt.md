@@ -2,7 +2,7 @@
 
 The `default_superdirt.scd` is your default **SuperDirt** configuration. **SuperDirt** is the nickname of a very powerful audio engine used 
 by some live coding libraries like **TidalCycles** or **Sardine**. By default, this file will specify **where to look for audio samples** 
-or **how many inputs and outputs** your system must use.
+or **how many inputs and outputs** your system must use. You can open it from the terminal by typing `sardine config-superdirt`.
 
 You must edit it manually if you are willing to change anything to it. This is outside of the reach of **Sardine** and it is preferable to let
 the user decide for the most suitable configuration. The [SuperDirt](https://github.com/musikinformatik/SuperDirt) repository is a good place

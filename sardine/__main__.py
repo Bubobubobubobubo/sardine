@@ -1,4 +1,4 @@
-from fishery.console import ConsoleManager
+from sardine.console import ConsoleManager
 import click
 import os
 import psutil
@@ -36,10 +36,10 @@ def set_python_process_priority() -> Tuple[int, int, bool]:
 
 
 _, _, successful_patch = set_python_process_priority()
-if successful_patch:
-    print(f"Patched process", end=" | ")
-else:
-    print("Unpatched process", end=" | ")
+# if successful_patch:
+#     print(f"Patched process", end=" | ")
+# else:
+#     print("Unpatched process", end=" | ")
 
 CONTEXT_SETTINGS = {
     "help_option_names": ["-h", "--help"],
@@ -53,7 +53,8 @@ CONTEXT_SETTINGS = {
 )
 @click.version_option(
     package_name="sardine",
-    prog_name=__package__,
+    # prog_name=__package__,
+    prog_name="sardine",
     message="%(prog)s for %(package)s v%(version)s",
 )
 @click.pass_context
@@ -67,8 +68,9 @@ def main(ctx: click.Context):
 # fishery web --host
 # fishery web --port
 # fishery web --host --port
+# fishery config
 @main.command(
-    short_help="Starts sardine as a web server.",
+    short_help="Starts sardine as a web server",
     help="""
         This command starts sardine as a web server. The server can be accessed
         at http://localhost:8000 by default.
@@ -104,6 +106,34 @@ def web(host: str, port: int, no_browser: bool):
     if not no_browser:
         server.open_in_browser()
     consoleManager.start()
+
+@main.command(
+    short_help="Starts sardine configuration tool",
+    help="This command starts Sardine configuration tool."
+)
+def config():
+    """Start sardine.cli:main from fishery"""
+    from sardine_core.cli import main
+    main()
+
+@main.command(
+    short_help="Open SuperDirt configuration file",
+    help="This command opens the SuperDirt configuration file with your default editor."
+)
+def config_superdirt():
+    """Start sardine.cli:main from fishery"""
+    from sardine_core.cli.main import edit_superdirt_configuration 
+    edit_superdirt_configuration()
+
+
+@main.command(
+    short_help="Open Python configuration file",
+    help="This command opens the Python configuration file with your default editor."
+)
+def config_python():
+    """Start sardine.cli:main from fishery"""
+    from sardine_core.cli.main import edit_python_configuration
+    edit_python_configuration()
 
 
 if __name__ == "__main__":

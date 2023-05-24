@@ -18,7 +18,7 @@ import pytest_asyncio
 import rich
 from rich.table import Column, Table
 
-from sardine import BaseHandler, FishBowl
+from sardine_core import BaseHandler, FishBowl
 
 __all__ = ("EventLogEntry", "EventLogHandler", "fish_bowl")
 

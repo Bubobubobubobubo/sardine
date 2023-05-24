@@ -1,7 +1,7 @@
 # Configuration tour
 
 Let's break down what the options in the configuration tool are.
-To start the configuration tool, please type `sardine-config` in your terminal.
+To start the configuration tool, please type `sardine config` in your terminal.
 A splashscreen will appear and some options will pop up as well!
 
 ### Show Config
@@ -35,11 +35,8 @@ This menu will allow you to configure the default clock used by **Sardine** at t
 - **Turn on verbose output**: Debug printing.
   - Can prove very useful for **MacOS** and **Linux** users playing with their configuration.
   - Please turn it off for playing! Printing is expensive in Python!
-- **Enter your SuperDirt booth path**: leave blank if you don&rsquo;t know what you are doing.
+- **Enter your SuperDirt booth path**: leave blank if you don't know what you are doing.
 ### Editor
 - This menu will allow you to toggle the **web editor** by default or not. See the section concerning text editors to know if this is an option you want to consider. Note that this option is untoggled by default.
 ### More
 - **Don't touch it**: it's for devs only :)
-
-
-

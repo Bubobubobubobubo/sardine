@@ -20,14 +20,14 @@
 - Sardine is a **very** flexible software. It can be hard to install for that reason.
 - It is designed to mold around your system, not to be all bells and whistles.
 - You probably don't need everything but you need to understand the architecture:
-  - **Fishery Web** is an optional text editor for **Sardine** crafted by us!
-  - **Fishery** is an asynchronous Python interpreter running **Sardine**.
-  - **Sardine** is a library for live coding in Python.
+  - **Sardine web** is an optional text editor for **Sardine** crafted by us!
+  - **Sardine** is an asynchronous Python interpreter firing up the **Sardine** library.
+  - **Sardine Core** is the library for live coding in Python itself.
     - it opens / close and manage MIDI ports.
     - it communicates over the network through the OSC protocol.
     - it create musical code using a powerful patterning engine.
 
 ## About the different Sardine versions
 
-- Sardine is experimental software. Always install from GitHub if possible!
-- The Pipy version is always lagging behind. We update it at every major version.
+- **Sardine** is experimental software. Always install from GitHub if possible!
+- The **Pipy** version is always lagging behind. We update it at every major version.

@@ -1,6 +1,6 @@
 import pytest
 
-from sardine import FishBowl
+from sardine_core import FishBowl
 
 from . import EventLogHandler, fish_bowl
 

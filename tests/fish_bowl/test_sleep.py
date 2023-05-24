@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from sardine import FishBowl, InternalClock
+from sardine_core import FishBowl, InternalClock
 
 from . import Pauser, fish_bowl
 

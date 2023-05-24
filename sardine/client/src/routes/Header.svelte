@@ -41,14 +41,12 @@
 	nav {
 		display: flex;
 		justify-content: space-between;
-		padding: 15px;
 		align-items: center;
-		height: 5vh;
 	}
 
 	nav .logo {
 		width: auto;
-		height: 50px;
+		height: 5vw;
 	}
 
 	.container {

@@ -1,8 +1,8 @@
 import pytest
 import pytest_asyncio
 
-from sardine import FishBowl
-from sardine.sequences import ListParser
+from sardine_core import FishBowl
+from sardine_core.sequences import ListParser
 
 
 # NOTE: only put new parsers here if they support sardine's patterning syntax

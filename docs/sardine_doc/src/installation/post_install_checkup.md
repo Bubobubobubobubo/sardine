@@ -22,17 +22,18 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 
 - **Windows users:** do you want to play virtual MIDI instruments (VSTs, etc)?
   - install a tool to create [virtual midi ports](https://www.tobias-erichsen.de/software/virtualmidi.html). Create at least one virtual port.
-  - configure Sardine to use it in the `MIDI` section of `sardine-config`.
+  - configure Sardine to use it in the `MIDI` section of `sardine config`.
   - Linux and MacOS users don't need to do this. The `Sardine` port is automatically created.
 
-## Can you run fishery and fishery-web?
+## Can you run sardine and sardine web?
 
-- in your terminal, run `fishery` first! If you see a splashscreen, everything is fine! :)
-- in your terminal, run `fishery web`! Does your web browser magically open? You are good to go.
+- in your terminal, run `sardine` first! If you see a splashscreen, everything is fine! :)
+- in your terminal, run `sardine web`! Does your web browser magically open? You are good to go.
+  - Windows users: you will sometimes have to run this twice. Run the app. Quit it and launch again.
 
-## Can you run sardine-config? 
+## Can you run sardine config? 
 
-- in your terminal, run `sardine-config`? If you see the configuration tool appearing, perfect!
+- in your terminal, run `sardine config`? If you see the configuration tool appearing, perfect!
 - take some time to familiarise yourself with all the available options! The configuration step 
   is important.
 

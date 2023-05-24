@@ -19,7 +19,9 @@ FUNNY_TEXT = """
 ╚█████╔╝╚█████╔╝██║░╚███║██║░░░░░██║╚██████╔╝
 ░╚════╝░░╚════╝░╚═╝░░╚══╝╚═╝░░░░░╚═╝░╚═════╝░
 
- This is the configuration tool for Sardine
+ This is the configuration tool for Sardine.
+ This tool can configure the default session.
+ Use it wisely, discover all the options!
 """
 
 # Appdirs boilerplate code

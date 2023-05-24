@@ -1,6 +1,6 @@
 import pytest
 
-from sardine import BaseHandler, FishBowl
+from sardine_core import BaseHandler, FishBowl
 
 
 def test_basic_children():

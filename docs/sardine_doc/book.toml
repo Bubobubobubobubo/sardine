@@ -6,6 +6,7 @@ src = "src"
 title = "Sardine Documentation"
 
 [output.html]
+theme="theme"
 git-repository-url = "https://github.com/Bubobubobubobubo/sardine"
 site-url = "https://sardine.raphaelforment.fr"
 cname = "sardine.raphaelforment.fr"

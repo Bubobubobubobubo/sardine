@@ -25,7 +25,7 @@ TEMPLATE_CONFIGURATION = {
         "parameters": [],
         "parser": str,
         "superdirt_handler": True,
-        "boot_supercollider": False,
+        "boot_supercollider": True,
         "sardine_boot_file": True,
         "verbose_superdirt": False,
         "link_clock": False,

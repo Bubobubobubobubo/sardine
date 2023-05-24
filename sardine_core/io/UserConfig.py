@@ -26,7 +26,7 @@ TEMPLATE_CONFIGURATION = {
         "parser": "sardine",
         "superdirt_handler": True,
         "sardine_boot_file": True,
-        "boot_supercollider": False,
+        "boot_supercollider": True,
         "verbose_superdirt": False,
         "link_clock": False,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),

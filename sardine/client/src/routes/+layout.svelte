@@ -148,7 +148,7 @@ Menu button functions:
 		if ((event.key === 'Enter' && event.shiftKey) || (event.key === 'e' && event.ctrlKey)) {
 			event.preventDefault(); // Prevents the addition of a new line
 			const code = view.getSelectedLines();
-			runnerService.executeCode(code + '\n');
+			runnerService.executeCode(code + '\n\r');
 			saveBuffers(SARDINE_BUFFERS);
 			headerComponent.toggleSpinLogo();
 			setTimeout(() => {
@@ -159,7 +159,7 @@ Menu button functions:
 		if (event.key === 'Enter' && event.ctrlKey) {
 			event.preventDefault(); // Prevents the addition of a new line
 			const code = view.getCodeBlock();
-			runnerService.executeCode(code + '\n');
+			runnerService.executeCode(code + '\n\r');
 			saveBuffers(SARDINE_BUFFERS);
 			headerComponent.toggleSpinLogo();
 			setTimeout(() => {

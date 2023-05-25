@@ -523,8 +523,15 @@ class CalculateTree(Transformer):
             "scale": self.library.scale,
             "filt": self.library.custom_filter,
             "quant": self.library.quantize,
+            # Bipolar and unipolar time-dependent Low frequency oscillators
+            "lsin": self.library.lsin,
+            "ltri": self.library.ltri,
+            "alsin": self.library.alsin,
+            "altri": self.library.altri,
+            "lsaw": self.library.lsaw,
+            "alsaw": self.library.alsaw,
+            "lrect": self.library.lrect,
         }
-
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():
                 return modifiers_list[func_name](

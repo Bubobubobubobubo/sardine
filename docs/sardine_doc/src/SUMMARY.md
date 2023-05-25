@@ -66,6 +66,7 @@
         - [Voice Leading](pattern_languages/sardine/voice_leading.md)
         - [Note Functions](pattern_languages/sardine/notes_functions.md)
         - [Combinatorics](pattern_languages/sardine/combinatorics_functions.md)
+        - [Low Frequency Oscillators (LFOs)](pattern_languages/sardine/low_frequency_oscillators.md)
       - [Conditions](pattern_languages/sardine/conditions.md)
     - [Ziffers](pattern_languages/ziffers.md)
       - [Presentation](pattern_languages/ziffers/what_is_ziffers.md)

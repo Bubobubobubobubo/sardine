@@ -266,8 +266,8 @@ Menu button functions:
 				{#each Object.entries(SARDINE_BUFFERS) as [name, buffer]}
 					<Tab>{trimBufferName(name)}</Tab>
 				{/each}
-				<Tab>Docs</Tab>
-				<Tab>Config</Tab>
+				<Tab>[D]</Tab>
+				<Tab>[C]</Tab>
 			</TabList>
 
 			<Splitpanes

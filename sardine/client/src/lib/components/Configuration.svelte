@@ -46,14 +46,10 @@
 </script>
 
 <h1>Configuration Tool</h1>
-
-<div class="row">
-	<div class="column">
-		<button class="button" on:click={resetConfig}>Reset</button>
-	</div>
-	<div class="column">
-		<button class="button" on:click={() => (showModal = true)}>Show</button>
-	</div>
+<div class="button-row">
+	<button class="button" on:click={resetConfig}>Reset</button>
+	<button type="submit">Save</button>
+	<button class="button" on:click={() => (showModal = true)}>Show</button>
 </div>
 
 <main>
@@ -73,15 +69,9 @@
 					<label>
 						BPM:
 						<input type="number" min="20" max="800" step="1" bind:value={$config.bpm} />
-					</label>
-
-					<label>
-						Beats per Measure:
+						Beats:
 						<input type="number" min="1" max="999" step="1" bind:value={$config.beats} />
-					</label>
-
-					<label>
-						Link Clock:
+						Link:
 						<input type="checkbox" bind:checked={$config.link_clock} class="big-checkbox" />
 					</label>
 				</fieldset>
@@ -92,7 +82,7 @@
 					<legend>SuperCollider</legend>
 					<div>
 						<label>
-							SuperDirt Handler:
+							Handler:
 							<input
 								type="checkbox"
 								bind:checked={$config.superdirt_handler}
@@ -101,37 +91,27 @@
 						</label>
 
 						<label>
-							Boot SuperCollider:
+							Boot:
 							<input
 								type="checkbox"
 								bind:checked={$config.boot_supercollider}
 								class="big-checkbox"
 							/>
-						</label>
-					</div>
-
-					<div>
-						<label>
-							Sardine Boot File:
+							Boot File:
 							<input
 								type="checkbox"
 								bind:checked={$config.sardine_boot_file}
 								class="big-checkbox"
 							/>
 						</label>
-
-						<label>
-							Verbose SuperDirt:
-							<input
-								type="checkbox"
-								bind:checked={$config.verbose_superdirt}
-								class="big-checkbox"
-							/>
-						</label>
 					</div>
+
+					<div />
 					<label>
-						SuperCollider Boot Path:
+						Boot Path:
 						<input type="text" bind:value={$config.superdirt_config_path} autocomplete="off" />
+						Verbose:
+						<input type="checkbox" bind:checked={$config.verbose_superdirt} class="big-checkbox" />
 					</label>
 				</fieldset>
 
@@ -144,21 +124,9 @@
 				</fieldset>
 			</div>
 		</div>
-		<fieldset>
-			<legend>More</legend>
-			<label>
-				Debug Mode:
-				<input type="checkbox" bind:checked={$config.debug} class="big-checkbox" />
-			</label>
-
-			<label>
-				User Config Path:
-				<input type="text" bind:value={$config.user_config_path} autocomplete="off" />
-			</label>
-		</fieldset>
-
-		<button type="submit">Save</button>
 	</form>
+
+	<p>Use <code>sardine config</code> for a more complete configuration tool!</p>
 </main>
 
 <Modal bind:showModal>
@@ -167,18 +135,19 @@
 
 <style>
 	button {
-		padding-top: 10px;
-		padding-bottom: 10px;
+		padding-top: 0.1vh;
+		padding-bottom: 0.1vh;
 		display: block;
-		margin: 0 auto;
-		width: 100%;
-		height: 4rem;
-		line-height: 3rem;
-		font-size: 1.2rem;
+		margin: 2 auto;
+		width: 20vw;
+		height: 8vh;
+		line-height: 1rem;
+		font-size: 1.5vw;
 		text-align: center;
 		background-color: white;
 		color: black;
 		border: none;
+		border-radius: 10px;
 		outline: none;
 	}
 
@@ -192,39 +161,46 @@
 	.form-columns {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
+		gap: 1vw;
 	}
 
 	h1 {
 		text-align: center;
 		color: white;
 	}
+
 	fieldset {
-		padding: 30px;
-		height: 150px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		padding-bottom: 2vw;
+		margin-bottom: 1vw;
 	}
+
 	.big-checkbox {
 		transform: scale(2);
 	}
 
 	.row {
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		width: 100%;
 		margin-bottom: 1rem;
 	}
 
 	.column {
 		width: 50%;
+		display: grid;
+		justify-content: center;
 	}
 
-	label {
-		padding-top: 10px;
-		padding-bottom: 10px;
-		height: 20px;
+	.button-row {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	input[type='text'] {
+		width: 10.5vw;
 	}
 </style>

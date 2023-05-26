@@ -155,6 +155,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		width: 100%;
 		color: white;
 	}
 
@@ -180,19 +181,6 @@
 
 	.big-checkbox {
 		transform: scale(2);
-	}
-
-	.row {
-		display: flex;
-		justify-content: space-around;
-		width: 100%;
-		margin-bottom: 1rem;
-	}
-
-	.column {
-		width: 50%;
-		display: grid;
-		justify-content: center;
 	}
 
 	.button-row {

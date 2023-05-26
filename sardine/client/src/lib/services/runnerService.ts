@@ -10,7 +10,7 @@ class RunnerService{
 
     async executeCode(code:string) {
         const data = {
-            code: code,
+            code: code + "\n\r",
         }
         const response = await fetch( this.host + '/execute', {
             method: 'POST',
@@ -30,7 +30,7 @@ class RunnerService{
       let logBuffer: string[] = [];
 
       const debouncedOnLogs = debounce(() => {
-          onLogs(logBuffer.join('\n'));
+          onLogs(logBuffer.join('\n\r'));
           logBuffer = [];
       }, debounceDelay);
 

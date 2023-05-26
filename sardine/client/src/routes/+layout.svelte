@@ -1,12 +1,11 @@
 <script lang="ts">
-	import FileSaver from 'file-saver';
 	import { tick } from 'svelte';
 	import { derived } from 'svelte/store';
 	import type { EditorView } from '@codemirror/view';
 	import Editor from '$lib/components/Editor.svelte';
 	import Configuration from '$lib/components/Configuration.svelte';
 	import _reconfigureExtensions from '$lib/components/Editor.svelte';
-	import Header from './Header.svelte';
+	import Header from '$lib/components/Header.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
@@ -57,6 +56,7 @@ Menu button functions:
 	}
 
 	let SARDINE_BUFFERS: Dictionary<string> = {};
+	let TUTORIAL_BUFFERS: Dictionary<string> = {};
 	let showLogsStore = derived(activeTab, ($activeTab) => {
 		Number($activeTab) > 2;
 	});
@@ -76,7 +76,6 @@ Menu button functions:
 				}
 			});
 	}
-
 	fetchLocalFiles();
 
 	// Fetching from the local server to grab the content of the files.
@@ -148,7 +147,7 @@ Menu button functions:
 		if ((event.key === 'Enter' && event.shiftKey) || (event.key === 'e' && event.ctrlKey)) {
 			event.preventDefault(); // Prevents the addition of a new line
 			const code = view.getSelectedLines();
-			runnerService.executeCode(code + '\n\r');
+			runnerService.executeCode(code + '\n\n');
 			saveBuffers(SARDINE_BUFFERS);
 			headerComponent.toggleSpinLogo();
 			setTimeout(() => {
@@ -159,7 +158,7 @@ Menu button functions:
 		if (event.key === 'Enter' && event.ctrlKey) {
 			event.preventDefault(); // Prevents the addition of a new line
 			const code = view.getCodeBlock();
-			runnerService.executeCode(code + '\n\r');
+			runnerService.executeCode(code + '\n\n');
 			saveBuffers(SARDINE_BUFFERS);
 			headerComponent.toggleSpinLogo();
 			setTimeout(() => {
@@ -221,12 +220,13 @@ Menu button functions:
 		document.body.removeChild(a);
 	}
 
-	function spawnTutorial() {
+	function spawnTutorial(event) {
+		let text = event.detail.text;
 		console.log('Spawning the basic tutorial');
 		const tab = get(activeTab);
 		// We change the buffer but we need to trigger a redraw as well
 		SARDINE_BUFFERS[`buffer${tab}.py`] = tutorialText;
-		view._setText(tutorialText);
+		view._setText(text);
 	}
 
 	function openSardineFolder() {
@@ -254,6 +254,7 @@ Menu button functions:
 	<Header
 		bind:this={headerComponent}
 		on:play={handlePlay}
+		on:loadtutorial={spawnTutorial}
 		on:stop={handleStop}
 		on:save={saveAsTextFile}
 		on:users={() => console.log('Users')}

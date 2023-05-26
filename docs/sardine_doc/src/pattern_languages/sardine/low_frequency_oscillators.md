@@ -69,7 +69,7 @@ These functions are implementing low-frequency oscillators whose period is based
 
 
 <tr>
-<td class="org-left"><b>altri</b></td>
+<td class="org-left"><b>alsaw</b></td>
 <td class="org-left">period</td>
 <td class="org-left">unipolar sawtooth low-frequency oscillator (0, 1)</td>
 <td class="org-left">int|float</td>

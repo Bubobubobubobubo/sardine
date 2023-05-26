@@ -138,13 +138,14 @@ for player in player_names:
 #   - send_alias: an alias for the handler's send method that will be part of
 #     this session's global variables
 #     (make sure it does not conflict with any other global alias)
+#   - params: a dictionary with the handler's initialization parameters
 for ext_config_path in config.extensions:
     ext_config = read_extension_configuration(ext_config_path)
     sys.path.append(ext_config["root"])
     for ext_handler in ext_config["handlers"]:
         module = importlib.import_module(f'{ext_config["package"]}.{ext_handler["module"]}')
         cls = getattr(module, ext_handler["class"])
-        instance = cls()
+        instance = cls(ext_handler["params"])
         globals()[ext_handler["send_alias"]] = instance.send
         bowl.add_handler(instance)
 

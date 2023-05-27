@@ -204,7 +204,7 @@ Menu button functions:
 		// Getting the currently active tab through introspection
 		let tab = get(activeTab);
 		// Why is this magic number needed here? This is not good at all...
-		SARDINE_BUFFERS['buffer' + (tab - 2) + '.py'] = tr._doc.text.join('\n');
+		SARDINE_BUFFERS['buffer' + (tab - 2) + '.py'] = tr._doc.text;
 	}
 
 	function saveAsTextFile(content) {

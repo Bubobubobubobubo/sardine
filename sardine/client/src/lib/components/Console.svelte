@@ -38,13 +38,13 @@
 	}
 
 	.console-content {
-		font-size: 1vh;
-		height: 2000px;
+		font-size: 0.25vw;
+		height: 50vw;
 		overflow-y: scroll;
 	}
 
 	.console-content ul {
-		font-size: 1vh;
+		font-size: 0.25vh;
 		list-style: none;
 		padding: 0;
 		margin: 0;
@@ -55,10 +55,11 @@
 	pre {
 		margin: 0em;
 		font-family: monospace;
+		font-size: 1vw;
 	}
 
 	.console-content li {
-		font-size: 0.9vh;
+		font-size: 0.25vw;
 		padding: 0px 5px;
 	}
 </style>

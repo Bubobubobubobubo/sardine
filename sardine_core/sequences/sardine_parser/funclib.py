@@ -892,7 +892,7 @@ class FunctionLibrary:
             list: lfo value (-1 -> 1)
         """
         period = float(period[0])
-        return sin(2*pi*self.clock.time/period)
+        return [sin(2*pi*self.clock.time/period)]
 
     def alsin(self, period: int|float, **kwargs) -> list:
         """Basic unipolar sinusoïdal low frequency oscillator
@@ -902,7 +902,7 @@ class FunctionLibrary:
             list: lfo value (0 -> 1)
         """
         period = float(period[0])
-        return abs(sin(2*pi*self.clock.time/period))
+        return [abs(sin(2*pi*self.clock.time/period))]
 
     def ltri(self, period: int|float, **kwargs) -> list:
         """Basic triangular low frequency oscillator
@@ -920,7 +920,7 @@ class FunctionLibrary:
                 return 4 * t / period - 4
             else:
                 return -4 * t / period + 2
-        return inner_func()
+        return [inner_func()]
 
     def altri(self, period: int|float, **kwargs) -> list:
         """Basic unipolar triangular low frequency oscillator
@@ -930,7 +930,7 @@ class FunctionLibrary:
             list: lfo value (0 -> 1)
         """
         period = float(period[0])
-        return abs(self.ltri(period=period))
+        return [abs(self.ltri(period=period))]
 
     def lsaw(self, period: int|float, **kwargs) -> list:
         """Basic sawtooth low frequency oscillator
@@ -941,7 +941,7 @@ class FunctionLibrary:
         """
         period = float(period[0])
         t = self.clock.time % period
-        return 2 * t if t < period / 2 else (2 * t) - 2
+        return [2 * t if t < period / 2 else (2 * t) - 2]
 
     def alsaw(self, period: int|float, **kwargs) -> list:
         """Basic unipolar sawtooth low frequency oscillator
@@ -950,7 +950,7 @@ class FunctionLibrary:
         Returns:
             list: lfo value (0 -> 1)
         """
-        return abs(self.lsaw(period=period))
+        return [abs(self.lsaw(period=period))]
 
     def lrect(self, period: int|float, pwm: int|float=0.5, **kwargs) -> list:
         """Basic square low frequency oscillator
@@ -961,4 +961,4 @@ class FunctionLibrary:
         """
         period, pwm = float(period[0]), float(pwm[0]) * 100
         t = self.clock.time % period
-        return 1 if t < (period * (pwm / 100)) else -1
+        return [1 if t < (period * (pwm / 100)) else -1]

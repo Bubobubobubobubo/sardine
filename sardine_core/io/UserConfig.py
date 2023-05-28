@@ -33,7 +33,8 @@ TEMPLATE_CONFIGURATION = {
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "deferred_scheduling": True,
         "editor": False,
-    }
+    },
+    "extensions": []
 }
 
 
@@ -63,6 +64,7 @@ class Config:
     link_clock: bool
     deferred_scheduling: bool
     editor: bool
+    extensions: list
 
     @classmethod
     def from_dict(cls, data: dict) -> "Config":
@@ -82,6 +84,7 @@ class Config:
             user_config_path=config["user_config_path"],
             deferred_scheduling=config["deferred_scheduling"],
             editor=config["editor"],
+            extensions=data["extensions"],
         )
 
     def to_dict(self) -> dict:
@@ -101,7 +104,8 @@ class Config:
                 "user_config_path": self.user_config_path,
                 "deferred_scheduling": self.deferred_scheduling,
                 "editor": self.editor,
-            }
+            },
+            "extensions": self.extensions
         }
 
 
@@ -164,6 +168,13 @@ def read_user_configuration() -> Config:
             Path(USER_DIR / "buffers" / f"{number}.py").touch(exist_ok=True)
 
     return config
+
+
+def read_extension_configuration(file_path: str) -> dict:
+    """Read extension config JSON file."""
+    with open(file_path, "r") as f:
+        ext_data = json.load(f)
+    return ext_data
 
 
 if __name__ == "__main__":

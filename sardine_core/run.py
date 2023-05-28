@@ -7,7 +7,7 @@ from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
 from . import *
-from .io.UserConfig import read_user_configuration
+from .io.UserConfig import read_user_configuration, read_extension_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
@@ -125,6 +125,29 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
+
+# Extensions
+# An extension configuration file contains the following fields:
+# - root: filepath to the directory containing the extension package
+#   (must be added to the Python path before importing the package)
+# - package: the extension package name
+# - handlers: a list of sardine handlers that can be found in the package,
+#   each one of them containing the following fields:
+#   - module: the package's module containing the handler
+#   - class: the handler's class name
+#   - send_alias: an alias for the handler's send method that will be part of
+#     this session's global variables
+#     (make sure it does not conflict with any other global alias)
+#   - params: a dictionary with the handler's initialization parameters
+for ext_config_path in config.extensions:
+    ext_config = read_extension_configuration(ext_config_path)
+    sys.path.append(ext_config["root"])
+    for ext_handler in ext_config["handlers"]:
+        module = importlib.import_module(f'{ext_config["package"]}.{ext_handler["module"]}')
+        cls = getattr(module, ext_handler["class"])
+        instance = cls(ext_handler["params"])
+        globals()[ext_handler["send_alias"]] = instance.send
+        bowl.add_handler(instance)
 
 #######################################################################################
 # BASIC MECHANISMS: SWIMMING, DELAY, SLEEP AND OTHER IMPORTANT CONSTRUCTS

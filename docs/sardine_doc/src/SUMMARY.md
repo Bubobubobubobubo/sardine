@@ -96,6 +96,7 @@
       - [External Clock](diving_deeper/external_clock.md)
       - [Sardine and DAWs](diving_deeper/daw.md)
     - [Presets](diving_deeper/presets.md)
+    - [Extensions](diving_deeper/extensions.md)
 - [Audio Engine Reference](audio_engine.md)
     - [Sampler](audio_engine/sampler.md)
     - [Effects](audio_engine/effects.md)

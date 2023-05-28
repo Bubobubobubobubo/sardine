@@ -4,6 +4,7 @@
 	import { editorMode } from '$lib/store';
 	import { createEventDispatcher } from 'svelte';
 	import { tutorialText } from '$lib/text/TutorialText';
+	import { Button, Offcanvas } from 'sveltestrap';
 
 	let spinLogo = false;
 	export function toggleSpinLogo(): void {
@@ -24,9 +25,9 @@
 				<button class="dropbtn">[Help]</button>
 				<div class="dropdown-content">
 					{#each Object.entries(tutorialText) as [title, content]}
-						<a href="#" on:click|preventDefault={() => dispatch('loadtutorial', { text: content })}>
-							{title}</a
-						>
+						<a href="" on:click|preventDefault={() => dispatch('loadtutorial', { text: content })}>
+							{title}
+						</a>
 					{/each}
 				</div>
 			</div>
@@ -112,7 +113,7 @@
 		display: none;
 		position: absolute;
 		background-color: white;
-		min-width: 4vw;
+		min-width: 3vw;
 		box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 		z-index: 1;
 	}
@@ -120,10 +121,10 @@
 	/* Links inside the dropdown */
 	.dropdown-content a {
 		color: black;
-		padding: 12px 16px;
-		width: 16vw;
+		padding: 6px 12px;
+		width: 25vw;
 		text-decoration: none;
-		font-size: 1.25vw;
+		font-size: 0.75vw;
 		display: block;
 	}
 

@@ -111,7 +111,6 @@ class WebServer:
                 # .DS_Store files on MacOS killing the mood
                 if str(file).startswith("."):
                     continue
-                print(f"Nom du fichier: {file}")
                 path = (buffer_folder / file).as_posix()
                 with open(path, "r", encoding="utf-8") as buffer:
                     buffer_files[file] = buffer.read()

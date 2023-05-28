@@ -46,6 +46,6 @@
 		"svelte-idle": "^2.0.3",
 		"svelte-markdown": "^0.2.3",
 		"svelte-split-pane": "^0.1.2",
-		"svelte-splitpanes": "^0.7.13",
+		"svelte-splitpanes": "^0.7.13"
 	}
 }

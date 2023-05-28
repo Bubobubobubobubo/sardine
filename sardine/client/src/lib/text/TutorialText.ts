@@ -359,7 +359,57 @@ Pa * pc(chan=0, program='1~80')
 `
 
 let spl_tutorial = `# The Sardine Pattern Language
+
+# Sardine comes with an internal programming language
+# that you will often see referred as SPL, an acronym
+# that stands for "Sardine Pattern Language". We will
+# explore it using a very simple pattern.
+
+# This pattern is already using SPL (the string in green)
+Pa * d('drum sn drum hh', p=0.5)
+
+# Adding silence using the . operator
+Pa * d('. sn drum hh', p=0.5) # silence on beat 1
+Pa * d('... sn drum hh', p=0.5) # three silences
+Pa * d('....... sn drum hh', p=0.5) # too much silence
+
+# Repeating an element n times using !
+Pa * d('drum!3 sn drum hh', p=0.5)
+
+# Selecting a different sample using :
+Pa * d('drum sn:1 drum:4 hh', p=0.5)
+
+# Selecting a different sample using :
+Pa * d('drum sn:1 drum:4 hh', p=0.5)
+
+# Random choice between n elements
+Pa * d('drum|sn|drum|hh', p=0.5)
+
+# Random choice between n elements
+Pa * d('drum|sn|drum|hh', p=0.5)
+
+# You can make lists of elements using brackets:
+###################################################
+
+# No difference, so what is the point?
+Pa * d('[drum sn drum hh]', p=0.5)
+
+# Repeating each element n times
+Pa * d('[drum sn drum hh]!!4', p=0.5)
+
+# Repeating the list n times
+Pa * d('[drum sn drum]!2 hh', p=0.5)
+
+# Get the element at index n in list
+Pa * d('[drum sn drum hh]&[3]', p=0.5)
+
+# You can also generate lists of numbers using SPL:
+###################################################
+
+# Get the element at index n in list
+Pa * d('[drum sn drum hh]&[3]', p=0.5)
 `
+
 
 let pattern_tutorial = `# About Tutorial 5
 `

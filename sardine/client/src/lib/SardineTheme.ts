@@ -18,7 +18,13 @@ export const sardineColorScheme = EditorView.theme({
     },
 
     '.cm-content': {
-      caretColor: cursor
+      caretColor: cursor,
+      fontFamily: "inherit"
+    },
+
+    '.cm-scroller': {
+      caretColor: cursor,
+      fontFamily: "inherit"
     },
 
     '.cm-cursor, .cm-dropCursor': { borderLeftColor: cursor },

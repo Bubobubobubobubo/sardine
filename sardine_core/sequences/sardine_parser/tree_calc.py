@@ -380,9 +380,9 @@ class CalculateTree(Transformer):
     def floor_division(self, left, right):
         return map_binary_function(lambda x, y: x // y, left, right)
 
-    def name(self, name):
+    def name(self, *name):
         """Generating a name"""
-        return [str(name)]
+        return [''.join(name)]
 
     def assoc_sp_number(self, name, value):
         def _simple_association(name, value):

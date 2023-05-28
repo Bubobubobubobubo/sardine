@@ -75,6 +75,7 @@ pattern: sum sum* -> return_pattern
     | name_product "|" name_atom                          -> choice
 
 ?name_atom: NAME                                          -> name
+    | NUMBER NAME                                         -> name
     | "(" name_sum ")"
     | "[" name_sum name_sum* "]"           -> make_list
 

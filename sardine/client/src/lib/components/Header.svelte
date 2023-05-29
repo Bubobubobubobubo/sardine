@@ -4,7 +4,6 @@
 	import { editorMode } from '$lib/store';
 	import { createEventDispatcher } from 'svelte';
 	import { tutorialText } from '$lib/text/TutorialText';
-	import { Button, Offcanvas } from 'sveltestrap';
 
 	let spinLogo = false;
 	export function toggleSpinLogo(): void {

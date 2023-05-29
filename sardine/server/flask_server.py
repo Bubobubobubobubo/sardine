@@ -76,11 +76,12 @@ class WebServer:
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
-                print(f"Creating file {str(filename)} as utf-8!")
+                # print(f"Creating file {str(filename)} as utf-8!")
                 with open(check_file, "w", encoding="utf-8") as f:
                     f.write("")
             else:
-                print(f"Loading file {str(filename)}")
+                # print(f"Loading file {str(filename)}")
+                pass
 
     def load_buffer_files(self) -> Optional[dict]:
         """

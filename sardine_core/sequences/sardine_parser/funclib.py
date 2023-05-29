@@ -731,7 +731,7 @@ class FunctionLibrary:
             list: a valid pattern.
         """
         x = list(chain(*x))
-        return map_unary_function(vrai_lfo, x)
+        return map_unary_function(sin, x)
 
     def square_wave(self, *x, **kwargs) -> list:
         """Basic pulse-width modulable square wave function
@@ -894,16 +894,6 @@ class FunctionLibrary:
         period = float(period[0])
         return [sin(2*pi*self.clock.time/period)]
 
-    def alsin(self, period: int|float, **kwargs) -> list:
-        """Basic unipolar sinusoïdal low frequency oscillator
-        Args:
-            period (int|float): LFO period (duration in beats)  
-        Returns:
-            list: lfo value (0 -> 1)
-        """
-        period = float(period[0])
-        return [self.absolute(*[sin(2*pi*self.clock.time/period)])]
-
     def ltri(self, period: int|float, **kwargs) -> list:
         """Basic triangular low frequency oscillator
         Args:
@@ -922,6 +912,16 @@ class FunctionLibrary:
                 return -4 * t / period + 2
         return [inner_func()]
 
+    def alsin(self, period: int|float, **kwargs) -> list:
+        """Basic unipolar sinusoïdal low frequency oscillator
+        Args:
+            period (int|float): LFO period (duration in beats)  
+        Returns:
+            list: lfo value (0 -> 1)
+        """
+        # period = float(period[0])
+        return self.absolute(*[self.lsin(period)])
+
     def altri(self, period: int|float, **kwargs) -> list:
         """Basic unipolar triangular low frequency oscillator
         Args:
@@ -930,6 +930,16 @@ class FunctionLibrary:
             list: lfo value (0 -> 1)
         """
         return [self.absolute(*[self.ltri(period=period)])]
+
+    def alsaw(self, period: int|float, **kwargs) -> list:
+        """Basic unipolar sawtooth low frequency oscillator
+        Args:
+            period (int|float): LFO period (duration in beats)  
+        Returns:
+            list: lfo value (0 -> 1)
+        """
+        return [self.absolute(*[self.lsaw(period=period)])]
+
 
     def lsaw(self, period: int|float, **kwargs) -> list:
         """Basic sawtooth low frequency oscillator
@@ -942,14 +952,6 @@ class FunctionLibrary:
         t = self.clock.time % period
         return [2 * t if t < period / 2 else (2 * t) - 2]
 
-    def alsaw(self, period: int|float, **kwargs) -> list:
-        """Basic unipolar sawtooth low frequency oscillator
-        Args:
-            period (int|float): LFO period (duration in beats)  
-        Returns:
-            list: lfo value (0 -> 1)
-        """
-        return [self.absolute(*[self.lsaw(period=period)])]
 
     def lrect(self, period: int|float, pwm: int|float=0.5, **kwargs) -> list:
         """Basic square low frequency oscillator

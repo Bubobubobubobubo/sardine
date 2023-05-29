@@ -47,9 +47,9 @@ pattern: sum sum* -> return_pattern
      | "T" "." "μ"                                         -> get_microsecond // Unicode character U+03BC
      | "[" sum ":" sum "]"                                 -> generate_ramp
      | "[" sum ":" sum "," sum  "]"                        -> generate_ramp_with_range
-     | "[" sum sum* "]"                   -> make_list
-     | "[:" sum sum* ":]"                 -> make_list_repeat
-     | "{" sum sum* "}"                   -> make_chord
+     | "[" sum sum* "]"                                    -> make_list
+     | "[:" sum sum* ":]"                                  -> make_list_repeat
+     | "{" sum sum* "}"                                    -> make_chord
      | SILENCE+                                            -> silence
      | "(" sum ")"
 

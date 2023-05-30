@@ -57,15 +57,7 @@ With **Sardine**, you can:
 
 ## Installation
 
-In order to install Sardine, your system will require a recent version of Python (3.10+). We now support 3.11 versions as well.
-A more detailed installation guide can be found on [Sardine's website](https://sardine.raphaelforment.fr/technical/installation/).
-Refer to the website for complete details concerning the installation process.
-
-1) Run: `python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ sardine-system`.
-    - the `--find-links` option is used as a temporary fix to the unavailability of some dependencies in the Pypi repositories for Python 3.10/3.11.
-2) Install [SuperCollider](https://supercollider.github.io/) and [SuperDirt](https://github.com/musikinformatik/SuperDirt) for an additional supported audio backend.
-3) Run `sardine-config` and configure Sardine to your liking following [this guide](https://sardine.raphaelforment.fr/configuration.html)
-4) Install the text editor of your choice: VSCode, Neovim, Vim, Emacs, Jupyter Notebook, etc... There are many options you can pick from. They have all been tested with Sardine.
+Refer to the [installation section](https://sardine.raphaelforment.fr/installation.html).
 
 ## Contributions
 

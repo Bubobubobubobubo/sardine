@@ -191,12 +191,12 @@
 	}
 
 	function saveAsTextFile(content) {
-		const blob = new Blob([SARDINE_BUFFERS['buffer' + (get(activeTab) - 1) + '.py']], {
+		const blob = new Blob([SARDINE_BUFFERS['buffer' + (get(activeTab) - 2) + '.py']], {
 			type: 'text/plain'
 		});
 		const a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
-		a.download = 'sardine';
+		a.download = 'sardine.py';
 		a.style.display = 'none';
 		document.body.appendChild(a);
 		a.click();

@@ -131,14 +131,20 @@ def server_factory(console):
 
     @app.route("/save", methods=["POST"])
     def save_files_to_disk() -> str:
-        data = request.get_json(silent=False)
-        if data:
-            for key, content in data.items():
-                path = USER_DIR / "buffers" / f"{key}"
-                with open(path, "w", encoding="utf-8") as new_file:
-                    new_file.write(content)
-            return "OK"
-        else:
+        try:
+            data = request.get_json(silent=False)
+            if data:
+                for key, content in data.items():
+                    path = USER_DIR / "buffers" / f"{key}"
+                    with open(path, "w", encoding="utf-8") as new_file:
+                        # This is where you are supposed to do something about
+                        # formatting.
+                        new_file.write("\n".join(
+                            content) if isinstance(content, list) else content)
+                        print(content)
+                return "OK"
+        except Exception as e:
+            print(e)
             return "FAILED"
 
     @app.post("/open_folder")

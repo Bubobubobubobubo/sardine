@@ -10,13 +10,13 @@
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
-	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
 	import { tutorialText } from '$lib/text/TutorialText';
 	import { keyInstructions } from '$lib/text/KeyInstructions';
 	import { Pane, Splitpanes } from 'svelte-splitpanes';
+	import './styles.css';
 
 	let showModal = false;
 
@@ -107,6 +107,9 @@
 				});
 			}
 		});
+		setInterval(() => {
+			saveBuffers(SARDINE_BUFFERS);
+		}, 1000);
 	});
 
 	/**
@@ -182,7 +185,9 @@
 		// Getting the currently active tab through introspection
 		let tab = get(activeTab);
 		// Why is this magic number needed here? This is not good at all...
-		SARDINE_BUFFERS['buffer' + (tab - 2) + '.py'] = tr._doc.text;
+		// Sanitize here
+		// console.log(tr._doc.text);
+		SARDINE_BUFFERS['buffer' + (tab - 2) + '.py'] = tr._doc.text.join('\n');
 	}
 
 	function saveAsTextFile(content) {

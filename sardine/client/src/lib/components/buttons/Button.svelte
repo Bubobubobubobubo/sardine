@@ -12,7 +12,7 @@
 		background-color: black;
 		color: white;
 		padding: 8px;
-		font-size: 0.5vw;
+		font-size: 1.2rem;
 		margin-left: 15px;
 	}
 
@@ -22,4 +22,3 @@
 		transition: all 0.2s ease-in-out;
 	}
 </style>
-

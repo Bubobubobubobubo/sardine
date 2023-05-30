@@ -141,7 +141,6 @@ def server_factory(console):
                         # formatting.
                         new_file.write("\n".join(
                             content) if isinstance(content, list) else content)
-                        print(content)
                 return "OK"
         except Exception as e:
             print(e)

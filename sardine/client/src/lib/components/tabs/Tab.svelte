@@ -18,7 +18,7 @@
 		border: none;
 		border-radius: 0;
 		margin: 0;
-		font-size: 1.5vw;
+		font-size: 1.5rem;
 		color: white;
 	}
 
@@ -31,4 +31,3 @@
 		color: white;
 	}
 </style>
-

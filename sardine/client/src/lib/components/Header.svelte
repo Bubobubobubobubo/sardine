@@ -24,7 +24,7 @@
 				<button class="dropbtn">[Help]</button>
 				<div class="dropdown-content">
 					{#each Object.entries(tutorialText) as [title, content]}
-						<a href="" on:click|preventDefault={() => dispatch('loadtutorial', { text: content })}>
+						<a href="/" on:click|preventDefault={() => dispatch('loadtutorial', { text: content })}>
 							{title}
 						</a>
 					{/each}

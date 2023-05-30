@@ -10,36 +10,15 @@
 	import Console from '$lib/components/Console.svelte';
 	import { editorMode, activeTab } from '$lib/store';
 	import { get } from 'svelte/store';
-	import { vim } from '@replit/codemirror-vim';
 	import './styles.css';
 	import runnerService from '$lib/services/runnerService';
 	import { onMount } from 'svelte';
-	import { SardineBasicSetup } from '$lib/SardineSetup';
 	import { Tabs, TabList, TabPanel, Tab } from '$lib/components/tabs/tabs';
-	import { keymap } from '@codemirror/view';
 	import { tutorialText } from '$lib/text/TutorialText';
+	import { keyInstructions } from '$lib/text/KeyInstructions';
 	import { Pane, Splitpanes } from 'svelte-splitpanes';
 
-	let inputted_characters = 0;
-	let editorHeight, editorWidth;
 	let showModal = false;
-	let showLogs = true;
-
-	let keyInstructions = `
-This is the embedded Sardine Code Editor
-========================================
-Shift + Enter : eval selection
-Ctrl + Enter : eval code block
-Alt + Space : Vim/Emacs  mode
-
-Menu button functions:
-- Play : play
-- Stop : pause / resume
-- Save : save file to disk
-- Group : [TO IMPLEMENT]
-- Help : open this popup
-- Folder : open Sardine Folder
-`;
 
 	/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     Initialise a list of code buffers by fetching them from the server.  We are fetching files
@@ -56,7 +35,6 @@ Menu button functions:
 	}
 
 	let SARDINE_BUFFERS: Dictionary<string> = {};
-	let TUTORIAL_BUFFERS: Dictionary<string> = {};
 	let showLogsStore = derived(activeTab, ($activeTab) => {
 		Number($activeTab) > 2;
 	});

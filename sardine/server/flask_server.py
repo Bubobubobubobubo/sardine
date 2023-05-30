@@ -33,18 +33,7 @@ mimetypes.add_type("text/css", ".css")
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
-FILENAMES = [
-    "buffer0.py",
-    "buffer1.py",
-    "buffer2.py",
-    "buffer3.py",
-    "buffer4.py",
-    "buffer5.py",
-    "buffer6.py",
-    "buffer7.py",
-    "buffer8.py",
-    "buffer9.py",
-]
+FILENAMES = [f"buffer{i}.py" for i in range(1,10)]
 
 # We need to create the log file if it doesn't already exist
 Path(LOG_FILE).touch(exist_ok=True)
@@ -76,11 +65,9 @@ class WebServer:
         for filename in FILENAMES:
             check_file: Path = buffer_folder / filename
             if not check_file.exists():
-                # print(f"Creating file {str(filename)} as utf-8!")
                 with open(check_file, "w", encoding="utf-8") as f:
                     f.write("")
             else:
-                # print(f"Loading file {str(filename)}")
                 pass
 
     def load_buffer_files(self) -> Optional[dict]:

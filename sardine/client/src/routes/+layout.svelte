@@ -17,6 +17,7 @@
 	import { keyInstructions } from '$lib/text/KeyInstructions';
 	import { Pane, Splitpanes } from 'svelte-splitpanes';
 	import './styles.css';
+	import { vim } from '@replit/codemirror-vim';
 
 	let showModal = false;
 
@@ -81,7 +82,6 @@
 
 	let logs: string[] = [];
 	let extensions: any[] = [];
-	$: extensions = extensions;
 	let store;
 	let codeMirrorState;
 	let view: EditorView;
@@ -93,18 +93,10 @@
 		editorMode.subscribe((value) => {
 			if (value == 'vim') {
 				console.log('Switch to VIM Mode.');
-				tick().then(() => {
-					if (view) {
-						view.addVim();
-					}
-				});
+				extensions  =[vim()]
 			} else {
 				console.log('Switch to Emacs Mode.');
-				tick().then(() => {
-					if (view) {
-						view.removeVim();
-					}
-				});
+				extensions = []
 			}
 		});
 		setInterval(() => {

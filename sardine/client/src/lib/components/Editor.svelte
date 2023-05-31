@@ -123,31 +123,20 @@
 			if (!inited) _setText(newValue);
 		}
 	};
-
+	
 	// What is the expected type of extensions?
-	export let extensions: any[];
-	let extensionsWithVim = [SardineBasicSetup, vim(), blinking_extension];
-	let extensionsWithoutVim = [SardineBasicSetup, blinking_extension];
-	extensions = extensionsWithoutVim;
-
-	export function addVim() {
-		extensions = extensionsWithVim;
-		_reconfigureExtensions();
-	}
-
-	export function removeVim() {
-		extensions = extensionsWithoutVim;
-		_reconfigureExtensions();
-	}
+	let baseExtensions = [SardineBasicSetup, blinking_extension];
+	export let extensions:any[] = [];
+	$: globalExtensions = [...baseExtensions, ...extensions];
 
 	function _reconfigureExtensions(): void {
 		if (!view) return;
 		view.dispatch({
-			effects: StateEffect.reconfigure.of(extensions)
+			effects: StateEffect.reconfigure.of(globalExtensions)
 		});
 	}
 
-	$: extensions, _reconfigureExtensions();
+	$: globalExtensions, _reconfigureExtensions();
 
 	function _editorTxHandler(tr): void {
 		this.update([tr]);
@@ -243,7 +232,7 @@
 
 		view = new EditorView({
 			doc: initialDoc,
-			extensions: extensions,
+			extensions: globalExtensions,
 			parent: dom,
 			dispatch: _editorTxHandler
 		});

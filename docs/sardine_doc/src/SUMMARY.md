@@ -108,6 +108,7 @@
     - [Zorba in Belleville](showcase/zorba.md)
     - [Dumpster Dive](showcase/dumpster_dive.md)
     - [Artificial Life](showcase/artificial_life.md)
+    - [Transport Variations](showcase/transport_variations.md)
 - [About](about.md)
     - [Why Sardine?](about/why.md)
     - [Contributions](about/contributions.md)

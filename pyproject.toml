@@ -69,8 +69,8 @@ include = ["sardine_core**", "sardine**"]
 namespaces = false
 
 [tool.setuptools.package-data]
-"sardine.sequences.sardine_parser" = ["*.lark"]
-"sardine.superdirt" = ["*.scd"]
+"sardine_core.sequences.sardine_parser" = ["*.lark"]
+"sardine_core.superdirt" = ["*.scd"]
 
 [tool.isort]
 profile = "black"

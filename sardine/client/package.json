@@ -36,6 +36,7 @@
 		"@fortawesome/free-brands-svg-icons": "^6.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.2.1",
 		"@replit/codemirror-vim": "^6.0.4",
+		"@sveltejs/adapter-node": "^1.2.4",
 		"@sveltejs/adapter-static": "^1.0.5",
 		"codemirror": "^6.0.1",
 		"file-saver": "^2.0.5",

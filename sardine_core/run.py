@@ -681,10 +681,3 @@ if config.superdirt_handler:
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
-
-def debug_repl():
-    while True:
-        try:
-            bowl.parser._parse_debug(input('> '))
-        except Exception as e:
-            print(e)

@@ -950,7 +950,7 @@ class FunctionLibrary:
         """
         period = float(period[0])
         t = self.clock.time % period
-        return [2 * t if t < period / 2 else (2 * t) - 2]
+        return [((2 * t if t < period / 2 else (2 * t)) / 2) - 1]
 
 
     def lrect(self, period: int|float, pwm: int|float=0.5, **kwargs) -> list:

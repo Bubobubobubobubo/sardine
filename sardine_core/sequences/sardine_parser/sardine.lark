@@ -103,11 +103,11 @@ pattern: sum sum* -> return_pattern
 ?note2: note1
     | note1 NUMBER               -> note_set_octave
 
-?note3: note2
-    | note3 "'"                  -> note_octave_up
-    | note3 "."                  -> note_octave_down
+// ?note3: note2
+//     | note3 "'"                  -> note_octave_up
+//     | note3 "."                  -> note_octave_down
 
-?note: note3                     -> finish_note
+?note: note2                     -> finish_note
 
 ///////////////////////////////////////////////////////////////////////////////
 

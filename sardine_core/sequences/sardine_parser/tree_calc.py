@@ -112,7 +112,7 @@ class CalculateTree(Transformer):
 
     def note_set_octave(self, note, value):
         """Move a note to a given octave"""
-        return ((note - 12) % 12) + 12 + 12 * int(value)
+        return ((note - 12) % 12) + 24 + 12 * int(value)
 
     def get_slice(self, content: list, list_slice: list) -> list:
         """Return a slice of the given list"""

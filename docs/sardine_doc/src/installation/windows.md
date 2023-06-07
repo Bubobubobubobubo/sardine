@@ -1,10 +1,11 @@
 # Windows
 
-Installing Sardine on Windows is harder than on other operating systems. Windows is Windows! 
-It doesn't want you to have fun. Don't worry, at least two Sardine devs are running Windows
-just fine :)
+Installing Sardine on Windows is more difficult than installing it on Linux/MacOS. Don't blame me, blame Windows for not providing the right tools. Microsoft are doing everything they can to prevent you from having fun. Why aren't you running Excel or Word already?
 
-- **[PLEASE READ THE PRE-INSTALLATION PAGE BEFORE GOING FURTHER]**
+
+- **PLEASE READ THE PRE-INSTALLATION PAGE BEFORE GOING FURTHER**.
+- Install the [Windows Terminal](https://github.com/microsoft/terminal), the modern terminal for Windows, made by Microsoft.
+- Install [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) for MIDI connectivity. This will allow you to play with any synthesizer.
 
 
 ### Preparing your environment

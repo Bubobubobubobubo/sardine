@@ -33,15 +33,17 @@ class ListParser(BaseParser):
         debug: bool = False,
     ):
         """
-        ListParser is the main interface to the basic patterning langauge used in a very
-        basic Sardine setup. ListParser is a programming language capable of handling
-        notes, names, samples, OSC addresses, etc... It can be used for some basic
-        patterning.
+        ListParser is the main interface to the SPL pattern language. ListParser is
+        a programming language capable of handling notes, names, samples, OSC
+        addresses, etc...
         """
 
         super().__init__()
         self.debug = debug
         self.parser_type = parser_type
+
+        # Variables usable only in the SPL environment
+        self.inner_variables = {}
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} debug={self.debug} type={self.parser_type!r}>"
@@ -65,7 +67,7 @@ class ListParser(BaseParser):
                     cache=True,
                     lexer="contextual",
                     transformer=CalculateTree(
-                        self.env.clock, self.env.iterators, self.env.variables
+                        self.env.clock, self.env.variables, self.inner_variables,
                     ),
                 ),
             },

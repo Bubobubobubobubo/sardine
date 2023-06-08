@@ -112,9 +112,10 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock, amphibian):
+    def __init__(self, clock, amphibian, inner_variables):
         self.clock = clock
         self.amphibian = amphibian
+        self.inner_variables = inner_variables
 
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
@@ -260,6 +261,18 @@ class FunctionLibrary:
     def negative_unary_condition(self, condition, pattern=[None], **kwargs):
         """Do something only if the condition is not True"""
         return pattern if condition != [1] else [None]
+
+    def set_variable(self, *args, **kwargs):
+        """Set an internal variable to the given value and return the same value"""
+        self.inner_variables[str(args[0][0])] = args[1]
+        return args[1]
+
+    def get_variable(self, *args, **kwargs):
+        """Get an internal variable. If it doesn't exist, will return 0"""
+        try:
+            return self.inner_variables[str(args[0][0])]
+        except IndexError:
+            return 0
 
     def get_amphibian_variable(self, *args, **kwargs):
         """

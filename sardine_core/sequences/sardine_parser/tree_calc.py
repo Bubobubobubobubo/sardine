@@ -14,14 +14,16 @@ from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cy
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock, iterators, variables):
+    def __init__(self, clock, variables, inner_variables):
         super().__init__()
         self.clock = clock
-        self.iterators = iterators
         self.variables = variables
+        self.inner_variables = inner_variables
         self.memory = {}
         self.library = funclib.FunctionLibrary(
-            clock=self.clock, amphibian=self.variables
+            clock=self.clock, 
+            amphibian=self.variables,
+            inner_variables=self.inner_variables,
         )
 
     def number(self, number):
@@ -430,8 +432,10 @@ class CalculateTree(Transformer):
 
         modifiers_list = {
             # Amphibian variables
-            "v": self.library.get_amphibian_variable,
-            "sv": self.library.set_amphibian_variable,
+            "get": self.library.get_variable,
+            "set": self.library.set_variable,
+            "getA": self.library.get_amphibian_variable,
+            "setA": self.library.set_amphibian_variable,
             # Pure conditions
             "if": self.library.binary_condition,
             "nif": self.library.negative_binary_condition,

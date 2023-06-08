@@ -61,6 +61,7 @@
         - [Extend](pattern_languages/sardine/extend.md)
         - [Extend-Repeat](pattern_languages/sardine/extend_repeat.md)
       - [Function Library](pattern_languages/sardine/function_library.md)
+        - [Time Functions](pattern_languages/sardine/time_functions.md)
         - [Mathematical](pattern_languages/sardine/math_functions.md)
         - [Euclidian](pattern_languages/sardine/euclidian_functions.md)
         - [Voice Leading](pattern_languages/sardine/voice_leading.md)

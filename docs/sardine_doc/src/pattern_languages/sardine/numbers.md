@@ -25,45 +25,6 @@ def number(p=0.5, i=0):
 
 Many things can be safely considered as numbers such as **notes**. Internally, a **note** is also a number.
 
-## Time-dependant numbers
-
-```python
-@swim
-def number(p=0.5, i=0):
-    # We print time-dependant values
-    print(P('$ $.p $.m', i))
-    again(number, p=0.5, i=i+1)
- ```   
-
-Some number tokens are clock-time dependant (based on **Sardine** clock time).  Depending on the moment your loop/operation takes place, you might see some values recurring because you are not polling time continuously but at predictible rhythmic moments of time. Read that sentence twice, then read it again, **please**!
-- `$`: **beat**, the current beat, with floating point precision.
-- `$.p`: **phase**, a number between `0` and `1` denoting where you are in the beat.
-- `$.m`: **measure**, the measure since the clock started.
-    
-```python
-@swim
-def number(p=0.5, i=0):
-    print(P('$ $.m $.p', i))
-    again(number, p=0.5, i=i+1)
-```  
-Some other number tokens are based on **absolute time**. They are not dependent on the clock. Use them for long-running sequences for introducing randomization. You will notice that they are all prefixed by `T`. `T` is a symbol very often associated with **time** in **Sardine**, while `$` denotes the clock time.
-    
-```python
-@swim
-def wow(p=0.5, i=0):
-    print(P('T.U T.Y T.M T.D T.h T.m T.s T.µ', i))
-    gain(wow, p=0.5, i=i+1)
-```
-    
-- `T.U`: Unix Time, the current Unix Time.
-- `T.Y`: year, the current year.
-- `T.M`: month, the current month.
-- `T.D`: day, the current day.
-- `T.h`: hour, the current hour.
-- `T.m`: minute, the current minute.
-- `T.s`: second, the current second.
-- `T.µ`: microsecond, the current microsecond.
-
 ## Random numbers
 
 - You can write random numbers by using the word `rand`.

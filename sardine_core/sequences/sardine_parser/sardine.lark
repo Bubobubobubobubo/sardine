@@ -90,7 +90,7 @@ pattern: sum sum* -> return_pattern
 ?note2: note1
     | note1 NUMBER               -> note_set_octave
     | (note1|note2) "'"          -> note_octave_up
-    | (note1|note2) "."          -> note_octave_down
+    | (note1|note2) "_"          -> note_octave_down
 
 ?note: note2                     -> finish_note
 
@@ -104,7 +104,7 @@ NOTE: "A"|"La"|"B"|"Si"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
     | "Cb"|"Db"|"Eb"|"Fb"|"Gb"|"Ab"|"Bb"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
-SILENCE: "_"
+SILENCE: "."
 
 SPACE: /[\s\t\f\r\n]/
 %ignore SPACE

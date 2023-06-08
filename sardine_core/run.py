@@ -681,3 +681,13 @@ if config.superdirt_handler:
 #######################################################################################
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
+
+def spl_debug():
+    while True:
+        try:
+            user_input = input('> ')
+            if user_input == "exit":
+                break
+            message = bowl.parser._parse_debug(user_input)
+        except Exception as e:
+            print(e)

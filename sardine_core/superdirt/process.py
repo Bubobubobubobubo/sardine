@@ -96,7 +96,7 @@ class SuperDirtProcess:
             print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
             print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
-        if "listening to Tidal on port 57120" in decoded_line:
+        if "listening on port 57120" in decoded_line:
             print(f"[[green]/!\\\\[/green] - Audio server ready!]")
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()

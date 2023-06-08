@@ -1,6 +1,5 @@
-import datetime
-import random
 from itertools import count, takewhile, chain
+import random
 from time import time
 
 from lark import Transformer, v_args
@@ -44,6 +43,14 @@ class CalculateTree(Transformer):
         a dot or multiple dots for multiple silences.
         """
         return [None] * len(args)
+
+    def numbered_silence(self, duration):
+        """
+        Variant of a silence with a numeric value indicating silence length
+        """
+        print(duration)
+        return [None] * duration
+
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -196,50 +203,6 @@ class CalculateTree(Transformer):
             list: Gathered arguments in a list
         """
         return sum(args, start=[]) * 2
-
-    def get_time(self):
-        """Return current clock time (tick) as integer"""
-        return [self.clock.time]
-
-    def get_year(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().year)]
-
-    def get_month(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().month)]
-
-    def get_day(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().day)]
-
-    def get_hour(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().hour)]
-
-    def get_minute(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().minute)]
-
-    def get_second(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().second)]
-
-    def get_microsecond(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().microsecond)]
-
-    def get_measure(self):
-        """Return current measure (bar) as integer"""
-        return [self.clock.bar]
-
-    def get_phase(self):
-        """Return current phase (phase) as integer"""
-        return [self.clock.phase]
-
-    def get_unix_time(self):
-        """Return current unix time as integer"""
-        return [int(time())]
 
     def get_random_number(self):
         """Return a random number (alias used by parser)
@@ -489,8 +452,8 @@ class CalculateTree(Transformer):
             "aspeed": self.library.anti_speed,
             # Boolean mask operations
             "euclid": self.library.euclidian_rhythm,
-            "eu": self.library.euclidian_rhythm,
             "negative_euclid": self.library.negative_euclidian_rhythm,
+            "eu": self.library.euclidian_rhythm,
             "neu": self.library.negative_euclidian_rhythm,
             "mask": self.library.mask,
             "vanish": self.library.remove_x,
@@ -528,9 +491,18 @@ class CalculateTree(Transformer):
             "ltri": self.library.ltri,
             "lsaw": self.library.lsaw,
             "lrect": self.library.lrect,
-            "alsin": self.library.alsin,
-            "altri": self.library.altri,
-            "alsaw": self.library.alsaw,
+            "ulsin": self.library.alsin,
+            "ultri": self.library.altri,
+            "ulsaw": self.library.alsaw,
+            # Time information
+            "time": self.library.get_time,
+            "t": self.library.get_time,
+            "bar": self.library.get_bar,
+            "b": self.library.get_bar,
+            "phase": self.library.get_phase,
+            "p": self.library.get_phase,
+            "unix": self.library.get_unix_time,
+            "u": self.library.get_unix_time,
         }
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():

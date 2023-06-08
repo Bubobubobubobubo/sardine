@@ -4,6 +4,8 @@ from itertools import chain, cycle, islice
 from math import cos, sin, tan, asin, pi, atan
 from random import shuffle
 from typing import Optional, Union
+from time import time
+import datetime
 
 from ..sequence import euclid
 from .chord import Chord
@@ -963,3 +965,42 @@ class FunctionLibrary:
         period, pwm = float(period[0]), float(pwm[0]) * 100
         t = self.clock.time % period
         return [1 if t < (period * (pwm / 100)) else -1]
+
+    
+    def get_time(self, *args, **kwargs):
+        """Return a specific time unit"""
+        if len(args) >= 1:
+            data = str(args[0][0])
+        else:
+            data = None
+
+        print(data)
+
+        if not data:
+            return [self.clock.time]
+        elif data == "year":
+            return [int(datetime.datetime.now().year)]
+        elif data == "month":
+            return [int(datetime.datetime.now().month)]
+        elif data == "day":
+            return [int(datetime.datetime.now().day)]
+        elif data == "hour":
+            return [int(datetime.datetime.now().hour)]
+        elif data == "minute":
+            return [int(datetime.datetime.now().minute)]
+        elif data == "second":
+            return [int(datetime.datetime.now().second)]
+        elif data == "micro":
+            return [int(datetime.datetime.now().microsecond)]
+
+    def get_bar(self, *args, **kwargs):
+        """Return current measure (bar) as integer"""
+        return [self.clock.bar]
+
+    def get_phase(self, *args, **kwargs):
+        """Return current phase (phase) as integer"""
+        return [self.clock.phase]
+
+    def get_unix_time(self, *args, **kwargs):
+        """Return current unix time as integer"""
+        return [int(time())]

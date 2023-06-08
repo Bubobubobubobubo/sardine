@@ -139,11 +139,17 @@ class CalculateTree(Transformer):
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
-        return note + 12
+        if note <= 127 - 12:
+            return note + 12
+        else:
+            return note
 
     def note_octave_down(self, note):
         """Move a note one octave down"""
-        return note - 12
+        if note >= 12:
+            return note - 12
+        else:
+            return note
 
     def finish_note(self, note):
         """Finish the note construction"""

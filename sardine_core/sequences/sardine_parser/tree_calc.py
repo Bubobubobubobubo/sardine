@@ -14,16 +14,18 @@ from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cy
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock, variables, inner_variables):
+    def __init__(self, clock, variables, inner_variables: dict, global_scale: str):
         super().__init__()
         self.clock = clock
         self.variables = variables
         self.inner_variables = inner_variables
+        self.global_scale = global_scale
         self.memory = {}
         self.library = funclib.FunctionLibrary(
             clock=self.clock, 
             amphibian=self.variables,
             inner_variables=self.inner_variables,
+            global_scale=self.global_scale,
         )
 
     def number(self, number):
@@ -513,6 +515,9 @@ class CalculateTree(Transformer):
             "p": self.library.get_phase,
             "unix": self.library.get_unix_time,
             "u": self.library.get_unix_time,
+            # global scale support
+            "scl": self.library.get_scale_note,
+            "setscl": self.library.set_scale,
         }
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():

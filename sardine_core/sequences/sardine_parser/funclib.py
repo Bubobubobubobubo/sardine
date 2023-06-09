@@ -112,10 +112,11 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock, amphibian, inner_variables):
+    def __init__(self, clock, amphibian, inner_variables, global_scale):
         self.clock = clock
         self.amphibian = amphibian
         self.inner_variables = inner_variables
+        self.global_scale = global_scale
 
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
@@ -1017,3 +1018,33 @@ class FunctionLibrary:
     def get_unix_time(self, *args, **kwargs):
         """Return current unix time as integer"""
         return [int(time())]
+
+    def get_scale_note(self, *args, **kwargs):
+        """
+        Return a note from the currently selected scale.
+        If the index is higher than the collection, will
+        wrap around and octave up.
+        """
+        x = list(chain(*args))
+        forced_scale = kwargs.get("scale", None)
+        if forced_scale:
+            selected_scale = self.qualifiers[forced_scale[0]]
+        else:
+            selected_scale = self.qualifiers[self.global_scale]
+
+        def note_computer(note) -> int:
+            """Internal function to calculate the current note"""
+            octave, note = divmod(note, len(selected_scale) - 1)
+            return (12*octave) + selected_scale[note]
+        return map_unary_function(note_computer, x)
+
+
+    def set_scale(self, *args, **kwargs):
+        """
+        Set the current global scale. If the name is 
+        unknown, will continue on the current scale.
+        """
+        print(self.global_scale)
+        new_scale = str(args[0][0])
+        if new_scale in self.qualifiers.keys():
+            self.global_scale = new_scale

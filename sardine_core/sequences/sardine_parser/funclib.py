@@ -295,36 +295,6 @@ class FunctionLibrary:
         setattr(self.amphibian, str(args[0][0]), args[1])
         return [getattr(self.amphibian, str(args[1][0]))]
 
-    # These are just not great!
-
-    # def get_amphibian_iterator(self, *args, **kwargs):
-    #     """
-    #     Return the value of an amphibian iterator while also incrementing it
-    #     as the result of accessing it.
-    #     """
-    #     reset = kwargs.get("reset", 0)
-
-    #     if reset == 0:
-    #         letter = str(args[0][0])
-    #         self.amphibian.reset(letter)
-    #         return [getattr(self.amphibian, letter)]
-    #     else:
-    #         letter = str(args[0][0])
-    #         return [getattr(self.amphibian, letter)]
-
-    # def set_amphibian_iterator(self, *args, **kwargs):
-    #     """
-    #     Set an amphibian iterator to a new value.
-    #     """
-    #     step = kwargs.get("step", 0)
-
-    #     letter, number = str(args[0][0]), int(args[1][0])
-    #     if step != 0:
-    #         setattr(self.amphibian, letter, [number, step])
-    #     else:
-    #         setattr(self.amphibian, letter, number)
-    #     return [getattr(self.amphibian, letter)]
-    
     def drunk(self, *args, **kwargs):
         """
         Drunk walk: 50% chance +1, 50% chance -1.
@@ -1059,7 +1029,9 @@ class FunctionLibrary:
         Set the current global scale. If the name is 
         unknown, will continue on the current scale.
         """
-        print(self.global_scale)
-        new_scale = str(args[0][0])
-        if new_scale in self.qualifiers.keys():
-            self.global_scale = new_scale
+        args = list(chain(*args))
+        def internal_scale_changer(scale_name):
+            new_scale = str(scale_name)
+            if new_scale in self.qualifiers.keys():
+                self.global_scale = new_scale
+        return map_unary_function(internal_scale_changer, args)

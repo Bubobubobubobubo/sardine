@@ -463,6 +463,8 @@ class CalculateTree(Transformer):
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
             # Boolean mask operations
+            "e": self.library.euclidian_to_number,
+            "numclid": self.library.euclidian_to_number,
             "euclid": self.library.euclidian_rhythm,
             "negative_euclid": self.library.negative_euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,

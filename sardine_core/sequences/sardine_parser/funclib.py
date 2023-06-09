@@ -350,12 +350,33 @@ class FunctionLibrary:
             )
         )
 
+    def euclidian_to_number(self, pulses: list, steps: list, rotation: Optional[list] = [0]) -> list:
+        """Convert a 'binary' euclidian rhythm to a number based representation usable by patterns"""
+        rhythm = euclid(pulses[0], steps[0], rotation[0])
+        def convert(input_list):
+            input_list = int(''.join([str(i) for i in input_list]))
+            def convert_code(number):
+                count, result = 0, []
+                for digit in str(number):
+                    if digit == '1':
+                        if count > 0:
+                            result.append(count)
+                        count = 1
+                    elif digit == '0':
+                        count += 1
+                if count > 0:
+                    result.append(count)
+                return result
+            return convert_code(input_list)
+        return convert(rhythm)
+
+
     def euclidian_rhythm(
         self,
         collection: list,
         pulses: list,
         steps: list,
-        rotation: Optional[list] = None,
+        rotation: Optional[list] = [0],
         **kwargs,
     ) -> list:
         """

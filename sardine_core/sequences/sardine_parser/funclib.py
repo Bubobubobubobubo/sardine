@@ -80,8 +80,8 @@ class FunctionLibrary:
         "lydian": [0, 2, 4, 5, 7, 8, 9, 11],
         "majorlocrian": [0, 2, 4, 5, 6, 8, 10],
         "majorpenta": [0, 2, 4, 7, 9],
-        "minorpenta": [0, 3, 5, 7, 10],
         "melominup": [0, 2, 3, 5, 7, 9, 11],
+        "minorpenta": [0, 3, 5, 7, 10],
         "melomindown": [0, 2, 3, 5, 7, 8, 10],
         "mixolydian": [0, 2, 4, 5, 7, 9, 10],
         "neapolitan": [0, 1, 3, 5, 7, 8, 11],
@@ -270,10 +270,7 @@ class FunctionLibrary:
 
     def get_variable(self, *args, **kwargs):
         """Get an internal variable. If it doesn't exist, will return 0"""
-        try:
-            return self.inner_variables[str(args[0][0])]
-        except IndexError:
-            return 0
+        return self.inner_variables.get(args[0][0], [0])
 
     def get_amphibian_variable(self, *args, **kwargs):
         """
@@ -327,6 +324,24 @@ class FunctionLibrary:
     #     else:
     #         setattr(self.amphibian, letter, number)
     #     return [getattr(self.amphibian, letter)]
+    
+    def drunk(self, *args, **kwargs):
+        """
+        Drunk walk: 50% chance +1, 50% chance -1.
+        The span argument will make it possible to 
+        jump from +/- the given span, randomly.
+        """
+        span = kwargs.get("span", None)
+        if span:
+            random_span = random.randint(0, span[0])
+        else:
+            random_span = 1
+
+        args = list(chain(*args))
+        def drunk(number):
+            random_factor = random.random()
+            return number + random_span if random_factor > 0.5 else number - random_span
+        return map_unary_function(drunk, args)
 
     def anti_speed(self, *args, **kwargs) -> list:
         """Adds one silence per element in the list"""

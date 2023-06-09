@@ -479,6 +479,7 @@ class CalculateTree(Transformer):
             "insertrot": self.library.insert_rotate,
             "shuf": self.library.shuffle,
             # Math functions
+            "drunk": self.library.drunk,
             "sin": self.library.sinus,
             "usin": self.library.unipolar_sinus,
             "cos": self.library.cosinus,

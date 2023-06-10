@@ -934,35 +934,6 @@ class FunctionLibrary:
                 return -4 * t / period + 2
         return [inner_func()]
 
-    def alsin(self, period: int|float, **kwargs) -> list:
-        """Basic unipolar sinusoïdal low frequency oscillator
-        Args:
-            period (int|float): LFO period (duration in beats)  
-        Returns:
-            list: lfo value (0 -> 1)
-        """
-        # period = float(period[0])
-        return self.absolute(*[self.lsin(period)])
-
-    def altri(self, period: int|float, **kwargs) -> list:
-        """Basic unipolar triangular low frequency oscillator
-        Args:
-            period (int|float): LFO period (duration in beats)  
-        Returns:
-            list: lfo value (0 -> 1)
-        """
-        return [self.absolute(*[self.ltri(period=period)])]
-
-    def alsaw(self, period: int|float, **kwargs) -> list:
-        """Basic unipolar sawtooth low frequency oscillator
-        Args:
-            period (int|float): LFO period (duration in beats)  
-        Returns:
-            list: lfo value (0 -> 1)
-        """
-        return [self.absolute(*[self.lsaw(period=period)])]
-
-
     def lsaw(self, period: int|float, **kwargs) -> list:
         """Basic sawtooth low frequency oscillator
         Args:
@@ -974,7 +945,6 @@ class FunctionLibrary:
         t = self.clock.time % period
         return [((2 * t if t < period / 2 else (2 * t)) / 2) - 1]
 
-
     def lrect(self, period: int|float, pwm: int|float=0.5, **kwargs) -> list:
         """Basic square low frequency oscillator
         Args:
@@ -985,6 +955,36 @@ class FunctionLibrary:
         period, pwm = float(period[0]), float(pwm[0]) * 100
         t = self.clock.time % period
         return [1 if t < (period * (pwm / 100)) else -1]
+
+    def ulsin(self, period: int|float, **kwargs) -> list:
+        """Basic unipolar sinusoïdal low frequency oscillator
+        Args:
+            period (int|float): LFO period (duration in beats)  
+        Returns:
+            list: lfo value (0 -> 1)
+        """
+        # period = float(period[0])
+        return self.absolute(*[self.lsin(period)])
+
+    def ultri(self, period: int|float, **kwargs) -> list:
+        """Basic unipolar triangular low frequency oscillator
+        Args:
+            period (int|float): LFO period (duration in beats)  
+        Returns:
+            list: lfo value (0 -> 1)
+        """
+        return self.absolute(*[self.ltri(period=period)])
+
+    def ulsaw(self, period: int|float, **kwargs) -> list:
+        """Basic unipolar sawtooth low frequency oscillator
+        Args:
+            period (int|float): LFO period (duration in beats)  
+        Returns:
+            list: lfo value (0 -> 1)
+        """
+        return self.absolute(*[self.lsaw(period=period)])
+
+
 
     
     def get_time(self, *args, **kwargs):

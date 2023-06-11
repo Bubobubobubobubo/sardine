@@ -2,7 +2,7 @@
 
 This type of functions is all about returning information about the current time. This timing information can either refer to the wall clock (the real world time) or to the Sardine Clock (internal representation of time). It will sometimes refer to musical time, sometimes to *'time as we know it'*.
 
-## time
+# time (t)
 
 This function returns wall clock time, spanning from the current year down to microseconds. It takes zero or one argument, the type of time you want to see returned.
 
@@ -14,7 +14,7 @@ This function returns wall clock time, spanning from the current year down to mi
 P('(time year)')
 ```
 
-## bar
+## bar (b)
 
 This function returns current the current bar (as integer).
 
@@ -26,7 +26,7 @@ This function returns current the current bar (as integer).
 P('(bar)')
 ```
 
-## phase
+## phase (p)
 
 This function returns current the current phase (as float).
 
@@ -38,7 +38,7 @@ This function returns current the current phase (as float).
 P('(phase)')
 ```
 
-## beat
+## beat (b)
 
 This function returns current the current beat (as float).
 
@@ -51,7 +51,7 @@ This function returns current the current beat (as float).
 P('(beat)')
 ```
 
-## unix
+## unix (u)
 
 This function returns current the current Unix Time (as integer) because why not! It can be used as a cool random number generator or as an incrementer.
 

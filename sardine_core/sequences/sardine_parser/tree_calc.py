@@ -432,20 +432,26 @@ class CalculateTree(Transformer):
         # Cleaning keyword_arguments so they form clean lists
         kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
 
+        # I will add a cross next to each function that is currently documented
+        # in the documentation. Remove when done.
         modifiers_list = {
             # Amphibian variables
-            "get": self.library.get_variable,
-            "set": self.library.set_variable,
-            "getA": self.library.get_amphibian_variable,
-            "setA": self.library.set_amphibian_variable,
+            "get": self.library.get_variable, # OK
+            "set": self.library.set_variable, # OK
+            "g": self.library.get_variable, # OK
+            "s": self.library.set_variable, # OK
+            "getA": self.library.get_amphibian_variable, # OK
+            "setA": self.library.set_amphibian_variable, # OK
+            "ga": self.library.get_amphibian_variable, # OK
+            "sa": self.library.set_amphibian_variable, # OK
             # Pure conditions
             "if": self.library.binary_condition,
             "nif": self.library.negative_binary_condition,
             "while": self.library.unary_condition,
             "nwhile": self.library.negative_unary_condition,
             # Boolean functions
-            "phase": self.library.phase,
-            "beat": self.library.beat,
+            "phase": self.library.phase, # OK
+            "beat": self.library.beat, # OK
             "obar": self.library.oddbar,
             "modbar": self.library.modbar,
             "ebar": self.library.evenbar,
@@ -457,19 +463,15 @@ class CalculateTree(Transformer):
             "voice": self.library.find_voice_leading,
             "sopr": self.library.soprano,
             "quant": self.library.quantize,
-            "disco": self.library.disco,
-            "bass": self.library.bassify,
-            "sopr": self.library.soprano,
+            "disco": self.library.disco, # OK
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
             # Boolean mask operations
-            "e": self.library.euclidian_to_number,
-            "numclid": self.library.euclidian_to_number,
-            "euclid": self.library.euclidian_rhythm,
-            "negative_euclid": self.library.negative_euclidian_rhythm,
             "eu": self.library.euclidian_rhythm,
             "neu": self.library.negative_euclidian_rhythm,
             "mask": self.library.mask,
+            "euclid": self.library.euclidian_to_number,
+            "numclid": self.library.euclidian_to_number,
             "vanish": self.library.remove_x,
             "expand": self.library.expand,
             "pal": self.library.palindrome,
@@ -481,21 +483,21 @@ class CalculateTree(Transformer):
             "insertrot": self.library.insert_rotate,
             "shuf": self.library.shuffle,
             # Math functions
-            "sin": self.library.sinus,
-            "usin": self.library.unipolar_sinus,
-            "cos": self.library.cosinus,
-            "ucos": self.library.unipolar_cosinus,
-            "drunk": self.library.drunk,
-            "saw": self.library.sawtooth_wave,
-            "usaw": self.library.unipolar_sawtooth_wave,
-            "rect": self.library.square_wave,
-            "urect": self.library.unipolar_square_wave,
-            "clamp": self.library.clamp,
-            "abs": self.library.absolute,
-            "max": self.library.maximum,
-            "min": self.library.minimum,
-            "mean": self.library.mean,
-            "scale": self.library.scale,
+            "sin": self.library.sinus, # OK
+            "usin": self.library.unipolar_sinus, # OK
+            "cos": self.library.cosinus, # OK
+            "ucos": self.library.unipolar_cosinus, # OK
+            "drunk": self.library.drunk, # OK
+            "saw": self.library.sawtooth_wave, # OK
+            "usaw": self.library.unipolar_sawtooth_wave, # OK
+            "rect": self.library.square_wave, # OK
+            "urect": self.library.unipolar_square_wave, # OK
+            "clamp": self.library.clamp, # OK
+            "abs": self.library.absolute, # OK
+            "max": self.library.maximum, # OK
+            "min": self.library.minimum, # OK
+            "mean": self.library.mean, # OK
+            "scale": self.library.scale, # OK
             "filt": self.library.custom_filter,
             "quant": self.library.quantize,
             # Bipolar and unipolar time-dependent Low frequency oscillators
@@ -507,17 +509,17 @@ class CalculateTree(Transformer):
             "ultri": self.library.ultri,
             "ulsaw": self.library.ulsaw,
             # Time information
-            "time": self.library.get_time,
-            "bar": self.library.get_bar,
-            "phase": self.library.get_phase,
-            "unix": self.library.get_unix_time,
-            "t": self.library.get_time,
-            "b": self.library.get_bar,
-            "p": self.library.get_phase,
-            "u": self.library.get_unix_time,
+            "time": self.library.get_time, # OK
+            "bar": self.library.get_bar, # OK
+            "phase": self.library.get_phase, # OK
+            "unix": self.library.get_unix_time, # OK
+            "t": self.library.get_time, # OK
+            "b": self.library.get_bar, # OK
+            "p": self.library.get_phase, # OK
+            "u": self.library.get_unix_time, # OK
             # global scale support
             "scl": self.library.get_scale_note,
-            "setscl": self.library.set_scale,
+            "setscl": self.library.set_scale, # OK
             # Binary rhythm generator
             "br": self.library.binary_rhythm_generator,
             "bl": self.library.binary_list,

@@ -528,18 +528,6 @@ class FunctionLibrary:
 
         return list(filter(cond, collection))
 
-    def bassify(self, *collection, **kwargs):
-        """Drop the first note down an octave"""
-        collection = list(chain(*collection))
-        collection[0] -= 12
-        return collection
-
-    def soprano(self, *collection, **kwargs) -> list:
-        """Last note up an octave"""
-        collection = list(chain(*collection))
-        collection[len(collection) - 1] += 12
-        return collection
-
     def _quantize(self, val, to_values, **kwargs):
         """Quantize a value with regards to a set of allowed values.
 

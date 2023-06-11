@@ -3,10 +3,41 @@
 This set of functions is all about generating and manipulating rhythms. There are different ways to generate rhythms using Sardine. The system is quite permissive and will allow you to do a lot of things either by manipulating the `period` argument, by filtering some of your events, by adding silences, etc... This variety of approaches is also reflected in rhythm functions.
 
 ## euclid (eu)
-## neuclid (neu)
-## mask 
+
+**Arguments:**
+- **None**
+
+**Example:**
+```python
+```
+
+## negative euclid (neu)
+
+**Arguments:**
+- **None**
+
+**Example:**
+```python
+```
+
 ## numclid (e)
+
+- **None**
+**Arguments:**
+
+**Example:**
+```python
+```
+
 ## binary rhythm
+
+**Arguments:**
+- **None**
+
+**Example:**
+```python
+```
+
 
 ## Euclidian
 

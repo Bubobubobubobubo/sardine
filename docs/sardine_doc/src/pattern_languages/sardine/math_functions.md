@@ -1,4 +1,4 @@
-# Mathematical
+# Math Functions
 
 Simple mathematical functions that can be applied on any numeric expression. They are very often the typical generic operations that you can find on digital calculators:
 
@@ -213,7 +213,7 @@ The drunk walk function will return +1 or -1 to any provided integer with a 50% 
 (drunk (get a) ::span 4) # -> returns 127
 ```
 
-**More examples and application:**
+# More examples and applications
 
 ```python
 @swim

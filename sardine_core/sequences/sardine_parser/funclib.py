@@ -1060,8 +1060,8 @@ class FunctionLibrary:
         Everything is then converted in a rhythm using the same technique
         as the euclidian rhythm generator
         """
-        rotation = rotation[0]
-        number_as_list = [int(x) for x in list('{0:0b}'.format(input_number[0]))]
+        rotation = int(rotation[0])
+        number_as_list = [int(x) for x in list('{0:0b}'.format(int(input_number[0])))]
         if rotation != 0:
             number_as_list = number_as_list[-rotation:] + number_as_list[:-rotation]
         def convert(input_list):

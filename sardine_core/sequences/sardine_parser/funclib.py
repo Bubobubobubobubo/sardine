@@ -298,7 +298,7 @@ class FunctionLibrary:
     def drunk(self, *args, **kwargs):
         """
         Drunk walk: 50% chance +1, 50% chance -1.
-        The span argument will make it possible to 
+        The span argument will make it possible to
         jump from +/- the given span, randomly.
         """
         span = kwargs.get("span", None)
@@ -308,9 +308,11 @@ class FunctionLibrary:
             random_span = 1
 
         args = list(chain(*args))
+
         def drunk(number):
             random_factor = random.random()
             return number + random_span if random_factor > 0.5 else number - random_span
+
         return map_unary_function(drunk, args)
 
     def anti_speed(self, *args, **kwargs) -> list:
@@ -350,26 +352,31 @@ class FunctionLibrary:
             )
         )
 
-    def euclidian_to_number(self, pulses: list, steps: list, rotation: Optional[list] = [0]) -> list:
+    def euclidian_to_number(
+        self, pulses: list, steps: list, rotation: Optional[list] = [0]
+    ) -> list:
         """Convert a 'binary' euclidian rhythm to a number based representation usable by patterns"""
         rhythm = euclid(pulses[0], steps[0], rotation[0])
+
         def convert(input_list):
-            input_list = int(''.join([str(i) for i in input_list]))
+            input_list = int("".join([str(i) for i in input_list]))
+
             def convert_code(number):
                 count, result = 0, []
                 for digit in str(number):
-                    if digit == '1':
+                    if digit == "1":
                         if count > 0:
                             result.append(count)
                         count = 1
-                    elif digit == '0':
+                    elif digit == "0":
                         count += 1
                 if count > 0:
                     result.append(count)
                 return result
-            return convert_code(input_list)
-        return convert(rhythm)
 
+            return convert_code(input_list)
+
+        return convert(rhythm)
 
     def euclidian_rhythm(
         self,
@@ -858,25 +865,26 @@ class FunctionLibrary:
         x = list(chain(*x))
         return map_unary_function(abs, x)
 
-    def lsin(self, period: int|float, **kwargs) -> list:
+    def lsin(self, period: int | float, **kwargs) -> list:
         """Basic sinusoïdal low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (-1 -> 1)
         """
         period = float(period[0])
-        return [sin(2*pi*self.clock.time/period)]
+        return [sin(2 * pi * self.clock.time / period)]
 
-    def ltri(self, period: int|float, **kwargs) -> list:
+    def ltri(self, period: int | float, **kwargs) -> list:
         """Basic triangular low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (-1 -> 1)
         """
         period = float(period[0])
         t = self.clock.time % period
+
         def inner_func():
             if t < period / 4:
                 return 4 * t / period
@@ -884,12 +892,13 @@ class FunctionLibrary:
                 return 4 * t / period - 4
             else:
                 return -4 * t / period + 2
+
         return [inner_func()]
 
-    def lsaw(self, period: int|float, **kwargs) -> list:
+    def lsaw(self, period: int | float, **kwargs) -> list:
         """Basic sawtooth low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (-1 -> 1)
         """
@@ -897,10 +906,10 @@ class FunctionLibrary:
         t = self.clock.time % period
         return [((2 * t if t < period / 2 else (2 * t)) / 2) - 1]
 
-    def lrect(self, period: int|float, pwm: int|float=0.5, **kwargs) -> list:
+    def lrect(self, period: int | float, pwm: int | float = 0.5, **kwargs) -> list:
         """Basic square low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (-1 -> 1)
         """
@@ -908,29 +917,29 @@ class FunctionLibrary:
         t = self.clock.time % period
         return [1 if t < (period * (pwm / 100)) else -1]
 
-    def ulsin(self, period: int|float, **kwargs) -> list:
+    def ulsin(self, period: int | float, **kwargs) -> list:
         """Basic unipolar sinusoïdal low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (0 -> 1)
         """
         # period = float(period[0])
         return self.absolute(*[self.lsin(period)])
 
-    def ultri(self, period: int|float, **kwargs) -> list:
+    def ultri(self, period: int | float, **kwargs) -> list:
         """Basic unipolar triangular low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (0 -> 1)
         """
         return self.absolute(*[self.ltri(period=period)])
 
-    def ulsaw(self, period: int|float, **kwargs) -> list:
+    def ulsaw(self, period: int | float, **kwargs) -> list:
         """Basic unipolar sawtooth low frequency oscillator
         Args:
-            period (int|float): LFO period (duration in beats)  
+            period (int|float): LFO period (duration in beats)
         Returns:
             list: lfo value (0 -> 1)
         """
@@ -990,54 +999,62 @@ class FunctionLibrary:
         def note_computer(note) -> int:
             """Internal function to calculate the current note"""
             octave, note = divmod(note, len(selected_scale) - 1)
-            return (12*octave) + selected_scale[note]
-        return map_unary_function(note_computer, x)
+            return 48 + (12 * octave) + selected_scale[note]
 
+        return map_unary_function(note_computer, x)
 
     def set_scale(self, *args, **kwargs):
         """
-        Set the current global scale. If the name is 
+        Set the current global scale. If the name is
         unknown, will continue on the current scale.
         """
         args = list(chain(*args))
+
         def internal_scale_changer(scale_name):
             new_scale = str(scale_name)
             if new_scale in self.qualifiers.keys():
                 self.global_scale = new_scale
+
         return map_unary_function(internal_scale_changer, args)
 
-    def binary_rhythm_generator(self, input_number: int|float, rotation: int|float = [0]):
+    def binary_rhythm_generator(
+        self, input_number: int | float, rotation: int | float = [0]
+    ):
         """
         Generate rhythms by converting an integer to binary representation.
         Everything is then converted in a rhythm using the same technique
         as the euclidian rhythm generator
         """
         rotation = int(rotation[0])
-        number_as_list = [int(x) for x in list('{0:0b}'.format(int(input_number[0])))]
+        number_as_list = [int(x) for x in list("{0:0b}".format(int(input_number[0])))]
         if rotation != 0:
             number_as_list = number_as_list[-rotation:] + number_as_list[:-rotation]
+
         def convert(input_list):
-                input_list = int(''.join([str(i) for i in input_list]))
-                def convert_code(number):
-                    count, result = 0, []
-                    for digit in str(number):
-                        if digit == '1':
-                            if count > 0:
-                                result.append(count)
-                            count = 1
-                        elif digit == '0':
-                            count += 1
-                    if count > 0:
-                        result.append(count)
-                    return result
-                return convert_code(input_list)
+            input_list = int("".join([str(i) for i in input_list]))
+
+            def convert_code(number):
+                count, result = 0, []
+                for digit in str(number):
+                    if digit == "1":
+                        if count > 0:
+                            result.append(count)
+                        count = 1
+                    elif digit == "0":
+                        count += 1
+                if count > 0:
+                    result.append(count)
+                return result
+
+            return convert_code(input_list)
+
         result = convert(number_as_list)
         return result
 
-    def binary_list(self, number: int|float, rotation: int|float = [0]):
+    def binary_list(self, number: int | float, rotation: int | float = [0]):
         """Generate a binary list with optional rotation"""
         rotation = int(rotation[0])
-        number_as_list = [int(x) for x in list('{0:0b}'.format(int(number[0])))]
+        number_as_list = [int(x) for x in list("{0:0b}".format(int(number[0])))]
         if rotation != 0:
             number_as_list = number_as_list[-rotation:] + number_as_list[:-rotation]
         return number_as_list

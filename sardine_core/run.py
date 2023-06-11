@@ -143,7 +143,9 @@ for ext_config_path in config.extensions:
     ext_config = read_extension_configuration(ext_config_path)
     sys.path.append(ext_config["root"])
     for ext_handler in ext_config["handlers"]:
-        module = importlib.import_module(f'{ext_config["package"]}.{ext_handler["module"]}')
+        module = importlib.import_module(
+            f'{ext_config["package"]}.{ext_handler["module"]}'
+        )
         cls = getattr(module, ext_handler["class"])
         instance = cls(ext_handler["params"])
         globals()[ext_handler["send_alias"]] = instance.send
@@ -674,7 +676,7 @@ if config.superdirt_handler:
                 )
         except Exception as e:
             print(e)
-        # clock._notify_tidal_streams()
+        # clock._notify_tidal_streams()
         again(tidal_loop, p=0.05)
 
 
@@ -682,10 +684,11 @@ if config.superdirt_handler:
 # CLOCK START: THE SESSION IS NOW LIVE
 bowl.start()
 
+
 def spl_debug():
     while True:
         try:
-            user_input = input('> ')
+            user_input = input("> ")
             if user_input == "exit":
                 break
             message = bowl.parser._parse_debug(user_input)

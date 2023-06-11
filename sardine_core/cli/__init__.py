@@ -234,6 +234,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     )
     return config_file
 
+
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
     print(

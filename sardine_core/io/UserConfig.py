@@ -34,7 +34,7 @@ TEMPLATE_CONFIGURATION = {
         "deferred_scheduling": True,
         "editor": False,
     },
-    "extensions": []
+    "extensions": [],
 }
 
 
@@ -105,7 +105,7 @@ class Config:
                 "deferred_scheduling": self.deferred_scheduling,
                 "editor": self.editor,
             },
-            "extensions": self.extensions
+            "extensions": self.extensions,
         }
 
 

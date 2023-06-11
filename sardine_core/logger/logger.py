@@ -22,9 +22,7 @@ report_file = open(LOG_FILE, "wt", encoding="utf-8")
 
 file_console = Console(file=report_file)
 
-terminal_console = Console(
-    color_system='truecolor' if os.name != 'nt' else 'windows'
-)
+terminal_console = Console(color_system="truecolor" if os.name != "nt" else "windows")
 
 
 def print(*args, **kwargs):

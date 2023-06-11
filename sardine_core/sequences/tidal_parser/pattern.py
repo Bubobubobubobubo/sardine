@@ -936,6 +936,7 @@ class Pattern:
             "Patterns cannot be compared. Evaluate them with `.first_cycle()` or similar"
         )
 
+
 def pure(value):
     """Returns a pattern that repeats the given value once per cycle"""
 

@@ -70,7 +70,7 @@ class ListParser(BaseParser):
                     cache=True,
                     lexer="contextual",
                     transformer=CalculateTree(
-                        clock=self.env.clock, 
+                        clock=self.env.clock,
                         variables=self.env.variables,
                         inner_variables=self.inner_variables,
                         global_scale=self.global_scale,

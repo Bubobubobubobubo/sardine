@@ -1,104 +1,88 @@
 # Combinatorics
 
-<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+This category of functions is containing many functions that perform many simple but important operations on lists.
 
-<colgroup>
+# rev
 
-<col  class="org-left" />
+Reverse a list.
 
-<col  class="org-left" />
+- **Arguments:**
+  - **None**
 
-<col  class="org-left" />
+**Example:**
+```python
+(rev 1 2 3 [1 2 3])
+```
 
-<col  class="org-left" />
-</colgroup>
-<tbody>
-<tr>
-<td class="org-left">Function name</td>
-<td class="org-left"> Arguments</td>
-<td class="org-left">Description</td>
-<td class="org-left">Return type</td>
-</tr>
+# pal
 
+Creates a palindrome. This will keep the list as is but will also append the list in reverse.
 
-<tr>
-<td class="org-left">invert</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">???</td>
-<td class="org-left">&#xa0;</td>
-</tr>
+- **Arguments:**
+  - **cut:** whether to repeat the last/first value of reversed list or not.
 
+**Example:**
+```python
+(pal [1:10] ::cut 1) # or ::cut 0
+```
 
-<tr>
-<td class="org-left">aspeed</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">Add one more silence to the pattern for every element it crosses.</td>
-<td class="org-left">[pattern]</td>
-</tr>
+# shuf
 
+Shuffle any list.
 
-<tr>
-<td class="org-left">expand</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">&#xa0;</td>
-</tr>
+Description ...
+- **Arguments:**
+  - **None**
 
+**Example:**
+```python
+(shuf 1 2 3 4 5)
+```
 
-<tr>
-<td class="org-left">pal</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">Return a palindrome of the given pattern</td>
-<td class="org-left">[pattern]</td>
-</tr>
+# leave
 
+Braid multiple lists of uneven length.
 
-<tr>
-<td class="org-left">rev</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">Reverse the pattern</td>
-<td class="org-left">[pattern]</td>
-</tr>
+- **Arguments:**
+  - **...:** feed multiple lists to braid them together.
 
+**Example:**
+```python
+(leave [1 2 3] [3 4 5] [1 2] [4 8 6 4])
+```
 
-<tr>
-<td class="org-left">leave</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">Interleave function</td>
-<td class="org-left">[pattern]</td>
-</tr>
+# insertp
 
+Insert a fixed element as pair element of each list.
 
-<tr>
-<td class="org-left">insertp</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">Braid a pattern with the first pattern being even and the second odd index numbers</td>
-<td class="org-left">[pattern]</td>
-</tr>
+- **Arguments:**
+  - **None**
 
+**Example:**
+```python
+```
 
-<tr>
-<td class="org-left">insert</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">???</td>
-<td class="org-left">[pattern]</td>
-</tr>
+# insert
 
+Insert a fixed element as odd element of each list.
 
-<tr>
-<td class="org-left">insertprot</td>
-<td class="org-left">&#xa0;</td>
-<td class="org-left">???</td>
-<td class="org-left">[pattern]</td>
-</tr>
+- **Arguments:**
+  - **None**
 
+**Example:**
+```python
+```
 
-<tr>
-<td class="org-left">shuf</td>
-<td class="org-left">[pattern]</td>
-<td class="org-left">Shuffle/randomize a given pattern</td>
-<td class="org-left">[pattern]</td>
-</tr>
+# insertprot
 
-</tbody>
-</table>
+Description ...
+
+- **Arguments:**
+  - **None**
+
+**Example:**
+```python
+```
+
+# insertrot
+# aspeed

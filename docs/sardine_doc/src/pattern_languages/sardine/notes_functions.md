@@ -16,6 +16,20 @@ Quantize a given list of arguments to the nearest value in the provided set. Thi
 (quant [1 2 3 4] maj7) # quantize on a major seventh chord
 ```
 
+## expand
+
+Chance-based operation. Apply a random octave transposition process to every note in a given collection. There is an optional factor parameter that multiplies the octave transposition.
+
+**Arguments**:
+- **collection:**
+- **factor:** multiplicator for the expansion amount.
+
+**Example:**
+```python
+```
+
+
+
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 <colgroup>

@@ -445,19 +445,19 @@ class CalculateTree(Transformer):
             "ga": self.library.get_amphibian_variable, # OK
             "sa": self.library.set_amphibian_variable, # OK
             # Pure conditions
-            "if": self.library.binary_condition,
-            "nif": self.library.negative_binary_condition,
-            "while": self.library.unary_condition,
-            "nwhile": self.library.negative_unary_condition,
+            "if": self.library.binary_condition, # OK
+            "nif": self.library.negative_binary_condition, # OK
+            "while": self.library.unary_condition, # OK
+            "nwhile": self.library.negative_unary_condition, #OK
             # Boolean functions
             "phase": self.library.phase, # OK
             "beat": self.library.beat, # OK
-            "obar": self.library.oddbar,
-            "modbar": self.library.modbar,
-            "ebar": self.library.evenbar,
-            "every": self.library.every,
-            "maybe": self.library.proba,
-            "dice": self.library.dice,
+            "obar": self.library.oddbar, # OK
+            "modbar": self.library.modbar, # OK
+            "ebar": self.library.evenbar, # OK
+            "every": self.library.every, # OK
+            "maybe": self.library.proba, # OK
+            "dice": self.library.dice, # OK
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,
@@ -467,11 +467,11 @@ class CalculateTree(Transformer):
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
             # Boolean mask operations
-            "eu": self.library.euclidian_rhythm,
-            "neu": self.library.negative_euclidian_rhythm,
+            "eu": self.library.euclidian_rhythm, # OK
+            "neu": self.library.negative_euclidian_rhythm, # OK
             "mask": self.library.mask,
-            "euclid": self.library.euclidian_to_number,
-            "numclid": self.library.euclidian_to_number,
+            "euclid": self.library.euclidian_to_number, # OK
+            "numclid": self.library.euclidian_to_number, # OK
             "vanish": self.library.remove_x,
             "expand": self.library.expand,
             "pal": self.library.palindrome,
@@ -501,13 +501,13 @@ class CalculateTree(Transformer):
             "filt": self.library.custom_filter,
             "quant": self.library.quantize,
             # Bipolar and unipolar time-dependent Low frequency oscillators
-            "lsin": self.library.lsin,
-            "ltri": self.library.ltri,
-            "lsaw": self.library.lsaw,
-            "lrect": self.library.lrect,
-            "ulsin": self.library.ulsin,
-            "ultri": self.library.ultri,
-            "ulsaw": self.library.ulsaw,
+            "lsin": self.library.lsin, # OK
+            "ltri": self.library.ltri, # OK
+            "lsaw": self.library.lsaw, # OK
+            "lrect": self.library.lrect, # OK
+            "ulsin": self.library.ulsin, # OK
+            "ultri": self.library.ultri, # OK
+            "ulsaw": self.library.ulsaw, # OK
             # Time information
             "time": self.library.get_time, # OK
             "bar": self.library.get_bar, # OK

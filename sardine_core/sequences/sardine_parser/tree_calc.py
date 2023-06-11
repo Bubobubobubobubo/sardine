@@ -454,7 +454,7 @@ class CalculateTree(Transformer):
             "beat": self.library.beat, # OK
             "obar": self.library.oddbar, # OK
             "modbar": self.library.modbar, # OK
-            "ebar": self.library.evenbar, # OK
+            "ebar": self.library.evenbar, # OK
             "every": self.library.every, # OK
             "maybe": self.library.proba, # OK
             "dice": self.library.dice, # OK

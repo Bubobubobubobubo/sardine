@@ -521,7 +521,7 @@ class CalculateTree(Transformer):
             "scl": self.library.get_scale_note,
             "setscl": self.library.set_scale, # OK
             # Binary rhythm generator
-            "br": self.library.binary_rhythm_generator,
+            "br": self.library.binary_rhythm_generator, # OK
             "bl": self.library.binary_list,
         }
         try:

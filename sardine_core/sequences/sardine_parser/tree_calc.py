@@ -523,6 +523,7 @@ class CalculateTree(Transformer):
             "setscl": self.library.set_scale,
             # Binary rhythm generator
             "br": self.library.binary_rhythm_generator,
+            "bl": self.library.binary_list,
         }
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():

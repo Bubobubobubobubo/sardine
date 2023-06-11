@@ -1082,3 +1082,10 @@ class FunctionLibrary:
         result = convert(number_as_list)
         return result
 
+    def binary_list(self, number: int|float, rotation: int|float = [0]):
+        """Generate a binary list with optional rotation"""
+        rotation = int(rotation[0])
+        number_as_list = [int(x) for x in list('{0:0b}'.format(int(number[0])))]
+        if rotation != 0:
+            number_as_list = number_as_list[-rotation:] + number_as_list[:-rotation]
+        return number_as_list

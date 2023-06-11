@@ -984,9 +984,6 @@ class FunctionLibrary:
         """
         return self.absolute(*[self.lsaw(period=period)])
 
-
-
-    
     def get_time(self, *args, **kwargs):
         """Return a specific time unit"""
         if len(args) >= 1:
@@ -1056,3 +1053,32 @@ class FunctionLibrary:
             if new_scale in self.qualifiers.keys():
                 self.global_scale = new_scale
         return map_unary_function(internal_scale_changer, args)
+
+    def binary_rhythm_generator(self, input_number: int|float, rotation: int|float = [0]):
+        """
+        Generate rhythms by converting an integer to binary representation.
+        Everything is then converted in a rhythm using the same technique
+        as the euclidian rhythm generator
+        """
+        rotation = rotation[0]
+        number_as_list = [int(x) for x in list('{0:0b}'.format(input_number[0]))]
+        if rotation != 0:
+            number_as_list = number_as_list[-rotation:] + number_as_list[:-rotation]
+        def convert(input_list):
+                input_list = int(''.join([str(i) for i in input_list]))
+                def convert_code(number):
+                    count, result = 0, []
+                    for digit in str(number):
+                        if digit == '1':
+                            if count > 0:
+                                result.append(count)
+                            count = 1
+                        elif digit == '0':
+                            count += 1
+                    if count > 0:
+                        result.append(count)
+                    return result
+                return convert_code(input_list)
+        result = convert(number_as_list)
+        return result
+

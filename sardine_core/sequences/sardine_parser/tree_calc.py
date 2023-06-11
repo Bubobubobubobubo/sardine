@@ -521,6 +521,8 @@ class CalculateTree(Transformer):
             # global scale support
             "scl": self.library.get_scale_note,
             "setscl": self.library.set_scale,
+            # Binary rhythm generator
+            "br": self.library.binary_rhythm_generator,
         }
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():

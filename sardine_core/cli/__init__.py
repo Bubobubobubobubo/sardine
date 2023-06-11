@@ -234,21 +234,6 @@ def _select_supercollider_settings(config_file: dict) -> dict:
     )
     return config_file
 
-
-def _select_editor(config_file: dict) -> dict:
-    """Select to spawn or not the embedded text editor"""
-    editor = inquirer.select(
-        message="Would you like to open up the embedded code editor?",
-        choices=[
-            Choice(value=True, enabled=True, name="Yes"),
-            Choice(value=False, name="No"),
-        ],
-        default=None,
-    ).execute()
-    config_file["editor"] = editor
-    return config_file
-
-
 def _select_additional_options(config_file: dict) -> dict:
     """Select additionals options used by Sardine"""
     print(
@@ -302,7 +287,6 @@ def main():
         "MIDI",
         "Clock",
         "SuperCollider",
-        "Editor",
         "More",
         "Exit",
     ]
@@ -346,5 +330,3 @@ def main():
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == "More":
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)
-        elif menu_select == "Editor":
-            USER_CONFIG = _select_editor(config_file=USER_CONFIG)

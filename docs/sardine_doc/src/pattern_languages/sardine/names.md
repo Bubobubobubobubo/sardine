@@ -1,9 +1,9 @@
 # Names
 
-Names can be used in patterns. They are used for three reasons:
-- audio sample and synthesizer names.
-- variables in the context of **amphibian variables**
-- addresses, a special type of composed name.
+The **Sardine Pattern Language** is using names for multiple things:
+- audio sample and synthesizer names like `kick` or `sawsynth`.
+- variable naming in the context of **amphibian variables** or **internal variables**.
+- addresses, a special type of composed name used for OSC addressing.
 
 ```python 
 @swim
@@ -16,20 +16,18 @@ A single letter (if it's not already a note name or a known symbol) can be consi
 Be careful! There are a few hidden rules for names:
 - Names can be one letter long but some letters are already taken.
 - Names cannot begin with a number.
-- Names can't contain any special symbol.
+- Names can't contain any special symbol like `_` or `^`.
 
 ## Sample association
 
-In the context of audio samples, appending a number to a sample using the association operator (`:`) will
-complete that name and refer to the `nth` sample in the folder you are designating by the name.
+In the context of audio samples, appending a number to a sample using the association operator (`:`) will complete that name and refer to the `nth` sample in the folder you are designating by the name. For a synthesizer, the behavior is a little different. It will pitch the synth in semitones.
 
 ```python
 dada:0 # first sound in the dada folder
 dada:1 # second sound in the dada folder
 ```
 
-**Note:** the name can be infinitely high. It does not matter. The number will simply loop around and
-only select a valid sample number!
+**Note:** when indexing on sample names, the number can be infinitely high. It does not matter. The indexing will simply loop around and select a valid sample number!
 
 ## Synthesizer name and numbers
 

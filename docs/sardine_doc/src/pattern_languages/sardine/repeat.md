@@ -1,8 +1,6 @@
 # Repeat
 
-    
-- The `!` operator inspired by ****TidalCycles**** is used to denote the repetition of a value.
-  - You need to add a number or a list to its right side.
+The `!` operator inspired by ****TidalCycles**** is used to denote the repetition of a value. You need to add a number or a list to its right side.
 
 ```python
 @swim

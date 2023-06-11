@@ -1,6 +1,6 @@
 # Extend-Repeat
 
-- Use `!!` to repeat each element of a list `x` times.
+Use the `!!` operator to repeat each element of a list `x` times. Beware of the confusion with it's little brother, `!`. These two operators work hand in hand!
 
 ```python
 @swim

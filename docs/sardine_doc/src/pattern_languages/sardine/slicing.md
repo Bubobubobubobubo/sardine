@@ -1,10 +1,6 @@
 # Slicing
 
-The **Sardine** pattern notation is built around the idea of having
-multiple ways to deal with linear lists and collections. The basic
-arithmetic syntax and most operators work on single tokens **but will
-also work on lists**. It means that you can write expressions such 
-as :
+The **Sardine** pattern notation is built around the idea of having multiple ways to deal with linear lists and collections. The basic arithmetic syntax and most operators work on single tokens **but will also work on lists**. It means that you can write expressions such as:
     
 ```python
 [0 1 2 3]%8

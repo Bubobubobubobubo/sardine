@@ -1,7 +1,6 @@
 # Extend
 
-- you can extend a list by calling the `!` operator on it. 
-  - This will repeat the list x times.
+You can extend a list by calling the `!` operator on it. This will repeat the list `x` times. Some people confuse this operator with its bigger brother, `!!`, called extend-repeat.
 
 ```python
 @swim

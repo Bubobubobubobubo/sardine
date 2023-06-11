@@ -3,6 +3,19 @@
 Functions that better apply on groups of notes! They can turn a pattern into
 a... funky pattern in no time! Most of these are really silly. Have fun.
 
+## quant
+
+Quantize a given list of arguments to the nearest value in the provided set. This set can be any list of numbers or can also be a scale or any other list object that you want to use as a quant reference. The quantized values are clamped in the range of MIDI note values (from `0` to `127`).
+
+**Arguments**:
+- **collection:** the collection/list that you want to quantize.
+- **reference:** the reference collection/list to quantize to.
+
+**Example:**
+```python
+(quant [1 2 3 4] maj7) # quantize on a major seventh chord
+```
+
 
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 <colgroup>

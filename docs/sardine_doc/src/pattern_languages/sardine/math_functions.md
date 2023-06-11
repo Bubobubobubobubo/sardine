@@ -1,121 +1,135 @@
 # Mathematical
 
-Simple mathematical functions that can be applied on any number token.
-They are generally very simple operations that you might find on a
-digital calculator or on any interface capable of computation:
+Simple mathematical functions that can be applied on any numeric expression. They are very often the typical generic operations that you can find on digital calculators:
 
- <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
- 
- 
- <colgroup>
- <col  class="org-left" />
- 
- <col  class="org-left" />
- 
- <col  class="org-left" />
- 
- <col  class="org-left" />
- </colgroup>
- <tbody>
- <tr>
- <td class="org-left">Function name</td>
- <td class="org-left">Arguments</td>
- <td class="org-left">Description</td>
- <td class="org-left">Return type</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">sin</td>
- <td class="org-left">...x</td>
- <td class="org-left">Sinusoïd function</td>
- <td class="org-left">1 or more Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">cos</td>
- <td class="org-left">...x</td>
- <td class="org-left">Cosinus function</td>
- <td class="org-left">1 or more Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">tan</td>
- <td class="org-left">...x</td>
- <td class="org-left">Tangent function</td>
- <td class="org-left">1 or more Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">abs</td>
- <td class="org-left">...x</td>
- <td class="org-left">Absolute function</td>
- <td class="org-left">1 or more Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">max</td>
- <td class="org-left">...x</td>
- <td class="org-left">Maximum function</td>
- <td class="org-left">Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">min</td>
- <td class="org-left">...x</td>
- <td class="org-left">Minimal function</td>
- <td class="org-left">Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">mean</td>
- <td class="org-left">...x</td>
- <td class="org-left">Arithmetic mean function</td>
- <td class="org-left">Number</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">scale</td>
- <td class="org-left">[], imin, imax, omin, omax</td>
- <td class="org-left">Scaling a list from range to range</td>
- <td class="org-left">List</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">quant</td>
- <td class="org-left">[], []</td>
- <td class="org-left">Quantize the first list to values in second</td>
- <td class="org-left">List</td>
- </tr>
- 
- 
- <tr>
- <td class="org-left">clamp</td>
- <td class="org-left">x, y, z</td>
- <td class="org-left">Simple clamping function (x between y and z)</td>
- <td class="org-left">List or Number</td>
- </tr>
- </tbody>
- </table>
-    
-**Example of application:**
+## sin
+
+Apply the sinus function to all the provided arguments.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+**Example:**
+```python
+(sin 1 2 3)
+(sin time)
+```
+
+## cos
+
+Apply the cosinus function to all the provided arguments.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+**Example:**
+```python
+(cos 4 5 6)
+(cos bar)
+```
+
+## tan
+
+Apply the tangent function to all the provided arguments.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+**Example:**
+```python
+(tan (abs -0.25))
+(tan (sin (time)))
+(tan 2)
+```
+
+## abs
+
+Returns the absolute value of all the provided arguments.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+
+**Example:**
+```python
+(abs [1:-5, 1])
+(abs -10)
+```
+
+## max
+
+Returns the maximum value in all the numbers provided as argument.
+
+
+**Arguments**:
+- **...** (any number of arguments)
+
+
+**Example:**
+```python
+(max 1 2 3)
+(max [rand rand rand rand])
+```
+
+## min
+
+Returns the minimum value in all the numbers provided as argument.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+**Example:**
+```python
+(min 1 2 3)
+(min [rand rand rand rand])
+```
+
+## mean
+
+Returns the mean of all the numbers provided as argument.
+
+**Arguments**:
+- **...** (any number of arguments)
+
+**Example:**
+```python
+(mean 1.5 3 2 10.4)
+```
+
+## scale
+
+Scale a number `z` from the range `x` `y` to the range `x1`, `y1`.
+
+**Arguments**:
+- **None**
+
+**Example:**
+```python
+(scale (bar) 0 4 0 10)
+```
+
+## clamp 
+
+Clamp a value `a` in between `b` and `c`. This means that the number `a` will be limited and range and will never be able to be set lower than `b` or higher than `c`.
+
+**Arguments**:
+- **None**
+
+**Example:**
+```python
+(clamp 1000 0 127) # -> returns 127
+```
+
+**More examples and application:**
 
 ```python
 @swim
 def demo(p=1/4, i=0):
-    D('moog:5', lpf='(sin $*2500)', res='(cos $)/2', i=i, legato=0.1)
+    D('moog:5', lpf='(sin (time)*2500)', res='(cos (time))/2', i=i, legato=0.1)
     D('cp', speed='0+(abs -rand*5)', d=8, i=i)
     again(demo, p=1/8, i=i+1)
 ```   
 
-These functions are the bread and butter of a good high-speed **Sardine** pattern. They will allow you to create **signal-like** value generators (*e.g* **Low frequency oscillators**). They are also very nice to use in connjunction with `$` or any timed value. You will find many creative ways to use them (especially by combining with arithmetic operators).
+These functions are the bread and butter of a good high-speed **Sardine** pattern. They will allow you to create **signal-like** value generators (*e.g* **Low frequency oscillators**). They are also very nice to use in conjunction with `(time)` or any time function. You will find many creative ways to use them (especially by combining with arithmetic operators).
 
 

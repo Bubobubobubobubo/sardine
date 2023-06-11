@@ -376,7 +376,7 @@ class MiniInterpreter:
 
     def eval_word(self, node):
         if node["index"]:
-            #return s(node["value"]) << n(node["index"])
+            # return s(node["value"]) << n(node["index"])
             return s(node["value"]).n(node["index"])
         else:
             return pure(node["value"])

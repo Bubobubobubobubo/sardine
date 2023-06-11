@@ -112,16 +112,18 @@ class TidalStream(BaseStream):
         correct_msg = []
         for _ in msg:
             if isinstance(_, dict):
-                correct_msg = [correct_msg, *list(sum(
-                    [(i, v) for (i, v) in _.items()], ())) ]
+                correct_msg = [
+                    correct_msg,
+                    *list(sum([(i, v) for (i, v) in _.items()], ())),
+                ]
             else:
                 correct_msg.append(_)
         correct_msg.extend(["cps", cps, "cycle", cycle, "delta", delta])
-        # We need to remove a rogue ['s'] if using a sample with index
-        # This operation can fail so we need to use a try-except block
-        if 'n' in correct_msg:
+        # We need to remove a rogue ['s'] if using a sample with index
+        # This operation can fail so we need to use a try-except block
+        if "n" in correct_msg:
             try:
-                correct_msg.remove(['s'])
+                correct_msg.remove(["s"])
             except ValueError:
                 pass
         self._last_value = correct_msg

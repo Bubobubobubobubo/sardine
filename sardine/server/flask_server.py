@@ -33,7 +33,7 @@ mimetypes.add_type("text/css", ".css")
 APP_NAME, APP_AUTHOR = "Sardine", "Bubobubobubo"
 USER_DIR = Path(user_data_dir(APP_NAME, APP_AUTHOR))
 LOG_FILE = USER_DIR / "sardine.log"
-FILENAMES = [f"buffer{i}.py" for i in range(1,10)]
+FILENAMES = [f"buffer{i}.py" for i in range(1, 10)]
 
 # We need to create the log file if it doesn't already exist
 Path(LOG_FILE).touch(exist_ok=True)
@@ -137,10 +137,11 @@ def server_factory(console):
                 for key, content in data.items():
                     path = USER_DIR / "buffers" / f"{key}"
                     with open(path, "w", encoding="utf-8") as new_file:
-                        # This is where you are supposed to do something about
-                        # formatting.
-                        new_file.write("\n".join(
-                            content) if isinstance(content, list) else content)
+                        # This is where you are supposed to do something about
+                        # formatting.
+                        new_file.write(
+                            "\n".join(content) if isinstance(content, list) else content
+                        )
                 return "OK"
         except Exception as e:
             print(e)

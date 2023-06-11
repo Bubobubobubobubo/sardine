@@ -63,7 +63,7 @@
       - [Function Library](pattern_languages/sardine/function_library.md)
         - [Time Functions](pattern_languages/sardine/time_functions.md)
         - [Math Functions](pattern_languages/sardine/math_functions.md)
-        - [Rhythm Functions](pattern_languages/sardine/euclidian_functions.md)
+        - [Rhythm Functions](pattern_languages/sardine/rhythm_functions.md)
         - [Melody Functions](pattern_languages/sardine/voice_leading.md)
         - [Note Functions](pattern_languages/sardine/notes_functions.md)
         - [Combinatorics](pattern_languages/sardine/combinatorics_functions.md)

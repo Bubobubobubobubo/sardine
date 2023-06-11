@@ -1,5 +1,7 @@
 ## Rhythm
 
+This set of functions is all about generating and manipulating rhythms easily.
+
 ### Probability rhythm
 
 ```python3

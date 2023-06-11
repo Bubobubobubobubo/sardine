@@ -759,13 +759,13 @@ class FunctionLibrary:
         """Basic pulse-width modulable square wave function
 
         Args:
-            pulse_width (float): pulse width of the square wave (0 < pulse_width < 1)
+            pwm (float): pulse width of the square wave (0 < pulse_width < 1)
             x (list): pattern
 
         Returns:
             list: a valid pattern.
         """
-        pw = kwargs.get("pw", 0.5)
+        pw = kwargs.get("pwm", 0.5)
         x = list(chain(*x))
         return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else -1, x)
 
@@ -779,35 +779,9 @@ class FunctionLibrary:
         Returns:
             list: a valid pattern.
         """
-        pw = kwargs.get("pw", 0.5)
+        pw = kwargs.get("pwm", 0.5)
         x = list(chain(*x))
         return map_unary_function(lambda val: 1 if sin(2 * pi * val) < pw else 0, x)
-
-    def triangular_wave(self, *x) -> list:
-        """Basic triangular wave function
-
-        Args:
-            x (list): pattern
-
-        Returns:
-            list: a valid pattern.
-        """
-        x = list(chain(*x))
-        return map_unary_function(lambda val: (4 / pi) * asin(sin(2 * pi * val)), x)
-
-    def unipolar_triangular_wave(self, *x) -> list:
-        """Basic unipolar triangular wave function
-
-        Args:
-            x (list): pattern
-
-        Returns:
-            list: a valid pattern.
-        """
-        x = list(chain(*x))
-        return map_unary_function(
-            lambda val: abs((4 / pi) * asin(sin(2 * pi * val))), x
-        )
 
     def sawtooth_wave(self, *x) -> list:
         """Basic sawtooth wave function
@@ -895,16 +869,6 @@ class FunctionLibrary:
         """
         x = list(chain(*x))
         return map_unary_function(abs, x)
-
-    def tangent(self, *x) -> list:
-        """Basic tangent function
-        Args:
-            x (list): pattern
-        Returns:
-            list: a valid pattern.
-        """
-        x = list(chain(*x))
-        return map_unary_function(tan, x)
 
     def lsin(self, period: int|float, **kwargs) -> list:
         """Basic sinusoïdal low frequency oscillator

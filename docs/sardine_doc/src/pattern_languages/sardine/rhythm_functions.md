@@ -1,4 +1,14 @@
-# Euclidian
+# Rhythm Functions
+
+This set of functions is all about generating and manipulating rhythms. There are different ways to generate rhythms using Sardine. The system is quite permissive and will allow you to do a lot of things either by manipulating the `period` argument, by filtering some of your events, by adding silences, etc... This variety of approaches is also reflected in rhythm functions.
+
+## euclid (eu)
+## neuclid (neu)
+## mask 
+## numclid (e)
+## binary rhythm
+
+## Euclidian
 
 Functions that apply a boolean mask on a pattern. This mask will either leave the pattern as is or replace some values by silences. The euclidian rhythm generator lives in this category. I know that you were looking for it :)
     

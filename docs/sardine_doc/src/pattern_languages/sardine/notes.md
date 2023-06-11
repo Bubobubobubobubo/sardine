@@ -1,11 +1,12 @@
 # Notes
 
-## What are notes?
+There are multiple ways to write notes in the **Sardine Pattern Language**. Most of the time, the way you will write notes will depend on context. You can play absolute notes, notes in the context of a scale, frequencies instead of notes, etc...
 
-Notes are numbers written using a conjunction of letters and numbers.
-- Notes will always be converted to some MIDI value 
-  - an integer value between `0` and `127`).
-- If you need more precision, speak in hertzs (`freq=402.230239`)
+## Note using the custom syntax
+
+There is a special representation to write notes using the english name of notes: `ABCDEFG`. Notes can also be flat (`b`) or sharp (`#`) and receive an octave number like so: `C5b`.
+- Notes will be converted to a numerical MIDI note value (*e.g* `C3` is `60`). 
+  - MIDI Notes start at 0 and end at 127. You can use numbers as well if you prefer.
 
 ```python
 @swim
@@ -14,19 +15,20 @@ def notes(p=0.5, i=0):
     again(notes, p=0.5, i=i+1)
 ```
 
-## Writing a note
-
 The syntax to write notes is the following:
 - A capital letter indicating the note name: `C D E F G A B`.
   - Optionally, you can write `Do Ré Mi Fa Sol La Si` (french note system).
 - An optional flat or sharp: `#`, `b`.
 - An optional octave number: `0..9`.
 
-Notes are letters turned to numbers. **You can do mathematics and calculations with notes**. It can be particularly useful to generate custom voicings or weirdly shaped chords that you want to transpose and invert around: `{([0 4 7 9 10 11]+50)^1}`.
+## Math with notes
+
+Notes are just numbers. If you want to go up an octave, you can just write an addition: `C5 + 12`. You can also add a note to an other note, etc... You can make use of that to generate weirdly shaped chords, for transposing or inverting things: `{([0 4 7 9 10 11]+50)^1}`.
+
 
 ## Note qualifiers
 
-You can use the `@` operator to **qualify** a note. 
+You can use the `@` operator to **qualify** a note. Qualyfing a note means that you are turning it into a specific collection of notes (a collection of intervals, a collection of scale notes, etc).
 - A note will become a collection of notes based on the initial note.
   - `C@penta` will yield a major pentatonic scale based on C4: `[60 62 64 67 69]`.
 
@@ -37,13 +39,10 @@ def notes(p=0.5, i=0):
     again(notes, p=0.5, i=i+1)
 ```
 
-**Be careful with this rule!** This will instantly turn a single token into a list of `x` tokens:
-- filter part of your newly generated collection for better control (`(filt)` or `(quant)`)
+**Be careful with this rule!** This will instantly turn a single token into a list of `x` tokens. Filter part of your newly generated collection for better control. Note that this can become really explosive if you play carelessly with collections and polyphony!
 
 
-To put it bluntly, this mechanism is not great. It was introduced in the alpha version of
-Sardine as a way to play notes and it sticked! To play chords and harmonies, prefer the 
-**Ziffers** patterning language that is included with Sardine.
+To put it bluntly, the collection mechanism if very crude and raw. It was introduced in the alpha version of Sardine as a way to play notes but some people still rely on it to play their music! To play chords and harmonies, prefer the **Ziffers** patterning language that is included with Sardine or use the `scale` system for better precision.
 
 
     
@@ -158,10 +157,9 @@ qualifiers = {
 ```
 
 
-## Collection or Chord inversions
+## Chord inversions
 
-
-You can write chord/sequence inversions using the `^` syntax
+You can write chord/sequence inversions using the `^` syntax:
 - The right hand side of the expression accept any number: `^(1~5)`. 
   - You can also feed negative numbers for inverting a chord downwards.
 - Chord inversions work on anything that is a list. Write custom chords!
@@ -169,19 +167,17 @@ You can write chord/sequence inversions using the `^` syntax
 ```python
 @swim
 def notes(p=0.5, i=0):
-    D('pluck', midinote='(disco C5@maj7^(0~4))', i=i)
+    D('pluck', midinote='C5@maj7^(0~4)', i=i)
     again(notes, p=0.5, i=i+1)
-``` 
+```
 
 ## Polyphony
 
 ### Note polyphony
 
-
-    
-- You can use the `{` and `}` delimiters to make parts of your pattern polyphonic.
-  - There is **note polyphony**, aka when multiple notes are played together.
-  - There is **parametric polyphonic**, aka when the same event is played multiple times with different parameters.
+- You can use the `{` and `}` delimiters to turn any pattern into a polyphonic pattern. Sardine makes a distinction between two types of polyphony:
+  - **Note polyphony**: multiple notes played together.
+  - **Parametric polyphony:** same event played multiple times with different synthesis parameters.
     
 ```python
 @swim
@@ -194,8 +190,8 @@ def poly(p=0.5, i=0):
     again(poly, p=P('0.5!4 0.25!2', i), i=i+1)
 ```
 
-There a few rules to understand about polyphony and polyphonic messages. These rules can sound quite counter-intuitive if you think about polyphony just like you think of it on a musical score.
-    - The **size** of a polyphonic event &#x2013; meaning the number of messages sent for one occurence of an event &#x2013; is equal to the length of the largest polyphonic pattern you declared.
+There a some rules to understand with polyphony and polyphonic messages. These rules can sound quite counter-intuitive if you understand polyphony coming from a classical music or score music background.
+- The **size** of a polyphonic event &#x2013; meaning the number of messages sent for one occurence of an event - is equal to the length of the largest polyphonic pattern you declared.
     
 In the first example, we have a 4-5 note polyphony. Every polyphonic element from our pattern is a major 9 or 7 chord (*e.g* `[62, 66, 69, 73, 76]`). It means that if you have a polyphony of `2` somewhere and a polyphony of `4` elsewhere, your first polyphony will be distributed over the second one:
     
@@ -216,12 +212,13 @@ To illustrate the preceding rule we just talked about, here is a truly bizarre e
 def poly(p=0.5, i=0):
     D('{[bd  superpiano]}', cutoff=500, midinote='{D@maj9} {G@maj7^0} {D@maj9} {G@dim7^1}', i=i, d=2, r=0.25)
     again(poly, p=Pat('0.5!4 0.25!2', i), i=i+1)
-```   
+```
 
-We have two clear alternations, one between the `superpiano` and `bd` sound sets, the other between the four or five values that form our chords. It is then natural that half of our polyphony will be composed from a tuned bassdrum and the remaining half from a tuned piano. Once you get use to this novel way of thinking about polyphonic patterns, you will see that it opens up some space for interesting polyphonic interactions between sounds :)
-It is currently not possible to limit the number of voices generated by an event. Be careful! It is quite easy to get overrun and to kill your computer playing with polyphony!
+We have two clear alternations, one between the `superpiano` and `bd` sound sets, the other between the four or five values that form our chords. It is then natural that half of our polyphony will be composed from a tuned bassdrum and the remaining half from a tuned piano. 
 
-# Parametric polyphony
+Once you get use to this novel way of thinking about polyphonic patterns, you will see that it opens up some space for interesting polyphonic interactions between sounds :) It is currently not possible to limit the number of voices generated by an event. Be careful! It is quite easy to get overrun and to kill your computer playing with polyphony!
+
+## Parametric polyphony
 
 Everything can become polyphonic. Just wrap anything between `{` and `}` and you will return the same event piled up multiple times with different parameters. It allows you to be very creative with patterns.
 

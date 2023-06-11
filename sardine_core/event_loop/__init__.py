@@ -42,7 +42,8 @@ def _install_uvloop() -> bool:
         return False
 
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-    rich.print("[yellow]Installed uvloop event loop")
+    # I don't think that this information is necessary anymore for users
+    # rich.print("[yellow]Installed uvloop event loop")
     return True
 
 

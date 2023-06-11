@@ -1,28 +1,34 @@
 # Sardine Pattern Language
 
-The pattern language is everywhere in **Sardine**. Everytime you use any of the senders (`D()`, `N()`, `P()` and their lowercase variants), you are likely to encounter it. **Sardine** automatically turns every argument it receives as a `string` in an expression that is read using the **pattern language**:
+## What and where are patterns?
+
+You will find the pattern language pretty much everywhere in **Sardine**. Everytime you use any of the senders like `D()`, `N()`, `P()` and their lowercase variants, you are likely using the pattern language already. **Sardine** automatically turns every `string` argument it receives into a pattern using the **Sardine Pattern Language**:
 
 ```python
 D('bd', speed=1, legato=2) # speed and legato are using regular Python types
 D('b', speed='1|2', legato='1~4') # speed and legato are now patterns (string)
 ```
-**Pattern Object**
-Sardine also has a pattern object. This is useful and required when patterning outside of Senders. Examples would be to pattern the period value in the `again()` statement, or patterning the `clock.tempo` value. 
 
-See [Diving Deeper > Pattern Object](../diving_deeper/pattern_object.md).
+Think of it as having a second programming language inside your main programming language. This language is a welcomed addition:
 
-### Patterning - a programming language within
-You can't even use a synthesizer or play a note without writing at least one pattern (the initial string). One call to the senders/handlers can result in multiple patterns being interpreted by the **Sardine pattern language** at once.
+- It is an efficient way to create variety in the musical output of your code. 
+- It saves space and makes it easier to express complex pattern transformations.
+- It gives you access to new operators that **Python** doesn't provide by default.
+- It makes writing lists way easier and less verbose compared to Python.
 
-Think of it as having a second programming language inside your main programming language.
+Note that pattern languages are one of the basic tools used in most live coding environments. Each environment comes with its own flavour, and Sardine comes with multiple pattern languages!
 
-So, why use the Sardine pattern language?
+## Pattern Object
 
-- It is an efficient way to create change and variety in musical output. 
-- It saves space, it makes it easier to express complex transformations fast.
-- It gives you access to new operators that **Python** doesn't provide.
-- It makes writing lists way easier and less verbose.
-- It is the key that unlocks Sardine's expressive potential. 
-- Patterning is a basic tool available in most livecoding environments. 
+Sardine also has a pattern object, named `P()`. This object is very useful when you start exploring on your own and start building your own abstractions. The most typical usage of the `P()` is to pattern the `again` call in a **swimming function** like so:
+
+```python
+@swim
+def donothing(p=1, i=0):
+    print('I do nothing really interesting!')
+    again(donothing, p=P('1 2 0.5!4', i), i=i+1)
+```
+
+If you want to learn more about it, I encourage you to read: [Diving Deeper > Pattern Object](../diving_deeper/pattern_object.md).
 
 

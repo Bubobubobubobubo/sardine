@@ -1,13 +1,10 @@
 # Ramp
 
-    
-- This operator is very reminiscent of the **range()** function, only better.
-- You can generate ramps of integers using the `[1:10]` syntax.
-    - This expression will yield `[1 2 3 4 5 6 7 8 9 10]`.
-- You can ramp up and you can ramp down!
-- You can be more specific: `[1:10,2]`.
-    - This expression will yield: `[1 3 5 7 9]`.
-    - It also works with floating point numbers and floating point number steps: `[1:10,0.5]`!
+This operator is analogous to Python's **range()** function, only better.
+- Generate a ramp using the `[1:10]` syntax: `[1 2 3 4 5 6 7 8 9 10]`.
+- Ramps can go up and down, and even go both directions `(pal [1:10])`.
+- You can also specify a step amount: `[1:10,2]`: `[1 3 5 7 9]`.
+    - also works with floating point numbers: `[1:10,0.5]`.
 
 ```python
 @swim

@@ -1,6 +1,5 @@
-import datetime
-import random
 from itertools import count, takewhile, chain
+import random
 from time import time
 
 from lark import Transformer, v_args
@@ -15,14 +14,18 @@ from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cy
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock, iterators, variables):
+    def __init__(self, clock, variables, inner_variables: dict, global_scale: str):
         super().__init__()
         self.clock = clock
-        self.iterators = iterators
         self.variables = variables
+        self.inner_variables = inner_variables
+        self.global_scale = global_scale
         self.memory = {}
         self.library = funclib.FunctionLibrary(
-            clock=self.clock, amphibian=self.variables
+            clock=self.clock, 
+            amphibian=self.variables,
+            inner_variables=self.inner_variables,
+            global_scale=self.global_scale,
         )
 
     def number(self, number):
@@ -44,6 +47,14 @@ class CalculateTree(Transformer):
         a dot or multiple dots for multiple silences.
         """
         return [None] * len(args)
+
+    def numbered_silence(self, duration):
+        """
+        Variant of a silence with a numeric value indicating silence length
+        """
+        print(duration)
+        return [None] * duration
+
 
     # ---------------------------------------------------------------------- #
     # Notes: methods used by the note-specific parser
@@ -132,11 +143,17 @@ class CalculateTree(Transformer):
 
     def note_octave_up(self, note):
         """Move a note one octave up"""
-        return note + 12
+        if note <= 127 - 12:
+            return note + 12
+        else:
+            return note
 
     def note_octave_down(self, note):
         """Move a note one octave down"""
-        return note - 12
+        if note >= 12:
+            return note - 12
+        else:
+            return note
 
     def finish_note(self, note):
         """Finish the note construction"""
@@ -196,50 +213,6 @@ class CalculateTree(Transformer):
             list: Gathered arguments in a list
         """
         return sum(args, start=[]) * 2
-
-    def get_time(self):
-        """Return current clock time (tick) as integer"""
-        return [self.clock.time]
-
-    def get_year(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().year)]
-
-    def get_month(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().month)]
-
-    def get_day(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().day)]
-
-    def get_hour(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().hour)]
-
-    def get_minute(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().minute)]
-
-    def get_second(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().second)]
-
-    def get_microsecond(self):
-        """Return current clock time (tick) as integer"""
-        return [int(datetime.datetime.now().microsecond)]
-
-    def get_measure(self):
-        """Return current measure (bar) as integer"""
-        return [self.clock.bar]
-
-    def get_phase(self):
-        """Return current phase (phase) as integer"""
-        return [self.clock.phase]
-
-    def get_unix_time(self):
-        """Return current unix time as integer"""
-        return [int(time())]
 
     def get_random_number(self):
         """Return a random number (alias used by parser)
@@ -459,40 +432,46 @@ class CalculateTree(Transformer):
         # Cleaning keyword_arguments so they form clean lists
         kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
 
+        # I will add a cross next to each function that is currently documented
+        # in the documentation. Remove when done.
         modifiers_list = {
             # Amphibian variables
-            "v": self.library.get_amphibian_variable,
-            "sv": self.library.set_amphibian_variable,
+            "get": self.library.get_variable, # OK
+            "set": self.library.set_variable, # OK
+            "g": self.library.get_variable, # OK
+            "s": self.library.set_variable, # OK
+            "getA": self.library.get_amphibian_variable, # OK
+            "setA": self.library.set_amphibian_variable, # OK
+            "ga": self.library.get_amphibian_variable, # OK
+            "sa": self.library.set_amphibian_variable, # OK
             # Pure conditions
-            "if": self.library.binary_condition,
-            "nif": self.library.negative_binary_condition,
-            "while": self.library.unary_condition,
-            "nwhile": self.library.negative_unary_condition,
+            "if": self.library.binary_condition, # OK
+            "nif": self.library.negative_binary_condition, # OK
+            "while": self.library.unary_condition, # OK
+            "nwhile": self.library.negative_unary_condition, #OK
             # Boolean functions
-            "phase": self.library.phase,
-            "beat": self.library.beat,
-            "obar": self.library.oddbar,
-            "modbar": self.library.modbar,
-            "ebar": self.library.evenbar,
-            "every": self.library.every,
-            "maybe": self.library.proba,
-            "dice": self.library.dice,
+            "phase": self.library.phase, # OK
+            "beat": self.library.beat, # OK
+            "obar": self.library.oddbar, # OK
+            "modbar": self.library.modbar, # OK
+            "ebar": self.library.evenbar, # OK
+            "every": self.library.every, # OK
+            "maybe": self.library.proba, # OK
+            "dice": self.library.dice, # OK
             # Voice leading operations
             "dmitri": self.library.dmitri,
             "voice": self.library.find_voice_leading,
             "sopr": self.library.soprano,
             "quant": self.library.quantize,
-            "disco": self.library.disco,
-            "bass": self.library.bassify,
-            "sopr": self.library.soprano,
+            "disco": self.library.disco, # OK
             "invert": self.library.invert,
             "aspeed": self.library.anti_speed,
             # Boolean mask operations
-            "euclid": self.library.euclidian_rhythm,
-            "eu": self.library.euclidian_rhythm,
-            "negative_euclid": self.library.negative_euclidian_rhythm,
-            "neu": self.library.negative_euclidian_rhythm,
+            "eu": self.library.euclidian_rhythm, # OK
+            "neu": self.library.negative_euclidian_rhythm, # OK
             "mask": self.library.mask,
+            "euclid": self.library.euclidian_to_number, # OK
+            "numclid": self.library.euclidian_to_number, # OK
             "vanish": self.library.remove_x,
             "expand": self.library.expand,
             "pal": self.library.palindrome,
@@ -504,33 +483,46 @@ class CalculateTree(Transformer):
             "insertrot": self.library.insert_rotate,
             "shuf": self.library.shuffle,
             # Math functions
-            "sin": self.library.sinus,
-            "usin": self.library.unipolar_sinus,
-            "cos": self.library.cosinus,
-            "ucos": self.library.unipolar_cosinus,
-            "tri": self.library.triangular_wave,
-            "utri": self.library.unipolar_triangular_wave,
-            "saw": self.library.sawtooth_wave,
-            "usaw": self.library.unipolar_sawtooth_wave,
-            "rect": self.library.square_wave,
-            "urect": self.library.unipolar_square_wave,
-            "clamp": self.library.clamp,
-            "tan": self.library.tangent,
-            "abs": self.library.absolute,
-            "max": self.library.maximum,
-            "min": self.library.minimum,
-            "mean": self.library.mean,
-            "scale": self.library.scale,
+            "sin": self.library.sinus, # OK
+            "usin": self.library.unipolar_sinus, # OK
+            "cos": self.library.cosinus, # OK
+            "ucos": self.library.unipolar_cosinus, # OK
+            "drunk": self.library.drunk, # OK
+            "saw": self.library.sawtooth_wave, # OK
+            "usaw": self.library.unipolar_sawtooth_wave, # OK
+            "rect": self.library.square_wave, # OK
+            "urect": self.library.unipolar_square_wave, # OK
+            "clamp": self.library.clamp, # OK
+            "abs": self.library.absolute, # OK
+            "max": self.library.maximum, # OK
+            "min": self.library.minimum, # OK
+            "mean": self.library.mean, # OK
+            "scale": self.library.scale, # OK
             "filt": self.library.custom_filter,
             "quant": self.library.quantize,
             # Bipolar and unipolar time-dependent Low frequency oscillators
-            "lsin": self.library.lsin,
-            "ltri": self.library.ltri,
-            "lsaw": self.library.lsaw,
-            "lrect": self.library.lrect,
-            "alsin": self.library.alsin,
-            "altri": self.library.altri,
-            "alsaw": self.library.alsaw,
+            "lsin": self.library.lsin, # OK
+            "ltri": self.library.ltri, # OK
+            "lsaw": self.library.lsaw, # OK
+            "lrect": self.library.lrect, # OK
+            "ulsin": self.library.ulsin, # OK
+            "ultri": self.library.ultri, # OK
+            "ulsaw": self.library.ulsaw, # OK
+            # Time information
+            "time": self.library.get_time, # OK
+            "bar": self.library.get_bar, # OK
+            "phase": self.library.get_phase, # OK
+            "unix": self.library.get_unix_time, # OK
+            "t": self.library.get_time, # OK
+            "b": self.library.get_bar, # OK
+            "p": self.library.get_phase, # OK
+            "u": self.library.get_unix_time, # OK
+            # global scale support
+            "scl": self.library.get_scale_note,
+            "setscl": self.library.set_scale, # OK
+            # Binary rhythm generator
+            "br": self.library.binary_rhythm_generator, # OK
+            "bl": self.library.binary_list,
         }
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():

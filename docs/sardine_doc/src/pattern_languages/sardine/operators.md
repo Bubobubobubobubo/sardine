@@ -1,6 +1,6 @@
 # Operators
 
-**Python** is limited to a set of operators and you can't create your own. That's not good for us because live coding
-is also about speed. It is faster to write `!!` than to write `repeat_and_copy`. That&rsquo;s also why having a
-**pattern language** is important. We have new operators to work with to create musical patterns.
-
+**Python** is limited to a set of operators and you can't even create your own. Operators are great for typing speed **Sardine** is a live coding library. It is faster to write `!!` than to use a function named `repeat_and_copy`. That's why having a **pattern language** is important:
+- new operators to work on lists and note collections, very common in a musical context.
+- new behavior for well known operators such as the addition, the multiplication, etc...
+- new operators for working on custom objects : sample names, addresses, etc...

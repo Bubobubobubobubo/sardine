@@ -1,9 +1,6 @@
 # Euclidian
 
-Functions that apply a boolean mask on a pattern. This mask will
-either leave the pattern as is or replace some values by silences.
-The euclidian rhythm generator lives in this category. I know 
-that you were looking for it :)
+Functions that apply a boolean mask on a pattern. This mask will either leave the pattern as is or replace some values by silences. The euclidian rhythm generator lives in this category. I know that you were looking for it :)
     
  <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
  

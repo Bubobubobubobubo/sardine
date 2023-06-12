@@ -1,5 +1,7 @@
 # Filter Functions
 
+There is a group of functions used for filtering: removing events, filtering values, etc... These functions are very low-level but they can be really interesting for specific use cases.
+
 ## mask 
 
 

@@ -67,7 +67,6 @@
         - [Rhythm Functions](pattern_languages/sardine/rhythm_functions.md)
         - [Filter Functions](pattern_languages/sardine/filter_functions.md)
         - [Melody Functions](pattern_languages/sardine/melodic_functions.md)
-        - [Note Functions](pattern_languages/sardine/notes_functions.md)
         - [Condition Functions](pattern_languages/sardine/conditions.md)
         - [Combinatorics](pattern_languages/sardine/combinatorics_functions.md)
         - [Low Frequency Oscillators (LFOs)](pattern_languages/sardine/low_frequency_oscillators.md)

@@ -26,3 +26,30 @@ The disco function is a joke. It was initially supposed to mimick the typical di
 Pa * d('pluck', n='(disco C Eb G C)', p='.5')
 Pa * d('pluck', n='(disco C Eb G C ::depth -2)', p='.5')
 ```
+
+## quant
+
+Quantize a given list of arguments to the nearest value in the provided set. This set can be any list of numbers or can also be a scale or any other list object that you want to use as a quant reference. The quantized values are clamped in the range of MIDI note values (from `0` to `127`).
+
+**Arguments**:
+- **collection:** the collection/list that you want to quantize.
+- **reference:** the reference collection/list to quantize to.
+
+**Example:**
+```python
+(quant [1 2 3 4] maj7) # quantize on a major seventh chord
+```
+
+## expand
+
+Chance-based operation. Apply a random octave transposition process to every note in a given collection. There is an optional factor parameter that multiplies the octave transposition.
+
+**Arguments**:
+- **collection:**
+- **factor:** multiplicator for the expansion amount.
+
+**Example:**
+```python
+```
+
+

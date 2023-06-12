@@ -14,6 +14,18 @@ Reverse a list.
 (rev 1 2 3 [1 2 3])
 ```
 
+# rot
+
+Rotates a list. This will move the n first steps at the end of the list.
+
+- **Arguments:**
+  - **n:** How many steps to rotate by
+
+**Example:**
+```python
+(rot [1 2 3] 1) # gives [2 3 1]
+```
+
 # pal
 
 Creates a palindrome. This will keep the list as is but will also append the list in reverse.
@@ -25,6 +37,8 @@ Creates a palindrome. This will keep the list as is but will also append the lis
 ```python
 (pal [1:10] ::cut 1) # or ::cut 0
 ```
+
+
 
 # shuf
 

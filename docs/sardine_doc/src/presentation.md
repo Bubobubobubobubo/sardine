@@ -1,9 +1,11 @@
-> [Sardine](https://github.com/Bubobubobubobubo/sardine) is a free/open-source software for Python 3.10+. It turns Python into a musical instrument. You can play it alone or with your friends. **With Sardine you can**:
+> [Sardine](https://github.com/Bubobubobubobubo/sardine) is a free/open-source software for Python 3.10+. **Sardine** turns Python into a musical instrument. It is a framework for *live coding* music and controlling musical hardware from Python. You can play alone or synchronize with other audio softwares and instances of **Sardine**. **With Sardine you can**:
 > -   Play synthesizers and audio samples using **SuperCollider**.
-> -   Control synthesizers through MIDI/OSC messages.
+> -   Control synthesizers through **MIDI** and **OSC** messages.
 > -   Interconnect audio/video softwares and/or sound engines.
-> -   Play collaboratively with your friends.
+> -   Play collaboratively with your friends or other musicians.
 > -   Extend your musical environment using any **Python** package.
+> -   Explore multiple algorithmic pattern languages for improvisation.
+
  
 <style>
 img[src*='#center'] { 

@@ -1,6 +1,6 @@
 import random
 import statistics
-from itertools import chain, cycle, islice
+from itertools import chain, cycle, islice, repeat
 from math import cos, sin, tan, asin, pi, atan
 from random import shuffle
 from typing import Optional, Union
@@ -989,6 +989,8 @@ class FunctionLibrary:
         If the index is higher than the collection, will
         wrap around and octave up.
         """
+        oct = kwargs.get("oct", [5])
+        oct = oct[0]
         x = list(chain(*args))
         forced_scale = kwargs.get("scale", None)
         if forced_scale:
@@ -999,7 +1001,8 @@ class FunctionLibrary:
         def note_computer(note) -> int:
             """Internal function to calculate the current note"""
             octave, note = divmod(note, len(selected_scale) - 1)
-            return 48 + (12 * octave) + selected_scale[note]
+            octave = oct + octave
+            return (12 * octave) + selected_scale[note]
 
         return map_unary_function(note_computer, x)
 

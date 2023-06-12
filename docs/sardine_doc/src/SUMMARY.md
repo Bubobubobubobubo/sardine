@@ -113,6 +113,7 @@
     - [Solstice](showcase/solstice.md)
     - [Zorba in Belleville](showcase/zorba.md)
     - [Artificial Life](showcase/artificial_life.md)
+    - [Claude](showcase/claude.md)
 - [About](about.md)
     - [Why Sardine?](about/why.md)
     - [Contributions](about/contributions.md)

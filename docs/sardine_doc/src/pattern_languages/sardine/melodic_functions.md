@@ -6,6 +6,7 @@ This function will map any number of numeric arguments to the global melodic sca
 
 **Arguments:**
 - **...:** list of notes to put on the scale. If the number is higher than the number of notes in the scale, it wraps around and octaves up. Same thing happens if you use negative numbers.
+- **octave**: optional octave modifier where `0` returns the scale note without any octaviation, and up.
 
 **Example:**
 ```python

@@ -521,6 +521,7 @@ class CalculateTree(Transformer):
                 # Binary rhythm generator
                 "br": self.library.binary_rhythm_generator,
                 "bl": self.library.binary_list,
+                "rot": self.library.rotate,
             }
         except Exception as e:
             print(e)

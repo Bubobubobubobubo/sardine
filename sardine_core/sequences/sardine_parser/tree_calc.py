@@ -234,10 +234,15 @@ class CalculateTree(Transformer):
         Returns:
             list: a ramp of ascending or descending integers
         """
-        ramp_from, ramp_to = left[-1], right[0]
-        between = range(min(ramp_from, ramp_to) + 1, max(ramp_from, ramp_to))
-        between_flipped = between if ramp_from <= ramp_to else reversed(between)
-        return left + list(between_flipped) + right
+        try:
+            ramp_from, ramp_to = left[-1], right[0]
+            if any([isinstance(x, float) for x in [ramp_from, ramp_to]]):
+                return self.generate_ramp_with_range([ramp_from], [ramp_to], [1.0])
+            between = range(min(ramp_from, ramp_to) + 1, max(ramp_from, ramp_to))
+            between_flipped = between if ramp_from <= ramp_to else reversed(between)
+            return left + list(between_flipped) + right
+        except Exception as e:
+            print(e)
 
     def generate_ramp_with_range(self, left, right, step):
         """Generates a ramp of integers between x included and y

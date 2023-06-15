@@ -29,19 +29,6 @@ print(sardine_intro)
 print(config_line_printer(config))
 
 
-#######################################################################################
-# LOADING USER CONFIGURATION
-
-if Path(f"{config.user_config_path}").is_file():
-    spec = importlib.util.spec_from_file_location(
-        "user_configuration", config.user_config_path
-    )
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    from user_configuration import *
-else:
-    print(f"[red]No user provided configuration file found...")
 
 # Initialisation of the FishBowl (the environment holding everything together)
 
@@ -685,6 +672,15 @@ if config.superdirt_handler:
 bowl.start()
 
 
+#######################################################################################
+# LOADING USER CONFIGURATION
+
+if Path(f"{config.user_config_path}").is_file():
+    exec(open(config.user_config_path).read())
+else:
+    print(f"[red]No user provided configuration file found...")
+
+
 def spl_debug():
     while True:
         try:
@@ -694,3 +690,4 @@ def spl_debug():
             message = bowl.parser._parse_debug(user_input)
         except Exception as e:
             print(e)
+

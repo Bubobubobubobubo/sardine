@@ -114,6 +114,7 @@ class InternalClock(BaseClock):
 
     @tempo.setter
     def tempo(self, new_tempo: NUMBER):
+        self.env.dispatch('tempo_change')
         new_tempo = float(new_tempo)
 
         if not 1 <= new_tempo <= 999:

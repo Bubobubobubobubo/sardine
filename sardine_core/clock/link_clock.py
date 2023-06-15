@@ -125,6 +125,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @tempo.setter
     def tempo(self, new_tempo: float) -> None:
+        self.env.dispatch('tempo_change')
         if self._link is not None:
             session = self._link.captureSessionState()
             session.setTempo(new_tempo, self.beats_per_bar)

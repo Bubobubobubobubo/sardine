@@ -505,7 +505,7 @@ class AsyncRunner:
 
         try:
             while self._is_ready_for_iteration():
-                self._last_interval = self._get_period(self._last_state) * self.clock.beat_duration
+                #self._last_interval = self._get_period(self._last_state) * self.clock.beat_duration
                 try:
                     await self._run_once()
                 except Exception as exc:

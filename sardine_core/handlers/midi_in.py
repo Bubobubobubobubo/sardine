@@ -26,6 +26,8 @@ class MidiInHandler(BaseHandler):
     """
     MIDI-In Listener: listen to incoming MIDI events from a selected port.
     Useful for mapping controllers to control / interact with Sardine.
+
+    The incoming messages are stored in a queue and retrieved in FIFO order.
     """
 
     def __init__(
@@ -62,7 +64,7 @@ class MidiInHandler(BaseHandler):
         """Callback for MidiListener Port"""
         # Add more filters
         if message:
-            self.queue.append(message)
+            self.queue.appendleft(message)
 
     def _get_control(self, control: int, channel: int) -> None:
         """Get a specific control change"""

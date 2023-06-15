@@ -441,7 +441,11 @@ class AsyncRunner:
         self._can_correct_interval = False
 
     def _correct_interval_background_job(self, period: Union[float, int]):
-        """Alternative version for fixed-rate background jobs"""
+        """
+        Alternative version for fixed-rate background jobs. The interval or
+        period is not indexed on the clock like with the _correct_interval 
+        method above.
+        """
         interval = period
         if self._can_correct_interval and interval != self._last_interval:
             time = self._expected_time

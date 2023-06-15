@@ -36,7 +36,8 @@ class PatternInformation:
     kwargs: dict[str, Any]
     period: NumericElement
     iterator: Optional[Number]
-    iteration_span: NumericElement
+    iterator_span: NumericElement
+    iterator_limit: NumericElement
     divisor: NumericElement
     rate: NumericElement
     snap: Number
@@ -60,6 +61,7 @@ class Player(BaseHandler):
         self.runner = AsyncRunner(name=name)
         self.iterator: Number = 0
         self._iteration_span: Number = 1
+        self._iteration_limit: Optional[Number] = None
         self._period: int | float = 1.0
 
     @property
@@ -82,7 +84,8 @@ class Player(BaseHandler):
 
     @staticmethod
     @alias_param(name="period", alias="p")
-    @alias_param(name="iteration_span", alias="i")
+    @alias_param(name="iterator_span", alias="i")
+    @alias_param(name="iterator_limit", alias="l")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
     @alias_param(name="timespan", alias="span")
@@ -94,13 +97,16 @@ class Player(BaseHandler):
         until: Optional[int] = None,
         period: NumericElement = 1,
         iterator: Optional[Number] = None,
+        iterator_span: Optional[Number] = 1,
+        iterator_limit: Optional[Number] = None,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
         snap: Number = 0,
         **kwargs: P.kwargs,
     ):
         """Entry point of a pattern into the Player"""
-        iteration_span = kwargs.pop("iteration_span", 1)
+        # iteration_span = kwargs.pop("iteration_span", 1)
+        # iteration_limit = kwargs.pop("iteration_limit", 1)
 
         return PatternInformation(
             sender,
@@ -109,7 +115,8 @@ class Player(BaseHandler):
             kwargs,
             period,
             iterator,
-            iteration_span,
+            iterator_span,
+            iterator_limit,
             divisor,
             rate,
             snap,
@@ -161,7 +168,9 @@ class Player(BaseHandler):
         p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
-        self._iteration_span = pattern.iteration_span
+        self._iterator_span = pattern.iterator_span
+        self._iterator_limit = pattern.iterator_limit
+
         if pattern.iterator is not None:
             self.iterator = pattern.iterator
             pattern.iterator = None
@@ -174,7 +183,14 @@ class Player(BaseHandler):
             rate=pattern.rate,
         )
 
-        self.iterator += self._iteration_span
+        # Reset the iterator when it reaches a certain ceiling
+        if self._iterator_limit:
+            if self.iterator >= self._iterator_limit:
+                self.iterator = 0
+
+        # Moving the iterator up
+        self.iterator += self._iterator_span
+
         period = self.get_new_period(pattern)
         if not dur:
             self.again(pattern=pattern, p=period)

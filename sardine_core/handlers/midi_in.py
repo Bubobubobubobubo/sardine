@@ -61,32 +61,21 @@ class MidiInHandler(BaseHandler):
         return f"<MidiListener: {self._input} target={self.target}>"
 
     def _callback(self, message):
-        """Callback for MidiListener Port"""
+        """Callback for MidiListener Port."""
         # Add more filters
         if message:
-            self.queue.appendleft(message)
+            if isinstance(self.target, ControlTarget):
+                if not (
+                    message.type == "control_change"
+                    and message.control == self.target.control
+                    and message.channel == self.target.channel
+                ):
+                    return
+            elif isinstance(self.target, NoteTarget):
+                if not message.channel == self.target.channel:
+                    return
 
-    def _get_control(self, control: int, channel: int) -> None:
-        """Get a specific control change"""
-        if self.queue:
-            message = self.queue.pop()
-            if (
-                message.type == "control_change"
-                and message.control == control
-                and message.channel == channel
-            ):
-                self._last_item = message
-            else:
-                self._last_item = self._last_item
-
-    def _get_note(self, channel: int) -> None:
-        """Get notes from a specific MIDI channel"""
-        if self.queue:
-            message = self.queue.pop()
-            if message.channel == channel:
-                self._last_item = message
-            else:
-                self._last_item = self._last_item
+        self.queue.appendleft(message)
 
     def _extract_value(self, message: Union[mido.Message, None]) -> Union[Message, int]:
         """
@@ -105,21 +94,26 @@ class MidiInHandler(BaseHandler):
             return message
         return value
 
-    def get(self):
-        """Get an item from the MidiListener"""
+    def get(self, last=False):
+        """Get an item from the MidiListener event queue. If last is True, return the last element that was inserted and
+        clear the queue."""
         target = self.target
 
-        if isinstance(target, ControlTarget):
-            self._get_control(channel=target.channel, control=target.control)
-        elif isinstance(target, NoteTarget):
-            self._get_note(channel=target.channel)
-        else:
-            if self.queue:
-                self._last_item = self.queue.pop()
+        if self.queue:
+            if last:
+                self._last_item = self.queue.popleft()
+                self.queue.clear()
             else:
-                self._last_item = self._last_item
+                self._last_item = self.queue.pop()
+        else:
+            self._last_item = self._last_item
 
         return self._extract_value(self._last_item)
+
+    def getlast(self):
+        """Get the last item from the MidiListener event queue and clear the queue. This is mostly useful to get latest
+        value of a control, but probably not for notes."""
+        return self.get(last=True)
 
     def inspect_queue(self):
         print(f"{self.queue}")

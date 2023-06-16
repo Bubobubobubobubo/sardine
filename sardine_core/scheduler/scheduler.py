@@ -16,15 +16,16 @@ class Scheduler(BaseHandler):
         self._runners: dict[str, AsyncRunner] = {}
         self.deferred = deferred_scheduling
 
-    def _react_to_tempo_change(self, *args, **kwargs):
+    def _react_to_tempo_change(self, old_tempo: int|float, new_tempo: int|float):
         """
         In reaction to a tempo change, the scheduler should
         trigger an event for each runner prompting to update
         their current interval_shift. This prevents runners
         from desynchronization everytime tempo change happens.
         """
-        for runner in runner.keys():
-            runner.interval_shift = 0.0
+        scale = old_tempo / new_tempo
+        for runner in self._runners.values():
+            runner.interval_shift *= scale
 
     def __repr__(self) -> str:
         n_runners = len(self._runners)
@@ -134,4 +135,4 @@ class Scheduler(BaseHandler):
         if event == "stop":
             self.reset()
         if event == "tempo_change":
-            self._react_to_tempo_change()
+            self._react_to_tempo_change(*args)

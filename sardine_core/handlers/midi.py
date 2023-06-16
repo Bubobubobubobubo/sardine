@@ -169,7 +169,7 @@ class MidiHandler(Sender):
     async def send_off(
         self, note: int, channel: int, velocity: int, delay: Union[int, float]
     ):
-        await self.env.sleep(delay)
+        await self.env.sleep_beats(delay)
         self._midi.send(
             mido.Message("note_off", note=note, channel=channel, velocity=velocity)
         )
@@ -223,7 +223,7 @@ class MidiHandler(Sender):
         self.active_notes[key] = asyncio.create_task(
             self.send_off(
                 note=pattern["note"],
-                delay=pattern["duration"] - 0.02,
+                delay=pattern["duration"],
                 velocity=pattern["velocity"],
                 channel=pattern["channel"],
             )

@@ -51,10 +51,22 @@ class ListParser(BaseParser):
         # Current iterator for parsing expressions (defaults to 0)
         self.iterator: int = 0
 
+        # Reference to the transformer
+        self._transformer: Optional[Any] = None
+
     def __repr__(self) -> str:
         return f"<{type(self).__name__} debug={self.debug} type={self.parser_type!r}>"
 
     def setup(self):
+
+        self._transformer = CalculateTree(
+            clock=self.env.clock,
+            variables=self.env.variables,
+            inner_variables=self.inner_variables,
+            global_scale=self.global_scale,
+            iterator=self.iterator,
+        )
+
         parsers = {
             "sardine": {
                 "raw": Lark.open(
@@ -72,13 +84,7 @@ class ListParser(BaseParser):
                     start="start",
                     cache=True,
                     lexer="contextual",
-                    transformer=CalculateTree(
-                        clock=self.env.clock,
-                        variables=self.env.variables,
-                        inner_variables=self.inner_variables,
-                        global_scale=self.global_scale,
-                        iterator=self.iterator,
-                    ),
+                    transformer=self._transformer,
                 ),
             },
         }
@@ -152,14 +158,13 @@ class ListParser(BaseParser):
             list: The parsed pattern as a list of values
         """
         print(f"Args: {list(args)}, Iterator: {iterator}")
-
-        # IMPORTANT: updating the iterator before parsing an expression
-        self.iterator = iterator
+        self._transformer.iterator = iterator
 
         pattern = args[0]
         final_pattern = []
 
         try:
+            # self._result_parser.iterator(iterator)
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
             print(f"[red][Pattern Language Error][/red]")

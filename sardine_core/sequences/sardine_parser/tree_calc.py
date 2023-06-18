@@ -234,6 +234,14 @@ class CalculateTree(Transformer):
         """
         return [random.random()]
 
+    def get_iterator_value(self):
+        """Returns the current iterator value (passed by sender)
+
+        Returns:
+            int: the current iterator value
+        """
+        return [self.iterator]
+
     def generate_ramp(self, left, right):
         """Generates a ramp of integers between x included and y
         included (used by parser). Note that this is an extension
@@ -562,6 +570,4 @@ class CalculateTree(Transformer):
             )
             return args[0]
 
-        def get_iterator_value(self):
-            """Test function for returning the current iterator value"""
-            return [self.iterator]
+

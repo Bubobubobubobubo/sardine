@@ -135,7 +135,7 @@ class ListParser(BaseParser):
         """
         print(Tree.pretty(self._printing_parser.parse(expression)))
 
-    def parse(self, iterator: int, *args):
+    def parse(self, *args, iterator: int):
         """Main method to parse a pattern. Parses 'pattern' and returns
         a flattened list to index on to extract individual values. Note
         that this function is temporary. Support for stacked values is
@@ -151,11 +151,12 @@ class ListParser(BaseParser):
         Returns:
             list: The parsed pattern as a list of values
         """
+        print(f"Args: {list(args)}, Iterator: {iterator}")
 
         # IMPORTANT: updating the iterator before parsing an expression
         self.iterator = iterator
 
-        pattern = args[1:]
+        pattern = args[0]
         final_pattern = []
 
         try:

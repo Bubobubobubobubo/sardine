@@ -403,7 +403,7 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     Returns:
         int: The ith element from the resulting pattern
     """
-    result = bowl.parser.parse(pattern)
+    result = bowl.parser.parse(pattern, iterator=i)
     return Sender.pattern_element(result, i, div, rate)
 
 

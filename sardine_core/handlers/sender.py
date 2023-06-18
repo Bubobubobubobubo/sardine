@@ -145,10 +145,10 @@ class Sender(BaseHandler):
         # TODO: document pattern_reduce() arguments
         def maybe_parse(val: ParsableElement) -> RecursiveElement:
             if isinstance(val, str):
-                return self.env.parser.parse(val)
+                return self.env.parser.parse(val, iterator)
             if isinstance(val, list) and all(isinstance(item, str) for item in val):
                 val = " ".join(val)
-                return self.env.parser.parse(val)
+                return self.env.parser.parse(val, iterator)
             return val
 
         if any(isinstance(n, (list, str)) for n in (divisor, rate)):

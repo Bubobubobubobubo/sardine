@@ -540,6 +540,8 @@ class CalculateTree(Transformer):
                 "br": self.library.binary_rhythm_generator,
                 "bl": self.library.binary_list,
                 "rot": self.library.rotate,
+                # Iterator access
+                "it": self.get_iterator_value,
             }
         except Exception as e:
             print(e)
@@ -559,3 +561,7 @@ class CalculateTree(Transformer):
                 )
             )
             return args[0]
+
+        def get_iterator_value(self):
+            """Test function for returning the current iterator value"""
+            return [self.iterator]

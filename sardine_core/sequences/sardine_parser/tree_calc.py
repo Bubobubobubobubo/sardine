@@ -14,11 +14,24 @@ from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cy
 
 @v_args(inline=True)
 class CalculateTree(Transformer):
-    def __init__(self, clock, variables, inner_variables: dict, global_scale: str):
+    def __init__(self, clock, variables, inner_variables: dict, global_scale: str, iterator: int):
+        """
+        Tree constructor for the Sardine Pattern Language:
+        Args:
+            clock (Clock): A reference to the FishBowl's Clock
+            variables (dict): A dictionary holding SPL amphibian variables.
+            variables (dict): A dictionary holding SPL global variables.
+            global_scale (str): The name of a global scale used by scale functions.
+            iterator (int): the current iterator to be used for parsing an expression.
+
+        Returns:
+            list: A parsed expression that will be cleaned and returned.
+        """
         super().__init__()
         self.clock = clock
         self.variables = variables
         self.inner_variables = inner_variables
+        self.iterator = iterator
         self.global_scale = global_scale
         self.memory = {}
         self.library = funclib.FunctionLibrary(

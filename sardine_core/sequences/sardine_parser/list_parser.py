@@ -48,6 +48,9 @@ class ListParser(BaseParser):
         # Current Global Scale
         self.global_scale: str = "major"
 
+        # Current iterator for parsing expressions (defaults to 0)
+        self.iterator: int = 0
+
     def __repr__(self) -> str:
         return f"<{type(self).__name__} debug={self.debug} type={self.parser_type!r}>"
 
@@ -74,6 +77,7 @@ class ListParser(BaseParser):
                         variables=self.env.variables,
                         inner_variables=self.inner_variables,
                         global_scale=self.global_scale,
+                        iterator=self.iterator,
                     ),
                 ),
             },
@@ -131,7 +135,7 @@ class ListParser(BaseParser):
         """
         print(Tree.pretty(self._printing_parser.parse(expression)))
 
-    def parse(self, *args):
+    def parse(self, iterator: int, *args):
         """Main method to parse a pattern. Parses 'pattern' and returns
         a flattened list to index on to extract individual values. Note
         that this function is temporary. Support for stacked values is
@@ -139,6 +143,7 @@ class ListParser(BaseParser):
 
         Args:
             pattern (str): A pattern to parse
+            iterator (int): Iterator used to build the sequence
 
         Raises:
             ParserError: Raised if the pattern is invalid
@@ -146,7 +151,11 @@ class ListParser(BaseParser):
         Returns:
             list: The parsed pattern as a list of values
         """
-        pattern = args[0]
+
+        # IMPORTANT: updating the iterator before parsing an expression
+        self.iterator = iterator
+
+        pattern = args[1:]
         final_pattern = []
 
         try:

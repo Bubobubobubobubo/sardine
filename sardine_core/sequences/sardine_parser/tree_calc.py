@@ -39,6 +39,7 @@ class CalculateTree(Transformer):
             amphibian=self.variables,
             inner_variables=self.inner_variables,
             global_scale=self.global_scale,
+            iterator=self.iterator,
         )
 
     def number(self, number):
@@ -530,6 +531,8 @@ class CalculateTree(Transformer):
                 "br": self.library.binary_rhythm_generator,
                 "bl": self.library.binary_list,
                 "rot": self.library.rotate,
+                # Iterator functions
+                "i": self.library.get_iterator,
             }
         except Exception as e:
             print(e)

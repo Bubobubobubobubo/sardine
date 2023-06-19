@@ -112,11 +112,17 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock, amphibian, inner_variables, global_scale):
+    def __init__(self, 
+                 clock, 
+                 amphibian, 
+                 inner_variables, 
+                 global_scale,
+                 iterator: int):
         self.clock = clock
         self.amphibian = amphibian
         self.inner_variables = inner_variables
         self.global_scale = global_scale
+        self.iterator = iterator
 
     # ============================================================================ #
     # Dmitri Tymoczko algorithm
@@ -1082,3 +1088,10 @@ class FunctionLibrary:
             n = n % len(collection)
 
         return collection[n:] + collection[:n]
+
+    def get_iterator(self, *args, **kwargs):
+        """
+        Fancier function to get the iterator or a value 
+        based on the iterator (division, multiple, etc..).
+        """
+        return self.iterator

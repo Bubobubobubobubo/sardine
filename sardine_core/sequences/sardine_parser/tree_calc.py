@@ -290,7 +290,7 @@ class CalculateTree(Transformer):
         start, stop, step, epsilon = (
             min(left, right)[0],
             max(left, right)[0],
-            step[0],
+            step[0] if step[0] != 0 else step[0]+1,
             0.0000001,
         )
         ramp = list(
@@ -438,35 +438,6 @@ class CalculateTree(Transformer):
           tions can be chained as well for weirder chance / probability based operations
 
         """
-
-        # Splitting between arguments and keyword arguments
-        current_keyname, past_keywords, skip_mode = "", [], False
-        arguments, kwarguments = [], {}
-
-        for _ in args:
-            # print(f'Token: {_} (type: {type(_)})')
-            # We need to determine if we are currently looking at a keyword and its
-            # value. If we have a repeating keyword, we will do our best to
-            # completely ignore it.
-            if isinstance(_, Token):
-                if not _ in past_keywords:
-                    current_keyname = str(_)
-                    kwarguments[current_keyname] = []
-                else:
-                    skip_mode = True
-
-            if skip_mode:
-                continue
-
-            if current_keyname == "":
-                arguments.append(_)
-            else:
-                if not isinstance(_, Token):
-                    kwarguments[current_keyname].append(_)
-
-        # Cleaning keyword_arguments so they form clean lists
-        kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
-
         try:
             modifiers_list = {
                 # Amphibian variables
@@ -561,6 +532,41 @@ class CalculateTree(Transformer):
             }
         except Exception as e:
             print(e)
+
+        if func_name not in modifiers_list.keys():
+            complete_list = list(args) + list(kwargs)
+            print(complete_list)
+            return None
+            #return self.make_list(complete_list)
+
+        # Splitting between arguments and keyword arguments
+        current_keyname, past_keywords, skip_mode = "", [], False
+        arguments, kwarguments = [], {}
+
+        for _ in args:
+            # print(f'Token: {_} (type: {type(_)})')
+            # We need to determine if we are currently looking at a keyword and its
+            # value. If we have a repeating keyword, we will do our best to
+            # completely ignore it.
+            if isinstance(_, Token):
+                if not _ in past_keywords:
+                    current_keyname = str(_)
+                    kwarguments[current_keyname] = []
+                else:
+                    skip_mode = True
+
+            if skip_mode:
+                continue
+
+            if current_keyname == "":
+                arguments.append(_)
+            else:
+                if not isinstance(_, Token):
+                    kwarguments[current_keyname].append(_)
+
+        # Cleaning keyword_arguments so they form clean lists
+        kwarguments = {k: list(chain(*v)) for k, v in kwarguments.items()}
+
         try:
             if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():
                 return modifiers_list[func_name](

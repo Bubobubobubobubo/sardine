@@ -436,8 +436,9 @@ class CalculateTree(Transformer):
 
         - cond: apply the function only if boolean (represented by 1/0) is True. Condi-
           tions can be chained as well for weirder chance / probability based operations
-
         """
+        func_name = func_name[0]
+
         try:
             modifiers_list = {
                 # Amphibian variables
@@ -534,10 +535,10 @@ class CalculateTree(Transformer):
             print(e)
 
         if func_name not in modifiers_list.keys():
-            complete_list = list(args) + list(kwargs)
-            print(complete_list)
-            return None
-            #return self.make_list(complete_list)
+            normal_list = [list([func_name]), *args]
+            print("Je passe dans la branche")
+            print(normal_list)
+            return self.make_list(normal_list)
 
         # Splitting between arguments and keyword arguments
         current_keyname, past_keywords, skip_mode = "", [], False

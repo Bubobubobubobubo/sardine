@@ -2,7 +2,7 @@
 pattern: sum sum* -> return_pattern
 
 
-?function: "(&" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
+?function: "(" patname sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
 
 ?sum: product
     | product "+" sum                  -> addition
@@ -32,8 +32,7 @@ pattern: sum sum* -> return_pattern
      | col
      | patname
      | "-" atom                        -> negation
-     | "rand"                          -> get_random_number
-     | "°"                             -> get_random_number
+     | ("°"|"rand")                    -> get_random_number
      | "$"                             -> get_iterator_value
      | "(" sum "->" sum ")"            -> generate_ramp
      | "(" sum "->" sum "," sum ")"    -> generate_ramp_with_range

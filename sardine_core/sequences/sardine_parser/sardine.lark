@@ -8,6 +8,7 @@ pattern: sum sum* -> return_pattern
     | product "+" sum                  -> addition
     | product "-" sum                  -> substraction
     | product "%" sum                  -> modulo
+    | product "|%" sum                  -> whole_part
     | product ":" sum                  -> assoc_sp_number
 
 ?product: atom

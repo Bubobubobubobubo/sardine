@@ -374,6 +374,9 @@ class CalculateTree(Transformer):
     def modulo(self, left, right):
         return map_binary_function(lambda x, y: x % y, left, right)
 
+    def whole_part(self, left, right):
+        return map_binary_function(lambda x, y: divmod(x, y)[0], left, right)
+
     def power(self, left, right):
         return map_binary_function(lambda x, y: pow(x, y), left, right)
 

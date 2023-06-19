@@ -1094,4 +1094,4 @@ class FunctionLibrary:
         Fancier function to get the iterator or a value 
         based on the iterator (division, multiple, etc..).
         """
-        return self.iterator
+        return [self.iterator]

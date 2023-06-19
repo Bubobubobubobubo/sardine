@@ -2,7 +2,7 @@
 pattern: sum sum* -> return_pattern
 
 
-?function: "(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
+?function: "!(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
 
 ?sum: product
     | product "+" sum                  -> addition
@@ -33,14 +33,11 @@ pattern: sum sum* -> return_pattern
      | "-" atom                        -> negation
      | "rand"                          -> get_random_number
      | "$"                             -> get_iterator_value
-     | "[" sum ":" sum "]"             -> generate_ramp
-     | "[" sum ":" sum "," sum  "]"    -> generate_ramp_with_range
-     | "[" sum sum* "]"                -> make_list
-     | "<<" sum sum* ">>"              -> make_alternation
-     | "[:" sum sum* ":]"              -> make_list_repeat
+     | "(" sum ":" sum ")"             -> generate_ramp
+     | "(" sum ":" sum "," sum  ")"    -> generate_ramp_with_range
+     | "(" sum sum* ")"                -> make_list
      | "{" sum sum* "}"                -> make_chord
      | SILENCE+                        -> silence
-     | "(" sum ")"
 
 ?patname: name_sum
 
@@ -54,8 +51,7 @@ pattern: sum sum* -> return_pattern
     | name_product "|" name_atom           -> choice
 
 ?name_atom: NAME                           -> name
-    | "(" name_sum ")"
-    | "[" name_sum name_sum* "]"           -> make_list
+    | "(" name_sum name_sum* ")"           -> make_list
 
 
 ?col0 : note

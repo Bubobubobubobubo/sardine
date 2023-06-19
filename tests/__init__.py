@@ -1,3 +1,3 @@
 import sardine_core
 
-sardine.event_loop.install_policy()
+sardine_core.event_loop.install_policy()

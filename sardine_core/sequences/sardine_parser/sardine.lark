@@ -2,9 +2,7 @@
 pattern: sum sum* -> return_pattern
 
 
-///////////////////////////////////////////////////////////////////////////////
-
-// Rules concerning numbers ///////////////////////////////////////////////////
+?function: "(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
 
 ?sum: product
     | product "+" sum                  -> addition
@@ -44,15 +42,6 @@ pattern: sum sum* -> return_pattern
      | SILENCE+                        -> silence
      | "(" sum ")"
 
-///////////////////////////////////////////////////////////////////////////////
-
-// Rules functions ////////////////////////////////////////////////////////////
-
-?function: "(" NAME sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
-
-
-// Rules concerning names /////////////////////////////////////////////////////
-
 ?patname: name_sum
 
 ?name_sum: name_product
@@ -67,45 +56,33 @@ pattern: sum sum* -> return_pattern
 ?name_atom: NAME                           -> name
     | "(" name_sum ")"
     | "[" name_sum name_sum* "]"           -> make_list
-    | "<<" name_sum name_sum* ">>"           -> make_alternation
 
-
-///////////////////////////////////////////////////////////////////////////////
-
-// Rules about notes /////////////////////////////////////////////////////////
 
 ?col0 : note
       | note "@" NAME             -> add_qualifier
-
 ?col1 : col0
       | col0 "^" sum              -> chord_reverse
+?col  : col1
 
-?col : col1
+
+?base_note: NOTE                 -> make_note
+?alt_note: base_note
+    | base_note "b"              -> note_flat
+    | base_note "#"              -> note_sharp
+?final_note: alt_note
+    |  alt_note NUMBER           -> note_set_octave
+    | (alt_note|final_note) "'"  -> note_octave_up
+    | (alt_note|final_note) "_"  -> note_octave_down
+
+?note: final_note                -> finish_note
 
 
-// Add sugar for chord inversions
+// BASE TOKENS //////////////////////////////////////////
+NOTE: (NOTE_EN | NOTE_ENB | NOTE_FR)
+NOTE_EN:  "A"  | "B"  | "C"  | "D"  | "E"   | "F"  | "G"
+NOTE_ENB: "Ab" | "Bb" | "Cb" | "Db" | "Eb"  | "Fb" | "Gb"
+NOTE_FR:  "Do" | "Re" | "Mi" | "Fa" | "Sol" | "La" | "Si"
 
-?note0: NOTE                     -> make_note
-
-?note1: note0
-    | note0 "b"                  -> note_flat
-    | note0 "#"                  -> note_sharp
-
-?note2: note1
-    | note1 NUMBER               -> note_set_octave
-    | (note1|note2) "'"          -> note_octave_up
-    | (note1|note2) "_"          -> note_octave_down
-
-?note: note2                     -> finish_note
-
-///////////////////////////////////////////////////////////////////////////////
-
-// Tokens /////////////////////////////////////////////////////////////////////
-
-// Notes start with an uppercase letter, other names start with a lower case letter.
-// This helps disambiguating the syntax.
-NOTE: "A"|"La"|"B"|"Si"|"D"|"Re"|"Ré"|"C"|"Do"|"E"|"Mi"|"F"|"Fa"|"G"|"Sol"
-    | "Cb"|"Db"|"Eb"|"Fb"|"Gb"|"Ab"|"Bb"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."

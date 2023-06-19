@@ -4,6 +4,7 @@ import pytest_asyncio
 from sardine_core import FishBowl
 from sardine_core.sequences import ListParser
 
+ITERATOR = 0
 
 # NOTE: only put new parsers here if they support sardine's patterning syntax
 @pytest_asyncio.fixture(scope="module", params=[ListParser])
@@ -19,7 +20,7 @@ def fish_bowl(request: pytest.FixtureRequest):
     ],
 )
 def test_silence_op(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == expected
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == expected
 
 
 @pytest.mark.parametrize(
@@ -32,7 +33,7 @@ def test_silence_op(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_choice_op(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) in expected
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) in expected
 
 
 @pytest.mark.parametrize(
@@ -48,7 +49,7 @@ def test_number_pattern(fish_bowl: FishBowl, pattern: str, expected: list):
     """
     Test parsing several patterns composed of numbers and simple math operations.
     """
-    assert fish_bowl.parser.parse(pattern) == pytest.approx(expected)
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(
@@ -65,7 +66,7 @@ def test_number_pattern(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_list_arithmetic(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == pytest.approx(expected)
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(
@@ -83,7 +84,7 @@ def test_list_arithmetic(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_note_compositions(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == expected
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == expected
 
 
 @pytest.mark.parametrize(
@@ -95,7 +96,7 @@ def test_note_compositions(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_integer_ranges(fish_bowl: FishBowl, pattern: str, expected_range: list):
-    assert fish_bowl.parser.parse(pattern)[0] in expected_range
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR)[0] in expected_range
 
 
 @pytest.mark.parametrize(
@@ -108,7 +109,7 @@ def test_integer_ranges(fish_bowl: FishBowl, pattern: str, expected_range: list)
     ],
 )
 def test_list_expansion(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == expected
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == expected
 
 
 @pytest.mark.parametrize(
@@ -119,7 +120,7 @@ def test_list_expansion(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_negation(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == expected
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == expected
 
 
 @pytest.mark.parametrize(
@@ -132,4 +133,4 @@ def test_negation(fish_bowl: FishBowl, pattern: str, expected: list):
     ],
 )
 def test_ramps(fish_bowl: FishBowl, pattern: str, expected: list):
-    assert fish_bowl.parser.parse(pattern) == pytest.approx(expected)
+    assert fish_bowl.parser.parse(pattern, iterator=ITERATOR) == pytest.approx(expected)

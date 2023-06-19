@@ -226,6 +226,16 @@ class CalculateTree(Transformer):
         """
         return sum(args, start=[]) * 2
 
+    def make_alternation(self, *args):
+        """Choose a number in list based on current iteration index
+
+        Returns:
+            list: number chosen in list
+        """
+        a, b = divmod(self.iterator, len(args))
+        element = args[a % len(args)]
+        return element
+
     def get_random_number(self):
         """Return a random number (alias used by parser)
 
@@ -548,8 +558,6 @@ class CalculateTree(Transformer):
                 "br": self.library.binary_rhythm_generator,
                 "bl": self.library.binary_list,
                 "rot": self.library.rotate,
-                # Iterator access
-                "it": self.get_iterator_value,
             }
         except Exception as e:
             print(e)

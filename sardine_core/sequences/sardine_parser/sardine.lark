@@ -38,6 +38,7 @@ pattern: sum sum* -> return_pattern
      | "[" sum ":" sum "]"             -> generate_ramp
      | "[" sum ":" sum "," sum  "]"    -> generate_ramp_with_range
      | "[" sum sum* "]"                -> make_list
+     | "<<" sum sum* ">>"              -> make_alternation
      | "[:" sum sum* ":]"              -> make_list_repeat
      | "{" sum sum* "}"                -> make_chord
      | SILENCE+                        -> silence
@@ -66,6 +67,8 @@ pattern: sum sum* -> return_pattern
 ?name_atom: NAME                           -> name
     | "(" name_sum ")"
     | "[" name_sum name_sum* "]"           -> make_list
+    | "<<" name_sum name_sum* ">>"           -> make_alternation
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

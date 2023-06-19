@@ -157,7 +157,6 @@ class ListParser(BaseParser):
         Returns:
             list: The parsed pattern as a list of values
         """
-        print(f"Args: {list(args)}, Iterator: {iterator}")
         self._transformer.iterator = iterator
 
         pattern = args[0]

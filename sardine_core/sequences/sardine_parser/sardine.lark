@@ -1,14 +1,14 @@
 ?start: pattern
 pattern: sum sum* -> return_pattern
 
+?function.2: ("("|"[") patname sum* (SPACE sum)* ("::" patname sum)* (")"|"]") -> function_call
 
-?function: "(" patname sum* (SPACE sum)* ("::" NAME atom)* ")" -> function_call
 
 ?sum: product
     | product "+" sum                  -> addition
     | product "-" sum                  -> substraction
     | product "%" sum                  -> modulo
-    | product "|%" sum                  -> whole_part
+    | product "|%" sum                 -> whole_part
     | product ":" sum                  -> assoc_sp_number
 
 ?product: atom
@@ -32,14 +32,14 @@ pattern: sum sum* -> return_pattern
      | function
      | col
      | patname
-     | "-" atom                        -> negation
-     | ("°"|"rand")                    -> get_random_number
-     | "$"                             -> get_iterator_value
-     | "(" sum "->" sum ")"            -> generate_ramp
-     | "(" sum "->" sum "," sum ")"    -> generate_ramp_with_range
-     | "(" sum sum* ")"                -> make_list
-     | "{" sum sum* "}"                -> make_chord
-     | SILENCE+                        -> silence
+     | "-" atom                                    -> negation
+     | ("°"|"rand")                                -> get_random_number
+     | "$"                                         -> get_iterator_value
+     | ("("|"[") sum "->" sum (")"|"]")            -> generate_ramp
+     | ("("|"[") sum "->" sum "," sum (")"|"]")    -> generate_ramp_with_range
+     | ("("|"[") sum sum* (")"|"]")                -> make_list 
+     | "{" sum sum* "}"                            -> make_chord
+     | SILENCE+                                    -> silence
 
 ?patname: name_sum
 
@@ -83,6 +83,7 @@ NOTE_FR:  "Do" | "Re" | "Mi" | "Fa" | "Sol" | "La" | "Si"
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
 
 SILENCE: "."
+
 
 SPACE: /[\s\t\f\r\n]/
 %ignore SPACE

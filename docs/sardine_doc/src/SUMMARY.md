@@ -37,8 +37,8 @@
 # Reference
 
 - [Basics](basics.md)
-    - [Senders](basics/senders.md)  
-    - [Player vs @Swim](basics/player-vs-swimfunction.md)  
+    - [Senders](basics/senders.md)
+    - [Player vs @Swim](basics/player-vs-swimfunction.md)
     - [Players](basics/players.md)
     - [Player arguments](basics/player_arguments.md)
     - [@swim function](basics/swimfunction.md)
@@ -60,6 +60,7 @@
         - [Slicing](pattern_languages/sardine/slicing.md)
         - [Extend](pattern_languages/sardine/extend.md)
         - [Extend-Repeat](pattern_languages/sardine/extend_repeat.md)
+        - [Logic](pattern_languages/sardine/logic.md)
       - [Function Library](pattern_languages/sardine/function_library.md)
         - [Variable Functions](pattern_languages/sardine/variable_functions.md)
         - [Time Functions](pattern_languages/sardine/time_functions.md)

@@ -1069,16 +1069,8 @@ class FunctionLibrary:
         **kwargs,
     ) -> list:
         """Rotate a list by a given amount of steps
-
-        Args:
-            collection (list): A list generated through a qualifier
-
-        Returns:
-            list: palindromed list of integers from qualifier's based
-            collection
         """
         n = int(n[0])
-        if n >= len(collection):
-            n = n % len(collection)
+        n = n % len(collection)
 
         return collection[n:] + collection[:n]

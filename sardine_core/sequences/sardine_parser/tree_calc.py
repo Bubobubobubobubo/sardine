@@ -321,6 +321,47 @@ class CalculateTree(Transformer):
         """
         return random.choice([left, right])
 
+    def union(self, left, right):
+        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical OR.
+        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
+        Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
+        kept. """
+        out = []
+
+        for i in range(max(len(left), len(right))):
+            out.append(left[i % len(left)] or right[i % len(right)])
+
+        return out
+
+    def intersection(self, left, right):
+        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical AND.
+        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
+        Works best with 1s, 0s, and rests. If two "falsy" elements are being compared, the one from the left operand is
+        kept. """
+        out = []
+
+        for i in range(max(len(left), len(right))):
+            out.append(left[i % len(left)] and right[i % len(right)])
+
+        return out
+
+    def xor(self, left, right):
+        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical XOR.
+        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
+        Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
+        kept. """
+        out = []
+
+        for i in range(max(len(left), len(right))):
+            if (left[i % len(left)] and right[i % len(right)]):
+                # Returning a rest as default value when both elements are truthy seems to be the most appropriate
+                # way of doing things, since those methods are mostly used for rhythms generation.
+                out.append(None)
+            else:
+                out.append(left[i % len(left)] or right[i % len(right)] or None)
+
+        return out
+
     def random_in_range(self, left, right):
         left = min([left, right])
         right = max([left, right])

@@ -26,6 +26,9 @@ pattern: sum sum* -> return_pattern
      | product "!!" atom               -> extend_repeat
      | product "^" atom                -> chord_reverse
      | product "&" atom                -> get_slice
+     | product "&&" atom               -> intersection
+     | product "||" atom               -> union
+     | product "^|" atom              -> xor
 
 
 ?atom: NUMBER                          -> number

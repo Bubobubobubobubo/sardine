@@ -140,11 +140,19 @@ class CalculateTree(Transformer):
 
     def get_slice(self, content: list, list_slice: list) -> list:
         """Return a slice of the given list"""
+        print(f"Liste reçue par get_slice: {content}")
+        print(f"Slice à extraire: {list_slice}")
         if len(list_slice) == 1:
-            return content[list_slice[0] % len(content) - 1]
+            try:
+                return content[list_slice[0] % len(content) - 1]
+            except Exception as e:
+                print(e)
         else:
-            content = CyclicalList(content)
-            return content[list_slice[0] : list_slice[1]]
+            try:
+                content = CyclicalList(content)
+                return content[list_slice[0] : list_slice[1]]
+            except Exception as e:
+                print(e)
 
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
@@ -542,8 +550,6 @@ class CalculateTree(Transformer):
 
         if func_name not in modifiers_list.keys():
             normal_list = [list([func_name]), *args]
-            print("Je passe dans la branche")
-            print(normal_list)
             return self.make_list(normal_list)
 
         # Splitting between arguments and keyword arguments

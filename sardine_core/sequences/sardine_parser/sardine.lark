@@ -1,8 +1,7 @@
 ?start: pattern
 pattern: sum sum* -> return_pattern
 
-?function.2: ("("|"[") patname sum* (SPACE sum)* ("::" patname sum)* (")"|"]") -> function_call
-
+?function: ("("|"[") patname sum* (SPACE sum)* (KWARG sum*)* (")"|"]") -> function_call
 
 ?sum: product
     | product "+" sum                  -> addition
@@ -25,8 +24,7 @@ pattern: sum sum* -> return_pattern
      | product "!" atom                -> extend
      | product "!!" atom               -> extend_repeat
      | product "^" atom                -> chord_reverse
-     | product "&" atom                -> get_slice
-
+     | product "&" sum                 -> get_slice
 
 ?atom: NUMBER                          -> number
      | function
@@ -54,7 +52,6 @@ pattern: sum sum* -> return_pattern
 
 ?name_atom: NAME                           -> name
 
-
 ?col0 : note
       | note "@" NAME             -> add_qualifier
 ?col1 : col0
@@ -81,9 +78,9 @@ NOTE_ENB: "Ab" | "Bb" | "Cb" | "Db" | "Eb"  | "Fb" | "Gb"
 NOTE_FR:  "Do" | "Re" | "Mi" | "Fa" | "Sol" | "La" | "Si"
 
 NAME: LCASE_LETTER (LETTER|DIGIT+)*
+KWARG: "," NAME
 
 SILENCE: "."
-
 
 SPACE: /[\s\t\f\r\n]/
 %ignore SPACE

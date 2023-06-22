@@ -271,8 +271,8 @@ class FunctionLibrary:
 
     def set_variable(self, *args, **kwargs):
         """Set an internal variable to the given value and return the same value"""
-        self.inner_variables[str(args[0][0])] = args[1]
-        return args[1]
+        self.inner_variables[str(args[0][0])] = args[1:][0]
+        return args[1:]
 
     def get_variable(self, *args, **kwargs):
         """Get an internal variable. If it doesn't exist, will return 0"""

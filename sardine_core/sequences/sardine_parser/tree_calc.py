@@ -272,6 +272,32 @@ class CalculateTree(Transformer):
         else:
             return ramp
 
+    def generate_ramp_with_interpolate(self, left, right, steps):
+        """Generates a ramp of floats between x included and y
+        included (used by parser). Variant using a step param.
+
+        Args:
+            left (int): First boundary
+            right (int): Second boundary
+            step (int): Number of steps over which to generate this ramp
+
+        Returns:
+            list: a ramp of ascending or descending floats with step
+        """
+        start, stop, steps = (
+            min(left, right)[0],
+            max(left, right)[0],
+            steps[0],
+        )
+        delta = (stop - start) / steps
+        ramp = list(
+            [i * delta for i in range(steps)]
+        )
+        if left > right:
+            return list(reversed(ramp))
+        else:
+            return ramp
+
     def extend(self, left, right):
         """Extend a token: repeat the token x times. Note that this function
         will work for any possible type on its left and right side. A list

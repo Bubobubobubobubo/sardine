@@ -1,6 +1,7 @@
 from collections import deque
 from dataclasses import dataclass
 from typing import Optional, Union
+import sys
 
 import mido
 from mido import Message, get_input_names, open_input, parse_string_stream
@@ -21,6 +22,15 @@ class ControlTarget:
 class NoteTarget:
     channel: int
 
+def find_midi_in_port(name: str) -> Optional[str]:
+    """Find the port name of a MIDI-In port by name."""
+    for port in mido.get_input_names():
+        port_without_number = port
+        if sys.platform == "win32":
+            port_without_number = " ".join(port.split(" ")[:-1])
+        if name == port_without_number:
+            return port
+    return None
 
 class MidiInHandler(BaseHandler):
     """
@@ -42,6 +52,7 @@ class MidiInHandler(BaseHandler):
         self._last_value = 0
 
         if port_name:
+            port_name = find_midi_in_port(port_name)
             try:
                 self._input = open_input(port_name)
                 self._input.callback = self._callback

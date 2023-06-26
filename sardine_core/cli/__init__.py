@@ -81,6 +81,9 @@ def _select_midi_output(config_file: dict) -> dict:
 
     choices = ["Automatic", "Manual", "Custom (advanced)"]
     midi_ports = mido.get_output_names()
+    if sys.platform == "win32":
+        for i, port in enumerate(midi_ports):
+            midi_ports[i] = " ".join(port.split(" ")[:-1])
     print(
         Panel.fit(
             f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"

@@ -9,6 +9,17 @@ import sys
 __all__ = ("MidiHandler",)
 
 
+def find_midi_out_port(name: str) -> Optional[str]:
+    """Find the port name of a MIDI-Out port by name."""
+    for port in mido.get_input_names():
+        port_without_number = port
+        if sys.platform == "win32":
+            port_without_number = " ".join(port.split(" ")[:-1])
+        if name == port_without_number:
+            return port
+    return None
+
+
 class MidiHandler(Sender):
 
     """
@@ -21,8 +32,8 @@ class MidiHandler(Sender):
 
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
-        self._port_name = port_name
-
+        self._port_name = find_midi_out_port(port_name)
+        print(self._available_ports)
         # Getting a default MIDI port name
         if port_name in self._available_ports:
             pass
@@ -46,9 +57,9 @@ class MidiHandler(Sender):
                         self._available_ports[0], virtual=False
                     )
                     self._port_name = str(self._available_ports[0])
-
         # For W10/W11
         else:
+            print(self._port_name)
             try:
                 self._midi = mido.open_output(self._port_name)
             except Exception as err:

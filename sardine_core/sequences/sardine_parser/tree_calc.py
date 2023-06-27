@@ -134,7 +134,7 @@ class CalculateTree(Transformer):
 
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
-        return self.library.chordify(*sum(args, start=[]))
+        return [self.library.chordify(*sum(args, start=[]))]
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
         """Chord inversion upwards"""

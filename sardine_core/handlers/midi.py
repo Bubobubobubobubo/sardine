@@ -59,7 +59,6 @@ class MidiHandler(Sender):
                     self._port_name = str(self._available_ports[0])
         # For W10/W11
         else:
-            print(self._port_name)
             try:
                 self._midi = mido.open_output(self._port_name)
             except Exception as err:

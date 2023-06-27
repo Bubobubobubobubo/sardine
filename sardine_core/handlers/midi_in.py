@@ -32,7 +32,7 @@ class MidiInHandler(BaseHandler):
     def __init__(self, port_name: Optional[str] = None):
         super().__init__()
         self.queues = {}
-        self._last_item: Optional[Message] = None
+        self._last_item = {}
         self._last_value = 0
 
         if port_name:
@@ -117,34 +117,33 @@ class MidiInHandler(BaseHandler):
 
     def _get(self, control: Optional[int], channel: int, last: bool = False):
         """Get an item from the MidiListener event dictionnary. IF last is True,
-        return the last element that was inserted and clear the queue. If Control 
+        return the last element that was inserted and clear the queue. If Control
         is None, then it must be a note"""
+        if control:
+            idx = self._get_index_for_control_change(control, channel)
+        else:
+            idx = self._get_index_for_note()
         try:
-            if control:
-                queue = self.queues[self._get_index_for_control_change(control, channel)]
-            else:
-                queue = self.queues[self._get_index_for_note(channel)]
+            queue = self.queues[idx]
         except KeyError:
             return 0
 
         if queue:
             if last:
-                self._last_item = queue.popleft()
+                self._last_item[idx] = queue.popleft()
                 queue.clear()
             else:
-                self._last_item = queue.pop()
-        else:
-            self._last_item = self._last_item
+                self._last_item[idx] = queue.pop()
 
-        return self._extract_value(self._last_item)
+        return self._extract_value(self._last_item[idx])
 
     def get_control(self, channel: int, control: int, last: bool = False):
-        """Get a control change from the MidiListener event dictionnary. If last 
+        """Get a control change from the MidiListener event dictionnary. If last
         is True, return the last element that was inserted and clear the queue."""
         return self._get(control=control, channel=channel, last=last)
 
     def get_note(self, channel: int, last: bool = False):
-        """Get a note from the MidiListener event dictionnary. If last 
+        """Get a note from the MidiListener event dictionnary. If last
         is True, return the last element that was inserted and clear the queue."""
         return self._get(channel=channel, last=last)
 

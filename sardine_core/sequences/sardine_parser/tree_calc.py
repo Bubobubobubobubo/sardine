@@ -291,7 +291,7 @@ class CalculateTree(Transformer):
         )
         delta = (stop - start) / steps
         ramp = list(
-            [i * delta for i in range(steps)]
+            [start + i * delta for i in range(steps)]
         )
         if left > right:
             return list(reversed(ramp))

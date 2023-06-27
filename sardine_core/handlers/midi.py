@@ -11,7 +11,7 @@ __all__ = ("MidiHandler",)
 
 def find_midi_out_port(name: str) -> Optional[str]:
     """Find the port name of a MIDI-Out port by name."""
-    for port in mido.get_input_names():
+    for port in mido.get_output_names():
         port_without_number = port
         if sys.platform == "win32":
             port_without_number = " ".join(port.split(" ")[:-1])
@@ -33,9 +33,9 @@ class MidiHandler(Sender):
         # Setting up the MIDI Connexion
         self._available_ports = mido.get_output_names()
         self._port_name = find_midi_out_port(port_name)
-        print(self._available_ports)
+
         # Getting a default MIDI port name
-        if port_name in self._available_ports:
+        if self._port_name in self._available_ports:
             pass
         else:
             if sys.platform in "win32":

@@ -49,7 +49,7 @@ class MidiInHandler(BaseHandler):
                 self._input.callback = self._callback
                 listened_port = mido.get_input_names()[0]
             except Exception:
-                raise OSError(f"Couldn't listen on port {port_name}")
+                raise OSError(f"Couldn't listen on port {listened_port}")
 
     def __str__(self):
         """String representation of the MIDI Listener"""

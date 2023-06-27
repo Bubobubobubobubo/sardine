@@ -517,7 +517,7 @@ class MidiHandler(Sender):
         def send_controls(pattern: dict) -> None:
             deadline = self.env.clock.shifted_time
             for message in self.pattern_reduce(pattern, iterator, divisor, rate):
-                if message["control"] is None:
+                if None in [message["control"], message["value"]]:
                     continue
                 for k, v in message.items():
                     message[k] = int(v)

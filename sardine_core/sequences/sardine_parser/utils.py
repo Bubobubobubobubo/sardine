@@ -73,8 +73,10 @@ def map_binary_function(func, left, right):
         left: The left value or list of values
         right: The right value or list of values
     """
-    if any(isinstance(x, Chord) for x in (left, right)):
-        return Chord(*[allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)])
+    if isinstance(left, Chord) and not isinstance(right, Chord):
+        return [allow_silence_2(func)(left, y) for y in right]
+    elif isinstance(right, Chord) and not isinstance(left, Chord):
+        return [allow_silence_2(func)(x, right) for x in left]
     else:
         return [allow_silence_2(func)(x, y) for x, y in zip_cycle(left, right)]
 

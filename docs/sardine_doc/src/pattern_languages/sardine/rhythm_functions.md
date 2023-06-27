@@ -79,6 +79,11 @@ Pd * d('openhat', p='(br 20 3)/4')
 
 ## notdot (rest inversion)
 
+The `notdot` value is used to reverse the rhythm of a pattern you are currently using. In the example above, `Pa` is playing a rhythm by alternating between `kick` and silence (`.`). To get the opposite of that list, the `notdot` function will replace the `1` by silences and the silences by `1`. It can be quite useful to get complementary and matching rhythms.
+
+**Arguments:**
+- **collection** a collection/list containing silences and values
+
 ```python
 Pa * d('(set pk [1 . . .]) * kick')
 Pd * d('(notdot (get pk))  * hat')  # outputs [. hat hat hat]

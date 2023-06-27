@@ -291,7 +291,7 @@ class CalculateTree(Transformer):
         )
         delta = (stop - start) / steps
         ramp = list(
-            [i * delta for i in range(steps)]
+            [start + i * delta for i in range(steps)]
         )
         if left > right:
             return list(reversed(ramp))
@@ -539,6 +539,7 @@ class CalculateTree(Transformer):
                 "eu": self.library.euclidian_rhythm,
                 "neu": self.library.negative_euclidian_rhythm,
                 "mask": self.library.mask,
+                "notdot": self.library.notdot,
                 "euclid": self.library.euclidian_to_number,
                 "numclid": self.library.euclidian_to_number,
                 "e": self.library.euclidian_to_number,

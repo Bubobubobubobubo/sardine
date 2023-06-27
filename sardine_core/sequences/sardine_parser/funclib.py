@@ -501,6 +501,10 @@ class FunctionLibrary:
                 new_collection.append(None)
         return new_collection
 
+    def notdot(self, collection: list) -> list:
+        """Invert a rhythm pattern (1 -> ., . -> 1)"""
+        return [1 if x == None else None for x in collection]
+
     def clamp(
         self,
         collection: list,

@@ -15,7 +15,7 @@ This function is the bread and butter of many musicians. Spend some time to lear
 - **hits:** how many steps to evenly distribute in the total number of steps.
 - **steps:** total number of steps.
 - **rotation:** pattern rotation.
- 
+
 **Example:**
 ```python
 Pa * d('(eu kick 5 8)', p=.5)
@@ -75,4 +75,11 @@ Pa * d('kick', p='(br 20 0)/4')
 Pb * d('snare', p='(br 20 1)/4')
 Pc * d('hat', p='(br 20 2)/[4 2 8!2]!!8')
 Pd * d('openhat', p='(br 20 3)/4')
+```
+
+## notdot (rest inversion)
+
+```python
+Pa * d('(set pk [1 . . .]) * kick')
+Pd * d('(notdot (get pk))  * hat')  # outputs [. hat hat hat]
 ```

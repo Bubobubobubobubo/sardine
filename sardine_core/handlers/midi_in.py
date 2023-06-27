@@ -9,18 +9,7 @@ from ..logger import print
 
 from ..base.handler import BaseHandler
 
-__all__ = ("MidiInHandler", "ControlTarget", "NoteTarget")
-
-
-@dataclass
-class ControlTarget:
-    control: int
-    channel: int
-
-
-@dataclass
-class NoteTarget:
-    channel: int
+__all__ = ("MidiInHandler",)
 
 def find_midi_in_port(name: str) -> Optional[str]:
     """Find the port name of a MIDI-In port by name."""
@@ -40,14 +29,9 @@ class MidiInHandler(BaseHandler):
     The incoming messages are stored in a queue and retrieved in FIFO order.
     """
 
-    def __init__(
-        self,
-        target: Union[ControlTarget, NoteTarget, None] = None,
-        port_name: Optional[str] = None,
-    ):
+    def __init__(self, port_name: Optional[str] = None):
         super().__init__()
-        self.target = target
-        self.queue = deque(maxlen=20)
+        self.queues = {}
         self._last_item: Optional[Message] = None
         self._last_value = 0
 
@@ -69,24 +53,50 @@ class MidiInHandler(BaseHandler):
 
     def __str__(self):
         """String representation of the MIDI Listener"""
-        return f"<MidiListener: {self._input} target={self.target}>"
+        return f"<MidiListener: {self._input}>"
 
-    def _callback(self, message):
+    def _get_index_for_control_change(self, control: int, channel: int):
+        """Generate a new dictionnary key for each control change route"""
+        return f"ctrl:{control},{channel}"
+
+    def _get_index_for_note(self, channel: int):
+        """Generate a new dictionnary key for each channel"""
+        return f"note:{channel}"
+
+    def _callback(self, message) -> None:
         """Callback for MidiListener Port."""
-        # Add more filters
-        if message:
-            if isinstance(self.target, ControlTarget):
-                if not (
-                    message.type == "control_change"
-                    and message.control == self.target.control
-                    and message.channel == self.target.channel
-                ):
-                    return
-            elif isinstance(self.target, NoteTarget):
-                if not message.channel == self.target.channel:
-                    return
 
-        self.queue.appendleft(message)
+        def _push_message_to_dict(index: str, message: mido.Message) -> None:
+            if index in self.queues:
+                self.queues[index].appendleft(message)
+            else:
+                self.queues[index] = deque(maxlen=20)
+                self.queues[index].appendleft(message)
+
+
+        if message:
+            # Case where the message is a control change
+            if hasattr(message, "control"):
+                queue_dictionnary_index = self._get_index_for_control_change(
+                    control=message.control,
+                    channel=message.channel
+                )
+                if not message.type == "control_change":
+                    return
+                else:
+                    _push_message_to_dict(queue_dictionnary_index, message)
+                return
+            # Case where the message is a note
+            elif hasattr(message, "note"):
+                queue_dictionnary_index = self._get_index_for_note(message.channel)
+                if not message.type in ("note_off", "note_in"):
+                    return
+                else:
+                    _push_message_to_dict(queue_dictionnary_index, message)
+                return
+            else:
+                # Case where the message is just garbage to dispose of
+                return
 
     def _extract_value(self, message: Union[mido.Message, None]) -> Union[Message, int]:
         """
@@ -105,29 +115,41 @@ class MidiInHandler(BaseHandler):
             return message
         return value
 
-    def get(self, last=False):
-        """Get an item from the MidiListener event queue. If last is True, return the last element that was inserted and
-        clear the queue."""
-        target = self.target
-
-        if self.queue:
-            if last:
-                self._last_item = self.queue.popleft()
-                self.queue.clear()
+    def _get(self, control: Optional[int], channel: int, last: bool = False):
+        """Get an item from the MidiListener event dictionnary. IF last is True,
+        return the last element that was inserted and clear the queue. If Control 
+        is None, then it must be a note"""
+        try:
+            if control:
+                queue = self.queues[self._get_index_for_control_change(control, channel)]
             else:
-                self._last_item = self.queue.pop()
+                queue = self.queues[self._get_index_for_note(channel)]
+        except KeyError:
+            return 0
+
+        if queue:
+            if last:
+                self._last_item = queue.popleft()
+                queue.clear()
+            else:
+                self._last_item = queue.pop()
         else:
             self._last_item = self._last_item
 
         return self._extract_value(self._last_item)
 
-    def getlast(self):
-        """Get the last item from the MidiListener event queue and clear the queue. This is mostly useful to get latest
-        value of a control, but probably not for notes."""
-        return self.get(last=True)
+    def get_control(self, channel: int, control: int, last: bool = False):
+        """Get a control change from the MidiListener event dictionnary. If last 
+        is True, return the last element that was inserted and clear the queue."""
+        return self._get(control=control, channel=channel, last=last)
 
-    def inspect_queue(self):
-        print(f"{self.queue}")
+    def get_note(self, channel: int, last: bool = False):
+        """Get a note from the MidiListener event dictionnary. If last 
+        is True, return the last element that was inserted and clear the queue."""
+        return self._get(channel=channel, last=last)
+
+    def inspect_queues(self):
+        print(f"{self.queues}")
 
     def kill(self):
         """Close the MIDIListener"""

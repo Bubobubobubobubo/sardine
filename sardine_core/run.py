@@ -67,10 +67,8 @@ except OSError as e:
 
 try:
     # MIDIIn Handler
-    midi_in = MidiInHandler(
-        target=ControlTarget(channel=0, control=20), port_name=config.midi
-    )
-    bowl.add_handler(midi)
+    midi_in = MidiInHandler(port_name=config.midi)
+    bowl.add_handler(midi_in)
     midi._ziffers_parser = z
 except OSError as e:
     print(f"{e}: [red]Invalid MIDI port![/red]")

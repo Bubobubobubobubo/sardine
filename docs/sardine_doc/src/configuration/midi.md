@@ -2,30 +2,23 @@
 
 ## Receiving MIDI
 
-**MIDI** Input is supported through the use of a special object, the **MidiListener** object. This object will open a connexion listening to incoming MIDI messages. There are only a few types of messages you should be able to listen to:
+**MIDI** Input is supported through the use of a special object, the **MidiInHandler** object. This object will open a connexion listening to incoming MIDI messages on any valid port. There are only a few types of messages you should be able to listen to:
 
-- **MIDI** notes through the `NoteTarget` object
-- **MIDI** control changes through the `ControlTarget` object
+- **MIDI** notes using the `get_note(channel)` method or its sibling, `get_note_last(channel)`.
+- **MIDI** control changes using the `get_control(control, channel)` method or its sibling, `get_control_last(control, channel)`.
 
-Every MidiListener is expecting a target. You must declare one and await on it using the following syntax:
+**MIDI** messages are stored in a dictionary of lists, meaning that you can store the last `n` values received for each valid route. The memory is `20` events long by default. The `get_control` and `get_control_last` methods are calling the same internal method, named `_get`. The difference is only that one flips the optional `last` boolean that will return the latest value received in the list.
 
+Using Sardine to receive **MIDI** messages, thus, is fairly straightforward. Declare your **MidiInHandler**:
 ```python
-
-a = MidiListener(target=ControlTarget(20, 0))
-@swim
-def pluck(d=0.25):
-    S('pluck', midinote=a.get()).out()
-    a(pluck, d=0.25)
+midi_in = MidiInHandler(port_name=config.midi)
+bowl.add_handler(midi_in)
 ```
-
-In this example, we are listening on the control change n°20 from the default port on the first channel (`0`). **Sardine** cannot assert the value of a given **MIDI** Control before it receives a first message therefore the initial value will be assumed to be `0`.
-
-You can fine tune your listening object by tweaking the parameters:
-
+You can now safely start to peek at messages coming in using the methods described above:
 ```python
-
-# picking a different MIDI Port
-a = MidiListener('other_midi_port', target=ControlTarget(40, 4))
+# Listen to control n°50 on channel n°1, always get latest message
+midi_in.get_control(control=50, channel=0, last=True)
+midi_in.get_control_last(control=50, channel=0) # idem
 ```
 
 ## Sending MIDI

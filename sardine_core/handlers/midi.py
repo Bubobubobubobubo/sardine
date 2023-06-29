@@ -159,6 +159,7 @@ class MidiHandler(Sender):
         self._midi.send(mido.Message("aftertouch", channel=channel, value=value))
 
     def _control_change(self, channel: int, control: int, value: int) -> None:
+        value = max(0, min(127, value))
         self._midi.send(
             mido.Message(
                 "control_change", channel=channel, control=control, value=value

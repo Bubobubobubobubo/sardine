@@ -354,6 +354,11 @@ class CalculateTree(Transformer):
         kept. """
         out = []
 
+        if not len(left):
+            return right
+        if not len(right):
+            return left
+
         for i in range(max(len(left), len(right))):
             out.append(left[i % len(left)] or right[i % len(right)])
 
@@ -366,6 +371,11 @@ class CalculateTree(Transformer):
         kept. """
         out = []
 
+        if not len(left):
+            return [None] * len(right)
+        if not len(right):
+            return [None] * len(left)
+
         for i in range(max(len(left), len(right))):
             out.append(left[i % len(left)] and right[i % len(right)])
 
@@ -377,6 +387,11 @@ class CalculateTree(Transformer):
         Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
         kept. """
         out = []
+
+        if not len(left):
+            return [None] * len(right)
+        if not len(right):
+            return [None] * len(left)
 
         for i in range(max(len(left), len(right))):
             if (left[i % len(left)] and right[i % len(right)]):

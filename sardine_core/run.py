@@ -606,7 +606,8 @@ if config.superdirt_handler:
 
         def _stream(self):
             """Return the last message played by this stream/player"""
-            return self.player.get()
+            lst = self.player._last_value
+            return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
         @property
         def stream(self):

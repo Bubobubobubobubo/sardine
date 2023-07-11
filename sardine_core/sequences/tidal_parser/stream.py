@@ -75,9 +75,10 @@ class BaseStream(ABC):
 
 
 class TidalStream(BaseStream):
-    def __init__(self, osc_client, latency=0.0, *args, **kwargs):
+    def __init__(self, osc_client, data_only: bool, latency=0.0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.data_only = data_only
         self.latency = latency
         self.name = "vortex"
         self._osc_client = osc_client
@@ -127,4 +128,5 @@ class TidalStream(BaseStream):
             except ValueError:
                 pass
         self._last_value = correct_msg
-        self._osc_client._send_timed_message(address="/dirt/play", message=correct_msg)
+        if not self.data_only:
+            self._osc_client._send_timed_message(address="/dirt/play", message=correct_msg)

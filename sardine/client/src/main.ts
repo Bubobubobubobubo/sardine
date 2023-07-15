@@ -1,4 +1,5 @@
 import type { Extension } from "@codemirror/state"
+import { keybindingsMessage } from "./help/keybindingsHelp";
 import { generalTutorials } from "./help/generalHelp";
 import { RunnerService } from "./RunnerService";
 import { EditorState, Compartment } from "@codemirror/state"
@@ -263,12 +264,22 @@ class Editor {
       scroller.style.fontFamily = this.settings.font
     })
 
+
+    // Replace the content of the Default buffer with the help text
+    this.view.dispatch({
+      changes: {
+        from: 0,
+        to: this.view.state.doc.length,
+        insert: keybindingsMessage
+      }
+    })
   };
 
 
 
 
   switchBuffer(bufferName: string): void {
+    localStorage.setItem("sardine_buffers", JSON.stringify(this.buffers))
     this.buffers[bufferName] = this.buffers[bufferName] || ""
     this.selectedBuffer = bufferName
     this.file_selector.value = bufferName

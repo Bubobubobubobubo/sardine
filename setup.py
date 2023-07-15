@@ -53,13 +53,13 @@ class build_npm(Command, SubCommand):
         for path in self.yarn_projects:
             # FIXME: could files be built directly to build/lib/*/build instead
             #        of inside the sub-project directory?
-            build_path = Path(path) / "build"
+            build_path = Path(path) / "dist"
             kwargs = {"cwd": path, "shell": True}
             subprocess.check_call(f'"{npx}" yarn install', **kwargs)
             subprocess.check_call(f'"{npx}" yarn run build', **kwargs)
 
             if not self.editable_mode:
-                output_path = self._get_output_path(path) / "build"
+                output_path = self._get_output_path(path) / "dist"
                 shutil.copytree(build_path, output_path, dirs_exist_ok=True)
 
     def get_source_files(self) -> list[str]:
@@ -88,7 +88,7 @@ class build_npm(Command, SubCommand):
         """
         files = []
         for path_str in self.yarn_projects:
-            output_path = self._get_output_path(path_str) / "build"
+            output_path = self._get_output_path(path_str) / "dist"
             assert output_path.is_dir(), f"failed to build {path_str}"
 
             for file in output_path.rglob("*"):

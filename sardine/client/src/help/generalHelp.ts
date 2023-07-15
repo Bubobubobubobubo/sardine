@@ -410,7 +410,22 @@ Pa * d('[drum sn drum hh]&[3]', p=0.5)
 Pa * d('[drum sn drum hh]&[3]', p=0.5)
 `
 
+let editor_tutorial = `# The Sardine Editor
+
+# Top bar
+###################################################
+
+# The top bar contains the file selector ('Default' by default)
+# and a row of butons. Here is what each button does:
+#     - play/pause: play or pause the scheduling engine.
+#     - save: save the current buffer as a text file (sardine.py). 
+#     - information: open the official documentation in your browser.
+#     - clip: prepare a sharable link of your current buffer.
+#     - bomb: clear all text files. /!\ This is irreversible.
+`
+
 export const generalTutorials = {
+  "help-editor": editor_tutorial,
   "help-tutorial": about_tutorial,
   "help-time": time_tutorial,
   "help-sound": sound_tutorial,

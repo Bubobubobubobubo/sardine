@@ -173,7 +173,7 @@ export const materialDarkHighlightStyle = HighlightStyle.define([
     color: base_yellow
   },
   { tag: [t.meta], color: base03 },
-  { tag: [t.comment], color: base03, fontStyle: 'italic' },
+  { tag: [t.comment], color: base02, fontStyle: 'italic' },
   { tag: t.monospace, color: base05 },
   { tag: t.strong, fontWeight: 'bold', color: base_red },
   { tag: t.emphasis, fontStyle: 'italic', color: base_lightgreen },

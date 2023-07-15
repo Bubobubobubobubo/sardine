@@ -214,19 +214,23 @@ class Editor {
       window.open('https://sardine.raphaelforment.fr')
     })
     this.clear_button.addEventListener('click', () => {
-      // Restore buffers to default
-      this.buffers = {
-        "Default": "// This is Sardine Web",
-        ...generalTutorials
-      };
-      this.switchBuffer('Default');
-      this.view.dispatch({
-        changes: {
-          from: 0,
-          to: this.view.state.doc.length,
-          insert: this.buffers[this.selectedBuffer]
-        },
-      });
+      // Ask for user confirmation in a popup
+      let confirmation = confirm("Are you sure you want to clear all your files? This action cannot be undone. You will lose all your text files. Create a copy of your files before proceeding.")
+      if (confirmation) {
+          // Restore buffers to default
+          this.buffers = {
+            "Default": "// This is Sardine Web",
+            ...generalTutorials
+          };
+          this.switchBuffer('Default');
+          this.view.dispatch({
+            changes: {
+              from: 0,
+              to: this.view.state.doc.length,
+              insert: this.buffers[this.selectedBuffer]
+            },
+          });
+      }
     })
 
     this.settings_button.addEventListener('click', () => {

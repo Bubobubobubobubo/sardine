@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.00, minimum-scale=1.00" />
+    <title class="text-2xl">Sardine Web</title>
+    <link href="./src/output.css" rel="stylesheet">
+    <link href="./fonts/SpaceMono/stylesheet.css" rel="stylesheet">
+    <link href="./fonts/JGSfont/stylesheet.css" rel="stylesheet">
+    <link href="./fonts/Fira/stylesheet.css" rel="stylesheet">
+    <link href="./fonts/Droid/stylesheet.css" rel="stylesheet">
+    <style>
+      .cm-editor {
+        width: 100%;
+      }
+
+      p, p:hover {
+        user-select: none;
+      }
+
+      .logs {
+        overflow-wrap: break-word;
+      }
+
+      @keyframes blink-animation {
+        to {
+          visibility: hidden;
+        }
+      }
+      @-webkit-keyframes blink-animation {
+        to {
+          visibility: hidden;
+        }
+      }
+
+      .blink {
+        animation: blink-animation 1s steps(5, start) infinite;
+        -webkit-animation: blink-animation 1s steps(5, start) infinite;
+      }
+      
+      html, body {
+          height: 100%;
+          overflow: hidden;
+      }
+
+      #main-container {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          overflow: auto;
+      }
+
+    </style>
+  </head>
+
+  <body class="font-['SpaceMono'] min-h-screen flex flex-col">
+    <nav class="basis-0 flex flex-row bg-gray-900 py-1">
+
+      <div id="buffer" class="flex flex-row flex-grow">
+        <p class="px-1 py-1">📁</p>
+        <input class="appearance-none bg-transparent border-white w-full text-white mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" id="file-selector" placeholder="Choose file" />
+      </div>
+
+      <ul class="basis-1/7 flex flex-row px-1 py-.5">
+        <li class="navbarButton rounded px-1 py-1 hover:scale-150" id="play-pause">⏯️️</li>
+        <li class="navbarButton rounded px-1 py-1 hover:scale-150" id="save-buffer">💾</li>
+        <li class="navbarButton rounded px-1 py-1 hover:scale-150" id="open-info">ℹ️</li>
+        <li class="navbarButton rounded px-1 py-1 hover:scale-150" id="share-buffer">📎</li>
+        <li class="navbarButton rounded px-1 py-1 hover:scale-150" id="clear-buffers">💣</li>
+      </ul>
+
+    </nav>
+
+    <div id="editor" class="font-['SpaceMono'] bg-gray-900 relative flex flex-grow w-100 overflow-hidden"></div>
+
+    <footer class="flex flex-col sticky bottom-0 bg-gray-900 text-white py-0.5">
+
+      <!-- Used by logs -->
+      <div id="footer-content" class="max-h-32 block bg-stone-900 mx-1 rounded px-1 overflow-x-scroll text-xs"></div>
+
+      <!-- Used by settings -->
+      <div id="settings-content" class="px-2 max-h-32 mb-4 overflow-x-scroll text-xs hidden">
+        <fieldset id="config-panel" class="border-2 px-4 py-2">
+          <legend>Editor</legend>
+          <div class="grid space-x-1 grid-cols-4">
+            <div><input id="vim-mode-checkbox" type="checkbox" name="vim"><label> Vim Mode</label></div>
+            <div class="mt-0">
+              <label>Font: </label>
+              <select id="font-selector" class="text-black" value="1">
+                <option value="SpaceMono">Space Mono</option>
+                <option value="jgs7">JGS Font</option>
+                <option value="Droid">Droid Sans Mono</option>
+                <option value="Fira Code">Fira Code</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <ul class="px-1 basis-1 flex flex-row space-x-4">
+        <!-- <li id="logs-button" class="hover:scale-110 hover:underline underline-offset-2">Logs</li> -->
+        <li id="docs-button" class="hover:scale-110 hover:underline underline-offset-2">Docs</li>
+        <li id="settings-button" class="hover:scale-110 hover:underline underline-offset-2">Settings</li>
+      </ul>
+  </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

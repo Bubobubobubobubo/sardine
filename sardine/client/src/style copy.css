@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@viewport {
+  zoom: 1.0;
+  min-zoom: 1.0;
+  max-zoom: 2.0;
+}
+
+li {
+    transition: transform .2s; /* Animation */
+}
+
+.navbarButton:hover {
+    transform: scale(1.5);
+}
+
+body {
+    font-family: monospace;
+    background: #2e3235; 
+    margin: 0; padding: 0;
+}
+
+h2 { margin-top: 0; margin-bottom: 0; }
+
+#app {
+  flex-direction: column;
+  display: flex;
+  min-height: 99vh;
+}
+
+nav {
+    min-width: 100%; max-width: 100%;
+    justify-content: space-between;
+    height: 10vh; max-height: 10vh;
+    display: inline;
+}
+
+div #buffer { 
+    width: 20vw;
+    display: flex;
+}
+
+div #buffer h2 {
+    padding-right: 2vh;
+}
+
+nav ul li {
+    font-size: 1.5em;
+    display: inline;
+    margin-right: 10px; 
+}
+
+nav, footer {
+    margin-top: 1vh;
+    margin-bottom: 1vh;
+    display: flex;
+    background-color: #2e3235; 
+    color: white;
+    padding: 0px;
+}
+
+footer {
+    position: sticky;
+    bottom: 0px;
+    margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
+#editor {
+  max-height: 80vh;
+  flex: 1;
+  overflow-y: auto;
+}
+
+input {
+    height: 1.5em;
+    background: #545b61;
+    border: none;
+    color: white;
+
+} 
+
+input:focus, input:focus{
+    outline: none;
+}
+
+ul {
+    margin-top: 0;
+}

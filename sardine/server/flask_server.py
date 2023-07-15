@@ -125,7 +125,7 @@ class WebServer:
 
 
 def server_factory(console):
-    app = Flask(__name__, static_folder="../client/build")
+    app = Flask(__name__, static_folder="../client/dist")
     app.logger.disabled = True  # Disable some of the logging
     CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -192,16 +192,20 @@ def server_factory(console):
     @app.route("/log")
     def progress_log():
         def generate():
-            unread_lines = Pygtail(
-                str(LOG_FILE),
-                every_n=1,
-                full_lines=False,
-                encoding="utf-8",
-            )
-            for line in unread_lines:
-                yield "data:" + str(line) + "\n\n"
-
-        return Response(generate(), mimetype="text/event-stream")
+            try:
+                unread_lines = Pygtail(
+                    str(LOG_FILE),
+                    every_n=1,
+                    full_lines=True,
+                    encoding="utf-8",
+                )
+                for line in unread_lines:
+                    yield "data:" + str(line) + "\n\n"
+                if unread_lines.length == 0:
+                    yield "data:" + str("") + "\n\n"
+            except Exception as e:
+                yield "data: An error occured while reading the logfile\n\n"
+        return Response(generate(), mimetype="text/plain")
 
     @app.route("/config")
     def get_config():

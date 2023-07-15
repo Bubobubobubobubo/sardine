@@ -54,6 +54,7 @@ class Editor {
   // Checkboxes
   vim_mode_checkbox: HTMLInputElement = document.getElementById('vim-mode-checkbox') as HTMLInputElement
   font_selector: HTMLSelectElement = document.getElementById('font-selector') as HTMLSelectElement
+  footer_file_selector: HTMLSelectElement = document.getElementById('footer-file-selector') as HTMLSelectElement
 
   view: EditorView
   selectedBuffer: string = "Default"
@@ -217,7 +218,6 @@ class Editor {
       // Ask for user confirmation in a popup
       let confirmation = confirm("Are you sure you want to clear all your files? This action cannot be undone. You will lose all your text files. Create a copy of your files before proceeding.")
       if (confirmation) {
-          // Restore buffers to default
           this.buffers = {
             "Default": "// This is Sardine Web",
             ...generalTutorials
@@ -260,6 +260,7 @@ class Editor {
     });
 
     this.font_selector.addEventListener('input', () => {
+      console.log('Quand tu appuies ça marche')
       this.settings.font = this.font_selector.value
       // Update font on body element
       document.body.style.fontFamily = this.settings.font
@@ -268,6 +269,19 @@ class Editor {
       scroller.style.fontFamily = this.settings.font
     })
 
+    // Selection is a different matter
+    this.populateFileSelector();
+    this.footer_file_selector.addEventListener('change', () => {
+      this.selectedBuffer = this.footer_file_selector.value
+      this.switchBuffer(this.selectedBuffer)
+      this.view.dispatch({
+        changes: {
+          from: 0,
+          to: this.view.state.doc.length,
+          insert: this.buffers[this.selectedBuffer]
+        }
+      })
+    });
 
     // Replace the content of the Default buffer with the help text
     this.view.dispatch({
@@ -279,8 +293,15 @@ class Editor {
     })
   };
 
-
-
+  populateFileSelector(): void {
+    let options = Object.keys(this.buffers)
+    for (let i = 0; i < options.length; i++) {
+      const newOption = document.createElement('option');
+      newOption.text = options[i];
+      newOption.value = options[i];
+      this.footer_file_selector.appendChild(newOption);
+    }
+  }
 
   switchBuffer(bufferName: string): void {
     localStorage.setItem("sardine_buffers", JSON.stringify(this.buffers))

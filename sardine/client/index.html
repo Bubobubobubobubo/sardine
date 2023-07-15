@@ -81,20 +81,39 @@
       <div id="footer-content" class="max-h-32 block bg-stone-900 mx-1 rounded px-1 overflow-x-scroll text-xs"></div>
 
       <!-- Used by settings -->
-      <div id="settings-content" class="px-2 max-h-32 mb-4 overflow-x-scroll text-xs hidden">
-        <fieldset id="config-panel" class="border-2 px-4 py-2">
+      <div id="settings-content" class="px-2 max-h-32 mb-1 overflow-x-scroll text-xs hidden">
+        <fieldset id="config-panel" class="border-2 px-4 py-0">
           <legend>Editor</legend>
+
           <div class="grid space-x-1 grid-cols-4">
-            <div><input id="vim-mode-checkbox" type="checkbox" name="vim"><label> Vim Mode</label></div>
-            <div class="mt-0">
-              <label>Font: </label>
-              <select id="font-selector" class="text-black" value="1">
-                <option value="SpaceMono">Space Mono</option>
-                <option value="jgs7">JGS Font</option>
-                <option value="Droid">Droid Sans Mono</option>
-                <option value="Fira Code">Fira Code</option>
-              </select>
+
+            <div class="py-1 col-span-1">
+              <input id="vim-mode-checkbox" type="checkbox" name="vim"><label> Vim Mode</label>
             </div>
+
+            <div class="mt-0 space-x-0 col-span-1">
+              <div class="pb-4">
+                <label>Font: </label>
+                <select id="font-selector" class="text-black" value="1">
+                  <option value="SpaceMono">Space Mono</option>
+                  <option value="jgs7">JGS Font</option>
+                  <option value="Droid">Droid Sans Mono</option>
+                  <option value="Fira Code">Fira Code</option>
+                </select>
+              </div>
+              <div>
+                <label>Buffer: </label>
+                <select id="footer-file-selector" class="text-black" value="1">
+                  <option value="Default">Default</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="row-start-2 col-start-1 col-span-1">
+            </div>
+
+            <p class="pb-2 text-xs text-justify col-span-2">This is Sardine Web. Made with love by <a class="underline underline-offset-2" href="https://raphaelforment.fr">Raphaël Maurice Forment</a> (BuboBubo). <a class="underline underline-offset-2" href="https://sardine.raphaelforment.fr">Sardine</a> is a free and open source software built for algorithmic improvisation and musical hacking. Play music, read the docs, contribute, and have fun!</p>
           </div>
         </fieldset>
       </div>

@@ -346,10 +346,16 @@ class CalculateTree(Transformer):
         return random.choice([left, right])
 
     def union(self, left, right):
-        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical OR.
-        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
-        Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
-        kept."""
+        """
+        Merge the two lists into a list of the same length as the longest one,
+        applying an element-wise logical OR. Works best with 1s, 0s, and rests.
+
+        If one of the operand is shorter than the other, it is repeated until
+        it reaches the length of the longest one.
+
+        If two "truthy" elements are being compared, the one from the left
+        operand is kept.
+        """
         out = []
 
         if not len(left):
@@ -363,10 +369,16 @@ class CalculateTree(Transformer):
         return out
 
     def intersection(self, left, right):
-        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical AND.
-        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
-        Works best with 1s, 0s, and rests. If two "falsy" elements are being compared, the one from the left operand is
-        kept."""
+        """
+        Merge the two lists into a list of the same length as the longest one,
+        applying an element-wise logical AND. Works best with 1s, 0s, and rests.
+
+        If one of the operand is shorter than the other, it is repeated until
+        it reaches the length of the longest one.
+
+        If two "falsy" elements are being compared, the one from the left
+        operand is kept.
+        """
         out = []
 
         if not len(left):
@@ -380,10 +392,16 @@ class CalculateTree(Transformer):
         return out
 
     def xor(self, left, right):
-        """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical XOR.
-        If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
-        Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
-        kept."""
+        """
+        Merge the two lists into a list of the same length as the longest one,
+        applying an element-wise logical XOR. Works best with 1s, 0s, and rests.
+
+        If one of the operand is shorter than the other, it is repeated until
+        it reaches the length of the longest one.
+
+        If two "truthy" elements are being compared, the one from the left
+        operand is kept.
+        """
         out = []
 
         if not len(left):

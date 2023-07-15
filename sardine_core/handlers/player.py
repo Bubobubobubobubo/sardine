@@ -183,7 +183,7 @@ class Player(BaseHandler):
             rate=pattern.rate,
         )
 
-        # Reset the iterator when it reaches a certain ceiling
+        # Reset the iterator when it reaches a certain ceiling
         if self._iterator_limit:
             if self.iterator >= self._iterator_limit:
                 self.iterator = 0

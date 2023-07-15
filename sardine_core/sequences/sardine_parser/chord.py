@@ -46,8 +46,6 @@ class Chord(list):
     def __rsub__(self, other):
         return self - other
 
-
-
     def __setitem__(self, index, item):
         super().__setitem__(index, item)
 

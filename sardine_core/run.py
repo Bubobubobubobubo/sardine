@@ -29,7 +29,6 @@ print(sardine_intro)
 print(config_line_printer(config))
 
 
-
 # Initialisation of the FishBowl (the environment holding everything together)
 
 clock = LinkClock if config.link_clock else InternalClock
@@ -689,4 +688,3 @@ def spl_debug():
             message = bowl.parser._parse_debug(user_input)
         except Exception as e:
             print(e)
-

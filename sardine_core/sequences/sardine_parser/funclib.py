@@ -1073,8 +1073,7 @@ class FunctionLibrary:
         n: int | float = [0],
         **kwargs,
     ) -> list:
-        """Rotate a list by a given amount of steps
-        """
+        """Rotate a list by a given amount of steps"""
         n = int(n[0])
         n = n % len(collection)
 

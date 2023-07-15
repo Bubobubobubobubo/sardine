@@ -290,9 +290,7 @@ class CalculateTree(Transformer):
             steps[0],
         )
         delta = (stop - start) / steps
-        ramp = list(
-            [start + i * delta for i in range(steps)]
-        )
+        ramp = list([start + i * delta for i in range(steps)])
         if left > right:
             return list(reversed(ramp))
         else:
@@ -351,7 +349,7 @@ class CalculateTree(Transformer):
         """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical OR.
         If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
         Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
-        kept. """
+        kept."""
         out = []
 
         if not len(left):
@@ -368,7 +366,7 @@ class CalculateTree(Transformer):
         """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical AND.
         If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
         Works best with 1s, 0s, and rests. If two "falsy" elements are being compared, the one from the left operand is
-        kept. """
+        kept."""
         out = []
 
         if not len(left):
@@ -385,7 +383,7 @@ class CalculateTree(Transformer):
         """Merge the two lists into a list of the same length as the longest one, applying an element-wise logical XOR.
         If one of the operand is shorter than the other, it is repeated until it reaches the length of the longest one.
         Works best with 1s, 0s, and rests. If two "truthy" elements are being compared, the one from the left operand is
-        kept. """
+        kept."""
         out = []
 
         if not len(left):
@@ -394,7 +392,7 @@ class CalculateTree(Transformer):
             return [None] * len(left)
 
         for i in range(max(len(left), len(right))):
-            if (left[i % len(left)] and right[i % len(right)]):
+            if left[i % len(left)] and right[i % len(right)]:
                 # Returning a rest as default value when both elements are truthy seems to be the most appropriate
                 # way of doing things, since those methods are mostly used for rhythms generation.
                 out.append(None)

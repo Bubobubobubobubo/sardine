@@ -16,7 +16,7 @@ class Scheduler(BaseHandler):
         self._runners: dict[str, AsyncRunner] = {}
         self.deferred = deferred_scheduling
 
-    def _react_to_tempo_change(self, old_tempo: int|float, new_tempo: int|float):
+    def _react_to_tempo_change(self, old_tempo: int | float, new_tempo: int | float):
         """
         In reaction to a tempo change, the scheduler should
         trigger an event for each runner prompting to update

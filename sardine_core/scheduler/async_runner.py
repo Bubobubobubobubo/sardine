@@ -443,7 +443,7 @@ class AsyncRunner:
     def _correct_interval_background_job(self, period: Union[float, int]):
         """
         Alternative version for fixed-rate background jobs. The interval or
-        period is not indexed on the clock like with the _correct_interval 
+        period is not indexed on the clock like with the _correct_interval
         method above.
         """
         interval = period
@@ -505,7 +505,7 @@ class AsyncRunner:
 
         try:
             while self._is_ready_for_iteration():
-                #self._last_interval = self._get_period(self._last_state) * self.clock.beat_duration
+                # self._last_interval = self._get_period(self._last_state) * self.clock.beat_duration
                 try:
                     await self._run_once()
                 except Exception as exc:

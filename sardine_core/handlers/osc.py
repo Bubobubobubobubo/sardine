@@ -79,7 +79,6 @@ class OSCHandler(Sender):
         sort: bool = True,
         **pattern: NumericElement,
     ) -> None:
-
         if address is None:
             return
 

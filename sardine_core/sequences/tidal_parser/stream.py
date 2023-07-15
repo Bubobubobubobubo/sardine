@@ -129,4 +129,7 @@ class TidalStream(BaseStream):
                 pass
         self._last_value = correct_msg
         if not self.data_only:
-            self._osc_client._send_timed_message(address="/dirt/play", message=correct_msg)
+            self._osc_client._send_timed_message(
+                address="/dirt/play",
+                message=correct_msg,
+            )

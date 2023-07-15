@@ -35,7 +35,7 @@ def partial_function(f):
     def wrapper(*args):
         try:
             return f(*args)
-        except (TypeError) as e:
+        except TypeError as e:
             return partial(f, *args)
 
     return wrapper

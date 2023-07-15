@@ -11,6 +11,7 @@ from ..base.handler import BaseHandler
 
 __all__ = ("MidiInHandler",)
 
+
 def find_midi_in_port(name: str) -> Optional[str]:
     """Find the port name of a MIDI-In port by name."""
     for port in mido.get_input_names():
@@ -20,6 +21,7 @@ def find_midi_in_port(name: str) -> Optional[str]:
         if name == port_without_number:
             return port
     return None
+
 
 class MidiInHandler(BaseHandler):
     """
@@ -73,13 +75,12 @@ class MidiInHandler(BaseHandler):
                 self.queues[index] = deque(maxlen=20)
                 self.queues[index].appendleft(message)
 
-
         if message:
             # Case where the message is a control change
             if hasattr(message, "control"):
                 queue_dictionnary_index = self._get_index_for_control_change(
                     control=message.control,
-                    channel=message.channel
+                    channel=message.channel,
                 )
                 if not message.type == "control_change":
                     return

@@ -12,7 +12,7 @@ def tidal_factory(env, osc_client, tidal_players):
     """Returns a tidal function to play Tidal patterns on a given OSC client"""
     env = env
 
-    def tidal(key, pattern=None, data_only: bool=False):
+    def tidal(key, pattern=None, data_only: bool = False):
         if key not in __streams:
             __streams[key] = TidalStream(
                 data_only=data_only,

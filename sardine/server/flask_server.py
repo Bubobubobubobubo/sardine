@@ -205,6 +205,7 @@ def server_factory(console):
                     yield "data:" + str("") + "\n\n"
             except Exception as e:
                 yield "data: An error occured while reading the logfile\n\n"
+
         return Response(generate(), mimetype="text/plain")
 
     @app.route("/config")

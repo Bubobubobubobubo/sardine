@@ -174,8 +174,7 @@ class FishBowl:
         return await self.sleeper.sleep(duration)
 
     async def sleep_beats(self, beats: Union[int, float]):
-        """Sleeps for the given number of beats.
-        """
+        """Sleeps for the given number of beats."""
         return await self.sleep(beats * self.clock.beat_duration)
 
     # Hot-swap methods ############################################################

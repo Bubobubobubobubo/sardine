@@ -42,6 +42,7 @@ class Editor {
   open_info: HTMLButtonElement = document.getElementById('open-info') as HTMLButtonElement
   share_buffer: HTMLButtonElement = document.getElementById('share-buffer') as HTMLButtonElement
   clear_button: HTMLButtonElement = document.getElementById('clear-buffers') as HTMLButtonElement
+  clear_file_button: HTMLButtonElement = document.getElementById('clear-file') as HTMLButtonElement
   file_selector: HTMLSelectElement = document.getElementById('file-selector') as HTMLSelectElement
 
   // Footer
@@ -214,6 +215,7 @@ class Editor {
     this.open_info.addEventListener('click', () => {
       window.open('https://sardine.raphaelforment.fr')
     })
+
     this.clear_button.addEventListener('click', () => {
       // Ask for user confirmation in a popup
       let confirmation = confirm("Are you sure you want to clear all your files? This action cannot be undone. You will lose all your text files. Create a copy of your files before proceeding.")
@@ -230,8 +232,27 @@ class Editor {
               insert: this.buffers[this.selectedBuffer]
             },
           });
+        this.populateFileSelector();
       }
     })
+
+    this.clear_file_button.addEventListener('click', () => {
+      // Ask for user confirmation in a popup
+      let confirmation = confirm("Do you really want to delete that file?")
+      if (confirmation) {
+          delete this.buffers[this.selectedBuffer];
+          this.switchBuffer('Default', true);
+          this.view.dispatch({
+            changes: {
+              from: 0,
+              to: this.view.state.doc.length,
+              insert: this.buffers[this.selectedBuffer]
+            },
+          });
+        this.populateFileSelector();
+      }
+    })
+
 
     this.settings_button.addEventListener('click', () => {
       let settings = document.getElementById('settings-content') as HTMLElement
@@ -294,6 +315,7 @@ class Editor {
   };
 
   populateFileSelector(): void {
+    this.footer_file_selector.innerHTML = '';
     let options = Object.keys(this.buffers)
     for (let i = 0; i < options.length; i++) {
       const newOption = document.createElement('option');
@@ -303,8 +325,8 @@ class Editor {
     }
   }
 
-  switchBuffer(bufferName: string): void {
-    localStorage.setItem("sardine_buffers", JSON.stringify(this.buffers))
+  switchBuffer(bufferName: string, afterDelete: boolean = false): void {
+    if (!afterDelete) localStorage.setItem("sardine_buffers", JSON.stringify(this.buffers))
     this.buffers[bufferName] = this.buffers[bufferName] || ""
     this.selectedBuffer = bufferName
     this.file_selector.value = bufferName

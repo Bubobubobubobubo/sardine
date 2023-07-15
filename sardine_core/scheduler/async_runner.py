@@ -454,7 +454,7 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
-    def _get_corrected_interval(self, period: Union[float, int]) -> float:
+    def _get_next_deadline(self, period: Union[float, int]) -> float:
         """Returns the amount of time until the next interval.
 
         The base interval is determined by the `period` argument,
@@ -547,7 +547,7 @@ class AsyncRunner:
                 self._correct_interval(period)
             else:
                 self._correct_interval_background_job(period)
-            deadline = self._get_corrected_interval(period)
+            deadline = self._get_next_deadline(period)
 
         # Push any deferred states that have or will arrive onto the stack
         arriving_states: list[DeferredState] = []

@@ -26,8 +26,7 @@ used by the application. You will also have to install some tools that will allo
     - You might have to add `sclang` to your path. To do so, copy `alias sclang="/Applications/SuperCollider.app/Contents/MacOS/sclang"`
       into your `.bashrc` or `.zshrc` in the `$HOME` directory.
 
-3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to be able to build the website.
-    - NodeJS is a package manager for JavaScript. Yarn is also... a package manager for JavaScript.
+3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to build the integrated web editor.
     - If you are installing the package from GitHub, the build process for the text editor will start automatically.
 
 ## Installing Sardine

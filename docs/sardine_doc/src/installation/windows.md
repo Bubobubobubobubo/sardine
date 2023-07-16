@@ -27,8 +27,7 @@ used by the application. You will also have to install some tools that will allo
     - Press **Shift + Enter** and wait for the installation to be done! Close **SuperCollider** when done.
     - **Optional:** You can also install [sc3plugins](https://github.com/supercollider/sc3-plugins) to get more audio effects and synthesizers!
 
-3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to be able to build the website.
-    - NodeJS is a package manager for JavaScript. Yarn is also... a package manager for JavaScript.
+3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to build the integrated web editor.
     - If you are installing the package from GitHub, the build process for the text editor will start automatically.
 
 ## Installing Sardine

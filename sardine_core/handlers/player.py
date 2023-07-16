@@ -175,6 +175,15 @@ class Player(BaseHandler):
             self.iterator = pattern.iterator
             pattern.iterator = None
 
+        import math
+        clock = self.runner.clock
+        is_repeated = math.isclose(clock.shifted_time, self.last_shifted_time, abs_tol=1e-3)
+        print(
+            f"{self.name} {clock.shifted_time = :6.3f} {clock.time = :6.3f}, "
+            f"{self.iterator = :3d} {' X'[is_repeated]}"
+        )
+        self.last_shifted_time = clock.shifted_time
+
         dur = pattern.send_method(
             *pattern.args,
             **pattern.kwargs,
@@ -231,6 +240,7 @@ class Player(BaseHandler):
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()
+        self.last_shifted_time = self.runner.clock.shifted_time
 
     def again(self, *args, **kwargs):
         self.runner.update_state(*args, **kwargs)

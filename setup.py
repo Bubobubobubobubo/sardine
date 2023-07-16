@@ -64,7 +64,7 @@ class build_npm(Command, SubCommand):
 
     def get_source_files(self) -> list[str]:
         """
-        Return a list of all files that are used by the command to create 
+        Return a list of all files that are used by the command to create
         the expected outputs. For example, if your build command transpiles
         Java files into Python, you should list here all the Java files.
         The primary purpose of this function is to help populating the ``sdist``

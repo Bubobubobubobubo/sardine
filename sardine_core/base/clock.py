@@ -226,9 +226,9 @@ class BaseClock(BaseRunnerHandler, ABC):
         # Due to potential rounding errors, we might get a duration
         # that should be, but isn't actually equal to the interval.
         # To mitigate this, we will replace any durations below 10
-        # microseconds.
+        # nanoseconds.
         # Rounding errors will worsen over time, but it is unlikely
-        # we'll get to a point where 10 microseconds is too little
+        # we'll get to a point where 10 nanoseconds is too little
         # (but possible if sardine goes on for 5-6 years).
         if math.isclose(duration, 0.0, rel_tol=0.0, abs_tol=1e-8):
             return interval

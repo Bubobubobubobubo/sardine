@@ -364,12 +364,14 @@ class Editor {
 
        let result_string = state.doc.sliceString(startLine.from, endLine.to);
        result_string = result_string.split('\n').map((line, index, lines) => {
-         if (index === lines.length - 1 || /^\s/.test(lines[index + 1])) {
+         const trimmedLine = line.trim();
+         if (index === lines.length - 1 || /^\s/.test(lines[index + 1]) || trimmedLine.startsWith('@')) {
            return line;
          } else {
            return line + ';\\';
          }
        }).join('\n');
+
        return result_string
   }
 

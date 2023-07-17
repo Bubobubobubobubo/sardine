@@ -1,7 +1,6 @@
 import asyncio
 import heapq
 import inspect
-import math
 import traceback
 from collections import deque
 from dataclasses import dataclass
@@ -557,10 +556,7 @@ class AsyncRunner:
             if (
                 self.clock.time >= entry.deadline
                 or state is not None
-                and (
-                    deadline > entry.deadline
-                    or math.isclose(deadline, entry.deadline, rel_tol=0.0, abs_tol=1e-8)
-                )
+                and deadline >= entry.deadline - 1e-8
             ):
                 heapq.heappop(self.deferred_states)
 

@@ -1,6 +1,7 @@
 import asyncio
 import heapq
 import inspect
+import math
 import traceback
 from collections import deque
 from dataclasses import dataclass
@@ -190,7 +191,7 @@ class AsyncRunner:
     _can_correct_interval: bool
     _expected_time: float
     _last_interval: float
-    _last_iteration_called: bool
+    _last_expected_time: float
     _last_state: Optional[FunctionState]
 
     def __init__(self, name: str):
@@ -213,7 +214,7 @@ class AsyncRunner:
         self._can_correct_interval = False
         self._expected_time = 0.0
         self._last_interval = 0.0
-        self._last_iteration_called = False
+        self._last_expected_time = -math.inf
         self._last_state = None
 
     def __repr__(self):
@@ -471,13 +472,27 @@ class AsyncRunner:
         Returns:
             float: The deadline for the next interval.
         """
-        # We only want to use the expected time if the last iteration
-        # ran its function normally - if the runner skipped the iteration,
-        # that means we haven't yet reached the deadline
-        if self._last_iteration_called:
-            time = self._expected_time
-        else:
-            time = self.clock.time
+        # If this is called earlier than the expected time, we should use
+        # the current time to avoid calculating the next beat too far ahead,
+        # which would cause an unusually long gap between iterations.
+        #
+        # If this is called after the expected time has already passed,
+        # we should assume we're continuing from the last iteration and
+        # ignore whatever the time is.
+        # This allows returning an overdue deadline if we somehow exceeded
+        # the new interval (such as caused by a high delta), allowing missed
+        # iterations to fire ASAP.
+        #
+        # Given the above requirements, this would be the ideal solution:
+        #     time = min(self.clock.time, self._expected_time)
+        #
+        # However, this is complicated by SleepHandler which does not guarantee
+        # that a successful iteration will never be earlier than the deadline.
+        # As such, we will additionally prevent the time from being sooner than
+        # the last successful iteration.
+        # If we ignored this and allowed deadlines earlier than the last iteration,
+        # the above solution could potentially trigger non-missed iterations too early.
+        time = max(self._last_expected_time, min(self.clock.time, self._expected_time))
 
         self._check_snap(time)
         if self.snap is not None:
@@ -518,7 +533,7 @@ class AsyncRunner:
             print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     def _prepare(self):
-        self._last_iteration_called = False
+        self._last_expected_time = -math.inf
         self._last_state = self._get_state()
         self._swimming = True
         self._stop = False
@@ -556,7 +571,7 @@ class AsyncRunner:
             if (
                 self.clock.time >= entry.deadline
                 or state is not None
-                and deadline >= entry.deadline - 1e-8
+                and deadline >= entry.deadline
             ):
                 heapq.heappop(self.deferred_states)
 
@@ -597,7 +612,7 @@ class AsyncRunner:
                 name=f"asyncrunner-func-{self.name}",
             )
         finally:
-            self._last_iteration_called = True
+            self._last_expected_time = self._expected_time
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
@@ -668,5 +683,4 @@ class AsyncRunner:
         self._has_reverted = True
 
     def _skip_iteration(self) -> None:
-        self._last_iteration_called = False
         self.swim()

@@ -12,10 +12,10 @@ You will have to install all the development environment that will allow you to 
 You will of course have to install Python but also make sure you have SuperCollider, the audio engine
 used by the application. You will also have to install some tools that will allow you to compile the application.
 
-1) Install the latest [Python](https://www.python.org/) version for your OS (currently 3.11). 
+1) Install the latest [Python](https://www.python.org/) version for your OS (currently 3.11).
    - **Sardine** will not work with a Python older than 3.10.
    - Be careful with distribution provided Python versions! They might be incomplete!
-   - Install [Pyenv](https://github.com/pyenv/pyenv) or use [virtual environments](https://docs.python.org/3/library/venv.html) 
+   - Install [Pyenv](https://github.com/pyenv/pyenv) or use [virtual environments](https://docs.python.org/3/library/venv.html)
      to keep everything nice and tidy!
 
 2) Install [SuperCollider](https://supercollider.github.io/), the default audio backend used by **Sardine**.
@@ -28,19 +28,28 @@ used by the application. You will also have to install some tools that will allo
 
 ## Installing Sardine
 
-We will now proceed to the installation of Sardine. Sardine is a Python library which is composed of two modules: 
+We will now proceed to the installation of Sardine.
+Sardine is a Python library which is composed of two modules:
 - **Sardine Core**: the Python library for live coding. Contains all the goodies.
 - **Sardine**: an asynchronous Python interpreter **AND** integrated text editor.
 
-
-Install the development version (**recommanded**).
-```python
-git clone https://github.com/Bubobubobubobubo/sardine
-cd sardine && python -m pip install --editable .
+```bash
+python -m pip install sardine-system
 ```
 
-**Note**: the `--editable` flag is optional. You can remove it if you are not planning to modify **Sardine**!
+If you want to install the development version, which may have more features
+than the package on PyPI:
 
-**Note 2:** If you get an error when trying to install `python-rtmidi`, you can get it from these sources:
-  - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git@eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba#egg=python-rtmidi`
-  - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git#eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba`
+```bash
+python -m pip install git+https://github.com/Bubobubobubobubo/sardine
+```
+
+**Note:**
+  If you get an error when trying to install `python-rtmidi`,
+  you can install the package manually using one of the following commands:
+  - ```bash
+    python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git@eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba#egg=python-rtmidi
+    ```
+  - ```bash
+    python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git#eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba
+    ```

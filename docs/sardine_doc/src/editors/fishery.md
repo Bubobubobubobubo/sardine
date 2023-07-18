@@ -2,35 +2,26 @@
 
 ![img](fishery_web.png)
 
-You don't need a text editor to play with **Sardine**.
-Just start **Sardine** with its own text editor by typing 
-`sardine web`. You can optionally the `--port` and  `--host` 
-arguments for fine-tuning your local server:
 
-    sardine web
-    sardine web --port 12345
-    sardine web --host 0.0.0.0 --port 8000
+Sardine also comes with its own text editor named **Sardine Web**. If you have it installed on your computer, you will be able to start it simply by typing `sardine web` in your terminal!
 
-Your web browser will open as a result of typing the command. 
-Our text editor is a web application living in your web browser,
-generally at `https://localhost:8000`. The text editor is simple
-but has a few nice features:
+Typing the command will automatically open your web browser on the editor page. Our text editor is a web application living in your browser. All your code files will also be stored on your web browser!
 
-- multi-pane / multi-buffer editing.
-- access to the Sardine documentation.
-- normal editing mode or [Vim](https://en.wikipedia.org/wiki/Vim_(text_editor)) mode.
-- quick access to play/pause, etc.
-- console for logging.
-- **Shift + enter** to eval code 
-  - **note:** you need to select code before running it)
+## Installation
 
-The text editor also handles its own set of text files automatically.
-You can retrieve them inside the **Sardine** folder (see the appropriate section).
+1) Install [NodeJS](https://nodejs.org/en) for your OS/platform.
+2) Install [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable), a package manager for NodeJS.
+3) With **NodeJS** and **Yarn** installed as per the guide, you can then install this package:
 
-## Building the web application yourself
+```bash
+# From remote:
+pip install git+https://github.com/sardine-system/sardine-web
+# Or from local clone in current working directory:
+pip install -e .[dev]
+```
 
-For now, the application must be built manually in able to be used. In the `/sardine/client` directory, 
-run `yarn install` and `yarn run build` to build the text editor. As you might guess, you need to 
-install [Yarn](https://yarnpkg.com/) and also [npm](https://www.npmjs.com/). These are tools used by
-Javascript developers to build their applications. These commands should only be runned once everytime 
-you install **Sardine**.
+4) Type `sardine web` in your terminal and enjoy.
+
+## Instructions
+
+Everything you need to learn how to use the editor is already included. You will also find many **Sardine** tutorials directly included with the editor.

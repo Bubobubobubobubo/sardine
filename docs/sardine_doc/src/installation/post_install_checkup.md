@@ -16,7 +16,7 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 ## Are you running Windows?
 
 - **Windows users:** check if SuperCollider is properly detected.
-  - if not, boot **SuperCollider** and **Sardine** side by side. Check the 
+  - if not, boot **SuperCollider** and **Sardine** side by side. Check the
     [configuration section](../configuration/configuration_tool.md) and the
     troubleshot section to learn more about this process.
 
@@ -29,19 +29,18 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 
 - in your terminal, run `sardine` first! If you see a splashscreen, everything is fine! :)
 
-## Can you run sardine config? 
+## Can you run sardine config?
 
 - in your terminal, run `sardine config`? If you see the configuration tool appearing, perfect!
-- take some time to familiarise yourself with all the available options! The configuration step 
+- take some time to familiarise yourself with all the available options! The configuration step
   is important.
 
 ## Do you want to turn on SuperCollider?
 
-- If you want to play audio directly with **Sardine**, check out the 
+- If you want to play audio directly with **Sardine**, check out the
   [configuration](../configuration/configuration_tool.md) section. Head to the `SuperCollider`
   section and turn everything on!
 
 ## You need a code editor now!
 
 - Check out the Editor section to choose your favorite editor!
-

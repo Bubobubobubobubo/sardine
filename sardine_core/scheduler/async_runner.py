@@ -477,11 +477,9 @@ class AsyncRunner:
         # which would cause an unusually long gap between iterations.
         #
         # If this is called after the expected time has already passed,
-        # we should assume we're continuing from the last iteration and
-        # ignore whatever the time is.
-        # This allows returning an overdue deadline if we somehow exceeded
-        # the new interval (such as caused by a high delta), allowing missed
-        # iterations to fire ASAP.
+        # we should continue from that iteration and ignore the current time.
+        # This allows returning an overdue deadline potentially caused by a
+        # high delta, letting missed iterations fire ASAP.
         #
         # Given the above requirements, this would be the ideal solution:
         #     time = min(self.clock.time, self._expected_time)

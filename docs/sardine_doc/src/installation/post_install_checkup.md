@@ -28,8 +28,6 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 ## Can you run sardine and sardine web?
 
 - in your terminal, run `sardine` first! If you see a splashscreen, everything is fine! :)
-- in your terminal, run `sardine web`! Does your web browser magically open? You are good to go.
-  - Windows users: you will sometimes have to run this twice. Run the app. Quit it and launch again.
 
 ## Can you run sardine config? 
 
@@ -42,4 +40,8 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 - If you want to play audio directly with **Sardine**, check out the 
   [configuration](../configuration/configuration_tool.md) section. Head to the `SuperCollider`
   section and turn everything on!
+
+## You need a code editor now!
+
+- Check out the Editor section to choose your favorite editor!
 

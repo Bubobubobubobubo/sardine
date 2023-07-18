@@ -26,24 +26,17 @@ Now, **kill your command line** and restart a fresh terminal. The output of `pyt
 Python 3.11.3
 ```
 
-## 2) Installing some Web Tools
 
-**Sardine** also requires you to install some tools needed for web development in order to install properly. This is because of **Sardine Web**, our very cool web editor that will be available once everything is ready.
-
-- Install [NodeJS](https://nodejs.org/en/download): this is the base stack for web development in JavaScript.
-- Once done, run the following command in your terminal: `npm install yarn -g`
-
-
-## 3) Other versions of Sardine
+## 2) Other versions of Sardine
 
 - As funny as it may sound, I am not the owner of the `sardine` package on Pypi. **Sardine** is named `sardine-system`. Some people sometimes end up installing a totally unrelated tool!
 - `sardine-system` is very outdated. Please install from source.
 
-## 4) The modular architecture of Sardine
+## 3) The modular architecture of Sardine
 
 - Sardine is a **very** flexible software. It can be hard to install for that reason.
 - You probably don't need everything but you need to understand the architecture:
-  - **Sardine web** is an optional text editor for **Sardine** written with JavaScript.
+  - **Sardine web** is an optional text editor for **Sardine** written in TypeScript.
   - **Sardine** is an asynchronous Python interpreter firing up the **Sardine** library.
   - **Sardine Core** is the Python library that is responsible for all that livecoding.
     - it defines a temporal engine allowing you to live code in Python.

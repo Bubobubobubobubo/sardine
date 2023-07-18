@@ -98,12 +98,17 @@ def config_python():
     edit_python_configuration()
 
 
-def run_pre_hooks() -> None:
+def run_main_hooks() -> None:
     entry_points = importlib.metadata.entry_points(group="sardine.cli_main_hooks")
     for ep in entry_points:
         hook = ep.load()
         hook(main)
 
 
-if __name__ == "__main__":
+def run() -> None:
+    run_main_hooks()
     main()
+
+
+if __name__ == "__main__":
+    run()

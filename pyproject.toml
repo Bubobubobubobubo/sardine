@@ -90,7 +90,7 @@ Documentation = "https://sardine.raphaelforment.fr"
 "Bug Tracker" = "https://github.com/Bubobubobubobubo/sardine/issues"
 
 [project.scripts]
-sardine = 'sardine.__main__:main'
+sardine = 'sardine.__main__:run'
 
 [tool.black]
 target_version = ['py311']

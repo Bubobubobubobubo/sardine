@@ -28,6 +28,9 @@ The source of this error is currently unknown and is not Sardine related. Hopefu
 ## Can you run sardine and sardine web?
 
 - in your terminal, run `sardine` first! If you see a splashscreen, everything is fine! :)
+- if you can run `sardine web`, you have the sardine-web package installed!
+  if not, you must install that package before you can use the command
+  ([docs](../editors/fishery.md)).
 
 ## Can you run sardine config?
 

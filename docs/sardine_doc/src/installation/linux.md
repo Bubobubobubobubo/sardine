@@ -24,9 +24,6 @@ used by the application. You will also have to install some tools that will allo
     - Press **Shift + Enter** and wait for the installation to be done! Close **SuperCollider** when done.
     - **Optional:** You can also install [sc3plugins](https://github.com/supercollider/sc3-plugins) to get more audio effects and synthesizers!
 
-3) Install [NodeJS](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/) to build the integrated web editor.
-    - If you are installing the package from GitHub, the build process for the text editor will start automatically.
-
 ## Installing Sardine
 
 We will now proceed to the installation of Sardine. Sardine is a Python library which is composed of two modules: 
@@ -37,17 +34,11 @@ We will now proceed to the installation of Sardine. Sardine is a Python library 
 Install the development version (**recommanded**).
 ```python
 git clone https://github.com/Bubobubobubobubo/sardine
-cd sardine && python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ --editable .
+cd sardine && python -m pip install .
 ```
-- **Optional**: You can install the outdated [Pypi package](https://pypi.org/project/sardine-system/) but it is older and lagging behind:
-  ```python
-  python -m pip install --find-links https://thegamecracks.github.io/python-rtmidi-wheels/ --editable sardine-system
-  ```
 
 **Note**: the `--editable` flag is optional. You can remove it if you are not planning to modify **Sardine**!
 
-- If you get an error when trying to install `python-rtmidi` because of `#include "longintrepr.h"`, you can try one of the following install commands:
+**Note 2:** If you get an error when trying to install `python-rtmidi`, you can get it from these sources:
   - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git@eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba#egg=python-rtmidi`
   - `python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git#eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba`
-
-**Note**: the `python-rtmidi` project is now undergoing a maintainer transition. The situation should resolve quite soon! :)

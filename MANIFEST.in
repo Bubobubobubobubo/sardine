@@ -1,2 +1,1 @@
 prune **/__pycache__
-prune **/build

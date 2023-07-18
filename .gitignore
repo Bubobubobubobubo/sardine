@@ -62,6 +62,3 @@ poetry.lock
 .vim
 .vscode
 .idea
-
-# Svelte
-!sardine/client/src/lib

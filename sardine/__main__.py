@@ -1,5 +1,6 @@
 from sardine.console import ConsoleManager
 import click
+import importlib.metadata
 import os
 import psutil
 from typing import Tuple
@@ -139,6 +140,13 @@ def config_python():
     from sardine_core.cli.main import edit_python_configuration
 
     edit_python_configuration()
+
+
+def run_pre_hooks() -> None:
+    entry_points = importlib.metadata.entry_points(group="sardine-cli-main-hooks")
+    for ep in entry_points:
+        hook = ep.load()
+        hook(main)
 
 
 if __name__ == "__main__":

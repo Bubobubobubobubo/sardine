@@ -99,7 +99,7 @@ def config_python():
 
 
 def run_pre_hooks() -> None:
-    entry_points = importlib.metadata.entry_points(group="sardine-cli-main-hooks")
+    entry_points = importlib.metadata.entry_points(group="sardine.cli_main_hooks")
     for ep in entry_points:
         hook = ep.load()
         hook(main)

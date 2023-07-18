@@ -4,7 +4,7 @@ This section will guide you through the installation of Sardine. Sardine is a mu
 - **Sardine:** the Python parts of the system.
 - **SuperCollider (for sound only):** optional audio backend.
 - **Dependencies:** C++ dependencies for MIDI and Ableton Link.
-- **Sardine web**: the optional Sardine text editor (JavaScript).
+- **Sardine Web**: the optional Sardine text editor written in TypeScript.
 
 **There is nothing more I can do to help if you are not reading these lines! Please read the instructions and install all the necessary. Sardine will break if you have not carefully prepared your environment. I insist, Please, read the instructions:**
 - you probably don't know how your Python is installed.

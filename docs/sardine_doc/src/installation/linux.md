@@ -51,3 +51,14 @@ python -m pip install git+https://github.com/Bubobubobubobubo/sardine
   - ```bash
     python -m pip install git+https://github.com/SpotlightKid/python-rtmidi.git#eb16ab3268b29b94cd2baa6bfc777f5cf5f908ba
     ```
+
+## Installing Sardine Web
+
+After Sardine is installed, you may choose to install the `sardine web` editor
+with the following command:
+
+```bash
+python -m pip install sardine-system
+```
+
+More details are provided in the [Sardine Web](../editors/fishery.md) section.

@@ -60,7 +60,7 @@ After Sardine is installed, you may choose to install the `sardine web` editor
 with the following command:
 
 ```bash
-python -m pip install sardine-system
+python -m pip install sardine-web
 ```
 
 More details are provided in the [Sardine Web](../editors/fishery.md) section.

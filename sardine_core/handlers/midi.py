@@ -110,10 +110,6 @@ class MidiHandler(Sender):
     def nudge(self, nudge):
         self._nudge = nudge
 
-    def call_timed_with_nudge(self, deadline, method, **kwargs):
-        """Applying nudge to call_timed method"""
-        return self.call_timed(deadline + self.nudge, method, **kwargs)
-
     def __repr__(self) -> str:
         return f"<{type(self).__name__} port={self._port_name!r} nudge={self._nudge}>"
 

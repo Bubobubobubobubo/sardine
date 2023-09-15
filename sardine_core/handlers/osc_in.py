@@ -71,7 +71,9 @@ class OSCInHandler(BaseHandler):
         print(f"[yellow]Watching address [red]{address}[/red].[/yellow]")
         self._generic_store(address)
 
-    def attach(self, address: str, function: Callable, watch: bool = False):
+    def attach(
+        self, address: str, function: Callable, watch: bool = False, argscheme=None
+    ):
         """
         Attach a callback to a given address. You can also toggle the watch
         boolean value to tell if the value should be tracked by the receiver.
@@ -81,7 +83,11 @@ class OSCInHandler(BaseHandler):
         print(
             f"[yellow]Attaching function [red]{function.__name__}[/red] to address [red]{address}[/red][/yellow]"
         )
-        osc_method(address, function)
+        osc_method(
+            address,
+            function,
+            argscheme=OSCARG_DATAUNPACK if argscheme is None else argscheme,
+        )
         if watch:
             self.watch(address)
 

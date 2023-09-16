@@ -21,6 +21,7 @@ class OSCHandler(Sender):
         port: int = 23456,
         name: str = "OSCSender",
         ahead_amount: float = 0.0,
+        nudge: float = 0.0,
     ):
         super().__init__()
         self.loop = loop
@@ -31,6 +32,7 @@ class OSCHandler(Sender):
         self.client = osc_udp_client(address=self._ip, port=self._port, name=self._name)
         self._events = {"send": self._send}
         self._defaults: dict = {}
+        self.nudge = nudge
 
         loop.add_child(self, setup=True)
 
@@ -51,20 +53,42 @@ class OSCHandler(Sender):
         return self._defaults
 
     def _send(self, address: str, message: list) -> None:
-        msg = oscbuildparse.OSCMessage(address, None, message)
-        bun = oscbuildparse.OSCBundle(
-            oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
-            [msg],
-        )
+        bun = self._make_bundle([[address, message]])
         osc_send(bun, self._name)
 
-    def send_raw(self, address: str, message: list) -> None:
+    def _send_bundle(self, messages: list) -> None:
+        bun = self._make_bundle(messages)
+        osc_send(bun, self._name)
+
+    def send_raw(self, address: str, message: list, nudge=False) -> None:
         """
         Public alias for the _send function. It can sometimes be useful to have it
         when we do want to write some raw OSC message without formatting it in the
         expected SuperDirt format.
         """
-        self._send(address, message)
+        if nudge:
+            self.call_timed_with_nudge(
+                self.env.clock.shifted_time, self._send, address, message
+            )
+        else:
+            self._send(address, message)
+
+    def send_raw_bundle(self, messages: list, nudge=False) -> None:
+        if nudge:
+            self.call_timed_with_nudge(
+                self.env.clock.shifted_time, self._send_bundle, messages
+            )
+        else:
+            self._send_bundle(messages)
+
+    def _make_bundle(self, messages: list) -> oscbuildparse.OSCBundle:
+        return oscbuildparse.OSCBundle(
+            oscbuildparse.unixtime2timetag(time.time() + self._ahead_amount),
+            [
+                oscbuildparse.OSCMessage(message[0], None, message[1])
+                for message in messages
+            ],
+        )
 
     @alias_param(name="iterator", alias="i")
     @alias_param(name="divisor", alias="d")
@@ -97,4 +121,4 @@ class OSCHandler(Sender):
                 serialized = list(chain(*sorted(message.items())))
             else:
                 serialized = list(chain(*message.items()))
-            self.call_timed(deadline, self._send, f"/{address}", serialized)
+            self.call_timed_with_nudge(deadline, self._send, f"/{address}", serialized)

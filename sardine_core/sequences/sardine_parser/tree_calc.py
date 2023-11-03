@@ -571,6 +571,8 @@ class CalculateTree(Transformer):
                 "neu": self.library.negative_euclidian_rhythm,
                 "mask": self.library.mask,
                 "notdot": self.library.notdot,
+                "filtdot": self.library.filtdot,
+                "keepdot": self.library.keepdot,
                 "euclid": self.library.euclidian_to_number,
                 "numclid": self.library.euclidian_to_number,
                 "e": self.library.euclidian_to_number,

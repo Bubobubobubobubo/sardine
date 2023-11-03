@@ -505,6 +505,12 @@ class FunctionLibrary:
         """Invert a rhythm pattern (1 -> ., . -> 1)"""
         return [1 if x == None else None for x in collection]
 
+    def filtdot(self, collection: list, filter_: list) -> list:
+        return [x if x not in filter_ else None for x in collection]
+
+    def keepdot(self, collection: list, keep_: list) -> list:
+        return [x if x in keep_ else None for x in collection]
+
     def clamp(
         self,
         collection: list,

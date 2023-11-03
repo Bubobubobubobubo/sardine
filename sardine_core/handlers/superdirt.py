@@ -131,6 +131,7 @@ class SuperDirtHandler(Sender):
             "tremd": "tremolodepth",
             "dist": "distort",
             "o": "orbit",
+            "ts": "timescale",
         }
         return rename_keys(pattern, aliases)
 

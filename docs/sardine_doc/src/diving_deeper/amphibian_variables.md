@@ -1,6 +1,7 @@
 # Amphibian Variables
 
 ```python
+from random import random
 V.s = 60 # this is an amphibian variable
 
 @swim

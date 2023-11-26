@@ -915,7 +915,7 @@ class FunctionLibrary:
         """
         period = float(period[0])
         t = self.clock.time % period
-        return [((2 * t if t < period / 2 else (2 * t)) / 2) - 1]
+        return [2 * (t / period) - 1]
 
     def lrect(self, period: int | float, pwm: int | float = 0.5, **kwargs) -> list:
         """Basic square low frequency oscillator
@@ -954,7 +954,9 @@ class FunctionLibrary:
         Returns:
             list: lfo value (0 -> 1)
         """
-        return self.absolute(*[self.lsaw(period=period)])
+        bipolar_wave = self.lsaw(period)
+        unipolar_wave = [(value + 1) / 2 for value in bipolar_wave]
+        return unipolar_wave
 
     def get_time(self, *args, **kwargs):
         """Return a specific time unit"""

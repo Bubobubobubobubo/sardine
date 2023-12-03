@@ -367,11 +367,13 @@ def silence(*runners: AsyncRunner) -> None:
         if config.superdirt_handler:
             hush()
 
+
 def solo(*args):
     """Soloing a single player out of all running players"""
     for pat in bowl.scheduler.runners:
         if pat.name not in args:
             silence(pat)
+
 
 def panic(*runners: AsyncRunner) -> None:
     """

@@ -80,7 +80,12 @@ class Sender(BaseHandler):
 
     def call_timed_with_nudge(self, deadline, method, *args, **kwargs):
         """Applying nudge to call_timed method"""
-        return self.call_timed(deadline + self.nudge, method, *args, **kwargs)
+        return self.call_timed(
+            deadline + (self.env.clock.beat_duration * self.nudge),
+            method,
+            *args,
+            **kwargs,
+        )
 
     @staticmethod
     def pattern_element(

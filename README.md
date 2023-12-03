@@ -15,6 +15,10 @@
 </p>
 
 <p align="center">
+  <a href='https://ko-fi.com/I2I2RSBHF' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi3.png?v=3' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+</p>
+
+<p align="center">
   <a href="https://discord.gg/aPgV7mSFZh">Discord</a> |
   <a href="https://sardine.raphaelforment.fr/">Website</a> |
   <a href="https://sardine.raphaelforment.fr/showcase">Examples</a> |

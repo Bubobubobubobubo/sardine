@@ -75,7 +75,6 @@ Pa * d('alphabet:[0:25,1]', p=0.5, room=1,size=0.5,dry=0.4)
 clock.tempo = 60
 silence()
 
-Pa * d('808:[0:5,1]', p=0.5, room=1,size=0.5,dry=0.4)
 Pa * d('808bd:[0:24,1]', p=0.5, room=1,size=0.5,dry=0.4)
 Pa * d('808cy:[0:24,1]', p=0.5, room=1,size=0.5,dry=0.4)
 Pa * d('808hc:[0:4,1]', p=0.5, room=1,size=0.5,dry=0.4)

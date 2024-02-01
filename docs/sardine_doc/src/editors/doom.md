@@ -30,7 +30,7 @@ while I finetune my **Emacs** config.
 ;; Customize the python-mode to run Sardine code using the terminal.
 
 (setq
- python-shell-interpreter "fishery"
+ python-shell-interpreter "sardine"
  python-shell-interpreter-args "")
 
 (defun sardine/start-sardine ()

@@ -12,7 +12,7 @@ The process for working with **Sardine** from **Neovim** is pretty straightforwa
 1. install the [slime](https://github.com/jpalardy/vim-slime) plugin.
    -   note that the technique to do so might vary depending on your configuration. I am using [Lua](https://github.com/nanotee/nvim-lua-guide) to write my configuration. In the past, I had previously used [Plug](https://github.com/junegunn/vim-plug) for years without encountering any issue!
 2. split your workspace in two vertical (`:vs`) or horizontal (`:sp`) panes.
-3. open up a `:terminal` in one of them and run `fishery`.
+3. open up a `:terminal` in one of them and run `sardine`.
 4. work in the other one and use `C-c C-c` (`Control+C` twice) to send code from one side to the other.
    -   **slime** will probably ask you which job to target, just press enter!
 

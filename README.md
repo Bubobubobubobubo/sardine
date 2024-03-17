@@ -71,3 +71,16 @@ about music and technology, we welcome your expertise, whether it's code, docume
 
 To collaborate with the Sardine community, connect with us on **Discord**, **Github** or send a private message if you have specific inquiries.
 Together, we can create an even more powerful tool for musical expression and creativity!
+
+### Generating documentation
+
+**Sardine** documentation is using [mdbook](https://rust-lang.github.io/mdBook/guide/creating.html).
+
+You first need to have [Rust](https://www.rust-lang.org/tools/install) properly installed.
+
+```
+cargo install mdbook
+mdbook serve --open
+```
+
+You should have the documentation automatically opened in your browser at <http://localhost:3000/>.

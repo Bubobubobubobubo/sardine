@@ -39,9 +39,9 @@ iron.setup({
         -- Can be a table or a function that
         -- returns a table (see below)
         command = { "zsh" },
-        python = {
-          command = { "sardine" },
       },
+      python = {
+        command = { "sardine" },
         format = require("iron.fts.common").bracketed_paste, -- super important (!!!)
       },
     },

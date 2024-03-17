@@ -1,0 +1,8 @@
+# Replace no-break spaces with regular spaces
+a2f5b2be4ee060b4cb00f704c9abe1112b434f95
+# Reformat README.md
+c50fbbdf26b2d1fadaecb0fc5646e7c61b91f1d1
+# Reformat installation.md
+89006f66bba88de0fbce2173d1ff6ed363a296bf
+# Run black formatter
+c0037336a43c1dce30f50d83ef8c7c2cae3ae781

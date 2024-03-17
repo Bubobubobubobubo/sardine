@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chords - Sardine Documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../presentation.html"><strong aria-hidden="true">1.</strong> Presentation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../presentation/what_is_sardine.html"><strong aria-hidden="true">1.1.</strong> What is Sardine?</a></li><li class="chapter-item expanded "><a href="../../presentation/what_is_live_coding.html"><strong aria-hidden="true">1.2.</strong> What is Live Coding?</a></li><li class="chapter-item expanded "><a href="../../presentation/community.html"><strong aria-hidden="true">1.3.</strong> Community</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation.html"><strong aria-hidden="true">2.</strong> Installation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/preliminary_words.html"><strong aria-hidden="true">2.1.</strong> Preparing your environment</a></li><li class="chapter-item expanded "><a href="../../installation/windows.html"><strong aria-hidden="true">2.2.</strong> Installing on Windows</a></li><li class="chapter-item expanded "><a href="../../installation/macos.html"><strong aria-hidden="true">2.3.</strong> Installing on MacOS</a></li><li class="chapter-item expanded "><a href="../../installation/linux.html"><strong aria-hidden="true">2.4.</strong> Installing on Linux</a></li><li class="chapter-item expanded "><a href="../../installation/post_install_checkup.html"><strong aria-hidden="true">2.5.</strong> Post Installation</a></li></ol></li><li class="chapter-item expanded "><a href="../../updating.html"><strong aria-hidden="true">3.</strong> Updating / Uninstalling</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../updating/updating.html"><strong aria-hidden="true">3.1.</strong> Updating / Uninstalling</a></li><li class="chapter-item expanded "><a href="../../updating/install_errors.html"><strong aria-hidden="true">3.2.</strong> Errors during installation</a></li><li class="chapter-item expanded "><a href="../../updating/superdirt.html"><strong aria-hidden="true">3.3.</strong> SuperCollider/SuperDirt</a></li><li class="chapter-item expanded "><a href="../../updating/sardine.html"><strong aria-hidden="true">3.4.</strong> Sardine related errors</a></li></ol></li><li class="chapter-item expanded "><a href="../../configuration.html"><strong aria-hidden="true">4.</strong> Configuration</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../configuration/configuration_tool.html"><strong aria-hidden="true">4.1.</strong> Configuration tool</a></li><li class="chapter-item expanded "><a href="../../configuration/configuration_tour.html"><strong aria-hidden="true">4.2.</strong> Configuration tour</a></li><li class="chapter-item expanded "><a href="../../configuration/midi.html"><strong aria-hidden="true">4.3.</strong> MIDI</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../configuration/midi_instrument.html"><strong aria-hidden="true">4.3.1.</strong> MIDI Instrument</a></li><li class="chapter-item "><a href="../../configuration/midi_controller.html"><strong aria-hidden="true">4.3.2.</strong> MIDI Controller</a></li></ol></li><li class="chapter-item expanded "><a href="../../configuration/osc.html"><strong aria-hidden="true">4.4.</strong> OSC</a></li><li class="chapter-item expanded "><a href="../../configuration/superdirt.html"><strong aria-hidden="true">4.5.</strong> SuperCollider / SuperDirt</a></li></ol></li><li class="chapter-item expanded "><a href="../../editors.html"><strong aria-hidden="true">5.</strong> Text Editors</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../editors/fishery.html"><strong aria-hidden="true">5.1.</strong> Sardine Web</a></li><li class="chapter-item expanded "><a href="../../editors/flok.html"><strong aria-hidden="true">5.2.</strong> Flok</a></li><li class="chapter-item expanded "><a href="../../editors/vscode.html"><strong aria-hidden="true">5.3.</strong> VSCode</a></li><li class="chapter-item expanded "><a href="../../editors/vim.html"><strong aria-hidden="true">5.4.</strong> Vim / Neovim</a></li><li class="chapter-item expanded "><a href="../../editors/doom.html"><strong aria-hidden="true">5.5.</strong> (Doom) Emacs</a></li><li class="chapter-item expanded "><a href="../../editors/others.html"><strong aria-hidden="true">5.6.</strong> Others</a></li></ol></li><li class="chapter-item expanded "><a href="../../getting_started.html"><strong aria-hidden="true">6.</strong> Getting started</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../getting_started/starting.html"><strong aria-hidden="true">6.1.</strong> Starting Sardine</a></li><li class="chapter-item expanded "><a href="../../getting_started/code_evaluation.html"><strong aria-hidden="true">6.2.</strong> Code evaluation</a></li><li class="chapter-item expanded "><a href="../../getting_started/samples_and_synths.html"><strong aria-hidden="true">6.3.</strong> Synths / Samples</a></li><li class="chapter-item expanded "><a href="../../getting_started/patterns.html"><strong aria-hidden="true">6.4.</strong> Patterns</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../../basics.html"><strong aria-hidden="true">7.</strong> Basics</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../basics/senders.html"><strong aria-hidden="true">7.1.</strong> Senders</a></li><li class="chapter-item expanded "><a href="../../basics/player-vs-swimfunction.html"><strong aria-hidden="true">7.2.</strong> Player vs @Swim</a></li><li class="chapter-item expanded "><a href="../../basics/players.html"><strong aria-hidden="true">7.3.</strong> Players</a></li><li class="chapter-item expanded "><a href="../../basics/player_arguments.html"><strong aria-hidden="true">7.4.</strong> Player arguments</a></li><li class="chapter-item expanded "><a href="../../basics/swimfunction.html"><strong aria-hidden="true">7.5.</strong> @swim function</a></li><li class="chapter-item expanded "><a href="../../basics/period-divisor-rate.html"><strong aria-hidden="true">7.6.</strong> Period Divisor Rate</a></li><li class="chapter-item expanded "><a href="../../basics/tempo_and_playback.html"><strong aria-hidden="true">7.7.</strong> Tempo and playback</a></li></ol></li><li class="chapter-item expanded "><a href="../../pattern_languages.html"><strong aria-hidden="true">8.</strong> Pattern Languages</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../pattern_languages/sardine.html"><strong aria-hidden="true">8.1.</strong> Sardine Pattern Language</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../pattern_languages/sardine/numbers.html"><strong aria-hidden="true">8.1.1.</strong> Numbers</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/notes.html"><strong aria-hidden="true">8.1.2.</strong> Notes</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/names.html"><strong aria-hidden="true">8.1.3.</strong> Names</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/addresses.html"><strong aria-hidden="true">8.1.4.</strong> Addresses</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/operators.html"><strong aria-hidden="true">8.1.5.</strong> Operators</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../pattern_languages/sardine/silence.html"><strong aria-hidden="true">8.1.5.1.</strong> Silence</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/choice.html"><strong aria-hidden="true">8.1.5.2.</strong> Choice</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/range.html"><strong aria-hidden="true">8.1.5.3.</strong> Range</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/ramp.html"><strong aria-hidden="true">8.1.5.4.</strong> Ramp</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/repeat.html"><strong aria-hidden="true">8.1.5.5.</strong> Repeat</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/slicing.html"><strong aria-hidden="true">8.1.5.6.</strong> Slicing</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/extend.html"><strong aria-hidden="true">8.1.5.7.</strong> Extend</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/extend_repeat.html"><strong aria-hidden="true">8.1.5.8.</strong> Extend-Repeat</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/logic.html"><strong aria-hidden="true">8.1.5.9.</strong> Logic</a></li></ol></li><li class="chapter-item "><a href="../../pattern_languages/sardine/function_library.html"><strong aria-hidden="true">8.1.6.</strong> Function Library</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../pattern_languages/sardine/variable_functions.html"><strong aria-hidden="true">8.1.6.1.</strong> Variable Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/time_functions.html"><strong aria-hidden="true">8.1.6.2.</strong> Time Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/math_functions.html"><strong aria-hidden="true">8.1.6.3.</strong> Math Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/rhythm_functions.html"><strong aria-hidden="true">8.1.6.4.</strong> Rhythm Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/filter_functions.html"><strong aria-hidden="true">8.1.6.5.</strong> Filter Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/melodic_functions.html"><strong aria-hidden="true">8.1.6.6.</strong> Melody Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/conditions.html"><strong aria-hidden="true">8.1.6.7.</strong> Condition Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/combinatorics_functions.html"><strong aria-hidden="true">8.1.6.8.</strong> Combinatorics</a></li><li class="chapter-item "><a href="../../pattern_languages/sardine/low_frequency_oscillators.html"><strong aria-hidden="true">8.1.6.9.</strong> Low Frequency Oscillators (LFOs)</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../pattern_languages/ziffers.html"><strong aria-hidden="true">8.2.</strong> Ziffers</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../pattern_languages/ziffers/what_is_ziffers.html"><strong aria-hidden="true">8.2.1.</strong> Presentation</a></li><li class="chapter-item "><a href="../../pattern_languages/ziffers/pitch.html"><strong aria-hidden="true">8.2.2.</strong> Pitch</a></li><li class="chapter-item "><a href="../../pattern_languages/ziffers/rhythm.html"><strong aria-hidden="true">8.2.3.</strong> Rhythm</a></li><li class="chapter-item expanded "><a href="../../pattern_languages/ziffers/chords.html" class="active"><strong aria-hidden="true">8.2.4.</strong> Chords</a></li><li class="chapter-item "><a href="../../pattern_languages/ziffers/random.html"><strong aria-hidden="true">8.2.5.</strong> Random</a></li><li class="chapter-item "><a href="../../pattern_languages/ziffers/lists.html"><strong aria-hidden="true">8.2.6.</strong> Lists</a></li><li class="chapter-item "><a href="../../pattern_languages/ziffers/euclidian.html"><strong aria-hidden="true">8.2.7.</strong> Euclidian</a></li></ol></li><li class="chapter-item expanded "><a href="../../pattern_languages/vortex.html"><strong aria-hidden="true">8.3.</strong> Vortex</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../pattern_languages/vortex/players.html"><strong aria-hidden="true">8.3.1.</strong> Players</a></li><li class="chapter-item "><a href="../../pattern_languages/vortex/clock.html"><strong aria-hidden="true">8.3.2.</strong> Clock</a></li><li class="chapter-item "><a href="../../pattern_languages/vortex/mininotation.html"><strong aria-hidden="true">8.3.3.</strong> Mini-notation</a></li><li class="chapter-item "><a href="../../pattern_languages/vortex/functions.html"><strong aria-hidden="true">8.3.4.</strong> Functions</a></li><li class="chapter-item "><a href="../../pattern_languages/vortex/querying.html"><strong aria-hidden="true">8.3.5.</strong> Querying</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../diving_deeper.html"><strong aria-hidden="true">9.</strong> Diving Deeper</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../diving_deeper/fishbowl.html"><strong aria-hidden="true">9.1.</strong> FishBowl</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/nudging.html"><strong aria-hidden="true">9.2.</strong> Time-alignment</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/high_level_patterns.html"><strong aria-hidden="true">9.3.</strong> High-level patterns</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/sleeping.html"><strong aria-hidden="true">9.4.</strong> Sleeping / oversleeping</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/pattern_object.html"><strong aria-hidden="true">9.5.</strong> Pattern object</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/amphibian_variables.html"><strong aria-hidden="true">9.6.</strong> Amphibian Variables</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/python.html"><strong aria-hidden="true">9.7.</strong> Using python</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../diving_deeper/python-sampleslicer.html"><strong aria-hidden="true">9.7.1.</strong> Advanced: Sample Slicer</a></li></ol></li><li class="chapter-item expanded "><a href="../../diving_deeper/externals.html"><strong aria-hidden="true">9.8.</strong> External to Sardine</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../diving_deeper/supercollider.html"><strong aria-hidden="true">9.8.1.</strong> SuperCollider</a></li><li class="chapter-item "><a href="../../diving_deeper/external_clock.html"><strong aria-hidden="true">9.8.2.</strong> External Clock</a></li><li class="chapter-item "><a href="../../diving_deeper/daw.html"><strong aria-hidden="true">9.8.3.</strong> Sardine and DAWs</a></li></ol></li><li class="chapter-item expanded "><a href="../../diving_deeper/presets.html"><strong aria-hidden="true">9.9.</strong> Presets</a></li><li class="chapter-item expanded "><a href="../../diving_deeper/extensions.html"><strong aria-hidden="true">9.10.</strong> Extensions</a></li></ol></li><li class="chapter-item expanded "><a href="../../audio_engine.html"><strong aria-hidden="true">10.</strong> Audio Engine Reference</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../audio_engine/sampler.html"><strong aria-hidden="true">10.1.</strong> Sampler</a></li><li class="chapter-item expanded "><a href="../../audio_engine/effects.html"><strong aria-hidden="true">10.2.</strong> Effects</a></li><li class="chapter-item expanded "><a href="../../audio_engine/filtering.html"><strong aria-hidden="true">10.3.</strong> Filtering</a></li><li class="chapter-item expanded "><a href="../../audio_engine/distortion.html"><strong aria-hidden="true">10.4.</strong> Distortion</a></li><li class="chapter-item expanded "><a href="../../audio_engine/hidden_gems.html"><strong aria-hidden="true">10.5.</strong> Hidden Gems</a></li></ol></li><li class="chapter-item expanded "><a href="../../showcase.html"><strong aria-hidden="true">11.</strong> Showcase</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../showcase/acousmatic_tekno.html"><strong aria-hidden="true">11.1.</strong> Acousmatic Tekno</a></li><li class="chapter-item expanded "><a href="../../showcase/transport_variations.html"><strong aria-hidden="true">11.2.</strong> Transport Variations</a></li><li class="chapter-item expanded "><a href="../../showcase/auzon.html"><strong aria-hidden="true">11.3.</strong> D'Auzon</a></li><li class="chapter-item expanded "><a href="../../showcase/dumpster_dive.html"><strong aria-hidden="true">11.4.</strong> Dumpster Dive</a></li><li class="chapter-item expanded "><a href="../../showcase/solstice.html"><strong aria-hidden="true">11.5.</strong> Solstice</a></li><li class="chapter-item expanded "><a href="../../showcase/zorba.html"><strong aria-hidden="true">11.6.</strong> Zorba in Belleville</a></li><li class="chapter-item expanded "><a href="../../showcase/artificial_life.html"><strong aria-hidden="true">11.7.</strong> Artificial Life</a></li><li class="chapter-item expanded "><a href="../../showcase/claude.html"><strong aria-hidden="true">11.8.</strong> Claude</a></li></ol></li><li class="chapter-item expanded "><a href="../../about.html"><strong aria-hidden="true">12.</strong> About</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../about/why.html"><strong aria-hidden="true">12.1.</strong> Why Sardine?</a></li><li class="chapter-item expanded "><a href="../../about/contributions.html"><strong aria-hidden="true">12.2.</strong> Contributions</a></li><li class="chapter-item expanded "><a href="../../about/website.html"><strong aria-hidden="true">12.3.</strong> About this website</a></li><li class="chapter-item expanded "><a href="../../about/strategies.html"><strong aria-hidden="true">12.4.</strong> Sardine Strategies</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Sardine Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Bubobubobubobubo/sardine" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="chords"><a class="header" href="#chords">Chords</a></h1>
+<p>Chords can be played using groups of numbers <code>&quot;024 357&quot;</code> or using roman numerals: <code>i ii iii iv v vi vii</code>.</p>
+<pre><code class="language-python">&quot;[: i vi v :]&quot; # Play chords as a sequence using default chord length of 1
+
+&quot;q [: iv 1 2 3 iii 2 3 4 ii 4 3 2 i 1 2 3 :]&quot;
+</code></pre>
+<p>In major scale (or any other diatonic) roman numerals would correspond to these pitch classes:</p>
+<pre><code class="language-python">i = 024
+ii = 135
+iii = 246
+iv = 357 or 35^0
+v = 468 or 46^1
+vi = 579 or 5^0^2
+vii = 68{10} or 6^1^3
+</code></pre>
+<p>Chord key is assigned with the <strong>key</strong> keyword argument (defaults to major). </p>
+<h2 id="chord-names"><a class="header" href="#chord-names">Chord names</a></h2>
+<p>Chord names are nice shorthands for similar group of notes. Define chord name using using <strong>^</strong> with 
+the name or by using <strong>chord_name</strong> parameter. Chord names work for minor, major and chromatic scales.
+Other than that who knows? Not me. Some might work and others might sound a bit funny.</p>
+<p>Examples using the chord names:</p>
+<pre><code class="language-python">&quot;i vi^dim&quot;
+&quot;i vi&quot;
+&quot;i vi^m11+&quot;
+&quot;i^7&quot;
+&quot;i^maj9&quot; 
+</code></pre>
+<p>Chords can also be inverted using % char, for example %1 to invert all following chords up by one:</p>
+<pre><code class="language-python">D('superpiano', 'vii%-2 iii%-1 vi%-1 ii v i%1 iv%2', key='D', scale='minor')
+</code></pre>
+<p>List of all chord names (Pitch classes in chromatic scale):</p>
+<pre><code class="language-python">^major  = 047       # ^M
+^min  	= 037       # ^minor or ^m
+^major7 = 04711     # ^maj7 or ^M7
+^7      = 047T      # ^dom7
+^m7     = 037{10}   # ^minor7
+^aug    = 048       # ^augmented or ^a
+^dim    = 036       # ^diminished or ^i
+^dim7   = 0369      # ^diminished7 or ^i7
+^m7-5   = 036{10}   # ^m7b5 or ^halfdim or ^halfdiminished
+^1    	= 0
+^5    	= 07
+^+5     = 048
+^m+5  	= 038
+^sus2   = 027
+^sus4   = 057
+^6    	= 0479
+^m6     = 0379
+^7sus2	= 027{10}
+^7sus4	= 057{10}
+^7-5  	= 046{10}
+^7+5  	= 048{10}
+^m7+5 	= 038{10}
+^9    	= 047{10}{14}
+^m9     = 037{10}{14}
+^m7+9 	= 037{10}{14}
+^maj9   = 04711{14}
+^9sus4	= 057{10}{14}
+^6*9  	= 0479{14}
+^m6*9 	= 0379{14}
+^7-9  	= 047{10}{13}
+^m7-9 	= 037{10}{13}
+^7-10 	= 047{10}{15}
+^7-11 	= 047{10}{16}
+^7-13 	= 047{10}{20}
+^9+5  	= 0{10}{13}
+^m9+5 	= 0{10}{14}
+^7+5-9	= 048{10}{13}
+^m7+5-9 = 038{10}{13}
+^11   	= 047{10}{14}{17}
+^m11    = 037{10}{14}{17}
+^maj11  = 04711{14}{17}
+^11+  	= 047{10}{14}{18}
+^m11+ 	= 037{10}{14}{18}
+^13   	= 047{10}{14}{17}{21}
+^m13  	= 037{10}{14}{17}{21}
+^add2   = 0247
+^add4   = 0457
+^add9   = 047{14}
+^add11  = 047{17}
+^add13	= 047{21}
+^madd2  = 0237
+^madd4  = 0357
+^madd9  = 037{14}
+^madd11 = 037{17}
+^madd13 = 037{21}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../pattern_languages/ziffers/rhythm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../pattern_languages/ziffers/random.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../pattern_languages/ziffers/rhythm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../pattern_languages/ziffers/random.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

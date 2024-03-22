@@ -23,8 +23,6 @@ T = TypeVar("T")
 # READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
 
 config = read_user_configuration()
-
-# Printing banner and some infos about setup/config
 print(greeter_printer(sardine_intro, config))
 
 
@@ -80,16 +78,21 @@ bowl.add_handler(osc_loop)  # NOTE: always keep this loop running for OSC handle
 dummy_osc = OSCHandler(
     ip="127.0.0.1",
     port=12345,
-    name="Custom OSC Connexion",
+    name="Dummy OSC Connexion",
     ahead_amount=0.0,
     loop=osc_loop,
 )
 O = dummy_osc.send
 
+
 # # OSC Listener Handler: dummy OSCIn handler, used for test purposes
-# my_osc_listener = OSCInHandler(
-#     ip="127.0.0.1", port=33333, name="OSC-In test", loop=my_osc_loop
-# )
+my_osc_listener = OSCInHandler(
+    ip="127.0.0.1", 
+    port=23456, 
+    name="Dummy OSC Listener", 
+    loop=my_osc_loop
+)
+
 
 # SuperDirt Handler: conditional
 if config.superdirt_handler:
@@ -101,8 +104,8 @@ if config.superdirt_handler:
 player_names = [
     "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
 ]
-player_names.remove("SC")
-player_names.remove("PC")
+player_names.remove("SC") # NOTE: used by SuperCollider command
+player_names.remove("PC") # NOTE: used by MIDI Program Change
 # player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)

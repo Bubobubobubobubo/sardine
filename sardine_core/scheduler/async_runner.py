@@ -3,8 +3,10 @@ import heapq
 import inspect
 import math
 import traceback
+import os
 from collections import deque
 from dataclasses import dataclass
+from rich.panel import Panel
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
 from ..logger import print
 
@@ -663,17 +665,25 @@ class AsyncRunner:
 
         wait_task = asyncio.create_task(self.env.sleeper.sleep_until(deadline))
         reload_task = asyncio.create_task(self._reload_event.wait())
-        done, pending = await asyncio.wait(
-            (wait_task, reload_task),
-            return_when=asyncio.FIRST_COMPLETED,
-        )
+        try:
+            done, pending = await asyncio.wait(
+                (wait_task, reload_task),
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            for task in pending:
+                task.cancel()
+            for task in done:
+                task.result()
 
-        for task in pending:
-            task.cancel()
-        for task in done:
-            task.result()
+            return reload_task in done
 
-        return reload_task in done
+        except asyncio.CancelledError:
+            os.system("cls" if os.name == "nt" else "clear")
+            print(
+                Panel.fit(
+                    "[red]/!\ Ctrl-C Pressed: Sardine was interrupted. Press again to quit![/red]"
+                )
+            )
 
     def _revert_state(self):
         if self.states:

@@ -166,7 +166,7 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
             )
         )
     )
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
     return config_file
 
 
@@ -238,7 +238,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
             )
         )
     )
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
     return config_file
 
 
@@ -275,8 +275,9 @@ def _select_additional_options(config_file: dict) -> dict:
             )
         )
     )
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
     return config_file
+
 
 def print_config(user_configuration: dict) -> None:
     """
@@ -296,15 +297,18 @@ def print_config(user_configuration: dict) -> None:
         "superdirt_config_path": "Path to SuperDirt configuration file",
         "superdirt_handler": "Should Sardine use SuperDirt?",
         "user_config_path": "Path to user Python configuration file",
-        "verbose_superdirt": "Turn on verbose output (console) for SuperCollider?" 
+        "verbose_superdirt": "Turn on verbose output (console) for SuperCollider?",
     }
     table = Table(title="Current Sardine Configuration")
     table.add_column("Key", style="cyan", no_wrap=True)
     table.add_column("Value", style="magenta")
     table.add_column("?", style="yellow")
     for (key, value) in user_configuration.items():
-        table.add_row(key, str(value), explanations[key] if key in explanations else "?")
+        table.add_row(
+            key, str(value), explanations[key] if key in explanations else "?"
+        )
     print(table)
+
 
 def main():
     """
@@ -337,7 +341,7 @@ def main():
 
     # This panel can stay because it is a splashscreen
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
     while True:
 
@@ -346,7 +350,7 @@ def main():
         ).execute()
 
         if menu_select == MENU_CHOICES[6]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             write_to_file = inquirer.confirm(
                 message="Do you wish to save and exit?"
             ).execute()
@@ -356,23 +360,23 @@ def main():
                     exit()
                 except Exception:
                     raise SystemError("Couldn't write config file!")
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
         elif menu_select == MENU_CHOICES[5]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             create_template_configuration_file(CONFIG_JSON)
             USER_CONFIG = read_json_file()["config"]
         elif menu_select == MENU_CHOICES[0]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             print_config(USER_CONFIG)
         elif menu_select == MENU_CHOICES[1]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             USER_CONFIG = _select_midi_output(config_file=USER_CONFIG)
         elif menu_select == MENU_CHOICES[2]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             USER_CONFIG = _select_bpm_and_timing(config_file=USER_CONFIG)
         elif menu_select == MENU_CHOICES[3]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
         elif menu_select == MENU_CHOICES[4]:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            os.system("cls" if os.name == "nt" else "clear")
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)

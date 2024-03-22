@@ -87,10 +87,7 @@ O = dummy_osc.send
 
 # # OSC Listener Handler: dummy OSCIn handler, used for test purposes
 my_osc_listener = OSCInHandler(
-    ip="127.0.0.1", 
-    port=23456, 
-    name="Dummy OSC Listener", 
-    loop=my_osc_loop
+    ip="127.0.0.1", port=23456, name="Dummy OSC Listener", loop=osc_loop
 )
 
 
@@ -104,8 +101,8 @@ if config.superdirt_handler:
 player_names = [
     "".join(tup) for tup in product(ascii_lowercase + ascii_uppercase, repeat=2)
 ]
-player_names.remove("SC") # NOTE: used by SuperCollider command
-player_names.remove("PC") # NOTE: used by MIDI Program Change
+player_names.remove("SC")  # NOTE: used by SuperCollider command
+player_names.remove("PC")  # NOTE: used by MIDI Program Change
 # player_names += [''.join(tup) for tup in list(product(ascii_lowercase, repeat=3))]
 for player in player_names:
     p = Player(name=player)

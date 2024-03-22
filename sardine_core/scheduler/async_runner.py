@@ -681,7 +681,7 @@ class AsyncRunner:
             os.system("cls" if os.name == "nt" else "clear")
             print(
                 Panel.fit(
-                    "[red]/!\ Ctrl-C Pressed: Sardine was interrupted. Press again to quit![/red]"
+                    "[red]/!\ Exit Pressed: Sardine was interrupted. Press Ctrl-C again to quit![/red]"
                 )
             )
 

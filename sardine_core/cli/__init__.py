@@ -3,13 +3,14 @@ from InquirerPy.validator import EmptyInputValidator
 from InquirerPy.base.control import Choice
 from InquirerPy import inquirer
 from rich.panel import Panel
+from rich.table import Table
 from pathlib import Path
 from ..logger import print
 from appdirs import *  # Wildcard used in docs
 import click
 import json
 import mido
-
+import os
 
 FUNNY_TEXT = """
 ░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░
@@ -116,6 +117,7 @@ def _select_midi_output(config_file: dict) -> dict:
             f"[red]Current MIDI Output: [green]{config_file['midi']}[/green][/red]"
         )
     )
+    os.system("cls" if os.name == "nt" else "clear")
     return config_file
 
 
@@ -164,6 +166,7 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
             )
         )
     )
+    os.system('cls' if os.name == 'nt' else 'clear')
     return config_file
 
 
@@ -235,6 +238,7 @@ def _select_supercollider_settings(config_file: dict) -> dict:
             )
         )
     )
+    os.system('cls' if os.name == 'nt' else 'clear')
     return config_file
 
 
@@ -271,8 +275,36 @@ def _select_additional_options(config_file: dict) -> dict:
             )
         )
     )
+    os.system('cls' if os.name == 'nt' else 'clear')
     return config_file
 
+def print_config(user_configuration: dict) -> None:
+    """
+    Configuration table format pretty printer
+    """
+    explanations = {
+        "beats": "Number of beats per measure",
+        "boot_supercollider": "Should Sardine boot SuperCollider?",
+        "bpm": "Tempo in BPM",
+        "debug": "Turn on parser debug mode (devs only)",
+        "deferred_scheduling": "Use deferred scheduling (devs only)",
+        "editor": "Should Sardine use its own editor?",
+        "link_clock": "Should Sardine use Ableton Link Clock?",
+        "midi": "Currently selected MIDI output",
+        "parser": "Unused",
+        "sardine_boot_file": "Should Sardine use its own boot file?",
+        "superdirt_config_path": "Path to SuperDirt configuration file",
+        "superdirt_handler": "Should Sardine use SuperDirt?",
+        "user_config_path": "Path to user Python configuration file",
+        "verbose_superdirt": "Turn on verbose output (console) for SuperCollider?" 
+    }
+    table = Table(title="Current Sardine Configuration")
+    table.add_column("Key", style="cyan", no_wrap=True)
+    table.add_column("Value", style="magenta")
+    table.add_column("?", style="yellow")
+    for (key, value) in user_configuration.items():
+        table.add_row(key, str(value), explanations[key] if key in explanations else "?")
+    print(table)
 
 def main():
     """
@@ -286,12 +318,12 @@ def main():
     """
 
     MENU_CHOICES = [
-        "Show Config",
-        "Reset",
-        "MIDI",
-        "Clock",
-        "SuperCollider",
-        "More",
+        "Show current configuration",
+        "Select MIDI Output",
+        "Select Musical Clock",
+        "SuperCollider Options",
+        "More options (devs)",
+        "Reset configuration",
         "Exit",
     ]
 
@@ -305,13 +337,16 @@ def main():
 
     # This panel can stay because it is a splashscreen
     print(Panel.fit("[red]" + FUNNY_TEXT + "[/red]"))
+    os.system('cls' if os.name == 'nt' else 'clear')
 
     while True:
+
         menu_select = inquirer.select(
             message="Select an option", choices=MENU_CHOICES
         ).execute()
 
-        if menu_select == "Exit":
+        if menu_select == MENU_CHOICES[6]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             write_to_file = inquirer.confirm(
                 message="Do you wish to save and exit?"
             ).execute()
@@ -321,16 +356,23 @@ def main():
                     exit()
                 except Exception:
                     raise SystemError("Couldn't write config file!")
-        elif menu_select == "Reset":
+            os.system('cls' if os.name == 'nt' else 'clear')
+        elif menu_select == MENU_CHOICES[5]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             create_template_configuration_file(CONFIG_JSON)
             USER_CONFIG = read_json_file()["config"]
-        elif menu_select == "Show Config":
-            print(USER_CONFIG)
-        elif menu_select == "MIDI":
+        elif menu_select == MENU_CHOICES[0]:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print_config(USER_CONFIG)
+        elif menu_select == MENU_CHOICES[1]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             USER_CONFIG = _select_midi_output(config_file=USER_CONFIG)
-        elif menu_select == "Clock":
+        elif menu_select == MENU_CHOICES[2]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             USER_CONFIG = _select_bpm_and_timing(config_file=USER_CONFIG)
-        elif menu_select == "SuperCollider":
+        elif menu_select == MENU_CHOICES[3]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             USER_CONFIG = _select_supercollider_settings(config_file=USER_CONFIG)
-        elif menu_select == "More":
+        elif menu_select == MENU_CHOICES[4]:
+            os.system('cls' if os.name == 'nt' else 'clear')
             USER_CONFIG = _select_additional_options(config_file=USER_CONFIG)

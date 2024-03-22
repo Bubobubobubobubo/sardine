@@ -12,7 +12,7 @@ from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import config_line_printer, get_snap_deadline, join, sardine_intro
+from .utils import greeter_printer, get_snap_deadline, join, sardine_intro
 from ziffers import z
 
 ParamSpec = ParamSpec("PS")
@@ -25,8 +25,7 @@ T = TypeVar("T")
 config = read_user_configuration()
 
 # Printing banner and some infos about setup/config
-print(sardine_intro)
-print(config_line_printer(config))
+print(greeter_printer(sardine_intro, config))
 
 
 # Initialisation of the FishBowl (the environment holding everything together)

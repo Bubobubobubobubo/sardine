@@ -113,7 +113,10 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @property
     def phase(self) -> float:
-        return (self._phase + self.beat_shift) % self.beat_duration
+        try:
+            return (self._phase + self.beat_shift) % self.beat_duration
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def tempo(self) -> float:

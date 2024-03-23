@@ -435,6 +435,7 @@ class AsyncRunner:
             period (Union[float, int]):
                 The period being used in the current iteration.
         """
+        # NOTE: this should account for tempo change, weird...
         interval = period * self.clock.beat_duration
         if self._can_correct_interval and interval != self._last_interval:
             time = self._expected_time
@@ -509,6 +510,12 @@ class AsyncRunner:
     # Runner loop
 
     async def _runner(self):
+        current_beat = (self.scheduler.env.clock.beat
+                % self.scheduler.env.clock.beats_per_bar)
+        current_bar = self.scheduler.env.clock.bar
+        current_phase = self.scheduler.env.clock.phase
+
+
         try:
             self._prepare()
         except Exception as exc:
@@ -516,7 +523,7 @@ class AsyncRunner:
             raise exc
 
         if not self.background_job:
-            print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
+            print(f"[yellow][[red]{self.name}[/red] is swimming at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]")
 
         try:
             while self._is_ready_for_iteration():
@@ -530,7 +537,7 @@ class AsyncRunner:
                     self._revert_state()
                     self.swim()
         finally:
-            print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
+            print(f"[yellow][Stopped [red]{self.name}[/red] at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]")
 
     def _prepare(self):
         self._last_expected_time = -math.inf
@@ -643,11 +650,16 @@ class AsyncRunner:
         )
 
     def _maybe_print_new_state(self, state: FunctionState):
+        current_beat = (self.scheduler.env.clock.beat
+                % self.scheduler.env.clock.beats_per_bar)
+        current_bar = self.scheduler.env.clock.bar
+        current_phase = self.scheduler.env.clock.phase
+
         if self._last_state is not None and state is not self._last_state:
             if not self._has_reverted:
-                print(f"[yellow][Updating [red]{self.name}[/red]]")
+                print(f"[yellow][Updating [red]{self.name}[/red] at {current_bar}/{current_beat}/{current_phase:.2f}]")
             else:
-                print(f"[yellow][Saving [red]{self.name}[/red] from crash]")
+                print(f"[yellow][Saving [red]{self.name}[/red] from crash ({current_bar}/{current_beat}/{current_phase:.2f})]")
                 self._has_reverted = False
 
     async def _sleep_until(self, deadline: Union[float, int]) -> bool:

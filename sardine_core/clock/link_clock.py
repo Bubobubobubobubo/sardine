@@ -78,7 +78,10 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @property
     def bar(self) -> int:
-        return self.beat // self.beats_per_bar
+        try:
+            return self.beat // self.beats_per_bar
+        except ZeroDivisionError:
+            return 0
 
     @property
     def beat(self) -> int:
@@ -91,7 +94,10 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
     @property
     def beat_shift(self) -> float:
         """A shorthand for time shift expressed in number of beats."""
-        return self.env.time.shift / self.beat_duration
+        try:
+            return self.env.time.shift / self.beat_duration
+        except ZeroDivisionError:
+            return 0
 
     @property
     def beats_per_bar(self) -> int:

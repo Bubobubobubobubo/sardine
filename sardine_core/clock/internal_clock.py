@@ -76,7 +76,10 @@ class InternalClock(BaseClock):
     @property
     def beat(self) -> int:
         # FIXME: Internal clock beat will abruptly change with tempo
-        return int(self.shifted_time // self.beat_duration)
+        try:
+            return int(self.shifted_time // self.beat_duration)
+        except ZeroDivisionError:
+            return 0
 
     @property
     def beat_duration(self) -> float:
@@ -96,7 +99,10 @@ class InternalClock(BaseClock):
 
     @property
     def phase(self) -> float:
-        return self.shifted_time % self.beat_duration
+        try:
+            return self.shifted_time % self.beat_duration
+        except ZeroDivisionError:
+            return 0
 
     @property
     def tempo(self) -> float:

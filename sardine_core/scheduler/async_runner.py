@@ -458,54 +458,66 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
-    def _get_next_deadline(self, period: Union[float, int]) -> float:
-        """Returns the amount of time until the next interval.
 
-        The base interval is determined by the `period` argument,
-        and then offsetted by the `interval_shift` attribute.
-
-        If the `snap` attribute is set to an absolute time
-        and the current clock time has not passed the snap,
-        it will take priority over whatever period was passed.
-
-        Args:
-            period (Union[float, int]):
-                The number of beats in the interval.
-
-        Returns:
-            float: The deadline for the next interval.
-        """
-        # If this is called earlier than the expected time, we should use
-        # the current time to avoid calculating the next beat too far ahead,
-        # which would cause an unusually long gap between iterations.
-        #
-        # If this is called after the expected time has already passed,
-        # we should continue from that iteration and ignore the current time.
-        # This allows returning an overdue deadline potentially caused by a
-        # high delta, letting missed iterations fire ASAP.
-        #
-        # Given the above requirements, this would be the ideal solution:
-        #     time = min(self.clock.time, self._expected_time)
-        #
-        # However, this is complicated by SleepHandler which does not guarantee
-        # that a successful iteration will never be earlier than the deadline.
-        # As such, we will additionally prevent the time from being sooner than
-        # the last successful iteration.
-        # If we ignored this and allowed deadlines earlier than the last iteration,
-        # the above solution could potentially trigger non-missed iterations too early.
-        time = max(self._last_expected_time, min(self.clock.time, self._expected_time))
-
-        self._check_snap(time)
+    def _get_next_deadline(self, period: Union[float, int], current_time: float) -> float:
+        # Original logic, modified to use `current_time` instead of self.clock.time
+        self._check_snap(current_time)
         if self.snap is not None:
             return self.snap
 
-        shifted_time = time + self.interval_shift
-
-        # If the interval was corrected, this should equal to:
-        #    `period * beat_duration`
+        shifted_time = current_time + self.interval_shift
         expected_duration = self.clock.get_beat_time(period, time=shifted_time)
 
-        return time + expected_duration
+        return current_time + expected_duration
+
+    # def _get_next_deadline(self, period: Union[float, int]) -> float:
+    #     """Returns the amount of time until the next interval.
+
+    #     The base interval is determined by the `period` argument,
+    #     and then offsetted by the `interval_shift` attribute.
+
+    #     If the `snap` attribute is set to an absolute time
+    #     and the current clock time has not passed the snap,
+    #     it will take priority over whatever period was passed.
+
+    #     Args:
+    #         period (Union[float, int]):
+    #             The number of beats in the interval.
+
+    #     Returns:
+    #         float: The deadline for the next interval.
+    #     """
+    #     # If this is called earlier than the expected time, we should use
+    #     # the current time to avoid calculating the next beat too far ahead,
+    #     # which would cause an unusually long gap between iterations.
+    #     #
+    #     # If this is called after the expected time has already passed,
+    #     # we should continue from that iteration and ignore the current time.
+    #     # This allows returning an overdue deadline potentially caused by a
+    #     # high delta, letting missed iterations fire ASAP.
+    #     #
+    #     # Given the above requirements, this would be the ideal solution:
+    #     #     time = min(self.clock.time, self._expected_time)
+    #     #
+    #     # However, this is complicated by SleepHandler which does not guarantee
+    #     # that a successful iteration will never be earlier than the deadline.
+    #     # As such, we will additionally prevent the time from being sooner than
+    #     # the last successful iteration.
+    #     # If we ignored this and allowed deadlines earlier than the last iteration,
+    #     # the above solution could potentially trigger non-missed iterations too early.
+    #     time = max(self._last_expected_time, min(self.clock.time, self._expected_time))
+
+    #     self._check_snap(time)
+    #     if self.snap is not None:
+    #         return self.snap
+
+    #     shifted_time = time + self.interval_shift
+
+    #     # If the interval was corrected, this should equal to:
+    #     #    `period * beat_duration`
+    #     expected_duration = self.clock.get_beat_time(period, time=shifted_time)
+
+    #     return time + expected_duration
 
     # Runner loop
 
@@ -529,9 +541,9 @@ class AsyncRunner:
 
         try:
             while self._is_ready_for_iteration():
-                # self._last_interval = self._get_period(self._last_state) * self.clock.beat_duration
+                current_time = self.clock.time
                 try:
-                    await self._run_once()
+                    await self._run_once(current_time)
                 except Exception as exc:
                     print(f"[red][Function exception | ({self.name})]")
                     traceback.print_exception(type(exc), exc, exc.__traceback__)
@@ -552,7 +564,7 @@ class AsyncRunner:
         period = self._get_period(self._last_state)
         self._last_interval = period * self.clock.beat_duration
 
-    async def _run_once(self):
+    async def _run_once(self, current_time: float):
         self._swimming = False
         self._reload_event.clear()
 
@@ -573,7 +585,7 @@ class AsyncRunner:
                 self._correct_interval(period)
             else:
                 self._correct_interval_background_job(period)
-            deadline = self._get_next_deadline(period)
+            deadline = self._get_next_deadline(period, current_time)
 
         # Push any deferred states that have or will arrive onto the stack
         arriving_states: list[DeferredState] = []
@@ -608,11 +620,11 @@ class AsyncRunner:
         elif state is None:
             # Nothing to do until the next deferred state arrives
             deadline = self.deferred_states[0].deadline
-            interrupted = await self._sleep_until(deadline)
+            interrupted = await self._sleep_until(deadline, current_time)
             return self._skip_iteration()
 
         # NOTE: duration will always be defined at this point
-        interrupted = await self._sleep_until(deadline)
+        interrupted = await self._sleep_until(deadline, current_time)
         if interrupted:
             return self._skip_iteration()
 
@@ -671,7 +683,7 @@ class AsyncRunner:
                 )
                 self._has_reverted = False
 
-    async def _sleep_until(self, deadline: Union[float, int]) -> bool:
+    async def _sleep_until(self, deadline: Union[float, int], current_time: float) -> bool:
         """Sleeps until the given deadline or until the runner is reloaded.
 
         Args:
@@ -681,11 +693,12 @@ class AsyncRunner:
             bool: True if the runner was reloaded, False otherwise.
         """
         self._expected_time = deadline
-        if self.clock.time >= deadline:
+        if current_time >= deadline:
             return self._reload_event.is_set()
 
         wait_task = asyncio.create_task(self.env.sleeper.sleep_until(deadline))
         reload_task = asyncio.create_task(self._reload_event.wait())
+
         try:
             done, pending = await asyncio.wait(
                 (wait_task, reload_task),

@@ -27,6 +27,7 @@ def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
 
     return decorator
 
+
 @dataclass
 class PatternInformation:
     sender: Sender
@@ -34,7 +35,9 @@ class PatternInformation:
     args: tuple[Any]
     kwargs: dict[str, Any]
     period: NumericElement
-    sync: Optional[Any] # NOTE: Actually Optional[Player] but I don't know how to type it
+    sync: Optional[
+        Any
+    ]  # NOTE: Actually Optional[Player] but I don't know how to type it
     iterator: Optional[Number]
     iterator_span: NumericElement
     iterator_limit: NumericElement

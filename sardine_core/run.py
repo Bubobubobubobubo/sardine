@@ -380,11 +380,9 @@ def panic(*runners: AsyncRunner) -> None:
     silence() capable of killing synths on-the-fly. Use as a last ressource if you are
     loosing control of the system.
     """
-    silence(*runners)
     if config.superdirt_handler:
         D("superpanic")
-        D("superpanic")
-
+    silence(*runners)
 
 def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
     """

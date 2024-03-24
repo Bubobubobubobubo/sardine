@@ -366,13 +366,15 @@ def silence(*runners: AsyncRunner) -> None:
         if config.superdirt_handler:
             hush()
 
-
 def solo(*args):
-    """Soloing a single player out of all running players"""
-    for pat in bowl.scheduler.runners:
-        if pat.name not in args:
-            silence(pat)
-
+    """Soloing a single player out of all running players, excluding background job."""
+    all_foreground_runners = list(filter(lambda x: not x.background_job, bowl.scheduler.runners))
+    all_foreground_names = list(map(lambda x: x.name, all_foreground_runners))
+    for runner in list(map(lambda x: x.name, args)):
+        if runner in all_foreground_names:
+            for e in bowl.scheduler.runners:
+                if e.name != runner:
+                    silence(e)
 
 def panic(*runners: AsyncRunner) -> None:
     """

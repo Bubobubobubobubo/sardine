@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, ParamSpec, TypeVar
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Self
 from ..handlers.sender import Number, NumericElement, Sender
 from ..utils import alias_param, get_snap_deadline, lerp
 from ..scheduler import AsyncRunner
@@ -27,7 +27,6 @@ def for_(n: int) -> Callable[[Callable[P, T]], Callable[P, T]]:
 
     return decorator
 
-
 @dataclass
 class PatternInformation:
     sender: Sender
@@ -35,6 +34,7 @@ class PatternInformation:
     args: tuple[Any]
     kwargs: dict[str, Any]
     period: NumericElement
+    sync: Optional[Any] # NOTE: Actually Optional[Player] but I don't know how to type it
     iterator: Optional[Number]
     iterator_span: NumericElement
     iterator_limit: NumericElement
@@ -96,6 +96,7 @@ class Player(BaseHandler):
         timespan: Optional[float] = None,
         until: Optional[int] = None,
         period: NumericElement = 1,
+        sync: Optional[Self] = None,
         iterator: Optional[Number] = None,
         iterator_span: Optional[Number] = 1,
         iterator_limit: Optional[Number] = None,
@@ -103,10 +104,8 @@ class Player(BaseHandler):
         rate: NumericElement = 1,
         snap: Number = 0,
         **kwargs: P.kwargs,
-    ):
+    ) -> PatternInformation:
         """Entry point of a pattern into the Player"""
-        # iteration_span = kwargs.pop("iteration_span", 1)
-        # iteration_limit = kwargs.pop("iteration_limit", 1)
 
         return PatternInformation(
             sender,
@@ -114,6 +113,7 @@ class Player(BaseHandler):
             args,
             kwargs,
             period,
+            sync,
             iterator,
             iterator_span,
             iterator_limit,
@@ -190,6 +190,9 @@ class Player(BaseHandler):
 
         # Moving the iterator up
         self.iterator += self._iterator_span
+
+        # If synced, we use the iterator from the other player
+        self.iterator = pattern.sync.iterator if pattern.sync else self.iterator
 
         period = self.get_new_period(pattern)
         if not dur:

@@ -41,7 +41,7 @@ bowl = FishBowl(
 config = read_user_configuration()
 if config.boot_supercollider:
     try:
-        SC = SuperDirtProcess(
+        SuperCollider = SuperDirtProcess(
             startup_file=(
                 config.superdirt_config_path if config.sardine_boot_file else None
             ),
@@ -688,3 +688,11 @@ def spl_debug():
             message = bowl.parser._parse_debug(user_input)
         except Exception as e:
             print(e)
+
+
+def runners():
+    """
+    A function to list the currently active runners
+    """
+    return list(map(lambda x: x.name, filter(
+        lambda x: x.name != 'tidal_loop', bowl.scheduler.runners)))

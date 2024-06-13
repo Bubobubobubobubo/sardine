@@ -2,7 +2,7 @@
   <b>Sardine</b>: ✨ Live Coding Library for Python ✨
 </h2>
 <p align="center"><i>
-  Python's missing algorave module. Hackable live coding tool for modern Python (3.10+)
+  Python's missing Algorave module. Hackable live coding tool for modern Python (3.10+)
 </i></p>
 
 <p align="center">
@@ -21,7 +21,8 @@
   <a href="https://sardine.raphaelforment.fr/showcase">Examples</a> |
   <a href="https://sardine.raphaelforment.fr/installation/">Installation</a> |
   <a href="https://raphaelforment.fr/">Author</a>  |
-  <a href="https://toplap.org/">About Live Coding</a>
+  <a href="https://toplap.org/">About Live Coding</a> |
+  <a href="https://livecoding.fr/">Live Coding France</a>
   <br><br>
   <p align='center'>
     <a href="https://github.com/bubobubobubobubo/sardine/graphs/contributors">
@@ -38,21 +39,18 @@
 
 ![Sardine algorave picture](pictures/sardine_intro_picture_repo.png)
 
-**Sardine** is a versatile and hacker-friendly Python library designed for musical improvisation, algorithmic composition, and beyond.
-It transforms your standard **Python** interpreter into a powerful music instrument, enabling you to create and map melodic and rhythmic
-patterns to any electronic instrument (**MIDI**, **OSC**, and **SuperCollider**).
-With **Sardine**, you can:
+**Sardine** is a versatile and user-friendly Python library designed for musical improvisation, algorithmic composition, and more. It turns your standard Python interpreter into a powerful musical instrument, allowing you to create and map melodic and rhythmic patterns to any electronic instrument (**MIDI**, **OSC**, and **SuperCollider**). With **Sardine**, you can:
 
-- **Unleash your musical creativity on stage, in the studio, or for personal enjoyment**
+- **Unleash your musical creativity on stage or in the studio**
   - Seamlessly communicate with any MIDI/OSC device and the **SuperCollider** audio engine using **Sardine**.
-  - Utilize bindings for **SuperDirt**, a widely recognized synthesis engine embraced by live coders globally.
+  - Utilize bindings for **SuperDirt**, a widely recognized audio engine embraced by live coders globally.
 
-- **Empower your Python code with time-aware capabilities**
+- **Python code but with time/tempo-awareness**
   - Employ temporal recursion to make any Python code time and tempo aware.
   - Accurately launch synchronous or asynchronous functions with time-specific results.
-  - Customize your own **Senders** or **Receivers** to pattern any desired elements!
+  - Customize your own **Senders** or **Receivers** to pattern any kind of data!
 
-- **Develop intricate audio/visual installations with MIDI and OSC *I/O***
+- **Develop intricate audiovisual performances with MIDI and OSC *I/O***
   - Assign **callbacks** to any OSC event, transforming **Sardine** into a sophisticated reactive toolbox.
   - Monitor changing values and incorporate them into your musical patterns or code.
 
@@ -66,17 +64,13 @@ Refer to the [installation section](https://sardine.raphaelforment.fr/installati
 
 ## Contributions
 
-Sardine is in its early stages of development, and we're actively seeking contributors to help enhance the project. If you're passionate
-about music and technology, we welcome your expertise, whether it's code, documentation, or ideas. We are looking for contributors! 
+Sardine is in its early stages of development, and we're actively seeking contributors to help the project. If you're passionate about music and technology, we welcome your expertise, whether it's code, documentation, or ideas. We are looking for contributors! 
 
 To collaborate with the Sardine community, connect with us on **Discord**, **Github** or send a private message if you have specific inquiries.
-Together, we can create an even more powerful tool for musical expression and creativity!
 
 ### Generating documentation
 
-**Sardine** documentation is using [mdbook](https://rust-lang.github.io/mdBook/guide/creating.html).
-
-You first need to have [Rust](https://www.rust-lang.org/tools/install) properly installed.
+**Sardine** documentation is using [mdbook](https://rust-lang.github.io/mdBook/guide/creating.html). You first need to have [Rust](https://www.rust-lang.org/tools/install) properly installed.
 
 ```
 cargo install mdbook

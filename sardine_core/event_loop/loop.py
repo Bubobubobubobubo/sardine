@@ -12,16 +12,13 @@ __all__ = (
 
 if hasattr(asyncio, "ProactorEventLoop"):
 
-    class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop):
-        ...
+    class PrecisionProactorEventLoop(PerfCounterMixin, asyncio.ProactorEventLoop): ...
 
 else:
     PrecisionProactorEventLoop = None
 
 
-class PrecisionSansIOEventLoop(PerfCounterMixin, SansIOEventLoop):
-    ...
+class PrecisionSansIOEventLoop(PerfCounterMixin, SansIOEventLoop): ...
 
 
-class PrecisionSelectorEventLoop(PerfCounterMixin, asyncio.SelectorEventLoop):
-    ...
+class PrecisionSelectorEventLoop(PerfCounterMixin, asyncio.SelectorEventLoop): ...

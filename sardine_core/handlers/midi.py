@@ -21,7 +21,6 @@ def find_midi_out_port(name: str) -> Optional[str]:
 
 
 class MidiHandler(Sender):
-
     """
     MidiHandler: a class capable of reacting to most MIDI Messages.
     """

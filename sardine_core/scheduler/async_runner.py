@@ -46,19 +46,13 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
 
 
 def _extract_new_period(
-    sig: inspect.Signature,
-    kwargs: dict[str, Any],
-    default_period: int | float
+    sig: inspect.Signature, kwargs: dict[str, Any], default_period: int | float
 ) -> Union[float, int]:
     period = kwargs.get("p")
 
     if period is None:
         param = sig.parameters.get("p")
-        period = getattr(
-            param,
-            "default",
-            default_period
-        )
+        period = getattr(param, "default", default_period)
 
     if callable(period):
         try:
@@ -72,6 +66,7 @@ def _extract_new_period(
         raise BadPeriodError(f"Period must be >0, not {period}")
 
     return period
+
 
 def _missing_kwargs(
     sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]
@@ -296,19 +291,19 @@ class AsyncRunner:
     # Setters
 
     @period.setter
-    def period(self, value: int|float):
+    def period(self, value: int | float):
         self._default_period = value
 
     @period.setter
-    def p(self, value: int|float):
+    def p(self, value: int | float):
         self._default_period = value
 
     @iter.setter
-    def iter(self, value: int|float):
+    def iter(self, value: int | float):
         self._iter = value
 
     @i.setter
-    def i(self, value: int|float):
+    def i(self, value: int | float):
         self._iter = value
 
     # State management
@@ -701,9 +696,7 @@ class AsyncRunner:
             return 0.0
 
         return _extract_new_period(
-            inspect.signature(state.func),
-            state.kwargs,
-            self.period
+            inspect.signature(state.func), state.kwargs, self.period
         )
 
     def _get_state(self) -> Optional[FunctionState]:

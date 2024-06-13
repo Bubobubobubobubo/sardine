@@ -24,7 +24,6 @@ Fraction.cycle_pos = lambda self: self - self.sam()
 
 @total_ordering
 class TimeSpan(object):
-
     """TimeSpan is (Time, Time)"""
 
     def __init__(self, begin: Fraction, end: Fraction):
@@ -99,7 +98,6 @@ class TimeSpan(object):
 
 @total_ordering
 class Event:
-
     """
     Event class, representing a value active during the timespan
     'part'. This might be a fragment of an event, in which case the

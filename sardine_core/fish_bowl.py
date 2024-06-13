@@ -15,8 +15,7 @@ __all__ = ("FishBowl",)
 class HookProtocol(Hashable, Protocol):
     """A callable object that accepts an event and any number of arguments."""
 
-    def __call__(self, event: str, *args):
-        ...
+    def __call__(self, event: str, *args): ...
 
 
 class FishBowl:
@@ -45,13 +44,13 @@ class FishBowl:
         self._resumed = asyncio.Event()
         self._vortex_subscribers: list = []
 
-        self._event_hooks: dict[
-            Optional[str], dict[HookProtocol, None]
-        ] = collections.defaultdict(dict)
+        self._event_hooks: dict[Optional[str], dict[HookProtocol, None]] = (
+            collections.defaultdict(dict)
+        )
         # Reverse mapping for easier removal of hooks
-        self._hook_events: dict[
-            HookProtocol, dict[Optional[str], None]
-        ] = collections.defaultdict(dict)
+        self._hook_events: dict[HookProtocol, dict[Optional[str], None]] = (
+            collections.defaultdict(dict)
+        )
 
         self.add_handler(self.clock)
         self.add_handler(self.parser)
@@ -77,9 +76,7 @@ class FishBowl:
         status = (
             "playing"
             if running and not paused
-            else "paused"
-            if running and paused
-            else "stopped"
+            else "paused" if running and paused else "stopped"
         )
 
         return "<{} {} clock={!r}>".format(

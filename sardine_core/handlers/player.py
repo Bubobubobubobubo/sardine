@@ -49,7 +49,6 @@ class PatternInformation:
 
 
 class Player(BaseHandler):
-
     """
     Players are holders used to support one-line specialised swimming functions. Many
     instances of 'Player' are injected in globals() at boot time as a way to provide a

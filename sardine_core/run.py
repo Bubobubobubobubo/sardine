@@ -163,8 +163,7 @@ def swim(
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     **kwargs: ParamSpec.kwargs,
-) -> AsyncRunner:
-    ...
+) -> AsyncRunner: ...
 
 
 @overload
@@ -173,8 +172,7 @@ def swim(
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     **kwargs,
-) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]:
-    ...
+) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
 
 
 # pylint: disable=keyword-arg-before-vararg  # signature is valid

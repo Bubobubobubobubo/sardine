@@ -305,7 +305,7 @@ def print_config(user_configuration: dict) -> None:
     table.add_column("Key", style="cyan", no_wrap=True)
     table.add_column("Value", style="magenta")
     table.add_column("?", style="yellow")
-    for (key, value) in user_configuration.items():
+    for key, value in user_configuration.items():
         table.add_row(
             key, str(value), explanations[key] if key in explanations else "?"
         )

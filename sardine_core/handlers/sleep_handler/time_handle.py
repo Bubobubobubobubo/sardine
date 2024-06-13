@@ -18,9 +18,7 @@ class TimeHandle:
         status = (
             "pending"
             if not self.fut.done()
-            else "done"
-            if not self.fut.cancelled()
-            else "cancelled"
+            else "done" if not self.fut.cancelled() else "cancelled"
         )
 
         return "<{} {} when={}>".format(

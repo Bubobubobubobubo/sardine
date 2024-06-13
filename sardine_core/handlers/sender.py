@@ -40,7 +40,6 @@ def _maybe_length(val: RecursiveElement) -> int:
 
 
 class Sender(BaseHandler):
-
     """
     Handlers can inherit from 'Sender' if they are in charge of some output operation.
     Output operations in Sardine generally involve some amount of pattern parsing and

@@ -622,9 +622,10 @@ class AsyncRunner:
             return self._skip_iteration()
 
         # NOTE: duration will always be defined at this point
-        interrupted = await self._sleep_until(deadline)
-        if interrupted:
-            return self._skip_iteration()
+        if not self.background_job:
+            interrupted = await self._sleep_until(deadline)
+            if interrupted:
+                return self._skip_iteration()
 
         try:
             # Use copied context in function by creating it as a task

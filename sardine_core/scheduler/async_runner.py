@@ -46,13 +46,19 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
 
 
 def _extract_new_period(
-    sig: inspect.Signature, kwargs: dict[str, Any]
+    sig: inspect.Signature,
+    kwargs: dict[str, Any],
+    default_period: int | float
 ) -> Union[float, int]:
     period = kwargs.get("p")
 
     if period is None:
         param = sig.parameters.get("p")
-        period = getattr(param, "default", 1)
+        period = getattr(
+            param,
+            "default",
+            default_period
+        )
 
     if callable(period):
         try:
@@ -127,8 +133,11 @@ class AsyncRunner:
     name: str
     """Uniquely identifies a runner when it is added to a scheduler."""
 
-    iter: int
+    _iter: int
     """Number of times this asyncrunner has been executed"""
+
+    _default_period: int | float
+    """Default recursion period"""
 
     background_job: bool
     """Determines if the asyncrunner should be running the background
@@ -212,7 +221,8 @@ class AsyncRunner:
         self.deferred_states = []
         self.interval_shift = 0.0
         self.snap = None
-        self.iter = 0
+        self._iter = 0
+        self._default_period = 0.25
         self.background_job = False
 
         self._swimming = False
@@ -262,6 +272,44 @@ class AsyncRunner:
     def time(self) -> Time:
         """The fish bowl's current time."""
         return self.scheduler.env.time
+
+    @property
+    def period(self) -> int | float:
+        """The default period duration between recursions"""
+        return self._default_period
+
+    @property
+    def p(self) -> int | float:
+        """Alias for period"""
+        return self._default_period
+
+    @property
+    def iter(self) -> int | float:
+        """The current iteration number"""
+        return self._iter
+
+    @property
+    def i(self) -> int | float:
+        """Alias for iter"""
+        return self._iter
+
+    # Setters
+
+    @period.setter
+    def period(self, value: int|float):
+        self._default_period = value
+
+    @period.setter
+    def p(self, value: int|float):
+        self._default_period = value
+
+    @iter.setter
+    def iter(self, value: int|float):
+        self._iter = value
+
+    @i.setter
+    def i(self, value: int|float):
+        self._iter = value
 
     # State management
 
@@ -577,7 +625,7 @@ class AsyncRunner:
             args = state.args
             # Prevent any TypeErrors when the user reduces the signature
             kwargs = _discard_kwargs(signature, state.kwargs)
-            period = _extract_new_period(signature, state.kwargs)
+            period = _extract_new_period(signature, state.kwargs, self._default_period)
 
             if not self.background_job:
                 self._correct_interval(period)
@@ -635,7 +683,7 @@ class AsyncRunner:
             )
         finally:
             self._last_expected_time = self._expected_time
-            self.iter += 1
+            self._iter += 1
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
@@ -648,12 +696,15 @@ class AsyncRunner:
 
         return await maybe_coro(func, *args, **kwargs)
 
-    @staticmethod
-    def _get_period(state: Optional[FunctionState]) -> Union[float, int]:
+    def _get_period(self, state: Optional[FunctionState]) -> Union[float, int]:
         if state is None:
             return 0.0
 
-        return _extract_new_period(inspect.signature(state.func), state.kwargs)
+        return _extract_new_period(
+            inspect.signature(state.func),
+            state.kwargs,
+            self.period
+        )
 
     def _get_state(self) -> Optional[FunctionState]:
         return self.states[-1] if self.states else None

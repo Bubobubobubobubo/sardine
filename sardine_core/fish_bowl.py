@@ -88,14 +88,14 @@ class FishBowl:
             self.clock,
         )
 
-    ## TRANSPORT ##############################################################
+    ## TRANSPORT ##############################################################
 
     def pause(self) -> bool:
         """Pauses the fish bowl.
 
         This will emit a `pause` event unless the fish bowl does
-        not need to be paused, e.g. being paused once already or not
-        having started.
+        not need to be paused, e.g. being paused once already or
+        not having started.
 
         Returns:
             bool: True if the fish bowl was paused, False otherwise.

@@ -145,8 +145,10 @@ def _select_bpm_and_timing(config_file: dict) -> dict:
     config_file["link_clock"] = link_clock
     tempo = inquirer.number(
         message="Input a new default tempo (BPM):",
-        min_allowed=20,
+        min_allowed=20.0,
+        default=120.0,
         max_allowed=800,
+        float_allowed=True,
         validate=EmptyInputValidator(),
     ).execute()
     config_file["bpm"] = float(tempo)

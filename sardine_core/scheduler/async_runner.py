@@ -49,9 +49,16 @@ def _extract_new_period(
     sig: inspect.Signature, kwargs: dict[str, Any]
 ) -> Union[float, int]:
     period = kwargs.get("p")
+
     if period is None:
         param = sig.parameters.get("p")
         period = getattr(param, "default", 1)
+
+    if callable(period):
+        try:
+            period = period()
+        except Exception as e:
+            raise BadPeriodError(f"Error evaluating function for period: {e}")
 
     if not isinstance(period, (float, int)):
         raise BadPeriodError(f"Period must be a float or integer, not {period!r}")
@@ -59,7 +66,6 @@ def _extract_new_period(
         raise BadPeriodError(f"Period must be >0, not {period}")
 
     return period
-
 
 def _missing_kwargs(
     sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]
@@ -120,6 +126,9 @@ class AsyncRunner:
 
     name: str
     """Uniquely identifies a runner when it is added to a scheduler."""
+
+    iter: int
+    """Number of times this asyncrunner has been executed"""
 
     background_job: bool
     """Determines if the asyncrunner should be running the background
@@ -203,6 +212,7 @@ class AsyncRunner:
         self.deferred_states = []
         self.interval_shift = 0.0
         self.snap = None
+        self.iter = 0
         self.background_job = False
 
         self._swimming = False
@@ -624,6 +634,7 @@ class AsyncRunner:
             )
         finally:
             self._last_expected_time = self._expected_time
+            self.iter += 1
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift

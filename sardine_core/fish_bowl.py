@@ -64,7 +64,7 @@ class FishBowl:
         """A list of all handlers added to this fish bowl."""
         return list(self._handlers)
 
-    ## DUNDER #################################################################
+    ## DUNDER #################################################################
 
     def __del__(self):
         self.stop()

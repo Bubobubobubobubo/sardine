@@ -183,6 +183,7 @@ def swim(
     snap: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     background_job: bool = False,
+    quant='beat',
     **kwargs,
 ):
     """

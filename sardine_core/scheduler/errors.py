@@ -12,3 +12,6 @@ class BadArgumentError(BadFunctionError):
 
 class BadPeriodError(BadFunctionError):
     """The period for a given function was not valid."""
+
+class BadQuantError(BadFunctionError):
+    """The quant for a given function was not valid."""

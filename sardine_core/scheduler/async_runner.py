@@ -67,6 +67,11 @@ def _extract_new_period(
 
     return period
 
+def _extract_sync_mode(sig: inspect.Signature, kwargs: dict[str, Any]) -> str:
+    quant = kwargs.get("quant")
+    if not isinstance(quant, (str)):
+        raise BadQuantError(f"Quant must be a valid str ('beat', 'bar', 'now'), not {quant!r}")
+    return quant
 
 def _missing_kwargs(
     sig: inspect.Signature, args: tuple[Any], kwargs: dict[str, Any]

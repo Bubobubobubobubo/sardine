@@ -31,7 +31,6 @@ TEMPLATE_CONFIGURATION = {
         "link_clock": False,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
-        "deferred_scheduling": True,
         "editor": False,
     }
 }
@@ -61,7 +60,6 @@ class Config:
     superdirt_handler: bool
     sardine_boot_file: bool
     link_clock: bool
-    deferred_scheduling: bool
     editor: bool
 
     @classmethod
@@ -80,7 +78,6 @@ class Config:
             link_clock=config["link_clock"],
             superdirt_config_path=config["superdirt_config_path"],
             user_config_path=config["user_config_path"],
-            deferred_scheduling=config["deferred_scheduling"],
             editor=config["editor"],
         )
 
@@ -99,7 +96,6 @@ class Config:
                 "superdirt_config_path": self.superdirt_config_path,
                 "link_clock": self.link_clock,
                 "user_config_path": self.user_config_path,
-                "deferred_scheduling": self.deferred_scheduling,
                 "editor": self.editor,
             }
         }

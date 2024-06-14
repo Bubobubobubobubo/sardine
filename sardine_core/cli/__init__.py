@@ -254,15 +254,6 @@ def _select_additional_options(config_file: dict) -> dict:
             )
         )
     )
-    debug = inquirer.select(
-        message="Turn on parser debug mode?",
-        choices=[
-            Choice(value=True, enabled=True, name="Yes"),
-            Choice(value=False, name="No"),
-        ],
-        default=None,
-    ).execute()
-    config_file["debug"] = debug
     user_config_path = inquirer.text(
         message="Enter your user Python config file path\n\
 (leave blank for default):"
@@ -289,8 +280,6 @@ def print_config(user_configuration: dict) -> None:
         "beats": "Number of beats per measure",
         "boot_supercollider": "Should Sardine boot SuperCollider?",
         "bpm": "Tempo in BPM",
-        "debug": "Turn on parser debug mode (devs only)",
-        "deferred_scheduling": "Use deferred scheduling (devs only)",
         "editor": "Should Sardine use its own editor?",
         "link_clock": "Should Sardine use Ableton Link Clock?",
         "midi": "Currently selected MIDI output",

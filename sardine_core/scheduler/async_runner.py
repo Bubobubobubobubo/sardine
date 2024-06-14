@@ -176,12 +176,12 @@ class AsyncRunner:
     running at different phases. To synchronize these functions together,
     their interval shifts should be set to the same value (usually 0).
     """
-    quant: Optional[Union[float, int]]
+    snap: Optional[Union[float, int]]
     """
     The absolute time that the next interval should start at.
 
     Setting this attribute will take priority over the regular interval
-    on the next iteration and cause the runner to wait until the quant
+    on the next iteration and cause the runner to wait until the snap
     deadline has arrived.
 
     The `delay_interval()` method combines this with interval shifting
@@ -191,8 +191,8 @@ class AsyncRunner:
     this attribute will be reset to `None`.
 
     Note that deferred states will take priority over this, and in fact even
-    replace the quant, if one or more of those states specify a deadline earlier
-    than the current quant's deadline.
+    replace the snap, if one or more of those states specify a deadline earlier
+    than the current snap's deadline.
     """
 
     _swimming: bool
@@ -215,7 +215,7 @@ class AsyncRunner:
         self.states = deque(maxlen=self.MAX_FUNCTION_STATES)
         self.deferred_states = []
         self.interval_shift = 0.0
-        self.quant= None
+        self.snap = None
         self._iter = 0
         self._default_period = 1
         self.background_job = False
@@ -314,10 +314,10 @@ class AsyncRunner:
         It is recommended to reload the runner after this in case the
         current iteration sleeps past the deadline.
 
-        Note that this does not take priority over the `quant` attribute;
-        if quant is specified, the runner will continue to wait for that
+        Note that this does not take priority over the `snap` attribute;
+        if a snap is specified, the runner will continue to wait for that
         deadline to pass. If running a new function immediately is desired,
-        the `quant` should be set to `None` before reloading the runner.
+        the `snap` should be set to `None` before reloading the runner.
 
         Args:
             func (MaybeCoroFunc): The function to add.
@@ -348,8 +348,8 @@ class AsyncRunner:
         It is recommended to reload the runner after this in case the
         current iteration sleeps past the deadline.
 
-        If there is an existing `quant` deadline, deferred states will take
-        priority and replace the `quant` attribute to ensure they run on time.
+        If there is an existing `snap` deadline, deferred states will take
+        priority and replace the `snap` attribute to ensure they run on time.
 
         Args:
             time (Union[float, int]):
@@ -451,7 +451,7 @@ class AsyncRunner:
     def delay_interval(self, deadline: Union[float, int], period: Union[float, int]):
         """Delays the next iteration until the given deadline has passed.
 
-        This is equivalent to setting the runner's `quant` attribute
+        This is equivalent to setting the runner's `snap` attribute
         to the deadline and also applying an appropriate interval
         shift to synchronize the period.
 
@@ -469,12 +469,12 @@ class AsyncRunner:
         Raises:
             RuntimeError: A function must be pushed before this can be used.
         """
-        self.quant = deadline
+        self.snap = deadline
         self.interval_shift = self.clock.get_beat_time(period, time=deadline)
 
-    def _check_quant(self, time: float):
-        if self.quant is not None and time + self._last_interval >= self.quant:
-            self.quant = None
+    def _check_snap(self, time: float):
+        if self.snap is not None and time + self._last_interval >= self.snap:
+            self.snap = None
 
     def _correct_interval(self, period: Union[float, int]):
         """Checks if the interval should be corrected.
@@ -517,8 +517,8 @@ class AsyncRunner:
         The base interval is determined by the `period` argument,
         and then offsetted by the `interval_shift` attribute.
 
-        If the `quant` attribute is set to an absolute time
-        and the current clock time has not passed the quant,
+        If the `snap` attribute is set to an absolute time
+        and the current clock time has not passed the snap,
         it will take priority over whatever period was passed.
 
         Args:
@@ -548,9 +548,9 @@ class AsyncRunner:
         # the above solution could potentially trigger non-missed iterations too early.
         time = max(self._last_expected_time, min(self.clock.time, self._expected_time))
 
-        self._check_quant(time)
-        if self.quant is not None:
-            return self.quant
+        self._check_snap(time)
+        if self.snap is not None:
+            return self.snap
 
         shifted_time = time + self.interval_shift
 

@@ -4,7 +4,7 @@ from functools import wraps
 from itertools import product
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, Literal, overload
 
 from . import *
 from .io.UserConfig import read_user_configuration, read_extension_configuration
@@ -12,7 +12,7 @@ from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import greeter_printer, get_snap_deadline, join, sardine_intro
+from .utils import greeter_printer, get_quant_deadline, join, sardine_intro
 from ziffers import z
 
 ParamSpec = ParamSpec("PS")
@@ -160,7 +160,7 @@ def swim(
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
     *args: ParamSpec.args,
-    snap: Optional[Union[float, int]] = 0,
+    quant: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     **kwargs: ParamSpec.kwargs,
 ) -> AsyncRunner: ...
@@ -169,7 +169,7 @@ def swim(
 @overload
 def swim(
     *args,
-    snap: Optional[Union[float, int]] = 0,
+    quant: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     **kwargs,
 ) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
@@ -180,7 +180,7 @@ def swim(
     func: Optional[Union[Callable, AsyncRunner]] = None,
     /,
     *args,
-    snap: Optional[Union[float, int]] = 0,
+    quant: Optional[Union[float, int]] = 0,
     until: Optional[int] = None,
     background_job: bool = False,
     **kwargs,
@@ -194,9 +194,9 @@ def swim(
             The function to be scheduled. If this is an AsyncRunner,
             the current state is simply updated with new arguments.
         *args: Positional arguments to be passed to `func.`
-        snap (Optional[Union[float, int]]):
+        quant (Optional[Union[float, int]]):
             If set to a numeric value, the new function will be
-            deferred until the next bar + `snap` beats arrives.
+            deferred until the next bar + `quant` beats arrives.
             If None, the function is immediately pushed and will
             run on its next interval.
             If `func` is an AsyncRunner, this parameter has no effect.
@@ -236,8 +236,8 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif snap is not None:
-            deadline = get_snap_deadline(bowl.clock, snap)
+        elif quant is not None:
+            deadline = get_quant_deadline(bowl.clock, quant)
             runner.push_deferred(deadline, func, *args, **kwargs)
         else:
             runner.push(func, *args, **kwargs)
@@ -626,7 +626,7 @@ if config.superdirt_handler:
     )
 
     # Background asyncrunner for running tidal patterns
-    @swim(background_job=True, snap=dirt.nudge)
+    @swim(background_job=True, quant=dirt.nudge)
     def tidal_loop(p=0.05):
         """Background Tidal/Vortex AsyncRunner:
         Notify Tidal Streams of the current passage of time.

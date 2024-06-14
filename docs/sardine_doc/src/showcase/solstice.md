@@ -330,7 +330,7 @@ def structure(p=0.5, i=0):
 
 silence(structure)
 Pc >> None
-@swim(snap=0)
+@swim(quant=0)
 def baba(p=0.5, i=0):
     D('ff', i=i, d=4, shape=0.5)
     D('s:[1:20]', i=i, d=3, speed='1|1|2|4', legato=0.4, pan='r')
@@ -342,7 +342,7 @@ def baba(p=0.5, i=0):
 
 
 Pb >> None
-@swim(snap=0)
+@swim(quant=0)
 def baba(p=0.5, i=0):
     D('long', orbit=3, cut=1, begin='r', i=i)
     D('ff', i=i, d=4)
@@ -350,7 +350,7 @@ def baba(p=0.5, i=0):
     again(baba, p=0.25, i=i+1)
 
 
-@swim(snap=0)
+@swim(quant=0)
 def baba(p=0.5, i=0):
     D('ulh:60', orbit=3, cut=1, begin='r', i=i)
     D('ff', i=i, d=4)

@@ -38,7 +38,7 @@ def alias_param(name: str, alias: str):
     return deco
 
 
-def get_snap_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
+def get_quant_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
     time = clock.shifted_time
     next_bar = clock.get_bar_time(1, time=time)
     offset = clock.get_beat_time(offset_beats, sync=False)

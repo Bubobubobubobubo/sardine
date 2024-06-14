@@ -19,12 +19,12 @@ Try to add or remove the `span` argument and listen to the difference.
 Play carefully with it as you might sometimes end up with weird rhythmical results, especially if you are already playing complex rhythms with `p`.
 
 
-## Snap argument (Swimming functions)
+## Quant argument (Swimming functions)
 
-`snap` is an additional argument for the `@swim` decorator. `snap` will time-shift the beginning of your pattern around the first beat of the measure:
+`quant` is an additional argument for the `@swim` decorator. `quant` will time-shift the beginning of your pattern around the first beat of the measure:
 
-- `snap=1` will start the pattern one beat after the beginning of the bar.
-- `snap=-0.5` will start the pattern half a beat before the beginning of the next bar.
+- `quant=1` will start the pattern one beat after the beginning of the bar.
+- `quant=-0.5` will start the pattern half a beat before the beginning of the next bar.
 
 It is a useful function for shifting things around and for synchronising **Sardine** in some scenarios (recording, etc..).
 
@@ -48,7 +48,7 @@ def baba(p=0.5, i=0):
     again(baba, p=P('[1:0.1,0.1]', i), i=i+1)
 ```
 
-You can also pair it with the `snap` argument if you wish to!
+You can also pair it with the `quant` argument if you wish to!
 
 Here is the bouncing ball example from above written using the Players syntax:
 

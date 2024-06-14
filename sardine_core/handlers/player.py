@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Self
 from ..handlers.sender import Number, NumericElement, Sender
-from ..utils import alias_param, get_snap_deadline, lerp
+from ..utils import alias_param, get_quant_deadline, lerp
 from ..scheduler import AsyncRunner
 from dataclasses import dataclass
 from ..base import BaseHandler
@@ -43,7 +43,7 @@ class PatternInformation:
     iterator_limit: NumericElement
     divisor: NumericElement
     rate: NumericElement
-    snap: Number
+    quant: Number
     timespan: Optional[float]
     until: Optional[int]
 
@@ -104,7 +104,7 @@ class Player(BaseHandler):
         iterator_limit: Optional[Number] = None,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        snap: Number = 0,
+        quant: Number = 0,
         **kwargs: P.kwargs,
     ) -> PatternInformation:
         """Entry point of a pattern into the Player"""
@@ -121,7 +121,7 @@ class Player(BaseHandler):
             iterator_limit,
             divisor,
             rate,
-            snap,
+            quant,
             timespan,
             until,
         )
@@ -226,7 +226,7 @@ class Player(BaseHandler):
 
         period = self.get_new_period(pattern)
 
-        deadline = get_snap_deadline(self.env.clock, pattern.snap)
+        deadline = get_quant_deadline(self.env.clock, pattern.quant)
         self.runner.push_deferred(
             deadline,
             for_(pattern.until)(self.func) if pattern.until else self.func,

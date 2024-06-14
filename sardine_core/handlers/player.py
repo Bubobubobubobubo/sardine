@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Self
 from ..handlers.sender import Number, NumericElement, Sender
-from ..utils import alias_param, get_quant_deadline, lerp
+from ..utils import Quant, alias_param, get_deadline_from_quant, lerp
 from ..scheduler import AsyncRunner
 from dataclasses import dataclass
 from ..base import BaseHandler
@@ -43,7 +43,7 @@ class PatternInformation:
     iterator_limit: NumericElement
     divisor: NumericElement
     rate: NumericElement
-    quant: Number
+    quant: Quant
     timespan: Optional[float]
     until: Optional[int]
 
@@ -104,7 +104,7 @@ class Player(BaseHandler):
         iterator_limit: Optional[Number] = None,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        quant: Number = 0,
+        quant: Quant = 0,
         **kwargs: P.kwargs,
     ) -> PatternInformation:
         """Entry point of a pattern into the Player"""
@@ -224,15 +224,14 @@ class Player(BaseHandler):
         # the new pattern can be synchronized
         self.runner.interval_shift = 0.0
 
+        func = for_(pattern.until)(self.func) if pattern.until else self.func
+        deadline = get_deadline_from_quant(self.env.clock, pattern.quant)
         period = self.get_new_period(pattern)
 
-        deadline = get_quant_deadline(self.env.clock, pattern.quant)
-        self.runner.push_deferred(
-            deadline,
-            for_(pattern.until)(self.func) if pattern.until else self.func,
-            pattern=pattern,
-            p=period,
-        )
+        if deadline is None:
+            self.runner.push(func, pattern=pattern, p=period)
+        else:
+            self.runner.push_deferred(deadline, func, pattern=pattern, p=period)
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

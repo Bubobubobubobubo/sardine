@@ -4,7 +4,7 @@ from functools import wraps
 from itertools import product
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, Literal, overload
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
 from . import *
 from .io.UserConfig import read_user_configuration, read_extension_configuration
@@ -12,7 +12,7 @@ from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import greeter_printer, get_quant_deadline, join, sardine_intro
+from .utils import Quant, greeter_printer, get_deadline_from_quant, join, sardine_intro
 from ziffers import z
 
 ParamSpec = ParamSpec("PS")
@@ -175,12 +175,13 @@ def swim(
 ) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
 
 
+# FIXME: quant docstring is outdated
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
 def swim(
     func: Optional[Union[Callable, AsyncRunner]] = None,
     /,
     *args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = 0,
     until: Optional[int] = None,
     background_job: bool = False,
     **kwargs,
@@ -194,7 +195,7 @@ def swim(
             The function to be scheduled. If this is an AsyncRunner,
             the current state is simply updated with new arguments.
         *args: Positional arguments to be passed to `func.`
-        quant (Optional[Union[float, int]]):
+        quant (Quant):
             If set to a numeric value, the new function will be
             deferred until the next bar + `quant` beats arrives.
             If None, the function is immediately pushed and will
@@ -236,24 +237,12 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif quant is not None and quant != 'now':
-            if isinstance(quant, (float, int)):
-                deadline = get_quant_deadline(bowl.clock, quant)
-                runner.push_deferred(deadline, func, *args, **kwargs)
-            elif isinstance(quant, str):
-                if quant == 'beat':
-                    time = bowl.clock.shifted_time
-                    deadline = time + bowl.clock.get_beat_time(1, time=time)
-                elif quant == 'bar':
-                    deadline = get_quant_deadline(bowl.clock, 0)
-                runner.push_deferred(deadline, func, *args, **kwargs)
-            else:
-                raise ValueError(
-                    f"Invalid snap argument {snap!r}; must be 'now', 'beat', "
-                    f"'bar', None, or a numeric offset measured in beats"
-                )
-        else:
+
+        deadline = get_deadline_from_quant(bowl.clock, quant)
+        if deadline is None:
             runner.push(func, *args, **kwargs)
+        else:
+            runner.push_deferred(deadline, func, *args, **kwargs)
 
         # Intentionally avoid interval correction so
         # the user doesn't accidentally nudge the runner

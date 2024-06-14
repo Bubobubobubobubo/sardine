@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Literal, Optional, ParamSpec, TypeVar, Union
 
 from .Messages import *
 
@@ -11,6 +11,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 Number = Union[float, int]
+Quant = Optional[Union[Number, Literal["now", "beat", "bar"]]]
 
 MISSING = object()
 
@@ -38,10 +39,23 @@ def alias_param(name: str, alias: str):
     return deco
 
 
-def get_quant_deadline(clock: "BaseClock", offset_beats: Union[float, int]):
+def get_deadline_from_quant(clock: "BaseClock", quant: Quant) -> Optional[float]:
+    if quant == "now" or quant is None:
+        return None
+    elif quant == "beat":
+        time = clock.shifted_time
+        return time + clock.get_beat_time(1, time=time)
+    elif quant == "bar":
+        return get_deadline_from_quant(clock, 0)
+    elif not isinstance(quant, (float, int)):
+        raise ValueError(
+            f"Invalid quant argument {quant!r}; must be 'now', 'beat', "
+            f"'bar', None, or a numeric offset measured in beats"
+        )
+
     time = clock.shifted_time
     next_bar = clock.get_bar_time(1, time=time)
-    offset = clock.get_beat_time(offset_beats, sync=False)
+    offset = clock.get_beat_time(quant, sync=False)
     return time + next_bar + offset
 
 

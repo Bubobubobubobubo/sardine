@@ -664,7 +664,7 @@ class AsyncRunner:
             interrupted = await self._sleep_until(deadline)
             return self._skip_iteration()
 
-        # NOTE: duration will always be defined at this point
+        # NOTE: deadline will always be defined at this point
         if not self.background_job:
             interrupted = await self._sleep_until(deadline)
             if interrupted:

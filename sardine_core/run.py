@@ -236,19 +236,17 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif quant is not None quant != 'now':
+        elif quant is not None and quant != 'now':
             if isinstance(quant, (float, int)):
                 deadline = get_quant_deadline(bowl.clock, quant)
                 runner.push_deferred(deadline, func, *args, **kwargs)
             elif isinstance(quant, str):
-                match quant:
-                    case 'beat':
-                        time = bowl.clock.shifted_time
-                        deadline = time + bowl.clock.get_beat_time(1, time=time)
-                        runner.push_deferred(deadline, func, *args, **kwargs)
-                    case 'bar':
-                        deadline = get_quant_deadline(bowl.clock, 0)
-                        runner.push_deferred(deadline, func, *args, **kwargs)
+                if quant == 'beat':
+                    time = bowl.clock.shifted_time
+                    deadline = time + bowl.clock.get_beat_time(1, time=time)
+                elif quant == 'bar':
+                    deadline = get_quant_deadline(bowl.clock, 0)
+                runner.push_deferred(deadline, func, *args, **kwargs)
             else:
                 raise ValueError(
                     f"Invalid snap argument {snap!r}; must be 'now', 'beat', "

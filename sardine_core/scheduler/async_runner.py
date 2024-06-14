@@ -200,6 +200,7 @@ class AsyncRunner:
     _task: Optional[asyncio.Task]
     _reload_event: asyncio.Event
     _has_reverted: bool
+    _jump_start: bool
 
     _deferred_state_index: int
 
@@ -225,6 +226,7 @@ class AsyncRunner:
         self._task = None
         self._reload_event = asyncio.Event()
         self._has_reverted = False
+        self._jump_start = False
 
         self._deferred_state_index = 0
 
@@ -659,14 +661,18 @@ class AsyncRunner:
             )
             return self._skip_iteration()
         elif state is None:
-            # Nothing to do until the next deferred state arrives
+            # Nothing to do until the next deferred state arrives.
+            #
+            # However, we will need to jump-start the next iteration
+            # so it runs exactly on the deadline instead of unnecessarily
+            # sleeping a full period.
             deadline = self.deferred_states[0].deadline
             interrupted = await self._sleep_until(deadline)
-            return self._skip_iteration()
+            return self._jump_start_iteration()
 
         # NOTE: deadline will always be defined at this point
         if not self.background_job:
-            interrupted = await self._sleep_until(deadline)
+            interrupted = await self._sleep_unless_jump_started(deadline)
             if interrupted:
                 return self._skip_iteration()
 
@@ -762,6 +768,13 @@ class AsyncRunner:
                 )
             )
 
+    async def _sleep_unless_jump_started(self, deadline: Union[float, int]) -> bool:
+        if self._jump_start:
+            self._jump_start = False
+            return False
+
+        return await self._sleep_until(deadline)
+
     def _revert_state(self):
         if self.states:
             self.states.pop()
@@ -769,3 +782,7 @@ class AsyncRunner:
 
     def _skip_iteration(self) -> None:
         self.swim()
+
+    def _jump_start_iteration(self) -> None:
+        self._jump_start = True
+        self._skip_iteration()

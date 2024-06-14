@@ -703,7 +703,7 @@ class AsyncRunner:
         return self.states[-1] if self.states else None
 
     def _is_ready_for_iteration(self) -> bool:
-        return (
+        return bool(
             (self.states or self.deferred_states)
             and self._swimming  # self.swim()
             and not self._stop  # self.stop()

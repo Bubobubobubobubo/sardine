@@ -217,7 +217,7 @@ class AsyncRunner:
         self.interval_shift = 0.0
         self.quant= None
         self._iter = 0
-        self._default_period = 0.25
+        self._default_period = 1
         self.background_job = False
 
         self._swimming = False

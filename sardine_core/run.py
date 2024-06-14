@@ -236,7 +236,7 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif quant is not None or quant is not 'now':
+        elif quant is not None quant != 'now':
             if isinstance(quant, (float, int)):
                 deadline = get_quant_deadline(bowl.clock, quant)
                 runner.push_deferred(deadline, func, *args, **kwargs)

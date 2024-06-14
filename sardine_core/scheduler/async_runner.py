@@ -294,7 +294,7 @@ class AsyncRunner:
     def period(self, value: int | float):
         self._default_period = value
 
-    @period.setter
+    @p.setter
     def p(self, value: int | float):
         self._default_period = value
 

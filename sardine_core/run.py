@@ -160,7 +160,7 @@ def swim(
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
     *args: ParamSpec.args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = 'bar',
     until: Optional[int] = None,
     **kwargs: ParamSpec.kwargs,
 ) -> AsyncRunner: ...
@@ -169,7 +169,7 @@ def swim(
 @overload
 def swim(
     *args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = 'bar',
     until: Optional[int] = None,
     **kwargs,
 ) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
@@ -181,7 +181,7 @@ def swim(
     func: Optional[Union[Callable, AsyncRunner]] = None,
     /,
     *args,
-    quant: Quant = 0,
+    quant: Quant = 'bar',
     until: Optional[int] = None,
     background_job: bool = False,
     **kwargs,

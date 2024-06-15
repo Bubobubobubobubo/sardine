@@ -104,7 +104,7 @@ class Player(BaseHandler):
         iterator_limit: Optional[Number] = None,
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        quant: Quant = 0,
+        quant: Quant = 'bar',
         **kwargs: P.kwargs,
     ) -> PatternInformation:
         """Entry point of a pattern into the Player"""

@@ -12,7 +12,7 @@ from ..logger import print
 
 from ..base import BaseClock
 from ..clock import Time
-from ..utils import MISSING, maybe_coro
+from ..utils import MISSING, maybe_coro, Span
 from .constants import MaybeCoroFunc
 from .errors import *
 
@@ -131,6 +131,12 @@ class AsyncRunner:
     _iter: int
     """Number of times this asyncrunner has been executed"""
 
+    _iter_step: int
+    """The iteration step to use for the next iteration"""
+
+    _iter_limit: Span
+    """The maximum number of iterations allowed before going back to 0"""
+
     _default_period: int | float
     """Default recursion period"""
 
@@ -218,6 +224,8 @@ class AsyncRunner:
         self.interval_shift = 0.0
         self.snap = None
         self._iter = 0
+        self._iter_step = 1
+        self ._iter_limit = 'inf'
         self._default_period = 1
         self.background_job = False
 
@@ -684,7 +692,14 @@ class AsyncRunner:
             )
         finally:
             self._last_expected_time = self._expected_time
-            self._iter += 1
+            self._update_iter()
+
+    def _update_iter(self):
+        """Updates the iteration number"""
+        self._iter += self._iter_step
+        if self._iter_limit != 'inf':
+            if self._iter >= self._iter_limit:
+                self._iter = 0
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift

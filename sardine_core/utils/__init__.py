@@ -12,6 +12,7 @@ T = TypeVar("T")
 
 Number = Union[float, int]
 Quant = Optional[Union[Number, Literal["now", "beat", "bar"]]]
+Span = Optional[Union[Number, Literal['inf']]]
 
 MISSING = object()
 

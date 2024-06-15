@@ -587,7 +587,7 @@ class AsyncRunner:
 
         if not self.background_job:
             print(
-                f"[yellow][[red]{self.name}[/red] is swimming at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]"
+                f"[yellow][[red]{self.name}[/red] is swimming][/yellow]"
             )
 
         try:
@@ -603,7 +603,7 @@ class AsyncRunner:
                     self.swim()
         finally:
             print(
-                f"[yellow][Stopped [red]{self.name}[/red] at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]"
+                f"[yellow][Stopped [red]{self.name}[/red]][/yellow]"
             )
 
     def _prepare(self):

@@ -106,10 +106,22 @@ class SuperDirtHandler(Sender):
         self.__send(address=address, message=message)
 
     def _dirt_play(self, message: list):
+        # TODO: custom logic here?
         self._send_timed_message(address="/dirt/play", message=message)
 
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
+
+    def _handle_sample_number(self, message: dict):
+        if ":" in message["sound"]:
+            orig_sp, orig_nb = message["sound"].split(":")
+            message["sound"] = orig_sp + ":" + str(
+                int(orig_nb) + int(message['n'])
+            )
+        else:
+            message["sound"] = message['sound'] + ":" + str(message['n'])
+        del message["n"]
+        return message
 
     def _parse_aliases(self, pattern: dict):
         """Parse aliases for certain keys in the pattern (lpf -> cutoff)"""
@@ -126,7 +138,6 @@ class SuperDirtHandler(Sender):
             "bpq": "resonance",
             "res": "resonance",
             "midi": "midinote",
-            "n": "midinote",
             "oct": "octave",
             "accel": "accelerate",
             "leg": "legato",
@@ -186,6 +197,8 @@ class SuperDirtHandler(Sender):
         ):
             if message["sound"] is None:
                 continue
+            if "n" in message and message["sound"] is not None:
+                message = self._handle_sample_number(message)
             serialized = list(chain(*sorted(message.items())))
             self.call_timed(deadline, self._dirt_play, serialized)
 

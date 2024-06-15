@@ -586,9 +586,7 @@ class AsyncRunner:
             raise exc
 
         if not self.background_job:
-            print(
-                f"[yellow][[red]{self.name}[/red] is swimming][/yellow]"
-            )
+            print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self._is_ready_for_iteration():
@@ -602,9 +600,7 @@ class AsyncRunner:
                     self._revert_state()
                     self.swim()
         finally:
-            print(
-                f"[yellow][Stopped [red]{self.name}[/red]][/yellow]"
-            )
+            print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     def _prepare(self):
         self._last_expected_time = -math.inf

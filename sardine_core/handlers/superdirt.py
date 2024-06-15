@@ -8,12 +8,12 @@ from osc4py3.as_eventloop import osc_send, osc_udp_client
 from ..utils import alias_param
 from .osc_loop import OSCLoop
 from .sender import (
-        Number,
-        NumericElement,
-        ParsableElement,
-        Sender,
-        StringElement,
-        _resolve_if_callable
+    Number,
+    NumericElement,
+    ParsableElement,
+    Sender,
+    StringElement,
+    _resolve_if_callable,
 )
 
 __all__ = ("SuperDirtHandler",)
@@ -115,11 +115,9 @@ class SuperDirtHandler(Sender):
     def _handle_sample_number(self, message: dict):
         if ":" in message["sound"]:
             orig_sp, orig_nb = message["sound"].split(":")
-            message["sound"] = orig_sp + ":" + str(
-                int(orig_nb) + int(message['n'])
-            )
+            message["sound"] = orig_sp + ":" + str(int(orig_nb) + int(message["n"]))
         else:
-            message["sound"] = message['sound'] + ":" + str(message['n'])
+            message["sound"] = message["sound"] + ":" + str(message["n"])
         del message["n"]
         return message
 
@@ -158,7 +156,10 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Union[Optional[StringElement | List[StringElement]], Callable[[], Optional[StringElement | List[StringElement]]]],
+        sound: Union[
+            Optional[StringElement | List[StringElement]],
+            Callable[[], Optional[StringElement | List[StringElement]]],
+        ],
         orbit: Union[NumericElement, Callable[[], NumericElement]] = 0,
         iterator: Union[Number, Callable[[], Number]] = 0,
         divisor: Union[NumericElement, Callable[[], NumericElement]] = 1,
@@ -190,10 +191,10 @@ class SuperDirtHandler(Sender):
 
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(
-            pattern, 
+            pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["sound"] is None:
                 continue
@@ -207,10 +208,13 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_ziffers(
         self,
-        sound: Optional[StringElement | List[StringElement]] | Callable[[], Optional[StringElement | List[StringElement]]],
+        sound: (
+            Optional[StringElement | List[StringElement]]
+            | Callable[[], Optional[StringElement | List[StringElement]]]
+        ),
         ziff: str | Callable[[], str],
         orbit: NumericElement | Callable[[], NumericElement] = 0,
-        iterator: Number | Callable [[], Number] = 0,
+        iterator: Number | Callable[[], Number] = 0,
         divisor: NumericElement | Callable[[], NumericElement] = 1,
         rate: NumericElement | Callable[[], NumericElement] = 1,
         key: str | Callable[[], str] = "C4",
@@ -238,7 +242,8 @@ class SuperDirtHandler(Sender):
                 _resolve_if_callable(ziff),
                 scale=_resolve_if_callable(scale),
                 key=_resolve_if_callable(key),
-                degrees=_resolve_if_callable(degrees))[_resolve_if_callable(iterator)]
+                degrees=_resolve_if_callable(degrees),
+            )[_resolve_if_callable(iterator)]
             try:
                 freq = ziffer.freq
             except AttributeError:  # if there is no note, it must be a silence
@@ -272,7 +277,8 @@ class SuperDirtHandler(Sender):
                 pattern,
                 _resolve_if_callable(iterator),
                 _resolve_if_callable(divisor),
-                _resolve_if_callable(rate)):
+                _resolve_if_callable(rate),
+            ):
                 if message["sound"] is None:
                     continue
                 serialized = list(chain(*sorted(message.items())))

@@ -368,10 +368,15 @@ def silence(*runners: AsyncRunner) -> None:
 
 
 def solo(*args):
-    """Soloing a single player out of all running players"""
-    for pat in bowl.scheduler.runners:
-        if pat.name not in args:
-            silence(pat)
+    """Soloing a single player out of all running players, excluding background job."""
+    foreground_runner_names = {
+        runner.name for runner in bowl.scheduler.runners if not runner.background_job
+    }
+    args_names = {runner.name for runner in args}
+    names_to_silence = foreground_runner_names - args_names
+    for runner in bowl.scheduler.runners:
+        if runner.name in names_to_silence:
+            silence(runner)
 
 
 def panic(*runners: AsyncRunner) -> None:

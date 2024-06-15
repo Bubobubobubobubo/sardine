@@ -122,7 +122,7 @@ class OSCHandler(Sender):
             pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["address"] is None:
                 continue

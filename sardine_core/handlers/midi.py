@@ -1,7 +1,9 @@
 from .sender import (
-        Number, NumericElement,
-        Sender, ParsableElement,
-        _resolve_if_callable
+    Number,
+    NumericElement,
+    Sender,
+    ParsableElement,
+    _resolve_if_callable,
 )
 from typing import Optional, Callable
 from ..utils import alias_param
@@ -271,7 +273,7 @@ class MidiHandler(Sender):
         pattern = {
             "control": _resolve_if_callable(control),
             "channel": _resolve_if_callable(channel),
-            "value": _resolve_if_callable(value)
+            "value": _resolve_if_callable(value),
         }
 
         # Evaluate all potential callables
@@ -281,10 +283,10 @@ class MidiHandler(Sender):
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(
-            pattern, 
+            pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if None in [message["control"], message["value"]]:
                 continue
@@ -316,7 +318,7 @@ class MidiHandler(Sender):
 
         pattern = {
             "channel": _resolve_if_callable(channel),
-            "program": _resolve_if_callable(program)
+            "program": _resolve_if_callable(program),
         }
 
         # Evaluate all potential callables
@@ -329,7 +331,7 @@ class MidiHandler(Sender):
             pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["channel"] is None:
                 continue
@@ -360,9 +362,7 @@ class MidiHandler(Sender):
         ):
             return
 
-        pattern = {
-            "value": _resolve_if_callable(value)
-        }
+        pattern = {"value": _resolve_if_callable(value)}
 
         # NOTE: No need to resolve any more callables for such a simple message...
 
@@ -371,7 +371,7 @@ class MidiHandler(Sender):
             pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["value"] is None:
                 continue
@@ -394,10 +394,10 @@ class MidiHandler(Sender):
         ziff: str | Callable[[], str],
         velocity: NumericElement | Callable[[], NumericElement] = 100,
         channel: NumericElement | Callable[[], NumericElement] = 0,
-        duration: NumericElement | Callable[[], NumericElement]  = 1,
+        duration: NumericElement | Callable[[], NumericElement] = 1,
         iterator: Number | Callable[[], Number] = 0,
-        divisor: NumericElement | Callable[[], NumericElement]  = 1,
-        rate: NumericElement | Callable[[], NumericElement]  = 1,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
         scale: str | Callable[[], str] = "IONIAN",
         key: str | Callable[[], str] = "C4",
         **rest_of_pattern: ParsableElement,
@@ -411,7 +411,6 @@ class MidiHandler(Sender):
             pattern=rest_of_pattern,
         ):
             return
-
 
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
@@ -447,7 +446,7 @@ class MidiHandler(Sender):
             pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["note"] is None:
                 continue
@@ -502,7 +501,9 @@ class MidiHandler(Sender):
                 "velocity": _resolve_if_callable(velocity),
                 "channel": _resolve_if_callable(channel),
                 "duration": _resolve_if_callable(duration),
-                "program_change": (_resolve_if_callable(program_change) if program_change else None),
+                "program_change": (
+                    _resolve_if_callable(program_change) if program_change else None
+                ),
             }
 
             # Evaluate all potential callables
@@ -515,7 +516,7 @@ class MidiHandler(Sender):
                 pattern,
                 _resolve_if_callable(iterator),
                 _resolve_if_callable(divisor),
-                _resolve_if_callable(rate)
+                _resolve_if_callable(rate),
             ):
                 if message["program_change"] is not None:
                     self._send_control(
@@ -534,7 +535,7 @@ class MidiHandler(Sender):
                 pattern,
                 _resolve_if_callable(iterator),
                 _resolve_if_callable(divisor),
-                _resolve_if_callable(rate)
+                _resolve_if_callable(rate),
             ):
                 if None in [message["control"], message["value"]]:
                     continue
@@ -582,7 +583,7 @@ class MidiHandler(Sender):
                 pattern,
                 _resolve_if_callable(iterator),
                 _resolve_if_callable(divisor),
-                _resolve_if_callable(rate)
+                _resolve_if_callable(rate),
             ):
                 if None in [message["control"], message["value"]]:
                     continue
@@ -645,7 +646,7 @@ class MidiHandler(Sender):
             pattern,
             _resolve_if_callable(iterator),
             _resolve_if_callable(divisor),
-            _resolve_if_callable(rate)
+            _resolve_if_callable(rate),
         ):
             if message["program_change"] is not None:
                 self.send_program(

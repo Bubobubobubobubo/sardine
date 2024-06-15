@@ -379,6 +379,12 @@ def solo(*args):
             silence(runner)
 
 
+def runners():
+    """Return all currently active AsyncRunners"""
+    condition = lambda x: x.name if x.name != "tidal_loop" else "internal"
+    return list(map(condition, bowl.scheduler.runners))
+
+
 def panic(*runners: AsyncRunner) -> None:
     """
     If SuperCollider/SuperDirt is booted, panic acts as a more powerful alternative to

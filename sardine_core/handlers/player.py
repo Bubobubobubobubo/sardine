@@ -96,10 +96,10 @@ class Player(BaseHandler):
         sync: Optional[AsyncRunner] = None,
         iterator: Optional[Number] = None,
         iterator_step: Optional[Number] = 1,
-        iterator_limit: Span = 'inf',
+        iterator_limit: Span = "inf",
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        quant: Quant = 'bar',
+        quant: Quant = "bar",
         **kwargs: P.kwargs,
     ) -> PatternInformation:
         """Entry point of a pattern into the Player"""

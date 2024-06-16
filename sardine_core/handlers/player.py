@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Self
 from ..handlers.sender import Number, NumericElement, Sender
-from ..utils import alias_param, get_quant_deadline, lerp
+from ..utils import Quant, alias_param, get_deadline_from_quant, lerp, Span
 from ..scheduler import AsyncRunner
 from dataclasses import dataclass
 from ..base import BaseHandler
@@ -35,15 +35,13 @@ class PatternInformation:
     args: tuple[Any]
     kwargs: dict[str, Any]
     period: NumericElement
-    sync: Optional[
-        Any
-    ]  # NOTE: Actually Optional[Player] but I don't know how to type it
+    sync: Optional[AsyncRunner]
     iterator: Optional[Number]
-    iterator_span: NumericElement
-    iterator_limit: NumericElement
+    iterator_step: NumericElement
+    iterator_limit: Span
     divisor: NumericElement
     rate: NumericElement
-    quant: Number
+    quant: Quant
     timespan: Optional[float]
     until: Optional[int]
 
@@ -61,9 +59,6 @@ class Player(BaseHandler):
         super().__init__()
         self._name = name
         self.runner = AsyncRunner(name=name)
-        self.iterator: Number = 0
-        self._iteration_span: Number = 1
-        self._iteration_limit: Optional[Number] = None
         self._period: int | float = 1.0
 
     @property
@@ -86,7 +81,7 @@ class Player(BaseHandler):
 
     @staticmethod
     @alias_param(name="period", alias="p")
-    @alias_param(name="iterator_span", alias="i")
+    @alias_param(name="iterator_step", alias="i")
     @alias_param(name="iterator_limit", alias="l")
     @alias_param(name="divisor", alias="d")
     @alias_param(name="rate", alias="r")
@@ -98,13 +93,13 @@ class Player(BaseHandler):
         timespan: Optional[float] = None,
         until: Optional[int] = None,
         period: NumericElement = 1,
-        sync: Optional[Self] = None,
+        sync: Optional[AsyncRunner] = None,
         iterator: Optional[Number] = None,
-        iterator_span: Optional[Number] = 1,
-        iterator_limit: Optional[Number] = None,
+        iterator_step: Optional[Number] = 1,
+        iterator_limit: Span = "inf",
         divisor: NumericElement = 1,
         rate: NumericElement = 1,
-        quant: Number = 0,
+        quant: Quant = "bar",
         **kwargs: P.kwargs,
     ) -> PatternInformation:
         """Entry point of a pattern into the Player"""
@@ -117,7 +112,7 @@ class Player(BaseHandler):
             period,
             sync,
             iterator,
-            iterator_span,
+            iterator_step,
             iterator_limit,
             divisor,
             rate,
@@ -170,31 +165,24 @@ class Player(BaseHandler):
         p: NumericElement = 1,  # pylint: disable=invalid-name,unused-argument
     ) -> None:
         """Central swimming function defined by the player"""
-        self._iterator_span = pattern.iterator_span
+        self._iterator_step = pattern.iterator_step
         self._iterator_limit = pattern.iterator_limit
 
-        if pattern.iterator is not None:
-            self.iterator = pattern.iterator
-            pattern.iterator = None
+        self.runner._iter_limit = pattern.iterator_limit
+        self.runner._iter_step = pattern.iterator_step
+
+        if pattern.sync is None:
+            iterator = self.runner.iter
+        else:
+            iterator = pattern.sync.runner.iter
 
         dur = pattern.send_method(
             *pattern.args,
             **pattern.kwargs,
-            iterator=self.iterator,
+            iterator=iterator,
             divisor=pattern.divisor,
             rate=pattern.rate,
         )
-
-        # Reset the iterator when it reaches a certain ceiling
-        if self._iterator_limit:
-            if self.iterator >= self._iterator_limit:
-                self.iterator = 0
-
-        # Moving the iterator up
-        self.iterator += self._iterator_span
-
-        # If synced, we use the iterator from the other player
-        self.iterator = pattern.sync.iterator if pattern.sync else self.iterator
 
         period = self.get_new_period(pattern)
         if not dur:
@@ -224,15 +212,14 @@ class Player(BaseHandler):
         # the new pattern can be synchronized
         self.runner.interval_shift = 0.0
 
+        func = for_(pattern.until)(self.func) if pattern.until else self.func
+        deadline = get_deadline_from_quant(self.env.clock, pattern.quant)
         period = self.get_new_period(pattern)
 
-        deadline = get_quant_deadline(self.env.clock, pattern.quant)
-        self.runner.push_deferred(
-            deadline,
-            for_(pattern.until)(self.func) if pattern.until else self.func,
-            pattern=pattern,
-            p=period,
-        )
+        if deadline is None:
+            self.runner.push(func, pattern=pattern, p=period)
+        else:
+            self.runner.push_deferred(deadline, func, pattern=pattern, p=period)
 
         self.env.scheduler.start_runner(self.runner)
         self.runner.reload()

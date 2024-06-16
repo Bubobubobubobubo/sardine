@@ -1,6 +1,6 @@
 import time
 from itertools import chain
-from typing import Optional
+from typing import Optional, Callable
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
@@ -8,7 +8,7 @@ from osc4py3.oscmethod import *
 
 from ..utils import alias_param
 from .osc_loop import OSCLoop
-from .sender import Number, NumericElement, Sender, StringElement
+from .sender import Number, NumericElement, Sender, StringElement, _resolve_if_callable
 
 __all__ = ("OSCHandler",)
 
@@ -96,11 +96,11 @@ class OSCHandler(Sender):
     @alias_param(name="sorted", alias="s")
     def send(
         self,
-        address: Optional[StringElement],
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        sort: bool = True,
+        address: Optional[StringElement] | Callable[[], StringElement],
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        sort: bool | Callable[[], bool] = True,
         **pattern: NumericElement,
     ) -> None:
         if address is None:
@@ -111,9 +111,19 @@ class OSCHandler(Sender):
         ):
             return
 
-        pattern["address"] = address
+        # Evaluate all potential callables
+        for key, value in rest_of_pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
+        pattern["address"] = _resolve_if_callable(address)
+
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["address"] is None:
                 continue
             address = message.pop("address")

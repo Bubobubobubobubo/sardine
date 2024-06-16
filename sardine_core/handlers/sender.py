@@ -1,7 +1,7 @@
 import asyncio
 from math import floor
 from random import random
-from typing import Callable, Generator, ParamSpec, TypeVar, Union, Optional
+from typing import Callable, Generator, ParamSpec, TypeVar, Union, Optional, Any
 from ..base import BaseHandler
 from ..utils import maybe_coro
 from ..sequences import euclid
@@ -31,6 +31,11 @@ def _maybe_index(val: RecursiveElement, i: int) -> RecursiveElement:
 
     length = len(val)
     return val[i % length]
+
+
+def _resolve_if_callable(val: Callable[[], Any] | Any) -> Any:
+    """Evaluate a callable if it is one, otherwise return the value."""
+    return val() if callable(val) else val
 
 
 def _maybe_length(val: RecursiveElement) -> int:

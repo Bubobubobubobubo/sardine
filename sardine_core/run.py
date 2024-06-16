@@ -4,7 +4,7 @@ from functools import wraps
 from itertools import product
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, Literal, overload
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
 from . import *
 from .io.UserConfig import read_user_configuration, read_extension_configuration
@@ -12,7 +12,7 @@ from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import greeter_printer, get_quant_deadline, join, sardine_intro
+from .utils import Quant, greeter_printer, get_deadline_from_quant, join, sardine_intro
 from ziffers import z
 
 ParamSpec = ParamSpec("PS")
@@ -160,7 +160,7 @@ def swim(
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
     *args: ParamSpec.args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = "bar",
     until: Optional[int] = None,
     **kwargs: ParamSpec.kwargs,
 ) -> AsyncRunner: ...
@@ -169,18 +169,19 @@ def swim(
 @overload
 def swim(
     *args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = "bar",
     until: Optional[int] = None,
     **kwargs,
 ) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
 
 
+# FIXME: quant docstring is outdated
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
 def swim(
     func: Optional[Union[Callable, AsyncRunner]] = None,
     /,
     *args,
-    quant: Optional[Union[float, int]] = 0,
+    quant: Quant = "bar",
     until: Optional[int] = None,
     background_job: bool = False,
     **kwargs,
@@ -194,7 +195,7 @@ def swim(
             The function to be scheduled. If this is an AsyncRunner,
             the current state is simply updated with new arguments.
         *args: Positional arguments to be passed to `func.`
-        quant (Optional[Union[float, int]]):
+        quant (Quant):
             If set to a numeric value, the new function will be
             deferred until the next bar + `quant` beats arrives.
             If None, the function is immediately pushed and will
@@ -236,11 +237,12 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif quant is not None:
-            deadline = get_quant_deadline(bowl.clock, quant)
-            runner.push_deferred(deadline, func, *args, **kwargs)
-        else:
+
+        deadline = get_deadline_from_quant(bowl.clock, quant)
+        if deadline is None:
             runner.push(func, *args, **kwargs)
+        else:
+            runner.push_deferred(deadline, func, *args, **kwargs)
 
         # Intentionally avoid interval correction so
         # the user doesn't accidentally nudge the runner
@@ -366,10 +368,21 @@ def silence(*runners: AsyncRunner) -> None:
 
 
 def solo(*args):
-    """Soloing a single player out of all running players"""
-    for pat in bowl.scheduler.runners:
-        if pat.name not in args:
-            silence(pat)
+    """Soloing a single player out of all running players, excluding background job."""
+    foreground_runner_names = {
+        runner.name for runner in bowl.scheduler.runners if not runner.background_job
+    }
+    args_names = {runner.name for runner in args}
+    names_to_silence = foreground_runner_names - args_names
+    for runner in bowl.scheduler.runners:
+        if runner.name in names_to_silence:
+            silence(runner)
+
+
+def runners():
+    """Return all currently active AsyncRunners"""
+    condition = lambda x: x.name if x.name != "tidal_loop" else "internal"
+    return list(map(condition, bowl.scheduler.runners))
 
 
 def panic(*runners: AsyncRunner) -> None:
@@ -384,13 +397,22 @@ def panic(*runners: AsyncRunner) -> None:
         D("superpanic")
 
 
-def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
+def Pat(
+    pattern: str,
+    i: int = 0,
+    div: int = 1,
+    rate: int = 1,
+    as_text: bool = False
+    ) -> Any:
     """
     General purpose pattern interface. This function can be used to summon the global
     parser stored in the fish_bowl. It is generally used to pattern outside of the
     handler/sender system, if you are playing with custom libraries, imported code or
     if you want to take the best of the patterning system without having to deal with
     all the built-in I/O.
+
+    The as_text argument allows the study of patterns in textual format. If as_text is
+    true, the pattern will print from index 0 up to i.
 
     Args:
         pattern (str): A pattern to be parsed
@@ -400,7 +422,14 @@ def Pat(pattern: str, i: int = 0, div: int = 1, rate: int = 1) -> Any:
         int: The ith element from the resulting pattern
     """
     result = bowl.parser.parse(pattern)
-    return Sender.pattern_element(result, i, div, rate)
+    if print:
+        pattern = []
+        for iterator in range(i):
+            pattern.append(Sender.pattern_element(result, iterator, div, rate))
+        print(pattern)
+        return pattern
+    else:
+        return Sender.pattern_element(result, i, div, rate)
 
 
 class Delay:

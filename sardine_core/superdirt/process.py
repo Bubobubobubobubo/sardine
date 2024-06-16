@@ -95,9 +95,11 @@ class SuperDirtProcess:
             sample_name = decoded_line.split("'")
             print(f"[[red]/!\\\\[/red] - Sample {sample_name[1]} not found]")
         if "late 0." in decoded_line:
-            print(f"[[red]/!\\\\[/red] - Late messages. Increase SC latency]")
+            print(
+                f"[yellow][[red]/!\\\\[/red] - Late messages. Increase SC latency][/yellow]"
+            )
         if "listening on port 57120" in decoded_line:
-            print(f"[[green]/!\\\\[/green] - Audio server ready!]")
+            print(f"[yellow][[green]/!\\\\[/green] - Audio server ready!][/yellow]")
             if self._synth_directory is not None:
                 self.load_custom_synthdefs()
         if "ERROR: failed to open UDP socket: address in use" in decoded_line:

@@ -1,13 +1,20 @@
 import time
 from itertools import chain
-from typing import Optional, List
+from typing import Optional, List, Union, Callable, Any
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from ..utils import alias_param
 from .osc_loop import OSCLoop
-from .sender import Number, NumericElement, ParsableElement, Sender, StringElement
+from .sender import (
+    Number,
+    NumericElement,
+    ParsableElement,
+    Sender,
+    StringElement,
+    _resolve_if_callable,
+)
 
 __all__ = ("SuperDirtHandler",)
 
@@ -99,10 +106,20 @@ class SuperDirtHandler(Sender):
         self.__send(address=address, message=message)
 
     def _dirt_play(self, message: list):
+        # TODO: custom logic here?
         self._send_timed_message(address="/dirt/play", message=message)
 
     def _dirt_panic(self):
         self._dirt_play(message=["sound", "superpanic"])
+
+    def _handle_sample_number(self, message: dict):
+        if ":" in message["sound"]:
+            orig_sp, orig_nb = message["sound"].split(":")
+            message["sound"] = orig_sp + ":" + str(int(orig_nb) + int(message["n"]))
+        else:
+            message["sound"] = message["sound"] + ":" + str(message["n"])
+        del message["n"]
+        return message
 
     def _parse_aliases(self, pattern: dict):
         """Parse aliases for certain keys in the pattern (lpf -> cutoff)"""
@@ -119,7 +136,6 @@ class SuperDirtHandler(Sender):
             "bpq": "resonance",
             "res": "resonance",
             "midi": "midinote",
-            "n": "midinote",
             "oct": "octave",
             "accel": "accelerate",
             "leg": "legato",
@@ -140,11 +156,14 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Optional[StringElement | List[StringElement]],
-        orbit: NumericElement = 0,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
+        sound: Union[
+            Optional[StringElement | List[StringElement]],
+            Callable[[], Optional[StringElement | List[StringElement]]],
+        ],
+        orbit: Union[NumericElement, Callable[[], NumericElement]] = 0,
+        iterator: Union[Number, Callable[[], Number]] = 0,
+        divisor: Union[NumericElement, Callable[[], NumericElement]] = 1,
+        rate: Union[NumericElement, Callable[[], NumericElement]] = 1,
         **pattern: ParsableElement,
     ):
         if sound is None:
@@ -155,21 +174,32 @@ class SuperDirtHandler(Sender):
         ):
             return
 
+        # Evaluate all potential callables
+        for key, value in pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         # Replace some shortcut parameters by their real name
         pattern = self._parse_aliases(pattern)
         pattern = {**self._defaults, **pattern}
 
-        pattern["sound"] = sound
-        pattern["orbit"] = orbit
+        pattern["sound"] = _resolve_if_callable(sound)
+        pattern["orbit"] = _resolve_if_callable(orbit)
         pattern["cps"] = round(self.env.clock.phase, 1)
         pattern["cycle"] = (
             self.env.clock.bar * self.env.clock.beats_per_bar
         ) + self.env.clock.beat
 
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["sound"] is None:
                 continue
+            if "n" in message and message["sound"] is not None:
+                message = self._handle_sample_number(message)
             serialized = list(chain(*sorted(message.items())))
             self.call_timed(deadline, self._dirt_play, serialized)
 
@@ -178,15 +208,18 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_ziffers(
         self,
-        sound: Optional[StringElement | List[StringElement]],
-        ziff: str,
-        orbit: NumericElement = 0,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        key: str = "C4",
-        scale: str = "IONIAN",
-        degrees: bool = False,
+        sound: (
+            Optional[StringElement | List[StringElement]]
+            | Callable[[], Optional[StringElement | List[StringElement]]]
+        ),
+        ziff: str | Callable[[], str],
+        orbit: NumericElement | Callable[[], NumericElement] = 0,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        key: str | Callable[[], str] = "C4",
+        scale: str | Callable[[], str] = "IONIAN",
+        degrees: bool | Callable[[], bool] = False,
         **pattern: ParsableElement,
     ) -> int | float:
         # Replace some shortcut parameters by their real name
@@ -198,12 +231,19 @@ class SuperDirtHandler(Sender):
         ):
             return
 
+        # Evaluate all potential callables
+        for key, value in pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         if not self._ziffers_parser:
             raise Exception("The ziffers package is not imported!")
         else:
-            ziffer = self._ziffers_parser(ziff, scale=scale, key=key, degrees=degrees)[
-                iterator
-            ]
+            ziffer = self._ziffers_parser(
+                _resolve_if_callable(ziff),
+                scale=_resolve_if_callable(scale),
+                key=_resolve_if_callable(key),
+                degrees=_resolve_if_callable(degrees),
+            )[_resolve_if_callable(iterator)]
             try:
                 freq = ziffer.freq
             except AttributeError:  # if there is no note, it must be a silence
@@ -225,16 +265,20 @@ class SuperDirtHandler(Sender):
             return
 
         if sound != "rest":
-            pattern["freq"] = freq
-            pattern["sound"] = sound
-            pattern["orbit"] = orbit
+            pattern["freq"] = _resolve_if_callable(freq)
+            pattern["sound"] = _resolve_if_callable(sound)
+            pattern["orbit"] = _resolve_if_callable(orbit)
             pattern["cps"] = round(self.env.clock.phase, 4)
             pattern["cycle"] = (
                 self.env.clock.bar * self.env.clock.beats_per_bar
             ) + self.env.clock.beat
-
             deadline = self.env.clock.shifted_time
-            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            for message in self.pattern_reduce(
+                pattern,
+                _resolve_if_callable(iterator),
+                _resolve_if_callable(divisor),
+                _resolve_if_callable(rate),
+            ):
                 if message["sound"] is None:
                     continue
                 serialized = list(chain(*sorted(message.items())))

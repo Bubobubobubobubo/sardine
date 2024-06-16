@@ -12,7 +12,7 @@ from ..logger import print
 
 from ..base import BaseClock
 from ..clock import Time
-from ..utils import MISSING, maybe_coro
+from ..utils import MISSING, maybe_coro, Span
 from .constants import MaybeCoroFunc
 from .errors import *
 
@@ -131,6 +131,12 @@ class AsyncRunner:
     _iter: int
     """Number of times this asyncrunner has been executed"""
 
+    _iter_step: int
+    """The iteration step to use for the next iteration"""
+
+    _iter_limit: Span
+    """The maximum number of iterations allowed before going back to 0"""
+
     _default_period: int | float
     """Default recursion period"""
 
@@ -200,6 +206,7 @@ class AsyncRunner:
     _task: Optional[asyncio.Task]
     _reload_event: asyncio.Event
     _has_reverted: bool
+    _jump_start: bool
 
     _deferred_state_index: int
 
@@ -217,7 +224,9 @@ class AsyncRunner:
         self.interval_shift = 0.0
         self.snap = None
         self._iter = 0
-        self._default_period = 0.25
+        self._iter_step = 1
+        self._iter_limit = "inf"
+        self._default_period = 1
         self.background_job = False
 
         self._swimming = False
@@ -225,6 +234,7 @@ class AsyncRunner:
         self._task = None
         self._reload_event = asyncio.Event()
         self._has_reverted = False
+        self._jump_start = False
 
         self._deferred_state_index = 0
 
@@ -576,9 +586,7 @@ class AsyncRunner:
             raise exc
 
         if not self.background_job:
-            print(
-                f"[yellow][[red]{self.name}[/red] is swimming at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]"
-            )
+            print(f"[yellow][[red]{self.name}[/red] is swimming][/yellow]")
 
         try:
             while self._is_ready_for_iteration():
@@ -592,9 +600,7 @@ class AsyncRunner:
                     self._revert_state()
                     self.swim()
         finally:
-            print(
-                f"[yellow][Stopped [red]{self.name}[/red] at {current_bar}/{current_beat}/{current_phase:.2f}][/yellow]"
-            )
+            print(f"[yellow][Stopped [red]{self.name}[/red]][/yellow]")
 
     def _prepare(self):
         self._last_expected_time = -math.inf
@@ -659,14 +665,18 @@ class AsyncRunner:
             )
             return self._skip_iteration()
         elif state is None:
-            # Nothing to do until the next deferred state arrives
+            # Nothing to do until the next deferred state arrives.
+            #
+            # However, we will need to jump-start the next iteration
+            # so it runs exactly on the deadline instead of unnecessarily
+            # sleeping a full period.
             deadline = self.deferred_states[0].deadline
             interrupted = await self._sleep_until(deadline)
-            return self._skip_iteration()
+            return self._jump_start_iteration()
 
         # NOTE: deadline will always be defined at this point
         if not self.background_job:
-            interrupted = await self._sleep_until(deadline)
+            interrupted = await self._sleep_unless_jump_started(deadline)
             if interrupted:
                 return self._skip_iteration()
 
@@ -678,7 +688,14 @@ class AsyncRunner:
             )
         finally:
             self._last_expected_time = self._expected_time
-            self._iter += 1
+            self._update_iter()
+
+    def _update_iter(self):
+        """Updates the iteration number"""
+        self._iter += self._iter_step
+        if self._iter_limit != "inf":
+            if self._iter >= self._iter_limit:
+                self._iter = 0
 
     async def _call_func(self, func, args, kwargs):
         """Calls the given function and optionally applies time shift
@@ -762,6 +779,13 @@ class AsyncRunner:
                 )
             )
 
+    async def _sleep_unless_jump_started(self, deadline: Union[float, int]) -> bool:
+        if self._jump_start:
+            self._jump_start = False
+            return False
+
+        return await self._sleep_until(deadline)
+
     def _revert_state(self):
         if self.states:
             self.states.pop()
@@ -769,3 +793,7 @@ class AsyncRunner:
 
     def _skip_iteration(self) -> None:
         self.swim()
+
+    def _jump_start_iteration(self) -> None:
+        self._jump_start = True
+        self._skip_iteration()

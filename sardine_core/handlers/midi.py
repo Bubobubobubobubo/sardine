@@ -1,5 +1,11 @@
-from .sender import Number, NumericElement, Sender, ParsableElement
-from typing import Optional, Union
+from .sender import (
+    Number,
+    NumericElement,
+    Sender,
+    ParsableElement,
+    _resolve_if_callable,
+)
+from typing import Optional, Callable
 from ..utils import alias_param
 from ..logger import print
 import asyncio
@@ -173,7 +179,7 @@ class MidiHandler(Sender):
         self._midi.send(mido.Message("pitchweel", pitch=pitch, channel=channel))
 
     async def send_off(
-        self, note: int, channel: int, velocity: int, delay: Union[int, float]
+        self, note: int, channel: int, velocity: int, delay: int | float
     ):
         await self.env.sleep_beats(delay)
         self._midi.send(
@@ -243,12 +249,12 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_control(
         self,
-        control: Optional[NumericElement] = 0,
-        channel: NumericElement = 0,
-        value: NumericElement = 60,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
+        control: Optional[NumericElement] | Callable[[], NumericElement] = 0,
+        channel: NumericElement | Callable[[], NumericElement] = 0,
+        value: NumericElement | Callable[[], NumericElement] = 60,
+        iterator: Number | Callable[[], NumericElement] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
@@ -264,10 +270,24 @@ class MidiHandler(Sender):
         ):
             return
 
-        pattern = {"control": control, "channel": channel, "value": value}
+        pattern = {
+            "control": _resolve_if_callable(control),
+            "channel": _resolve_if_callable(channel),
+            "value": _resolve_if_callable(value),
+        }
+
+        # Evaluate all potential callables
+        for key, value in rest_of_pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if None in [message["control"], message["value"]]:
                 continue
             for k, v in message.items():
@@ -282,10 +302,10 @@ class MidiHandler(Sender):
     def send_program(
         self,
         channel: Optional[NumericElement],
-        program: NumericElement = 60,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
+        program: NumericElement | Callable[[], NumericElement] = 60,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         if channel is None:
@@ -296,10 +316,23 @@ class MidiHandler(Sender):
         ):
             return
 
-        pattern = {"channel": channel, "program": program}
+        pattern = {
+            "channel": _resolve_if_callable(channel),
+            "program": _resolve_if_callable(program),
+        }
+
+        # Evaluate all potential callables
+        for key, value in rest_of_pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["channel"] is None:
                 continue
             for k, v in message.items():
@@ -313,12 +346,12 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_sysex(
         self,
-        data: list[int],
-        value: NumericElement = 60,
-        optional_modulo: NumericElement = 127,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
+        data: list[int] | Callable[[], list[int]],
+        value: NumericElement | Callable[[], NumericElement] = 60,
+        optional_modulo: NumericElement | Callable[[], NumericElement] = 127,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         if data is None:
@@ -329,9 +362,17 @@ class MidiHandler(Sender):
         ):
             return
 
-        pattern = {"value": value}
+        pattern = {"value": _resolve_if_callable(value)}
+
+        # NOTE: No need to resolve any more callables for such a simple message...
+
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["value"] is None:
                 continue
             for k, v in message.items():
@@ -350,15 +391,15 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_ziffers(
         self,
-        ziff: str,
-        velocity: NumericElement = 100,
-        channel: NumericElement = 0,
-        duration: NumericElement = 1,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        scale: str = "IONIAN",
-        key: str = "C4",
+        ziff: str | Callable[[], str],
+        velocity: NumericElement | Callable[[], NumericElement] = 100,
+        channel: NumericElement | Callable[[], NumericElement] = 0,
+        duration: NumericElement | Callable[[], NumericElement] = 1,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        scale: str | Callable[[], str] = "IONIAN",
+        key: str | Callable[[], str] = "C4",
         **rest_of_pattern: ParsableElement,
     ) -> int | float:
         """
@@ -388,15 +429,25 @@ class MidiHandler(Sender):
                 note = f"{{{' '.join([str(x) for x in note])}}}"
 
         pattern = {
-            "note": note,
-            "velocity": velocity,
-            "channel": channel,
-            "duration": duration,
+            "note": _resolve_if_callable(note),
+            "velocity": _resolve_if_callable(velocity),
+            "channel": _resolve_if_callable(channel),
+            "duration": _resolve_if_callable(duration),
         }
+
+        # Evaluate all potential callables
+        for key, value in rest_of_pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
 
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["note"] is None:
                 continue
             for k in ("note", "velocity", "channel"):
@@ -415,14 +466,14 @@ class MidiHandler(Sender):
     def send_instrument(
         self,
         note: Optional[NumericElement] = 60,
-        velocity: NumericElement = 100,
-        channel: NumericElement = 0,
-        duration: NumericElement = 1,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        map: dict = {},
-        program_change: Optional[Number] = None,
+        velocity: NumericElement | Callable[[], NumericElement] = 100,
+        channel: NumericElement | Callable[[], NumericElement] = 0,
+        duration: NumericElement | Callable[[], NumericElement] = 1,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        map: dict | Callable[[], dict] = {},
+        program_change: Optional[Number] | Callable[[], Number] = None,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
@@ -446,15 +497,27 @@ class MidiHandler(Sender):
 
         def note_pattern():
             pattern = {
-                "note": note,
-                "velocity": velocity,
-                "channel": channel,
-                "duration": duration,
-                "program_change": (program_change if program_change else None),
+                "note": _resolve_if_callable(note),
+                "velocity": _resolve_if_callable(velocity),
+                "channel": _resolve_if_callable(channel),
+                "duration": _resolve_if_callable(duration),
+                "program_change": (
+                    _resolve_if_callable(program_change) if program_change else None
+                ),
             }
+
+            # Evaluate all potential callables
+            for key, value in rest_of_pattern.items():
+                pattern[key] = _resolve_if_callable(value)
+
             pattern = {**self._defaults, **pattern}
             deadline = self.env.clock.shifted_time
-            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            for message in self.pattern_reduce(
+                pattern,
+                _resolve_if_callable(iterator),
+                _resolve_if_callable(divisor),
+                _resolve_if_callable(rate),
+            ):
                 if message["program_change"] is not None:
                     self._send_control(
                         program=message["program_change"], channel=message["channel"]
@@ -468,7 +531,12 @@ class MidiHandler(Sender):
 
         def send_controls(pattern: dict) -> None:
             deadline = self.env.clock.shifted_time
-            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            for message in self.pattern_reduce(
+                pattern,
+                _resolve_if_callable(iterator),
+                _resolve_if_callable(divisor),
+                _resolve_if_callable(rate),
+            ):
                 if None in [message["control"], message["value"]]:
                     continue
                 for k, v in message.items():
@@ -486,11 +554,11 @@ class MidiHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send_controller(
         self,
-        channel: NumericElement = 0,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        map: dict = {},
+        channel: NumericElement | Callable[[], NumericElement] = 0,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        map: dict | Callable[[], dict] = {},
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
@@ -506,12 +574,17 @@ class MidiHandler(Sender):
         for key, value in map.items():
             if key in rest_of_pattern.keys():
                 control = value
-                control["value"] = rest_of_pattern[key]
+                control["value"] = _resolve_if_callable(rest_of_pattern[key])
                 control_messages.append(control)
 
         def send_controls(pattern: dict) -> None:
             deadline = self.env.clock.shifted_time
-            for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+            for message in self.pattern_reduce(
+                pattern,
+                _resolve_if_callable(iterator),
+                _resolve_if_callable(divisor),
+                _resolve_if_callable(rate),
+            ):
                 if None in [message["control"], message["value"]]:
                     continue
                 for k, v in message.items():
@@ -531,14 +604,14 @@ class MidiHandler(Sender):
     @alias_param(name="program_change", alias="pgch")
     def send(
         self,
-        note: Optional[NumericElement] = 60,
-        velocity: NumericElement = 100,
-        channel: NumericElement = 0,
-        duration: NumericElement = 1,
-        iterator: Number = 0,
-        divisor: NumericElement = 1,
-        rate: NumericElement = 1,
-        program_change: Optional[Number] = None,
+        note: Optional[NumericElement] | Callable[[], Optional[NumericElement]] = 60,
+        velocity: NumericElement | Callable[[], NumericElement] = 100,
+        channel: NumericElement | Callable[[], NumericElement] = 0,
+        duration: NumericElement | Callable[[], NumericElement] = 1,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], Number] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
+        program_change: Optional[Number] | Callable[[], Number] = None,
         **rest_of_pattern: ParsableElement,
     ) -> None:
         """
@@ -556,15 +629,25 @@ class MidiHandler(Sender):
             return
 
         pattern = {
-            "note": note,
-            "velocity": velocity,
-            "channel": channel,
-            "duration": duration,
-            "program_change": program_change,
+            "note": _resolve_if_callable(note),
+            "velocity": _resolve_if_callable(velocity),
+            "channel": _resolve_if_callable(channel),
+            "duration": _resolve_if_callable(duration),
+            "program_change": _resolve_if_callable(program_change),
         }
+
+        # Evaluate all potential callables
+        for key, value in rest_of_pattern.items():
+            pattern[key] = _resolve_if_callable(value)
+
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time
-        for message in self.pattern_reduce(pattern, iterator, divisor, rate):
+        for message in self.pattern_reduce(
+            pattern,
+            _resolve_if_callable(iterator),
+            _resolve_if_callable(divisor),
+            _resolve_if_callable(rate),
+        ):
             if message["program_change"] is not None:
                 self.send_program(
                     program=message["program_change"], channel=message["channel"]

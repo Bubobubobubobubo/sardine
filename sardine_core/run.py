@@ -212,6 +212,8 @@ def swim(
     """
 
     def decorator(func: Union[Callable, AsyncRunner], /) -> AsyncRunner:
+
+        # This is true when the function is already running on the scheduler
         if isinstance(func, AsyncRunner):
             func.update_state(*args, **kwargs)
             bowl.scheduler.start_runner(func)
@@ -220,15 +222,18 @@ def swim(
         if until is not None:
             func = for_(until)(func)
 
+        # Checks if the runner already exists, otherwise, create a new one
         runner = bowl.scheduler.get_runner(func.__name__)
         if runner is None:
             runner = AsyncRunner(func.__name__)
+            # Some AsyncRunners need to stay in the background and never be
+            # interrupted by any user action (c.f. Tidal Vortex Loop)
             if background_job:
                 runner.background_job = True
         elif not runner.is_running():
-            # Runner has likely stopped swimming, in which case
-            # we should make sure the old state doesn't pollute
-            # the new function when it's pushed
+            # Runner has likely stopped swimming, in which case we should
+            # make sure the old state doesn't pollute the new function
+            # when it's pushed
             runner.reset_states()
 
         # Runners normally allow the same functions to appear in the stack,
@@ -238,14 +243,16 @@ def swim(
             bowl.scheduler.start_runner(runner)
             return runner
 
+        # We apply the 'quant' policy (start now, on next beat, bar, etc)
         deadline = get_deadline_from_quant(bowl.clock, quant)
+        # Deadline is None when the 'quant' policy is now
         if deadline is None:
             runner.push(func, *args, **kwargs)
         else:
             runner.push_deferred(deadline, func, *args, **kwargs)
 
-        # Intentionally avoid interval correction so
-        # the user doesn't accidentally nudge the runner
+        # Intentionally avoid interval correction so the user doesn't 
+        # accidentally nudge the runner
         runner.swim()
         runner.reload()
 
@@ -398,12 +405,8 @@ def panic(*runners: AsyncRunner) -> None:
 
 
 def Pat(
-    pattern: str,
-    i: int = 0,
-    div: int = 1,
-    rate: int = 1,
-    as_text: bool = False
-    ) -> Any:
+    pattern: str, i: int = 0, div: int = 1, rate: int = 1, as_text: bool = False
+) -> Any:
     """
     General purpose pattern interface. This function can be used to summon the global
     parser stored in the fish_bowl. It is generally used to pattern outside of the

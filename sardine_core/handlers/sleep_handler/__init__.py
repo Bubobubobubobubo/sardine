@@ -57,6 +57,8 @@ class SleepHandler(BaseHandler):
 
         The deadline is based on the fish bowl clock's time.
         """
+
+        # General checks
         if self.env is None:
             raise ValueError("SleepHandler must be added to a fish bowl")
         elif not self.env.is_running():
@@ -120,6 +122,7 @@ class SleepHandler(BaseHandler):
             self._poll_task.cancel()
 
     def _create_handle(self, deadline: NUMBER) -> TimeHandle:
+        #TODO: document this function
         handle = TimeHandle(deadline)
 
         if self.env.clock.time >= deadline:

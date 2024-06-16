@@ -1,17 +1,11 @@
-name: Style Lint
+name: Lint
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - '**.py'
-  pull_request:
+on: [push, pull_request]
 
 jobs:
-  formatter:
-    name: Run black
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
       - uses: psf/black@stable

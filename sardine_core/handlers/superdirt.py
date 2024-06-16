@@ -113,12 +113,14 @@ class SuperDirtHandler(Sender):
         self._dirt_play(message=["sound", "superpanic"])
 
     def _handle_sample_number(self, message: dict):
-        if ":" in message["sound"]:
-            orig_sp, orig_nb = message["sound"].split(":")
-            message["sound"] = orig_sp + ":" + str(int(orig_nb) + int(message["n"]))
+        sound = str(message["sound"])
+        if ":" in sound:
+            orig_sp, orig_nb = sound.split(":")
+            sound = orig_sp + ":" + str(int(orig_nb) + int(message["n"]))
         else:
-            message["sound"] = message["sound"] + ":" + str(message["n"])
+            sound = sound + ":" + str(message["n"])
         del message["n"]
+        message["sound"] = sound
         return message
 
     def _parse_aliases(self, pattern: dict):

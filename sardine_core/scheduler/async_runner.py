@@ -627,9 +627,7 @@ class AsyncRunner:
         Prepare the runner for an incoming iteration. This method is called at the
         start of the runner's main loop. TODO: add more.
         """
-        self._last_expected_time = -math.inf
-
-        # Grab function, arguments and key arguments stored in state
+        self._last_expected_time = self.clock.time
         self._last_state = self._get_state()
 
         # Setting flags

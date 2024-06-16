@@ -594,9 +594,9 @@ class AsyncRunner:
         """
 
         # Query time position
-        current_beat = self.scheduler.env.clock.beat % self.scheduler.env.clock.beats_per_bar
-        current_bar = self.scheduler.env.clock.bar
-        current_phase = self.scheduler.env.clock.phase
+        current_beat = self.clock.beat % self.clock.beats_per_bar
+        current_bar = self.clock.bar
+        current_phase = self.clock.phase
 
         # Preparing the runner for an incoming iteration
         try:
@@ -637,7 +637,7 @@ class AsyncRunner:
         # Extract period from state
         period = self._get_period(self._last_state)
 
-        self._last_interval = (period * self.clock.beat_duration)
+        self._last_interval = period * self.clock.beat_duration
 
     async def _run_once(self) -> None:
         """
@@ -756,10 +756,15 @@ class AsyncRunner:
             Union[float, int]: The period to use for the next iteration.
         """
         # If we don't have a state, we can't extract a period given by the user
+        if state is None:
+            return 0.0
+
         # Extract the period from the state or assign default period if missing
         return _extract_new_period(
-            inspect.signature(state.func), state.kwargs, self.period
-        ) if state is not None else 0.0
+            inspect.signature(state.func),
+            state.kwargs,
+            self.period,
+        )
 
     def _get_state(self) -> Optional[FunctionState]:
         """
@@ -789,19 +794,15 @@ class AsyncRunner:
         a new state has been pushed. It will print a message to the console indicating
         how well the runner is doing (update or saved from crash).
         """
-        current_beat = self.scheduler.env.clock.beat % self.scheduler.env.clock.beats_per_bar
-        current_bar = self.scheduler.env.clock.bar
-        current_phase = self.scheduler.env.clock.phase
+        current_beat = self.clock.beat % self.clock.beats_per_bar
+        current_bar = self.clock.bar
+        current_phase = self.clock.phase
 
         if self._last_state is not None and state is not self._last_state:
             if not self._has_reverted:
-                print(
-                    f"[yellow][Updating [red]{self.name}[/red]]"
-                )
+                print(f"[yellow][Updating [red]{self.name}[/red]]")
             else:
-                print(
-                    f"[yellow][Saving [red]{self.name}[/red] from crash]"
-                )
+                print(f"[yellow][Saving [red]{self.name}[/red] from crash]")
                 self._has_reverted = False
 
     async def _sleep_until(self, deadline: Union[float, int]) -> bool:

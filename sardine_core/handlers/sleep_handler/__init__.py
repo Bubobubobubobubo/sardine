@@ -122,7 +122,7 @@ class SleepHandler(BaseHandler):
             self._poll_task.cancel()
 
     def _create_handle(self, deadline: NUMBER) -> TimeHandle:
-        #TODO: document this function
+        # TODO: document this function
         handle = TimeHandle(deadline)
 
         if self.env.clock.time >= deadline:

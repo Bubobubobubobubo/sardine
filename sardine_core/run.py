@@ -251,7 +251,7 @@ def swim(
         else:
             runner.push_deferred(deadline, func, *args, **kwargs)
 
-        # Intentionally avoid interval correction so the user doesn't 
+        # Intentionally avoid interval correction so the user doesn't
         # accidentally nudge the runner
         runner.swim()
         runner.reload()

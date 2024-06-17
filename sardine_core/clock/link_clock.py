@@ -142,7 +142,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     ## METHODS  ##############################################################
 
-    def _capture_link_info(self):
+    def _capture_link_info(self, *, update_transport: bool):
         s: link.SessionState = self._link.captureSessionState()
         self._last_capture = s
         self._link_time: int = self._link.clock().micros()
@@ -157,8 +157,14 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         # Sardine phase is typically defined from 0.0 to the beat duration.
         # Conversions are needed for the phase coming from the LinkClock.
         self._phase = phase % 1 * self.beat_duration
-        self._playing = playing
+        self._playing, last_playing = playing, self._playing
         self._tempo = tempo
+
+        if update_transport:
+            if playing and not last_playing:
+                self.env.resume()
+            elif not playing and last_playing:
+                self.env.pause()
 
     def before_loop(self):
         self._link = link.Link(self._tempo)
@@ -166,11 +172,11 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._link.startStopSyncEnabled = True
 
         # Set the origin at the start
-        self._capture_link_info()
+        self._capture_link_info(update_transport=False)
         self._internal_origin = self.internal_time
 
     def loop(self):
-        self._capture_link_info()
+        self._capture_link_info(update_transport=True)
 
     def after_loop(self):
         self._link = None

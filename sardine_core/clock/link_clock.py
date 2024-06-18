@@ -209,5 +209,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
             # but Sardine's transport methods are idempotent so it should be fine.
             if event == "pause" and self._playing:
                 self._last_capture.setIsPlaying(False, self._link_time)
+                self._link.commitSessionState(self._last_capture)
             elif event == "resume" and not self._playing:
                 self._last_capture.setIsPlaying(True, self._link_time)
+                self._link.commitSessionState(self._last_capture)

@@ -436,7 +436,7 @@ class AsyncRunner:
             return
 
         self._task = asyncio.create_task(self._runner())
-        self._task.add_done_callback(asyncio.Task.result)
+        self._task.add_done_callback(self._on_task_done)
 
     def is_running(self) -> bool:
         """Returns True if the runner is running."""
@@ -867,3 +867,9 @@ class AsyncRunner:
     def _jump_start_iteration(self) -> None:
         self._jump_start = True
         self._skip_iteration()
+
+    def _on_task_done(self, task: asyncio.Task) -> None:
+        if task.cancelled():
+            return  # Suppress CancelledError
+
+        task.result()  # Raise any exception if present

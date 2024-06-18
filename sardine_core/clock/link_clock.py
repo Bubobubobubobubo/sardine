@@ -27,12 +27,15 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._internal_time: float = 0.0
         self._last_capture: Optional[link.SessionState] = None
         self._phase: float = 0.0
+        self._link_phase: float = 0.0
         self._playing: bool = False
         self._tempo: float = float(tempo)
         self._tidal_nudge: int = 0
         self._link_time: int = 0
         self._beats_per_cycle: int = 4
         self._framerate: float = 1 / 20
+        self._paused_link_phase: float = 0.0
+        self._time_shift: float = 0.0
 
     ## VORTEX   ################################################
 
@@ -149,11 +152,12 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         playing: bool = s.isPlaying()
         tempo: float = s.tempo()
 
-        self._internal_time = self._link_time / 1_000_000
+        self._internal_time = self._link_time / 1_000_000 + self._time_shift
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
         # Sardine phase is typically defined from 0.0 to the beat duration.
         # Conversions are needed for the phase coming from the LinkClock.
+        self._link_phase = phase
         self._phase = phase % 1 * self.beat_duration
         self._playing, last_playing = playing, self._playing
         self._tempo = tempo
@@ -165,6 +169,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
                 self.env.pause()
 
     def before_loop(self):
+        self._time_shift = 0.0
+
         self._link = link.Link(self._tempo)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
@@ -178,3 +184,27 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def after_loop(self):
         self._link = None
+
+    def hook(self, event: str, *args):
+        super().hook(event, *args)
+
+        if self._link is None:
+            return
+        elif event == "pause":
+            # Remember the current phase so the next time the clock is resumed,
+            # we can rewind time so the phase appears continuous.
+            self._paused_link_phase = self._link_phase
+        elif event == "resume":
+            # Alternative formula: (-bpb + lp - plp) % -bpb
+            delta = (self._link_phase - self._paused_link_phase) % self.beats_per_bar
+            if delta > 0:
+                # Don't allow time to jump forward, rewind instead.
+                delta -= self.beats_per_bar
+
+            self._time_shift = delta * self.beat_duration
+
+        # We could also try to broadcast start/stop from sardine transport methods,
+        # but we don't have a way to prevent _capture_link_info() from triggering this.
+        #
+        # if event in ("pause", "resume"):
+        #     self._link.setIsPlaying(event == "resume", self._link_time)

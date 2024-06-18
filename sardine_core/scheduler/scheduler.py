@@ -131,9 +131,13 @@ class Scheduler(BaseHandler):
     def setup(self):
         self.register("stop")
         self.register("tempo_change")
+        self.register("reset_iterator")
 
     def hook(self, event: str, *args):
         if event == "stop":
             self.reset()
         if event == "tempo_change":
             self._react_to_tempo_change(*args)
+        if event == "reset_iterator":
+            for runner in self.runners:
+                runner.iter = args[0]

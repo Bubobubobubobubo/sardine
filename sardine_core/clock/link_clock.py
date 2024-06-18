@@ -92,6 +92,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
     def beat(self, beat: int) -> None:
         self._last_capture.requestBeatAtTime(beat, self._link_time, self.beats_per_bar)
         self._link.commitSessionState(self._last_capture)
+        self.env.dispatch("reset_iterator", 0)
 
     @property
     def beat_duration(self) -> float:

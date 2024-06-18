@@ -205,8 +205,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
             self._time_shift += delta * self.beat_duration
 
-        # We could also try to broadcast start/stop from sardine transport methods,
-        # but we don't have a way to prevent _capture_link_info() from triggering this.
-        #
-        # if event in ("pause", "resume"):
-        #     self._link.setIsPlaying(event == "resume", self._link_time)
+        # Broadcast start/stop from sardine transport methods if needed
+        if event == "pause" and self._playing:
+            self._link.setIsPlaying(False, self._link_time)
+        elif event == "resume" and not self._playing:
+            self._link.setIsPlaying(True, self._link_time)

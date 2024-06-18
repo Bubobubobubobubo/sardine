@@ -201,7 +201,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
                 # Don't allow time to jump forward, rewind instead.
                 delta -= self.beats_per_bar
 
-            self._time_shift = delta * self.beat_duration
+            self._time_shift += delta * self.beat_duration
 
         # We could also try to broadcast start/stop from sardine transport methods,
         # but we don't have a way to prevent _capture_link_info() from triggering this.

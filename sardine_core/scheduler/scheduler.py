@@ -136,3 +136,6 @@ class Scheduler(BaseHandler):
             self.reset()
         if event == "tempo_change":
             self._react_to_tempo_change(*args)
+        if event == "reset_iterator":
+            for runner in self.runners:
+                runner.iter = args[0]

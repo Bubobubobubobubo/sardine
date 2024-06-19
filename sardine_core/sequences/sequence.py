@@ -1,5 +1,4 @@
-from random import random, randint, choice
-
+from random import choice, randint, random
 
 never = lambda: False
 almostNever = lambda: random() < 0.10

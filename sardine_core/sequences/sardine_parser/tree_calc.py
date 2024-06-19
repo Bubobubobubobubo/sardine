@@ -1,11 +1,12 @@
-from itertools import count, takewhile, chain
 import random
+from itertools import chain, count, takewhile
 from time import time
 
 from lark import Transformer, v_args
 from lark.lexer import Token
-from sardine_core.logger import print
 from rich.panel import Panel
+
+from sardine_core.logger import print
 
 from . import funclib
 from .chord import Chord

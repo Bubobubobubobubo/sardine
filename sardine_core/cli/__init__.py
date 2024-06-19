@@ -1,16 +1,18 @@
-from sardine_core.io.UserConfig import create_template_configuration_file
-from InquirerPy.validator import EmptyInputValidator
-from InquirerPy.base.control import Choice
+import json
+import os
+from pathlib import Path
+
+import click
+import mido
+from appdirs import *  # Wildcard used in docs
 from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
+from InquirerPy.validator import EmptyInputValidator
 from rich.panel import Panel
 from rich.table import Table
-from pathlib import Path
+
+from sardine_core.io.UserConfig import create_template_configuration_file
 from sardine_core.logger import print
-from appdirs import *  # Wildcard used in docs
-import click
-import json
-import mido
-import os
 
 FUNNY_TEXT = """
 ░█████╗░░█████╗░███╗░░██╗███████╗██╗░██████╗░

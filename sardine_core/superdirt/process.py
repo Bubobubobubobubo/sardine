@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 
-import sys
 import asyncio
 import platform
 import shutil
 import subprocess
+import sys
 import tempfile
 from os import path, walk
 from pathlib import Path
 from typing import Optional, Union
-from sardine_core.logger import print
 
 import psutil
 from appdirs import *
 from rich.console import Console
+
+from sardine_core.logger import print
 
 __all__ = ("SuperDirtProcess",)
 

@@ -1,13 +1,13 @@
+import sys
 from collections import deque
 from dataclasses import dataclass
 from typing import Optional, Union
-import sys
 
 import mido
 from mido import Message, get_input_names, open_input, parse_string_stream
-from sardine_core.logger import print
 
 from sardine_core.base.handler import BaseHandler
+from sardine_core.logger import print
 
 __all__ = ("MidiInHandler",)
 

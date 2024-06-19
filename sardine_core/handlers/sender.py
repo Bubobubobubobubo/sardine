@@ -1,11 +1,11 @@
 import asyncio
 from math import floor
 from random import random
-from typing import Callable, Generator, ParamSpec, TypeVar, Union, Optional, Any
-from sardine_core.base import BaseHandler
-from sardine_core.utils import maybe_coro
-from sardine_core.sequences import euclid
+from typing import Any, Callable, Generator, Optional, ParamSpec, TypeVar, Union
 
+from sardine_core.base import BaseHandler
+from sardine_core.sequences import euclid
+from sardine_core.utils import maybe_coro
 
 __all__ = ("Sender",)
 

@@ -1,11 +1,12 @@
 import time
 from itertools import chain
-from typing import Optional, List, Union, Callable, Any
+from typing import Any, Callable, List, Optional, Union
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 
 from sardine_core.utils import alias_param
+
 from .osc_loop import OSCLoop
 from .sender import (
     Number,

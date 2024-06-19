@@ -2,22 +2,25 @@ import asyncio
 import heapq
 import inspect
 import math
-import traceback
 import os
+import traceback
 from collections import deque
 from dataclasses import dataclass
-from rich.panel import Panel
 from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
-from sardine_core.logger import print
+
+from rich.panel import Panel
 
 from sardine_core.base import BaseClock
 from sardine_core.clock import Time
-from sardine_core.utils import MISSING, maybe_coro, Span
+from sardine_core.logger import print
+from sardine_core.utils import MISSING, Span, maybe_coro
+
 from .constants import MaybeCoroFunc
 from .errors import *
 
 if TYPE_CHECKING:
     from sardine_core.fish_bowl import FishBowl
+
     from .scheduler import Scheduler
 
 __all__ = ("AsyncRunner", "FunctionState")

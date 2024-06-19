@@ -1,5 +1,6 @@
-from rich.panel import Panel
 import os
+
+from rich.panel import Panel
 
 sardine_intro = """[red]
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗

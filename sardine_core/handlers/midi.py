@@ -1,16 +1,19 @@
+import asyncio
+import sys
+from typing import Callable, Optional
+
+import mido
+
+from sardine_core.logger import print
+from sardine_core.utils import alias_param
+
 from .sender import (
     Number,
     NumericElement,
-    Sender,
     ParsableElement,
+    Sender,
     _resolve_if_callable,
 )
-from typing import Optional, Callable
-from sardine_core.utils import alias_param
-from sardine_core.logger import print
-import asyncio
-import mido
-import sys
 
 __all__ = ("MidiHandler",)
 

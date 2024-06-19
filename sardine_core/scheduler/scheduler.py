@@ -2,6 +2,7 @@ from typing import Optional
 
 from sardine_core.base import BaseHandler
 from sardine_core.utils import plural
+
 from .async_runner import AsyncRunner
 
 __all__ = ("Scheduler",)

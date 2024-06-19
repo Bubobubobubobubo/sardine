@@ -1,9 +1,9 @@
 from .control import *
-from .tidal_euclid import *
-from .pattern import *
-from .utils import *
 from .mini import *
+from .pattern import *
 from .stream import TidalStream
+from .tidal_euclid import *
+from .utils import *
 
 __streams = {}
 

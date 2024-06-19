@@ -1,10 +1,11 @@
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Self
-from sardine_core.handlers.sender import Number, NumericElement, Sender
-from sardine_core.utils import Quant, alias_param, get_deadline_from_quant, lerp, Span
-from sardine_core.scheduler import AsyncRunner
 from dataclasses import dataclass
-from sardine_core.base import BaseHandler
 from functools import wraps
+from typing import Any, Callable, Optional, ParamSpec, Self, TypeVar
+
+from sardine_core.base import BaseHandler
+from sardine_core.handlers.sender import Number, NumericElement, Sender
+from sardine_core.scheduler import AsyncRunner
+from sardine_core.utils import Quant, Span, alias_param, get_deadline_from_quant, lerp
 
 __all__ = ("Player",)
 

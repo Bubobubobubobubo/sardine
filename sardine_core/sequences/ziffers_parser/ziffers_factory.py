@@ -2,7 +2,7 @@ import uuid
 
 try:
     from ziffers import z
-    from ziffers.classes import Sample, SampleList, Rest, Chord
+    from ziffers.classes import Chord, Rest, Sample, SampleList
 except ImportError:
     print("Install the ziffers package for using Ziffers patterns")
 

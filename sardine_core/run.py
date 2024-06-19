@@ -6,14 +6,15 @@ from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
 from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
 
+from ziffers import z
+
 from . import *
-from .io.UserConfig import read_user_configuration, read_extension_configuration
+from .io.UserConfig import read_extension_configuration, read_user_configuration
 from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import Quant, greeter_printer, get_deadline_from_quant, join, sardine_intro
-from ziffers import z
+from .utils import Quant, get_deadline_from_quant, greeter_printer, join, sardine_intro
 
 ParamSpec = ParamSpec("PS")
 T = TypeVar("T")

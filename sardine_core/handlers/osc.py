@@ -1,12 +1,13 @@
 import time
 from itertools import chain
-from typing import Optional, Callable
+from typing import Callable, Optional
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import *
 from osc4py3.oscmethod import *
 
 from sardine_core.utils import alias_param
+
 from .osc_loop import OSCLoop
 from .sender import Number, NumericElement, Sender, StringElement, _resolve_if_callable
 

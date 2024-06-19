@@ -1,8 +1,8 @@
-from appdirs import *
-from pathlib import Path
-from rich.console import Console
 import os
+from pathlib import Path
 
+from appdirs import *
+from rich.console import Console
 
 __all__ = ("print",)
 

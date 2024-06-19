@@ -1,9 +1,11 @@
+from abc import ABC
+from time import time
+from typing import Any, Dict, Optional
+
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
-from abc import ABC
-from typing import Dict, Any, Optional
+
 from .pattern import *
-from time import time
 
 
 class BaseStream(ABC):

@@ -1,13 +1,14 @@
+import datetime
 import random
 import statistics
 from itertools import chain, cycle, islice, repeat
-from math import cos, sin, tan, asin, pi, atan
+from math import asin, atan, cos, pi, sin, tan
 from random import shuffle
-from typing import Optional, Union
 from time import time
-import datetime
+from typing import Optional, Union
 
 from sardine_core.sequences.sequence import euclid
+
 from .chord import Chord
 from .utils import map_binary_function, map_unary_function
 

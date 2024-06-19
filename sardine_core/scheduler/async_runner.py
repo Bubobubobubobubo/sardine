@@ -737,12 +737,15 @@ class AsyncRunner:
         """Calls the given function and optionally applies time shift
         according to the `defer_beats` attribute.
         """
+        signature = inspect.signature(func)
+        valid_kwargs = {k: v for k, v in kwargs.items() if k in signature.parameters}
+
         if self.defer_beats:
             delta = self.clock.time - self._expected_time
             shift = self.defer_beats * self.clock.beat_duration - delta
             self.time.shift += shift
 
-        return await maybe_coro(func, *args, **kwargs)
+        return await maybe_coro(func, *args, **valid_kwargs)
 
     def _get_period(self, state: Optional[FunctionState]) -> Union[float, int]:
         """

@@ -1,8 +1,6 @@
 from typing import Optional, Union
 
 import link
-import math
-from time import time
 
 from ..base import BaseClock, BaseThreadedLoopMixin
 

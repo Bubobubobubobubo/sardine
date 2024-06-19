@@ -17,8 +17,11 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         tempo: NUMBER = 120,
         bpb: int = 4,
         loop_interval: float = 0.001,
+        startup_delay: float = 3.0,
     ):
         super().__init__(loop_interval=loop_interval)
+
+        self.startup_delay = startup_delay
 
         self._link: Optional[link.Link] = None
         self._tick: int = 0
@@ -38,6 +41,8 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         self._framerate: float = 1 / 20
         self._paused_link_phase: float = 0.0
         self._time_shift: float = 0.0
+        self._synced: bool = False
+        self._startup_time: float = 0.0
 
     ## VORTEX   ################################################
 
@@ -114,10 +119,16 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @property
     def internal_origin(self) -> float:
+        if not self._synced:
+            return 0.0
+
         return self._internal_origin
 
     @property
     def internal_time(self) -> float:
+        if not self._synced:
+            return 0.0
+
         return self._internal_time + self._time_shift
 
     @property
@@ -178,17 +189,28 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     def before_loop(self):
         self._time_shift = 0.0
+        self._synced = False
 
         self._link = link.Link(self._tempo)
         self._link.enabled = True
         self._link.startStopSyncEnabled = True
 
-        # Set the origin at the start
+        # Record the initial time so we know how long to wait before syncing
         self._capture_link_info(update_transport=False)
-        self._internal_origin = self.internal_time
+        self._startup_time = self._internal_time
 
     def loop(self):
         self._capture_link_info(update_transport=True)
+
+        # Give Link some time to sync before we start reporting time.
+        # Make sure the origin starts at phase 0.
+        if (
+            not self._synced
+            and self._internal_time - self._startup_time >= self.startup_delay
+        ):
+            phase_time = self._link_phase * self.beat_duration
+            self._internal_origin = self._internal_time - phase_time
+            self._synced = True
 
         if (
             DEBUG

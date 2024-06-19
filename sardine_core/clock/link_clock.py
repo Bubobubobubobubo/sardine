@@ -244,3 +244,4 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
             elif event == "resume" and not self._playing:
                 self._last_capture.setIsPlaying(True, self._link_time)
                 self._link.commitSessionState(self._last_capture)
+                self.beat = 0

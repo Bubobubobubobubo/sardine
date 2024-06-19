@@ -116,7 +116,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
     @property
     def internal_time(self) -> float:
-        return self._internal_time
+        return self._internal_time + self._time_shift
 
     @property
     def phase(self) -> float:
@@ -158,7 +158,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         playing: bool = s.isPlaying()
         tempo: float = s.tempo()
 
-        self._internal_time = self._link_time / 1_000_000 + self._time_shift
+        self._internal_time = self._link_time / 1_000_000
         self._beat = int(beat)
         self._beat_duration = 60 / tempo
         # Sardine phase is typically defined from 0.0 to the beat duration.

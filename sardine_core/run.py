@@ -108,6 +108,7 @@ for player in player_names:
     p = Player(name=player)
     globals()[player] = p
     bowl.add_handler(p)
+    del p
 
 # Extensions
 # An extension configuration file contains the following fields:

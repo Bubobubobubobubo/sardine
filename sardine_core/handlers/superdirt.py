@@ -5,7 +5,7 @@ from typing import Optional, List, Union, Callable, Any
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
 
-from ..utils import alias_param
+from sardine_core.utils import alias_param
 from .osc_loop import OSCLoop
 from .sender import (
     Number,

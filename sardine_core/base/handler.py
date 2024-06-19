@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from ..fish_bowl import FishBowl
+    from sardine_core.fish_bowl import FishBowl
 
 __all__ = ("BaseHandler",)
 

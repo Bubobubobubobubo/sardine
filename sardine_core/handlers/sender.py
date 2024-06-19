@@ -2,9 +2,9 @@ import asyncio
 from math import floor
 from random import random
 from typing import Callable, Generator, ParamSpec, TypeVar, Union, Optional, Any
-from ..base import BaseHandler
-from ..utils import maybe_coro
-from ..sequences import euclid
+from sardine_core.base import BaseHandler
+from sardine_core.utils import maybe_coro
+from sardine_core.sequences import euclid
 
 
 __all__ = ("Sender",)

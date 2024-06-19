@@ -6,8 +6,8 @@ from .sender import (
     _resolve_if_callable,
 )
 from typing import Optional, Callable
-from ..utils import alias_param
-from ..logger import print
+from sardine_core.utils import alias_param
+from sardine_core.logger import print
 import asyncio
 import mido
 import sys

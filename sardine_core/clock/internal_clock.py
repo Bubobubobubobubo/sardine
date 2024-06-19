@@ -3,7 +3,7 @@ import math
 import time
 from typing import Union
 
-from ..base import BaseClock
+from sardine_core.base import BaseClock
 
 NUMBER = Union[int, float]
 

@@ -2,7 +2,7 @@ import asyncio
 
 from osc4py3.as_eventloop import osc_process, osc_startup, osc_terminate
 
-from ..base import BaseRunnerHandler
+from sardine_core.base import BaseRunnerHandler
 
 __all__ = ("OSCLoop",)
 

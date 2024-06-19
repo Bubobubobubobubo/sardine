@@ -4,7 +4,7 @@ from time import time
 
 from lark import Transformer, v_args
 from lark.lexer import Token
-from ...logger import print
+from sardine_core.logger import print
 from rich.panel import Panel
 
 from . import funclib

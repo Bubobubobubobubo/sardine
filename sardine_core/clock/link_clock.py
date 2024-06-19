@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 import link
 
-from ..base import BaseClock, BaseThreadedLoopMixin
+from sardine_core.base import BaseClock, BaseThreadedLoopMixin
 
 NUMBER = Union[int, float]
 

@@ -1,10 +1,10 @@
 from .tree_calc import CalculateTree
-from ...base import BaseParser
+from sardine_core.base import BaseParser
 from lark import Lark, Tree
 from lark.exceptions import LarkError, UnexpectedCharacters, UnexpectedToken
 from pathlib import Path
 from .chord import Chord
-from ...logger import print
+from sardine_core.logger import print
 import traceback
 
 __all__ = ("ListParser",)

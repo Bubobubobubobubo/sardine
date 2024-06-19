@@ -3,9 +3,9 @@ from fractions import Fraction
 from parsimonious import NodeVisitor
 from parsimonious.nodes import Node
 
-from ..control import n, s
-from ..pattern import pure  # polymeter,
-from ..pattern import (
+from sardine_core.sequences.tidal_parser.control import n, s
+from sardine_core.sequences.tidal_parser.pattern import pure  # polymeter,
+from sardine_core.sequences.tidal_parser.pattern import (
     choose_cycles,
     id,
     polyrhythm,
@@ -14,7 +14,7 @@ from ..pattern import (
     stack,
     timecat,
 )
-from ..utils import flatten
+from sardine_core.sequences.tidal_parser.utils import flatten
 
 
 class MiniVisitor(NodeVisitor):

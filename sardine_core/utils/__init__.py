@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable, Literal, Optional, ParamSpec, TypeVa
 from .Messages import *
 
 if TYPE_CHECKING:
-    from ..base import BaseClock
+    from sardine_core.base import BaseClock
 
 P = ParamSpec("P")
 T = TypeVar("T")

@@ -1,7 +1,7 @@
 import contextlib
 import contextvars
 
-from ..base import BaseHandler
+from sardine_core.base import BaseHandler
 
 __all__ = ("Time",)
 

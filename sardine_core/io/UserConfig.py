@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 
 from appdirs import *
-from ..logger import print
+from sardine_core.logger import print
 
 __all__ = (
     "Config",

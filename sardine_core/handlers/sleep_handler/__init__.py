@@ -5,7 +5,7 @@ from typing import Optional, Union
 
 from exceptiongroup import BaseExceptionGroup
 
-from ...base import BaseHandler
+from sardine_core.base import BaseHandler
 from .time_handle import *
 
 __all__ = ("SleepHandler", "TimeHandle")

@@ -3,9 +3,9 @@ from typing import Any, Callable, Optional, Union
 from osc4py3.as_eventloop import *
 from osc4py3.oscchannel import TransportChannel, get_channel
 from osc4py3.oscmethod import *
-from ..logger import print
+from sardine_core.logger import print
 
-from ..base.handler import BaseHandler
+from sardine_core.base.handler import BaseHandler
 from .osc_loop import OSCLoop
 
 __all__ = ("OSCInHandler",)

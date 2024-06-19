@@ -9,7 +9,7 @@ import tempfile
 from os import path, walk
 from pathlib import Path
 from typing import Optional, Union
-from ..logger import print
+from sardine_core.logger import print
 
 import psutil
 from appdirs import *

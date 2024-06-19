@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional, Union
 
-from ..base import BaseHandler
+from sardine_core.base import BaseHandler
 
 __all__ = ("MissileMode",)
 

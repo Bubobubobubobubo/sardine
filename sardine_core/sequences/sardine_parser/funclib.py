@@ -7,7 +7,7 @@ from typing import Optional, Union
 from time import time
 import datetime
 
-from ..sequence import euclid
+from sardine_core.sequences.sequence import euclid
 from .chord import Chord
 from .utils import map_binary_function, map_unary_function
 

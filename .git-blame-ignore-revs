@@ -6,3 +6,7 @@ c50fbbdf26b2d1fadaecb0fc5646e7c61b91f1d1
 89006f66bba88de0fbce2173d1ff6ed363a296bf
 # Run black formatter
 c0037336a43c1dce30f50d83ef8c7c2cae3ae781
+# style: replace relative parent imports with absolute imports
+449b2f7af332b055d794535a357abc902a7cf7b3
+# style: sort imports with isort
+c8933ea4ce4843f866169331e8a6f69e30434de1

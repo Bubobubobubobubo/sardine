@@ -8,6 +8,8 @@ NUMBER = Union[int, float]
 
 __all__ = ("LinkClock",)
 
+DEBUG = False
+
 
 class LinkClock(BaseThreadedLoopMixin, BaseClock):
     def __init__(
@@ -188,6 +190,20 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
     def loop(self):
         self._capture_link_info(update_transport=True)
 
+        if (
+            DEBUG
+            and getattr(self, "_pause_check", False)
+            and self.time >= self._pause_state[0]
+        ):
+            self._pause_check = False
+            pause_time, pause_phase = self._pause_state
+            deviation = self._link_phase - pause_phase
+            print(
+                f"({pause_time:.3f}, {pause_phase:.3f}) -> "
+                f"({self.time:.3f}, {self._link_phase:.3f}), "
+                f"{deviation = :.3f}"
+            )
+
     def after_loop(self):
         self._link = None
 
@@ -200,12 +216,21 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
             # Remember the current phase so the next time the clock is resumed,
             # we can rewind time so the phase appears continuous.
             self._paused_link_phase = self._link_phase
+
+            if DEBUG:
+                self._pause_check = False
+                self._pause_state = (self.time, self._link_phase)
+
         elif event == "resume":
             # Alternative formula: (-bpb + lp - plp) % -bpb
             delta = (self._link_phase - self._paused_link_phase) % self.beats_per_bar
             if delta > 0:
                 # Don't allow time to jump forward, rewind instead.
                 delta -= self.beats_per_bar
+
+            if DEBUG:
+                self._pause_check = True
+                print(f"Time shifting by: {delta * self.beat_duration:.3f}")
 
             self._time_shift += delta * self.beat_duration
 

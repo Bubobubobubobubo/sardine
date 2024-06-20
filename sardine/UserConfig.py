@@ -28,7 +28,7 @@ TEMPLATE_CONFIGURATION = {
         "boot_supercollider": True,
         "sardine_boot_file": True,
         "verbose_superdirt": False,
-        "link_clock": False,
+        "link_clock": True,
         "superdirt_config_path": str(USER_DIR / "default_superdirt.scd"),
         "user_config_path": str(USER_DIR / "user_configuration.py"),
         "editor": False,

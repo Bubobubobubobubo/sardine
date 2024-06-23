@@ -4,7 +4,7 @@ from functools import wraps
 from itertools import product
 from pathlib import Path
 from string import ascii_lowercase, ascii_uppercase
-from typing import Any, Callable, Optional, ParamSpec, TypeVar, Union, overload
+from typing import Any, Callable, Optional, ParamSpec, TypeVar, overload
 
 from ziffers import z
 
@@ -158,7 +158,7 @@ def for_(n: int) -> Callable[[Callable[ParamSpec, T]], Callable[ParamSpec, T]]:
 
 @overload
 def swim(
-    func: Union[Callable[ParamSpec, Any], AsyncRunner],
+    func: Callable[ParamSpec, Any] | AsyncRunner,
     /,
     # NOTE: AsyncRunner doesn't support generic args/kwargs
     *args: ParamSpec.args,
@@ -174,13 +174,13 @@ def swim(
     quant: Quant = "bar",
     until: Optional[int] = None,
     **kwargs,
-) -> Callable[[Union[Callable, AsyncRunner]], AsyncRunner]: ...
+) -> Callable[[Callable | AsyncRunner], AsyncRunner]: ...
 
 
 # FIXME: quant docstring is outdated
 # pylint: disable=keyword-arg-before-vararg  # signature is valid
 def swim(
-    func: Optional[Union[Callable, AsyncRunner]] = None,
+    func: Optional[Callable | AsyncRunner] = None,
     /,
     *args,
     quant: Quant = "bar",
@@ -193,7 +193,7 @@ def swim(
     declared and followed by the scheduler system to recurse in time if needed.
 
     Args:
-        func (Optional[Union[Callable[P, T], AsyncRunner]]):
+        func (Optional[Callable[P | T], AsyncRunner]]):
             The function to be scheduled. If this is an AsyncRunner,
             the current state is simply updated with new arguments.
         *args: Positional arguments to be passed to `func.`
@@ -213,8 +213,7 @@ def swim(
         **kwargs: Keyword arguments to be passed to `func.`
     """
 
-    def decorator(func: Union[Callable, AsyncRunner], /) -> AsyncRunner:
-
+    def decorator(func: Callable | AsyncRunner, /) -> AsyncRunner:
         # This is true when the function is already running on the scheduler
         if isinstance(func, AsyncRunner):
             func.update_state(*args, **kwargs)
@@ -277,7 +276,7 @@ def again(runner: AsyncRunner, *args, **kwargs):
     runner.reload()
 
 
-def die(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
+def die(func: Callable | AsyncRunner) -> AsyncRunner:
     """
     Swimming decorator: remove a function from the scheduler. The function
     will not be called again and will likely stop recursing in time.
@@ -295,7 +294,7 @@ def die(func: Union[Callable, AsyncRunner]) -> AsyncRunner:
     return runner
 
 
-def sleep(n_beats: Union[int, float]):
+def sleep(n_beats: int | float):
     """Artificially sleep in the current function for `n_beats`.
 
     Example usage: ::
@@ -444,7 +443,7 @@ class Delay:
     extra indentation for marking visually where sleep takes effect.
     """
 
-    def __init__(self, duration: Union[int, float] = 1, delayFirst: bool = True):
+    def __init__(self, duration: int | float = 1, delayFirst: bool = True):
         self.duration = duration
         self.delayFirst = delayFirst
 

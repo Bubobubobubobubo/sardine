@@ -1,10 +1,10 @@
-from typing import Optional, Union
+from typing import Optional
 
 import link
 
 from sardine_core.base import BaseClock, BaseThreadedLoopMixin
 
-NUMBER = Union[int, float]
+NUMBER = int | float
 
 __all__ = ("LinkClock",)
 

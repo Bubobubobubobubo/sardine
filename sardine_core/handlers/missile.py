@@ -1,5 +1,5 @@
 import asyncio
-from typing import Optional, Union
+from typing import Optional
 
 from sardine_core.base import BaseHandler
 
@@ -9,7 +9,7 @@ __all__ = ("MissileMode",)
 class MissileMode(BaseHandler):
     """Maximize the current thread's wake time with a CPU-intensive task."""
 
-    def __init__(self, *, burn_rate: Union[float, int] = 1000):
+    def __init__(self, *, burn_rate: float | int = 1000):
         super().__init__()
         self.burn_interval = 1 / burn_rate
         self._running = False

@@ -6,7 +6,7 @@ import os
 import traceback
 from collections import deque
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional, Union
+from typing import TYPE_CHECKING, Any, MutableSequence, NamedTuple, Optional
 
 from rich.panel import Panel
 
@@ -50,7 +50,7 @@ def _discard_kwargs(sig: inspect.Signature, kwargs: dict[str, Any]) -> dict[str,
 
 def _extract_new_period(
     sig: inspect.Signature, kwargs: dict[str, Any], default_period: int | float
-) -> Union[float, int]:
+) -> float | int:
     period = kwargs.get("p")
 
     # Assign a default period if necessary
@@ -104,7 +104,7 @@ class FunctionState:
 
 
 class DeferredState(NamedTuple):
-    deadline: Union[float, int]
+    deadline: float | int
     index: int
     state: FunctionState
 
@@ -187,7 +187,7 @@ class AsyncRunner:
     running at different phases. To synchronize these functions together,
     their interval shifts should be set to the same value (usually 0).
     """
-    snap: Optional[Union[float, int]]
+    snap: Optional[float | int]
     """
     The absolute time that the next interval should start at.
 
@@ -361,7 +361,7 @@ class AsyncRunner:
         self.states.append(new_state)
 
     def push_deferred(
-        self, deadline: Union[float, int], func: "MaybeCoroFunc", *args, **kwargs
+        self, deadline: float | int, func: "MaybeCoroFunc", *args, **kwargs
     ):
         """Adds a function to a queue to eventually be run.
 
@@ -372,7 +372,7 @@ class AsyncRunner:
         priority and replace the `snap` attribute to ensure they run on time.
 
         Args:
-            time (Union[float, int]):
+            time (float | int):
                 The absolute clock time to wait before the function state
                 is pushed.
             func (MaybeCoroFunc): The function to add.
@@ -481,7 +481,7 @@ class AsyncRunner:
         """Allows the interval to be corrected in the next iteration."""
         self._can_correct_interval = True
 
-    def delay_interval(self, deadline: Union[float, int], period: Union[float, int]):
+    def delay_interval(self, deadline: float | int, period: float | int):
         """Delays the next iteration until the given deadline has passed.
 
         This is equivalent to setting the runner's `snap` attribute
@@ -496,8 +496,8 @@ class AsyncRunner:
         to skip the current iteration.
 
         Args:
-            time (Union[float, int]): The absolute time to wait.
-            period (Union[float, int]): The period to synchronize to.
+            time (float | int): The absolute time to wait.
+            period (float | int): The period to synchronize to.
 
         Raises:
             RuntimeError: A function must be pushed before this can be used.
@@ -510,7 +510,7 @@ class AsyncRunner:
         if self.snap is not None and time + self._last_interval >= self.snap:
             self.snap = None
 
-    def _correct_interval(self, period: Union[float, int]) -> None:
+    def _correct_interval(self, period: float | int) -> None:
         """Checks if the interval should be corrected.
 
         Interval correction occurs when `allow_interval_correction()`
@@ -519,7 +519,7 @@ class AsyncRunner:
         did not change, interval correction must be requested again.
 
         Args:
-            period (Union[float, int]):
+            period (float | int):
                 The period being used in the current iteration.
         """
         # NOTE: this should account for tempo change, weird...
@@ -531,7 +531,7 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
-    def _correct_interval_background_job(self, period: Union[float, int]) -> None:
+    def _correct_interval_background_job(self, period: float | int) -> None:
         """
         Alternative version for fixed-rate background jobs. The interval or
         period is not indexed on the clock like with the _correct_interval
@@ -545,7 +545,7 @@ class AsyncRunner:
         self._last_interval = interval
         self._can_correct_interval = False
 
-    def _get_next_deadline(self, period: Union[float, int]) -> float:
+    def _get_next_deadline(self, period: float | int) -> float:
         """Returns the amount of time until the next interval.
 
         The base interval is determined by the `period` argument,
@@ -575,7 +575,7 @@ class AsyncRunner:
         the above solution could potentially trigger non-missed iterations too early.
 
         Args:
-            period (Union[float, int]):
+            period (float | int):
                 The number of beats in the interval.
 
         Returns:
@@ -756,7 +756,7 @@ class AsyncRunner:
 
         return await maybe_coro(func, *args, **valid_kwargs)
 
-    def _get_period(self, state: Optional[FunctionState]) -> Union[float, int]:
+    def _get_period(self, state: Optional[FunctionState]) -> float | int:
         """
         TODO: ???
 
@@ -765,7 +765,7 @@ class AsyncRunner:
             most recent one).
 
         Returns:
-            Union[float, int]: The period to use for the next iteration.
+            float | int: The period to use for the next iteration.
         """
         # If we don't have a state, we can't extract a period given by the user
         if state is None:
@@ -817,11 +817,11 @@ class AsyncRunner:
                 print(f"[yellow][Saving [red]{self.name}[/red] from crash]")
                 self._has_reverted = False
 
-    async def _sleep_until(self, deadline: Union[float, int]) -> bool:
+    async def _sleep_until(self, deadline: float | int) -> bool:
         """Sleeps until the given deadline or until the runner is reloaded.
 
         Args:
-            duration (Union[float, int]): The amount of time to sleep.
+            duration (float | int): The amount of time to sleep.
 
         Returns:
             bool: True if the runner was reloaded, False otherwise.
@@ -857,7 +857,7 @@ class AsyncRunner:
                 )
             )
 
-    async def _sleep_unless_jump_started(self, deadline: Union[float, int]) -> bool:
+    async def _sleep_unless_jump_started(self, deadline: float | int) -> bool:
         if self._jump_start:
             self._jump_start = False
             return False

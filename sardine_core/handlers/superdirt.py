@@ -1,6 +1,6 @@
 import time
 from itertools import chain
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional
 
 from osc4py3 import oscbuildparse
 from osc4py3.as_eventloop import osc_send, osc_udp_client
@@ -159,14 +159,15 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Union[
+        sound: Optional[StringElement | List[StringElement]]
+        | Callable[
+            [],
             Optional[StringElement | List[StringElement]],
-            Callable[[], Optional[StringElement | List[StringElement]]],
         ],
-        orbit: Union[NumericElement, Callable[[], NumericElement]] = 0,
-        iterator: Union[Number, Callable[[], Number]] = 0,
-        divisor: Union[NumericElement, Callable[[], NumericElement]] = 1,
-        rate: Union[NumericElement, Callable[[], NumericElement]] = 1,
+        orbit: NumericElement | Callable[[], NumericElement] = 0,
+        iterator: Number | Callable[[], Number] = 0,
+        divisor: NumericElement | Callable[[], NumericElement] = 1,
+        rate: NumericElement | Callable[[], NumericElement] = 1,
         **pattern: ParsableElement,
     ):
         if sound is None:

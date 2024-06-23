@@ -1,11 +1,10 @@
 import asyncio
 import math
 import time
-from typing import Union
 
 from sardine_core.base import BaseClock
 
-NUMBER = Union[int, float]
+NUMBER = int | float
 
 __all__ = ("InternalClock",)
 
@@ -132,7 +131,7 @@ class InternalClock(BaseClock):
 
     ## METHODS  ##############################################################
 
-    async def sleep(self, duration: Union[float, int]) -> None:
+    async def sleep(self, duration: NUMBER) -> None:
         return await asyncio.sleep(duration)
 
     async def run(self):

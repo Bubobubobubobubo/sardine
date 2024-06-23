@@ -1,7 +1,7 @@
 import sys
 from collections import deque
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional
 
 import mido
 from mido import Message, get_input_names, open_input, parse_string_stream
@@ -99,7 +99,7 @@ class MidiInHandler(BaseHandler):
                 # Case where the message is just garbage to dispose of
                 return
 
-    def _extract_value(self, message: Union[mido.Message, None]) -> Union[Message, int]:
+    def _extract_value(self, message: mido.Message | None) -> Message | int:
         """
         Given a mido.Message, extract needed value based on message type
         """

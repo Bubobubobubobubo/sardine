@@ -1,7 +1,7 @@
 import asyncio
 from math import floor
 from random import random
-from typing import Any, Callable, Generator, Optional, ParamSpec, TypeVar, Union
+from typing import Any, Callable, Generator, Optional, ParamSpec, TypeVar
 
 from sardine_core.base import BaseHandler
 from sardine_core.sequences import euclid
@@ -12,14 +12,14 @@ __all__ = ("Sender",)
 P = ParamSpec("P")
 T = TypeVar("T")
 
-Number = Union[float, int]
+Number = float | int
 ReducedElement = TypeVar("ReducedElement")
-RecursiveElement = Union[ReducedElement, list]  # assume list is list[RecursiveElement]
-ParsableElement = Union[RecursiveElement, str]
+RecursiveElement = ReducedElement | list  # assume list is list[RecursiveElement]
+ParsableElement = RecursiveElement | str
 
 # Sub-types of ParsableElement
-NumericElement = Union[Number, list, str]
-StringElement = Union[str, list]  # assume list is list[StringElement]
+NumericElement = Number | list | str
+StringElement = str | list  # assume list is list[StringElement]
 
 Pattern = dict[str, list[ParsableElement]]
 ReducedPattern = dict[str, ReducedElement]

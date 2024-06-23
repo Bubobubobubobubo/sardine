@@ -1,6 +1,5 @@
 from itertools import count
 from string import ascii_letters
-from typing import Union
 
 __all__ = ("Variables",)
 
@@ -16,7 +15,7 @@ class Variables(object):
         for c in ascii_letters:
             self._iterators[c] = 0
 
-    def reset(self, iterator: Union[str, None] = None):
+    def reset(self, iterator: str | None = None):
         if not iterator:
             self._iterators = {}
             for c in ascii_letters:

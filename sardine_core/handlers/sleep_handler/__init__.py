@@ -1,7 +1,7 @@
 import asyncio
 import heapq
 from collections import deque
-from typing import Optional, Union
+from typing import Optional
 
 from exceptiongroup import BaseExceptionGroup
 
@@ -11,7 +11,7 @@ from .time_handle import *
 
 __all__ = ("SleepHandler", "TimeHandle")
 
-NUMBER = Union[float, int]
+NUMBER = float | int
 
 
 class SleepHandler(BaseHandler):

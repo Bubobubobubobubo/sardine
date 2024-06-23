@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional
 
 from osc4py3.as_eventloop import *
 from osc4py3.oscchannel import TransportChannel, get_channel
@@ -109,7 +109,7 @@ class OSCInHandler(BaseHandler):
 
         osc_method(address, event_dispatcher, argscheme=OSCARG_DATA)
 
-    def get(self, address: str) -> Union[Any, None]:
+    def get(self, address: str) -> Any | None:
         """Get a watched value. Return None if not found"""
         try:
             return self._watched_values[address]

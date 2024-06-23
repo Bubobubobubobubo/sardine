@@ -4,11 +4,10 @@ import asyncio
 import platform
 import shutil
 import subprocess
-import sys
 import tempfile
 from os import path, walk
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional
 
 import psutil
 from appdirs import *
@@ -49,7 +48,7 @@ class SuperDirtProcess:
         cur_path = Path(__file__).parent.resolve()
         return "".join([str(cur_path), "/default_superdirt.scd"])
 
-    def _find_startup_file(self, user_file: Union[str, None] = None) -> Path:
+    def _find_startup_file(self, user_file: str | None = None) -> Path:
         """Find the SuperDirt startup file"""
         if not user_file:
             file_path = self._user_dir / "default_superdirt.scd"

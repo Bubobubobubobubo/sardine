@@ -1,6 +1,6 @@
 import math
 from abc import ABC, abstractmethod
-from typing import Optional, Union
+from typing import Optional
 
 from .runner import BaseRunnerHandler
 
@@ -191,7 +191,7 @@ class BaseClock(BaseRunnerHandler, ABC):
 
     def get_beat_time(
         self,
-        n_beats: Union[int, float],
+        n_beats: int | float,
         *,
         time: Optional[float] = None,
         sync: bool = True,
@@ -199,7 +199,7 @@ class BaseClock(BaseRunnerHandler, ABC):
         """Determines the amount of time to wait for N beats to pass.
 
         Args:
-            n_beats (Union[int, float]): The number of beats to wait for.
+            n_beats (int | float): The number of beats to wait for.
             time (Optional[float]):
                 The exact time to use for calculations.
                 If not provided, this defaults to `shifted_time`.
@@ -237,7 +237,7 @@ class BaseClock(BaseRunnerHandler, ABC):
 
     def get_bar_time(
         self,
-        n_bars: Union[int, float],
+        n_bars: int | float,
         *,
         time: Optional[float] = None,
         sync: bool = True,
@@ -245,7 +245,7 @@ class BaseClock(BaseRunnerHandler, ABC):
         """Determines the amount of time to wait for N bars to pass.
 
         Args:
-            n_bars (Union[int, float]): The number of bars to wait for.
+            n_bars (int | float): The number of bars to wait for.
             time (Optional[float]):
                 The exact time to use for calculations.
                 If not provided, this defaults to `shifted_time`.
@@ -261,7 +261,7 @@ class BaseClock(BaseRunnerHandler, ABC):
         """
         return self.get_beat_time(n_bars * self.beats_per_bar, time=time, sync=sync)
 
-    async def sleep(self, duration: Union[float, int]) -> None:
+    async def sleep(self, duration: float | int) -> None:
         """Sleeps for the given duration.
 
         This method can be optionally overridden by subclasses.

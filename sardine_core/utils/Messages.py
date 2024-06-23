@@ -2,6 +2,8 @@ import os
 
 from rich.panel import Panel
 
+from sardine_core.io.UserConfig import Config
+
 sardine_intro = """[red]
 ░██████╗░█████╗░██████╗░██████╗░██╗███╗░░██╗███████╗
 ██╔════╝██╔══██╗██╔══██╗██╔══██╗██║████╗░██║██╔════╝
@@ -22,7 +24,7 @@ def _ticked(condition: bool):
     return "[X]" if condition else "[ ]"
 
 
-def greeter_printer(intro_logo: str, config: dict):
+def greeter_printer(intro_logo: str, config: Config):
     os.system("cls" if os.name == "nt" else "clear")
     midi_port = "Automatic" if config.midi == "Sardine" else config.midi
     config_message = (

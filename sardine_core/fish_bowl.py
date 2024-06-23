@@ -1,6 +1,6 @@
 import asyncio
 import collections
-from typing import Hashable, Iterable, Optional, Protocol, Union
+from typing import Hashable, Iterable, Optional, Protocol
 
 from exceptiongroup import BaseExceptionGroup
 
@@ -77,7 +77,9 @@ class FishBowl:
         status = (
             "playing"
             if running and not paused
-            else "paused" if running and paused else "stopped"
+            else "paused"
+            if running and paused
+            else "stopped"
         )
 
         return "<{} {} clock={!r}>".format(
@@ -164,14 +166,14 @@ class FishBowl:
 
     ## SLEEPING MANAGEMENT ############################################################
 
-    async def sleep(self, duration: Union[int, float]):
+    async def sleep(self, duration: int | float):
         """Sleeps for the given duration.
 
         This method is simply a shorthand for `self.sleeper.sleep(duration)`.
         """
         return await self.sleeper.sleep(duration)
 
-    async def sleep_beats(self, beats: Union[int, float]):
+    async def sleep_beats(self, beats: int | float):
         """Sleeps for the given number of beats."""
         return await self.sleep(beats * self.clock.beat_duration)
 

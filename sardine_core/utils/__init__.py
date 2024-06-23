@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import TYPE_CHECKING, Callable, Literal, Optional, ParamSpec, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Literal, Optional, ParamSpec, TypeVar
 
 from .Messages import *
 
@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 T = TypeVar("T")
 
-Number = Union[float, int]
-Quant = Optional[Union[Number, Literal["now", "beat", "bar"]]]
-Span = Optional[Union[Number, Literal["inf"]]]
+Number = float | int
+Quant = Optional[Number | Literal["now", "beat", "bar"]]
+Span = Optional[Number | Literal["inf"]]
 
 MISSING = object()
 

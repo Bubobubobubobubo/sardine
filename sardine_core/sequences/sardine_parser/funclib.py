@@ -5,7 +5,7 @@ from itertools import chain, cycle, islice, repeat
 from math import asin, atan, cos, pi, sin, tan
 from random import shuffle
 from time import time
-from typing import Optional, Union
+from typing import Optional
 
 from sardine_core.sequences.sequence import euclid
 
@@ -457,7 +457,7 @@ class FunctionLibrary:
     def find_voice_leading(
         self,
         collection,
-        divider: Optional[Union[list, int]] = 4,
+        divider: Optional[list | int] = 4,
     ) -> list:
         """Simple voice leading algorithm"""
         # Splitting the collection with divider
@@ -619,7 +619,7 @@ class FunctionLibrary:
         """
         factor = factor[0]
 
-        def expand_number(number: Union[int, float]) -> int | float:
+        def expand_number(number: int | float) -> int | float:
             expansions = [0, -12, 12]
             return [number + (random.choice(expansions) * factor)]
 

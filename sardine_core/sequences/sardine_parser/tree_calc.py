@@ -310,8 +310,8 @@ class CalculateTree(Transformer):
         etc..
 
         Args:
-            left (Union[list, float, int]): A token that will be extended
-            right (Union[list, float, int]): A token used as an extension rule
+            left (list | float | int): A token that will be extended
+            right (list | float | int): A token used as an extension rule
 
         Returns:
             list: A list of integers after applying the expansion rule.

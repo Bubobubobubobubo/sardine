@@ -1,7 +1,6 @@
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Union
 
 from appdirs import *
 
@@ -50,7 +49,7 @@ def _recursive_update(dest: dict, src: dict):
 
 @dataclass
 class Config:
-    midi: Union[str, None]
+    midi: str | None
     beats: int
     bpm: int
     debug: bool

@@ -17,7 +17,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
         tempo: NUMBER = 120,
         bpb: int = 4,
         loop_interval: float = 0.001,
-        startup_delay: float = 3.0,
+        startup_delay: float = 0.1,  # idk
     ):
         super().__init__(loop_interval=loop_interval)
 
@@ -183,6 +183,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
 
         if update_transport:
             if playing and not last_playing:
+                self.beat = 0
                 self.env.resume()
             elif not playing and last_playing:
                 self.env.pause()
@@ -257,7 +258,7 @@ class LinkClock(BaseThreadedLoopMixin, BaseClock):
             self._time_shift += delta * self.beat_duration
 
         if self._last_capture is not None:
-            # Allow boradcasting start/stop from sardine transport methods.
+            # Allow broadcasting start/stop from sardine transport methods.
             # This will cause a second pause/resume call from _capture_link_info(),
             # but Sardine's transport methods are idempotent so it should be fine.
             if event == "pause" and self._playing:

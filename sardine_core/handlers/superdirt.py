@@ -159,11 +159,13 @@ class SuperDirtHandler(Sender):
     @alias_param(name="rate", alias="r")
     def send(
         self,
-        sound: Optional[StringElement | List[StringElement]]
-        | Callable[
-            [],
-            Optional[StringElement | List[StringElement]],
-        ],
+        sound: (
+            Optional[StringElement | List[StringElement]]
+            | Callable[
+                [],
+                Optional[StringElement | List[StringElement]],
+            ]
+        ),
         orbit: NumericElement | Callable[[], NumericElement] = 0,
         iterator: Number | Callable[[], Number] = 0,
         divisor: NumericElement | Callable[[], NumericElement] = 1,

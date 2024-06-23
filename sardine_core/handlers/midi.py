@@ -201,7 +201,11 @@ class MidiHandler(Sender):
                 )
 
     async def send_midi_note(
-        self, note: int, channel: int, velocity: int, duration: float
+        self,
+        note: int,
+        channel: int,
+        velocity: int,
+        duration: float,
     ) -> None:
         """
         Function in charge of handling MIDI note sending. This also includes various
@@ -640,8 +644,8 @@ class MidiHandler(Sender):
         }
 
         # Evaluate all potential callables
-        for key, value in rest_of_pattern.items():
-            pattern[key] = _resolve_if_callable(value)
+        for _, value in rest_of_pattern.items():
+            _resolve_if_callable(value)
 
         pattern = {**self._defaults, **pattern}
         deadline = self.env.clock.shifted_time

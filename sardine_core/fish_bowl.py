@@ -77,9 +77,7 @@ class FishBowl:
         status = (
             "playing"
             if running and not paused
-            else "paused"
-            if running and paused
-            else "stopped"
+            else "paused" if running and paused else "stopped"
         )
 
         return "<{} {} clock={!r}>".format(

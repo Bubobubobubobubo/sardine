@@ -24,9 +24,8 @@ def _ticked(condition: bool):
     return "[X]" if condition else "[ ]"
 
 
-def greeter_printer(intro_logo: str, config: Config):
+def greeter_printer(config: Config):
     os.system("cls" if os.name == "nt" else "clear")
-    midi_port = "Automatic" if config.midi == "Sardine" else config.midi
     config_message = (
         f"[yellow]BPM: [red]{config.bpm}[/red] "
         + f"[yellow]BEATS: [red]{config.beats}[/red] "

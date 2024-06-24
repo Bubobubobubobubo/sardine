@@ -14,7 +14,7 @@ from .logger import print
 from .sequences import ListParser, ziffers_factory
 from .sequences.tidal_parser import *
 from .superdirt import SuperDirtProcess
-from .utils import Quant, get_deadline_from_quant, greeter_printer, join, sardine_intro
+from .utils import Quant, get_deadline_from_quant, greeter_printer
 
 ParamSpec = ParamSpec("PS")
 T = TypeVar("T")
@@ -24,7 +24,7 @@ T = TypeVar("T")
 # READING USER CONFIGURATION (TAKEN FROM SARDINE-CONFIG)
 
 config = read_user_configuration()
-print(greeter_printer(sardine_intro, config))
+print(greeter_printer(config))
 
 
 # Initialisation of the FishBowl (the environment holding everything together)

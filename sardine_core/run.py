@@ -362,7 +362,8 @@ def silence(*runners: AsyncRunner) -> None:
     if len(runners) == 0:
         midi.all_notes_off()
         bowl.scheduler.reset()
-        hush()
+        if config.superdirt_handler:
+            hush()
         return
 
     for run in runners:
@@ -426,7 +427,7 @@ def Pat(
         int: The ith element from the resulting pattern
     """
     result = bowl.parser.parse(pattern)
-    if print:
+    if as_text:
         pattern = []
         for iterator in range(i):
             pattern.append(Sender.pattern_element(result, iterator, div, rate))

@@ -45,9 +45,6 @@ class ListParser(BaseParser):
         self.debug = debug
         self.parser_type = parser_type
 
-        # Variables usable only in the SPL environment
-        self.inner_variables = {}
-
         # Current Global Scale
         self.global_scale: str = "major"
 
@@ -75,7 +72,6 @@ class ListParser(BaseParser):
                     transformer=CalculateTree(
                         clock=self.env.clock,
                         variables=self.env.variables,
-                        inner_variables=self.inner_variables,
                         global_scale=self.global_scale,
                     ),
                 ),

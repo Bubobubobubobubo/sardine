@@ -1,8 +1,8 @@
 import datetime
 import random
 import statistics
-from itertools import chain, cycle, islice, repeat
-from math import asin, atan, cos, pi, sin, tan
+from itertools import chain, cycle, islice
+from math import atan, cos, pi, sin, tan
 from random import shuffle
 from time import time
 from typing import Optional
@@ -10,7 +10,7 @@ from typing import Optional
 from sardine_core.sequences.sequence import euclid
 
 from .chord import Chord
-from .utils import map_binary_function, map_unary_function
+from .utils import map_unary_function
 
 # Type declarations
 
@@ -114,9 +114,8 @@ class FunctionLibrary:
         "octaves": [0, 12, 24, 36, 48],
     }
 
-    def __init__(self, clock, amphibian, inner_variables, global_scale):
+    def __init__(self, clock, inner_variables, global_scale):
         self.clock = clock
-        self.amphibian = amphibian
         self.inner_variables = inner_variables
         self.global_scale = global_scale
 
@@ -267,35 +266,12 @@ class FunctionLibrary:
 
     def set_variable(self, *args, **kwargs):
         """Set an internal variable to the given value and return the same value"""
-        self.inner_variables[str(args[0][0])] = args[1]
+        setattr(self.inner_variables, args[0][0], *args[1])
         return args[1]
 
     def get_variable(self, *args, **kwargs):
         """Get an internal variable. If it doesn't exist, will return 0"""
-        return self.inner_variables.get(args[0][0], [0])
-
-    def get_amphibian_variable(self, *args, **kwargs):
-        """
-        Return the value of an amphibian variable coming from the Python
-        side. The result can only be an int, a float or a string. The
-        final result is always assumed to be a list.
-        """
-        reset = kwargs.get("reset", 0)
-
-        if reset == 0:
-            self.amphibian.reset(str(str(args[0])))
-            return [getattr(self.amphibian, str(args[0][0]))]
-        else:
-            return [getattr(self.amphibian, str(args[0][0]))]
-
-    def set_amphibian_variable(self, *args):
-        """
-        Set an amphibian variable to a new value. This value can be of any
-        type supported internally by the Sardine pattern language. This
-        function will return the new-set value.
-        """
-        setattr(self.amphibian, str(args[0][0]), args[1])
-        return [getattr(self.amphibian, str(args[1][0]))]
+        return getattr(self.inner_variables, args[0][0], [0])
 
     def drunk(self, *args, **kwargs):
         """

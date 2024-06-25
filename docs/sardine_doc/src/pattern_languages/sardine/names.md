@@ -2,7 +2,7 @@
 
 The **Sardine Pattern Language** is using names for multiple things:
 - audio sample and synthesizer names like `kick` or `sawsynth`.
-- variable naming in the context of **amphibian variables** or **internal variables**.
+- variable naming in the context of or **internal global variables**.
 - addresses, a special type of composed name used for OSC addressing.
 
 ```python 

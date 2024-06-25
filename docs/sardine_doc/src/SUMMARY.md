@@ -91,7 +91,6 @@
     - [High-level patterns](diving_deeper/high_level_patterns.md)
     - [Sleeping / oversleeping](diving_deeper/sleeping.md)
     - [Pattern object](diving_deeper/pattern_object.md)
-    - [Amphibian Variables](diving_deeper/amphibian_variables.md)
     - [Using python](diving_deeper/python.md)
         - [Advanced: Sample Slicer](diving_deeper/python-sampleslicer.md)
     - [External to Sardine](diving_deeper/externals.md)

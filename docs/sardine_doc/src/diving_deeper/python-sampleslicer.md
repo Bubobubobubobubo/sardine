@@ -1,5 +1,7 @@
 # Advanced Python - Sample Slicer 
 
+**NOTE:** this article was using _amphibian variables_, a deprecated feature. Rely on the `set` and `get` functions for a similar behavior.
+
 **Using custom python functions to multiple amphibian variables**
 
 This example uses custom functions to generate 4 amphibian variables at once. It also uses presets, initialized values, and sample lists. The Sample Slicer is a complete livecoding program, ready to use. You can also extend it, add more samples to slice, add more amphibian variables, add more parameters, etc. 

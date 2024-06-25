@@ -29,30 +29,6 @@ Get a variable associated to a name. This function is the second part of the *ge
 Pz * d('clap', room='(get roomy)', crush='(get globalcrush)')
 ```
 
-# setA (sa)
-
-This function is part of the [amphibian variables](../../diving_deeper/amphibian_variables.html) mechanism. In a similar fashion to **set**, this function can be used to set the value of the associated amphibian variable. There is currently 26 amphibian variables you can use, one for each letter of the latin alphabet in lowercase. Just like **set**, you can set a value and still return its value for later usage.
-
-**Arguments:**
-- **variable name:** name of the amphibian variable to get.
-
-**Example:**
-```python
-(setA b 20)
-(sa b 20)
-```
-
-# getA (ga)
-
-- **variable name:** name of the amphibian variable to set.
-**Arguments:**
-
-**Example:**
-```python
-V.n = [52, randint(40, 60), 72, 35]
-Pa * d('supersaw', n='(ga n)', p=0.75 )
-```
-
 # setscl
 
 The **Sardine Pattern Language** always remember the name of a global scale that the user can set. It defaults to `major`, taken from the [list of possible qualifiers](../sardine/notes.md). You can choose any scale from that list as the default scale for all patterns using **scl**, thus the name of this very function.

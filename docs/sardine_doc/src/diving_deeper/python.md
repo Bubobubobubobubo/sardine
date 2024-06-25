@@ -73,28 +73,6 @@ def melody(p=1, i=0):
     again(melody, p=1, i=i+1)
 ```
 
-### Setting amphibian variables
-A similar results can be achieved using Amphibian Variables.
-
-Amphibian variables can have their values set outside of @swim with a python assignment/expression, or with a custom function.
-
-The custom function below returns a list of midi note value with an argument that sets the number of notes in the list. 
-
-```python
-def randNotes(listLen):
-    notes = []
-    i = 0
-    while i < listLen: 
-        notes.append(randint(30,80))
-        i += 1
-    return notes
-
-V.n = randNotes(5) # Execute again to change notes
-Pa * d('supersaw', n='(v n)', p=1 )
-```
-
-For more info see [Amphibian Variables](./amphibian_variables.md).
-
 ### Conditional logic
 This example uses python `if/elif/else` conditional logic to switch between sample sets and change the tempo. Notice the use of the iterator and how resetting it to 0 at the end resets the conditional logic. 
 

@@ -8,7 +8,8 @@ from .base import BaseClock, BaseHandler, BaseParser
 from .clock import InternalClock, Time
 from .handlers import SleepHandler
 from .scheduler import Scheduler
-from .sequences import Iterator, ListParser, Variables
+from .sequences import Iterator, ListParser
+from types import SimpleNamespace
 
 __all__ = ("FishBowl",)
 
@@ -30,7 +31,7 @@ class FishBowl:
         scheduler: Optional[Scheduler] = None,
         sleeper: Optional[SleepHandler] = None,
         time: Optional[Time] = None,
-        variables: Optional[Variables] = None,
+        variables: Optional[SimpleNamespace] = None,
     ):
         self.clock = clock or InternalClock()
         self.iterators = iterator or Iterator()
@@ -38,7 +39,7 @@ class FishBowl:
         self.scheduler = scheduler or Scheduler()
         self.sleeper = sleeper or SleepHandler()
         self.time = time or Time()
-        self.variables = variables or Variables()
+        self.variables = variables or SimpleNamespace()
 
         self._handlers: dict[BaseHandler, None] = {}
         self._alive = asyncio.Event()
@@ -77,7 +78,9 @@ class FishBowl:
         status = (
             "playing"
             if running and not paused
-            else "paused" if running and paused else "stopped"
+            else "paused"
+            if running and paused
+            else "stopped"
         )
 
         return "<{} {} clock={!r}>".format(

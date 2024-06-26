@@ -107,7 +107,7 @@ class Sender(BaseHandler):
         if length > 0:
             i = floor(iterator * rate / divisor) % length
             return val[i]
-        raise ValueError(f"Cannot pattern an empty sequence: {val!r}")
+        raise ValueError(f"Cannot pattern an empty sequence: {val}")
 
     def pattern_reduce(
         self,

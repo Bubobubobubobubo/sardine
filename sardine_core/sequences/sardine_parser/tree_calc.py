@@ -1,6 +1,7 @@
 import random
 from itertools import chain, count, takewhile
 from types import SimpleNamespace
+from functools import wraps
 
 from lark import Transformer, v_args
 from lark.lexer import Token
@@ -11,6 +12,26 @@ from sardine_core.logger import print
 from . import funclib
 from .chord import Chord
 from .utils import CyclicalList, map_binary_function, map_unary_function, zip_cycle
+
+
+class ParseError(Exception):
+    pass
+
+
+class FunctionError(Exception):
+    pass
+
+
+def log_on_error(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            print(f"Error in {func.__name__} with args: {args}, kwargs: {kwargs}")
+            raise e
+
+    return wrapper
 
 
 @v_args(inline=True)
@@ -131,8 +152,11 @@ class CalculateTree(Transformer):
             content = CyclicalList(content)
             return content[list_slice[0] : list_slice[1]]
 
+    @log_on_error
     def make_chord(self, *args: list):
         """Turn a list into a chord"""
+        # NOTE: this is a possible bugfix
+        args = [x if isinstance(x, list) else [x] for x in args]
         return [self.library.chordify(*sum(args, start=[]))]
 
     def chord_reverse(self, notes: list, inversion: list) -> list:
@@ -546,7 +570,6 @@ class CalculateTree(Transformer):
                 "while": self.library.unary_condition,
                 "nwhile": self.library.negative_unary_condition,
                 # Boolean functions
-                "phase": self.library.phase,
                 "beat": self.library.beat,
                 "obar": self.library.oddbar,
                 "modbar": self.library.modbar,
@@ -624,21 +647,19 @@ class CalculateTree(Transformer):
                 "bl": self.library.binary_list,
                 "rot": self.library.rotate,
             }
-        except Exception as e:
-            print(e)
-        try:
-            if kwarguments.get("cond", [1]) >= [1] or not "cond" in kwarguments.keys():
+            if kwarguments.get("cond", [1]) >= [1] or "cond" not in kwarguments.keys():
                 return modifiers_list[func_name](
                     *list(chain(arguments)), **(kwarguments)
                 )
             else:
                 return list(arguments)
-        except Exception as e:
-            # Fail safe
+        except KeyError as e:
             print(
                 Panel.fit(
-                    f"[red]/!\\\\[/red] [bold]Unknown or malformed function [/bold][bold yellow]{func_name}[/bold yellow] [red]/!\\\\[/red]\n\n[reverse gold1]{e}\n[/reverse gold1]\n[bold]Possible functions are:[/bold] \n\n"
-                    + "".join(f"{name} " for name in modifiers_list.keys())
+                    f"[red]/!\\\\[/red] [bold]Unknown SPL function [/bold][bold yellow]{func_name}[/bold yellow] [red]/!\\\\[/red]\n[bold yellow]> {e}[/bold yellow]"
                 )
             )
-            return args[0]
+        except Exception as e:
+            raise FunctionError(
+                f"Unknown SPL function {func_name} with args {args} and kwargs {kwarguments}: {e}"
+            )

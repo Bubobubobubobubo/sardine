@@ -2,8 +2,6 @@ import traceback
 from pathlib import Path
 
 from lark import Lark, Tree
-from lark.exceptions import LarkError, UnexpectedCharacters, UnexpectedToken
-
 from sardine_core.base import BaseParser
 from sardine_core.logger import print
 
@@ -55,7 +53,7 @@ class ListParser(BaseParser):
         parsers = {
             "sardine": {
                 "raw": Lark.open(
-                    grammar,
+                    str(grammar),
                     rel_to=__file__,
                     parser="lalr",
                     start="start",
@@ -63,7 +61,7 @@ class ListParser(BaseParser):
                     lexer="contextual",
                 ),
                 "full": Lark.open(
-                    grammar,
+                    str(grammar),
                     rel_to=__file__,
                     parser="lalr",
                     start="start",
@@ -151,7 +149,10 @@ class ListParser(BaseParser):
         try:
             final_pattern = self._result_parser.parse(pattern)
         except Exception as e:
-            print(f"[red][Pattern Language Error][/red]")
+            tb = traceback.format_exc()
+            raise ParserError(
+                f"Error parsing pattern {pattern}: {e.__class__.__name__} {e}\nTraceback: {tb}"
+            )
 
         if self.debug:
             print(f"Pat: {self._flatten_result(final_pattern)}")

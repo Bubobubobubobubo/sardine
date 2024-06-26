@@ -6,13 +6,9 @@ from math import atan, cos, pi, sin, tan
 from random import shuffle
 from time import time
 from typing import Optional
-
 from sardine_core.sequences.sequence import euclid
-
 from .chord import Chord
 from .utils import map_unary_function
-
-# Type declarations
 
 
 class FunctionLibrary:

@@ -1,4 +1,6 @@
 from itertools import count, cycle, dropwhile, islice, takewhile
+from typing import Iterable, Tuple
+
 
 from .chord import Chord
 
@@ -57,8 +59,16 @@ def map_unary_function(func, value):
         return [allow_silence_1(func)(x) for x in value]
 
 
-def zip_cycle(left, right):
-    """Zip two lists, cycling the shortest one"""
+def zip_cycle(left: Iterable, right: Iterable) -> Iterable[Tuple]:
+    """Zip two iterables, cycling the shortest one"""
+
+    def ensure_iterable(obj):
+        """Ensure obj is iterable."""
+        return obj if isinstance(obj, Iterable) else [obj]
+
+    left = ensure_iterable(left)
+    right = ensure_iterable(right)
+
     if len(left) < len(right):
         return zip(cycle(left), right)
     else:

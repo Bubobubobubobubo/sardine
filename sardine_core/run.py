@@ -76,21 +76,19 @@ osc_loop = OSCLoop()
 bowl.add_handler(osc_loop)  # NOTE: always keep this loop running for OSC handlers
 
 # OSC Handler: dummy OSC handler, mostly used for test purposes
-dummy_osc = OSCHandler(
-    ip="127.0.0.1",
-    port=12345,
-    name="Dummy OSC Connexion",
-    ahead_amount=0.0,
-    loop=osc_loop,
-)
-O = dummy_osc.send
-
+# dummy_osc = OSCHandler(
+#     ip="127.0.0.1",
+#     port=12345,
+#     name="Dummy OSC Connexion",
+#     ahead_amount=0.0,
+#     loop=osc_loop,
+# )
+# O = dummy_osc.send
 
 # # OSC Listener Handler: dummy OSCIn handler, used for test purposes
-my_osc_listener = OSCInHandler(
-    ip="127.0.0.1", port=23456, name="Dummy OSC Listener", loop=osc_loop
-)
-
+# my_osc_listener = OSCInHandler(
+#     ip="127.0.0.1", port=23456, name="Dummy OSC Listener", loop=osc_loop
+# )
 
 # SuperDirt Handler: conditional
 if config.superdirt_handler:

@@ -427,7 +427,7 @@ def Pat(
         int: The ith element from the resulting pattern
     """
     result = bowl.parser.parse(pattern)
-    if print:
+    if as_text == True:
         pattern = []
         for iterator in range(i):
             pattern.append(Sender.pattern_element(result, iterator, div, rate))

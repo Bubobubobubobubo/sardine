@@ -102,21 +102,21 @@ class OSCHandler(Sender):
         divisor: NumericElement | Callable[[], NumericElement] = 1,
         rate: NumericElement | Callable[[], NumericElement] = 1,
         sort: bool | Callable[[], bool] = True,
-        **pattern: NumericElement,
+        **rest_of_pattern: dict,
     ) -> None:
         if address is None:
             return
 
         if self.apply_conditional_mask_to_bars(
-            pattern=pattern,
+            pattern=rest_of_pattern,
         ):
             return
+
+        pattern = {"address": _resolve_if_callable(address)}
 
         # Evaluate all potential callables
         for key, value in rest_of_pattern.items():
             pattern[key] = _resolve_if_callable(value)
-
-        pattern["address"] = _resolve_if_callable(address)
 
         deadline = self.env.clock.shifted_time
         for message in self.pattern_reduce(

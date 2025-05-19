@@ -236,15 +236,15 @@ def swim(
             again(runner)
             bowl.scheduler.start_runner(runner)
             return runner
-        elif quant is not None and quant != 'now':
+        elif quant is not None and quant != "now":
             if isinstance(quant, (float, int)):
                 deadline = get_quant_deadline(bowl.clock, quant)
                 runner.push_deferred(deadline, func, *args, **kwargs)
             elif isinstance(quant, str):
-                if quant == 'beat':
+                if quant == "beat":
                     time = bowl.clock.shifted_time
                     deadline = time + bowl.clock.get_beat_time(1, time=time)
-                elif quant == 'bar':
+                elif quant == "bar":
                     deadline = get_quant_deadline(bowl.clock, 0)
                 runner.push_deferred(deadline, func, *args, **kwargs)
             else:
@@ -379,10 +379,21 @@ def silence(*runners: AsyncRunner) -> None:
 
 
 def solo(*args):
-    """Soloing a single player out of all running players"""
-    for pat in bowl.scheduler.runners:
-        if pat.name not in args:
-            silence(pat)
+    """Soloing a single player out of all running players, excluding background job."""
+    foreground_runner_names = {
+        runner.name for runner in bowl.scheduler.runners if not runner.background_job
+    }
+    args_names = {runner.name for runner in args}
+    names_to_silence = foreground_runner_names - args_names
+    for runner in bowl.scheduler.runners:
+        if runner.name in names_to_silence:
+            silence(runner)
+
+
+def runners():
+    """Return all currently active AsyncRunners"""
+    condition = lambda x: x.name if x.name != "tidal_loop" else "internal"
+    return list(map(condition, bowl.scheduler.runners))
 
 
 def panic(*runners: AsyncRunner) -> None:

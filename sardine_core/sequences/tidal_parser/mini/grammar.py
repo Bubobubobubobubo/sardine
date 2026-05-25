@@ -116,7 +116,7 @@ grammar = Grammar(
     #
     # A primitive is a simple token like a word (string) or a number (real or
     # integer).
-    word = ~"[-\w]+"
+    word = ~"[-\\w]+"
     number = real / integer
     real = integer '.' pos_integer?
     pos_real = pos_integer '.' pos_integer?
@@ -126,6 +126,6 @@ grammar = Grammar(
 
     ## Misc
     minus = '-'
-    ws = ~"\s+"
+    ws = ~"\\s+"
     """
 )

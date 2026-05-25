@@ -47,7 +47,34 @@ CONTEXT_SETTINGS = {
 }
 
 
+SARDINE_WEB_INSTALL_HINT = (
+    "The `sardine web` command is provided by the optional `sardine-web` package.\n"
+    "Install it with `python -m pip install sardine-web`, then run `sardine web` again."
+)
+
+
+def _missing_web_command() -> click.Command:
+    @click.command(
+        "web",
+        short_help="Install sardine-web to enable this command",
+        help="Show installation instructions for the optional Sardine Web editor.",
+    )
+    def web():
+        raise click.ClickException(SARDINE_WEB_INSTALL_HINT)
+
+    return web
+
+
+class SardineGroup(click.Group):
+    def get_command(self, ctx: click.Context, cmd_name: str):
+        command = super().get_command(ctx, cmd_name)
+        if command is None and cmd_name == "web":
+            return _missing_web_command()
+        return command
+
+
 @click.group(
+    cls=SardineGroup,
     context_settings=CONTEXT_SETTINGS,
     help="Starts sardine in an asyncio REPL.",
     invoke_without_command=True,
